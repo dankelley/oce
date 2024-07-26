@@ -65,7 +65,7 @@
       <h1>7. Altering oce Defaults</h1>
                         <h4 data-toc-skip class="author">Dan Kelley (<a href="https://orcid.org/0000-0001-7808-5911" class="external-link uri">https://orcid.org/0000-0001-7808-5911</a>)</h4>
             
-            <h4 data-toc-skip class="date">2024-07-15</h4>
+            <h4 data-toc-skip class="date">2024-07-26</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/dankelley/oce/blob/HEAD/vignettes/G_altering_defaults.Rmd" class="external-link"><code>vignettes/G_altering_defaults.Rmd</code></a></small>
       <div class="d-none name"><code>G_altering_defaults.Rmd</code></div>
@@ -89,13 +89,13 @@ old UNESCO equation of state be used in operations like plotting CTD
 data, might insert the following line in the <code>~/.Rprofile</code>
 file:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>oceEOS<span class="op">=</span><span class="st">"gsw"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>oceEOS <span class="op">=</span> <span class="st">"gsw"</span><span class="op">)</span></span></code></pre></div>
 <p><em>but</em> it should be noted that setting values in
 <code>~/.Rprofile</code> will render the user’s code non-reproducible
 (unless that file is provided along with the analysis code).</p>
 <p>The preferred method is not to use <code>~/.Rprofile</code>, but
 instead to specify the desired properties as arguments to relevant
-functions. For example, calling <code>plotTS(...,eos="unesco")</code>
+functions. For example, calling <code>plotTS(..., eos="unesco")</code>
 instead of letting <code>eos</code> take on the default value of
 <code>"gsw"</code>. (It is the ability to specify a choice by such a
 parameter that is indicated in the right-most column of the following

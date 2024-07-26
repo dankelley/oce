@@ -65,7 +65,7 @@
       <h1>3. Analysis of acoustic-Doppler data</h1>
                         <h4 data-toc-skip class="author">Dan Kelley (<a href="https://orcid.org/0000-0001-7808-5911" class="external-link uri">https://orcid.org/0000-0001-7808-5911</a>)</h4>
             
-            <h4 data-toc-skip class="date">2024-07-15</h4>
+            <h4 data-toc-skip class="date">2024-07-26</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/dankelley/oce/blob/HEAD/vignettes/C_adp.Rmd" class="external-link"><code>vignettes/C_adp.Rmd</code></a></small>
       <div class="d-none name"><code>C_adp.Rmd</code></div>
@@ -122,20 +122,22 @@ and so it can help to use the <code>by</code> argument, e.g. for a 138Mb
 file on the author’s computer,</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">f</span> <span class="op">&lt;-</span> <span class="st">"/data/archive/sleiwex/2008/moorings/m09/adp/rdi_2615/raw/adp_rdi_2615.000"</span></span>
-<span><span class="va">dall</span>  <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read.oce.html">read.oce</a></span><span class="op">(</span><span class="va">f</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">dall</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read.oce.html">read.oce</a></span><span class="op">(</span><span class="va">f</span><span class="op">)</span></span></code></pre></div>
 <p>takes 15.2s of user time, but</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">d100</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read.oce.html">read.oce</a></span><span class="op">(</span><span class="va">f</span>, by<span class="op">=</span><span class="fl">100</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">d100</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read.oce.html">read.oce</a></span><span class="op">(</span><span class="va">f</span>, by <span class="op">=</span> <span class="fl">100</span><span class="op">)</span></span></code></pre></div>
 <p>takes 0.2s. It is also possible to window the data, using the
 <code>from</code> and <code>to</code> arguments, which (like
 <code>by</code>) can be integers that count ensembles (or “profiles”) or
 a POSIX time (see <code><a href="../reference/read.adp.html">?read.adp</a></code>). For example, the adp dataset
 provided by oce was read with</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/read.oce.html">read.oce</a></span><span class="op">(</span><span class="va">f</span>, from<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/as.POSIXlt.html" class="external-link">as.POSIXct</a></span><span class="op">(</span><span class="st">"2008-06-26"</span>, tz<span class="op">=</span><span class="st">"UTC"</span><span class="op">)</span>,</span>
-<span>    to<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/as.POSIXlt.html" class="external-link">as.POSIXct</a></span><span class="op">(</span><span class="st">"2008-06-27"</span>, tz<span class="op">=</span><span class="st">"UTC"</span><span class="op">)</span>,</span>
-<span>    by<span class="op">=</span><span class="st">"60:00"</span>,</span>
-<span>    latitude<span class="op">=</span><span class="fl">47.88126</span>, longitude<span class="op">=</span><span class="op">-</span><span class="fl">69.73433</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/read.oce.html">read.oce</a></span><span class="op">(</span><span class="va">f</span>,</span>
+<span>    from <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.POSIXlt.html" class="external-link">as.POSIXct</a></span><span class="op">(</span><span class="st">"2008-06-26"</span>, tz <span class="op">=</span> <span class="st">"UTC"</span><span class="op">)</span>,</span>
+<span>    to <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.POSIXlt.html" class="external-link">as.POSIXct</a></span><span class="op">(</span><span class="st">"2008-06-27"</span>, tz <span class="op">=</span> <span class="st">"UTC"</span><span class="op">)</span>,</span>
+<span>    by <span class="op">=</span> <span class="st">"60:00"</span>,</span>
+<span>    latitude <span class="op">=</span> <span class="fl">47.88126</span>, longitude <span class="op">=</span> <span class="op">-</span><span class="fl">69.73433</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <p>with <code>f</code> as defined above. This also illustrates that it
 is possibly to specify the location of an instrument; the further
 processing that was done to create <code>data(adp)</code> will be
@@ -206,7 +208,7 @@ do something along the lines of</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">beam</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read.oce.html">read.oce</a></span><span class="op">(</span><span class="va">f</span><span class="op">)</span></span>
 <span><span class="va">xyx</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/beamToXyz.html">beamToXyz</a></span><span class="op">(</span><span class="va">beam</span><span class="op">)</span></span>
-<span><span class="va">enu</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/xyzToEnu.html">xyzToEnu</a></span><span class="op">(</span><span class="va">xyz</span>, declination<span class="op">=</span><span class="op">-</span><span class="fl">18.1</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">enu</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/xyzToEnu.html">xyzToEnu</a></span><span class="op">(</span><span class="va">xyz</span>, declination <span class="op">=</span> <span class="op">-</span><span class="fl">18.1</span><span class="op">)</span></span></code></pre></div>
 <p>where the declination illustrated is the value used in creating the
 <code>data(adp)</code> dataset. (Compensating for declination is
 necessary because compasses are calibrated at a particular place and
@@ -252,7 +254,7 @@ without the speed of the ship for a file named
 </h2>
 <p>Adp data can be subsetted in a wide variety of ways, e.g.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">adp</span>, <span class="va">distance</span><span class="op">&lt;</span><span class="fl">20</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">adp</span>, <span class="va">distance</span> <span class="op">&lt;</span> <span class="fl">20</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="C_adp_files/figure-html/unnamed-chunk-11-1.png" width="432"></p>
 <p>plots only data within 20m of the instrument. See
 <code><a href="../reference/subset-adp-method.html">?"subset,adp-method"</a></code> for more on subsetting.</p>
@@ -336,7 +338,7 @@ transformed data. Using</p>
 <p><strong>Exercise 2.</strong> Create a u-v scatterplot.</p>
 <p><strong>Solution.</strong></p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">adp</span>, which<span class="op">=</span><span class="st">"uv"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">adp</span>, which <span class="op">=</span> <span class="st">"uv"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="C_adp_files/figure-html/unnamed-chunk-18-1.png" width="288"></p>
 <p><strong>Exercise 3.</strong> Write the steps to plot the
 <code>east</code>, <code>north</code>, and <code>up</code> velocity
@@ -348,7 +350,7 @@ without the speed of the ship for a file named
 <span><span class="va">adcp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read.adp.html">read.adp</a></span><span class="op">(</span><span class="st">"COR2019002_20190818T064815_007_000000.ENS"</span><span class="op">)</span></span>
 <span><span class="va">enu</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/toEnu.html">toEnu</a></span><span class="op">(</span><span class="va">adcp</span><span class="op">)</span></span>
 <span><span class="va">removeShipSpeed</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/subtractBottomVelocity.html">subtractBottomVelocity</a></span><span class="op">(</span><span class="va">enu</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">removeShipSpeed</span>, which<span class="op">=</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">removeShipSpeed</span>, which <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span></span></code></pre></div>
 <p><strong>Exercise 4.</strong> Plot the adp data for the first half of
 the sampling interval.</p>
 <p><strong>Solution.</strong> (results not shown)</p>
@@ -361,13 +363,13 @@ depth-averaged eastward velocities.</p>
 <code class="sourceCode R"><span><span class="va">time</span> <span class="op">&lt;-</span> <span class="va">adp</span><span class="op">[[</span><span class="st">"time"</span><span class="op">]</span><span class="op">]</span></span>
 <span><span class="va">v</span> <span class="op">&lt;-</span> <span class="va">adp</span><span class="op">[[</span><span class="st">"v"</span><span class="op">]</span><span class="op">]</span></span>
 <span><span class="co"># The second index is for bin number, the third for beam number</span></span>
-<span><span class="va">midIndex</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">v</span><span class="op">)</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">/</span><span class="fl">2</span></span>
+<span><span class="va">midIndex</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">v</span><span class="op">)</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span> <span class="op">/</span> <span class="fl">2</span></span>
 <span><span class="va">eastMid</span> <span class="op">&lt;-</span> <span class="va">v</span><span class="op">[</span>, <span class="va">midIndex</span>, <span class="fl">1</span><span class="op">]</span> <span class="co"># third index is beam</span></span>
 <span><span class="va">distance</span> <span class="op">&lt;-</span> <span class="va">adp</span><span class="op">[[</span><span class="st">"distance"</span><span class="op">]</span><span class="op">]</span><span class="op">[</span><span class="va">midIndex</span><span class="op">]</span></span>
-<span><span class="fu"><a href="../reference/oce.plot.ts.html">oce.plot.ts</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">eastMid</span>, ylab<span class="op">=</span><span class="st">"Eastward velocity [m/s]"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/oce.plot.ts.html">oce.plot.ts</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">eastMid</span>, ylab <span class="op">=</span> <span class="st">"Eastward velocity [m/s]"</span><span class="op">)</span></span>
 <span><span class="co"># Depth mean; note that na.rm, is passed by apply() to mean()</span></span>
-<span><span class="va">eastMean</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/apply.html" class="external-link">apply</a></span><span class="op">(</span><span class="va">v</span><span class="op">[</span>, , <span class="fl">1</span><span class="op">]</span>, <span class="fl">1</span>, <span class="va">mean</span>, na.rm<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">eastMean</span>, col<span class="op">=</span><span class="fl">2</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">eastMean</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/apply.html" class="external-link">apply</a></span><span class="op">(</span><span class="va">v</span><span class="op">[</span>, , <span class="fl">1</span><span class="op">]</span>, <span class="fl">1</span>, <span class="va">mean</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">eastMean</span>, col <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
 <p><img src="C_adp_files/figure-html/unnamed-chunk-21-1.png" width="700.0000032"></p>
 <p>Here, <code><a href="../reference/oce.plot.ts.html">oce.plot.ts()</a></code> is used instead of the basic R
 function <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code>, because it provides a margin note on the
@@ -441,8 +443,8 @@ constituents are as follows</p>
 <span><span class="co">#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
 <span><span class="co">#&gt; * Processing Log</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     - 2024-07-15 20:28:56 UTC: `create 'tidem' object`</span></span>
-<span><span class="co">#&gt;     - 2024-07-15 20:28:56 UTC: `tidem(t = as.sealevel(pressure, time))`</span></span></code></pre></div>
+<span><span class="co">#&gt;     - 2024-07-26 11:33:04 UTC: `create 'tidem' object`</span></span>
+<span><span class="co">#&gt;     - 2024-07-26 11:33:04 UTC: `tidem(t = as.sealevel(pressure, time))`</span></span></code></pre></div>
 <p>(Note that it fitted for M2, but not S2, because the Rayleigh
 criterion prevents inferring both, and the conventional tidal analysis
 favours M2 over S2 if the time series is too short to fit for more than
@@ -451,10 +453,10 @@ one semi-diurnal constituent.)</p>
 makes sense to construct a finer time grid, to get a smooth curve, as in
 the following (see <code><a href="../reference/predict.tidem.html">?predict.tidem</a></code>).</p>
 <div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/oce.plot.ts.html">oce.plot.ts</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">pressure</span>, type<span class="op">=</span><span class="st">"p"</span>, col<span class="op">=</span><span class="st">"blue"</span><span class="op">)</span></span>
-<span><span class="va">timePredict</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">time</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">time</span><span class="op">)</span>, length.out<span class="op">=</span><span class="fl">200</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/oce.plot.ts.html">oce.plot.ts</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">pressure</span>, type <span class="op">=</span> <span class="st">"p"</span>, col <span class="op">=</span> <span class="st">"blue"</span><span class="op">)</span></span>
+<span><span class="va">timePredict</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">time</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">time</span><span class="op">)</span>, length.out <span class="op">=</span> <span class="fl">200</span><span class="op">)</span></span>
 <span><span class="va">pressurePredict</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">m</span>, <span class="va">timePredict</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="va">timePredict</span>, <span class="va">pressurePredict</span>, col<span class="op">=</span><span class="st">"red"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="va">timePredict</span>, <span class="va">pressurePredict</span>, col <span class="op">=</span> <span class="st">"red"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="C_adp_files/figure-html/unnamed-chunk-28-1.png" width="700.0000032"></p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
