@@ -234,7 +234,7 @@ setMethod(
             ", geographical=", geographical,
             ", cex.axis=", cex.axis,
             ", inset=", inset,
-            ", ...) {\n",
+            ", ...) START\n",
             sep = "", unindent = 1
         )
         if (!missing(projection)) {
@@ -442,7 +442,7 @@ setMethod(
         }
         # box()
         oceDebug(debug, "par(\"usr\")=", par("usr"), "\n")
-        oceDebug(debug, "} # plot.gps()\n", unindent = 1)
+        oceDebug(debug, "END plot.gps()\n", unindent = 1)
         invisible(NULL)
     }
 )
@@ -506,6 +506,7 @@ as.gps <- function(longitude, latitude, filename = "") {
 #'
 #' @family things related to gps data
 read.gps <- function(file, type = NULL, encoding = "latin1", debug = getOption("oceDebug"), processingLog) {
+    oceDebug(debug, "read.gps(...) START\n", sep = "", unindent = 1)
     if (missing(file)) {
         stop("must supply 'file'")
     }
@@ -517,7 +518,6 @@ read.gps <- function(file, type = NULL, encoding = "latin1", debug = getOption("
             stop("empty file \"", file, "\"")
         }
     }
-    oceDebug(debug, "read.gps(...) {\n", sep = "", style = "bold", unindent = 1)
     filename <- NULL
     if (is.character(file)) {
         filename <- fullFilename(file)
@@ -548,6 +548,6 @@ read.gps <- function(file, type = NULL, encoding = "latin1", debug = getOption("
     latlonCleaned <- gsub("[a-zA-Z<>=\"/]*", "", latlon)
     latlon <- read.table(text = latlonCleaned, encoding = encoding)
     res <- new("gps", longitude = latlon[, 2], latitude = latlon[, 1], file = filename)
-    oceDebug(debug, "} # read.gps()\n", sep = "", style = "bold", unindent = 1)
+    oceDebug(debug, "END read.gps()\n", sep = "", unindent = 1)
     res
 }

@@ -48,7 +48,7 @@ read.adv.nortek <- function(
         ", by=", by, ", tz=\"", tz, "\", header=", header, ",
         longitude=", longitude, ", latitude=", latitude, ", type=\"",
         type, "\", debug=", debug, ", monitor=", monitor, ",
-        processingLog=(not shown)) {\n",
+        processingLog=(not shown)) START\n",
         sep = "", unindent = 1
     )
     if (is.numeric(by) && by < 1) {
@@ -138,7 +138,7 @@ read.adv.nortek <- function(
     bisectNortekVectorSd <- function(tFind, add = 0, debug = 0) {
         # tFind=time add=offset debug=debug
         oceDebug(debug, "\n")
-        oceDebug(debug, "bisectNortekVectorSd(tFind=", format(tFind), ", add=", add, ", debug=", debug, ")\n")
+        oceDebug(debug, "bisectNortekVectorSd(tFind=", format(tFind), ", add=", add, ", debug=", debug, ") BEGIN\n")
         vsdLen <- length(vsdStart)
         lower <- 1
         upper <- vsdLen
@@ -181,7 +181,7 @@ read.adv.nortek <- function(
             bcdToInteger(buf[vsdStart[middle] + 5]), # sec
             tz = tz
         )
-        oceDebug(debug, "result: t=", format(t), " at vsdStart[", middle, "]=", vsdStart[middle], "\n")
+        oceDebug(debug, "END with result: t=", format(t), " at vsdStart[", middle, "]=", vsdStart[middle], "\n")
         return(list(index = middle, time = t)) # index is within vsd
     }
     # NOTE: system.time() indicates 0.2s to scan a 100Meg file [macpro desktop, circa 2009]
@@ -663,6 +663,6 @@ read.adv.nortek <- function(
     res@metadata$units$pitchSlow <- list(unit = expression(degree), scale = "")
     res@metadata$units$rollSlow <- list(unit = expression(degree), scale = "")
     res@metadata$units$temperatureSlow <- list(unit = expression(degree * C), scale = "")
-    oceDebug(debug, "} # read.adv.nortek(file=\"", filename, "\", ...)\n", sep = "", unindent = 1)
+    oceDebug(debug, "END read.adv.nortek(file=\"", filename, "\", ...)\n", sep = "", unindent = 1)
     res
 }

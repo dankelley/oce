@@ -144,7 +144,7 @@ setAs("list", "ctd", function(from) {
 #'
 #' @author Dan Kelley
 ctdRepair <- function(x, debug = getOption("oceDebug")) {
-    oceDebug(debug, "ctdRepair(x) {\n", sep = "", unindent = 1, style = "bold")
+    oceDebug(debug, "ctdRepair(x) START\n", sep = "", unindent = 1)
     dnames <- names(x@data)
     # 1: move things from data to metadata
     for (item in c("longitude", "latitude", "time", "station")) {
@@ -178,7 +178,7 @@ ctdRepair <- function(x, debug = getOption("oceDebug")) {
         }
     }
     x@processingLog <- processingLogAppend(x@processingLog, paste(deparse(match.call()), sep = "", collapse = ""))
-    oceDebug(debug, "} # ctdRepair()\n", sep = "", unindent = 1, style = "bold")
+    oceDebug(debug, "END ctdRepair()\n", sep = "", unindent = 1)
     x
 } # ctdRepair()
 
@@ -800,7 +800,7 @@ setMethod(
     definition = function(x, i, j, ...) {
         dots <- list(...)
         debug <- if ("debug" %in% names(dots)) dots$debug else 0
-        oceDebug(debug, "[[,ctd-method(\"", i, "\") ...\n", sep = "", style = "bold", unindent = 1)
+        oceDebug(debug, "[[,ctd-method(\"", i, "\") START\n", sep = "", unindent = 1)
         # message("i=\"", i, "\"")
         data <- x@data
         metadata <- x@metadata
@@ -1168,13 +1168,13 @@ as.ctd <- function(
     startTime = NULL, longitude = NULL, latitude = NULL, deploymentType = "unknown",
     pressureAtmospheric = 0, sampleInterval = NULL, profile = NULL,
     debug = getOption("oceDebug")) {
-    oceDebug(debug, "as.ctd(...) {\n", sep = "", unindent = 1, style = "bold")
+    oceDebug(debug, "as.ctd(...) START\n", sep = "", unindent = 1)
     unitsGiven <- !is.null(units)
     salinityGiven <- !missing(salinity)
     # Already a ctd-class object.
     if (salinityGiven && inherits(salinity, "ctd")) {
         oceDebug(debug, "first argument is 'ctd-class', so returning as-is\n")
-        oceDebug(debug, "} # as.ctd()\n", sep = "", unindent = 1, style = "bold")
+        oceDebug(debug, "END as.ctd()\n", sep = "", unindent = 1)
         return(salinity)
     }
     # An rsk-class object.
@@ -1190,7 +1190,7 @@ as.ctd <- function(
             deploymentType = deploymentType,
             debug = debug - 1
         )
-        oceDebug(debug, "} # as.ctd()\n", sep = "", unindent = 1, style = "bold")
+        oceDebug(debug, "END as.ctd()\n", sep = "", unindent = 1)
         return(res)
     }
     # Not an rsk object.
@@ -1788,7 +1788,7 @@ as.ctd <- function(
         res@metadata$latitude <- NULL
     }
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep = "", collapse = ""))
-    oceDebug(debug, "} # as.ctd()\n", sep = "", unindent = 1, style = "bold")
+    oceDebug(debug, "END as.ctd()\n", sep = "", unindent = 1)
     res
 }
 
@@ -1929,7 +1929,7 @@ ctdDecimate <- function(x, p = 1, method = "boxcar", rule = 1, e = 1.5, na.rm = 
         },
         ", rule=c(", paste(rule, collapse = ","), ")",
         ", e=", e,
-        ", ...) {\n",
+        ", ...) START\n",
         sep = "", unindent = 1
     )
     # if (!inherits(x, "ctd"))
@@ -2143,7 +2143,7 @@ ctdDecimate <- function(x, p = 1, method = "boxcar", rule = 1, e = 1.5, na.rm = 
     for (w in warningMessages) {
         res@processingLog <- processingLogAppend(res@processingLog, w)
     }
-    oceDebug(debug, "} # ctdDecimate()\n", unindent = 1)
+    oceDebug(debug, "END ctdDecimate()\n", unindent = 1)
     res
 }
 
@@ -2274,7 +2274,7 @@ ctdFindProfiles <- function(
         ", minHeight=", minHeight,
         ", direction=\"", direction, "\"",
         ", breaks=", if (missing(breaks)) "unspecified" else "specified",
-        ", arr.ind=", arr.ind, ", debug=", debug, ") {\n",
+        ", arr.ind=", arr.ind, ", debug=", debug, ") START\n",
         sep = "", unindent = 1
     )
     if (!missing(distinct)) {
@@ -2293,7 +2293,7 @@ ctdFindProfiles <- function(
             for (i in 1:nstn) {
                 casts[[i]] <- ctdTrim(x, "index", parameters = range(stnIndices[i]))
             }
-            oceDebug(debug, "} # ctdFindProfiles()\n", sep = "", unindent = 1)
+            oceDebug(debug, "END ctdFindProfiles()\n", sep = "", unindent = 1)
             return(casts)
         } else if (distinct %in% names(x@data)) {
             u <- unique(x[[distinct]])
@@ -2306,7 +2306,7 @@ ctdFindProfiles <- function(
             for (i in 1:nstn) {
                 casts[[i]] <- ctdTrim(x, method = "index", parameters = x[[distinct]] == u[i])
             }
-            oceDebug(debug, "} # ctdFindProfiles()\n", sep = "", unindent = 1)
+            oceDebug(debug, "END ctdFindProfiles()\n", sep = "", unindent = 1)
             return(casts)
         } else {
             stop("'distinct' not understood; it should be \"distance\" or something in names(x[[\"data\"]]")
@@ -2377,7 +2377,7 @@ ctdFindProfiles <- function(
         indices$end <- indices$end - 1
     }
     if (is.logical(arr.ind) && arr.ind) {
-        oceDebug(debug, "} # ctdFindProfiles()\n", sep = "", unindent = 1)
+        oceDebug(debug, "END ctdFindProfiles()\n", sep = "", unindent = 1)
         return(indices)
     } else {
         ncasts <- length(indices$start)
@@ -2404,7 +2404,7 @@ ctdFindProfiles <- function(
             )
             casts[[i]] <- cast
         }
-        oceDebug(debug, "} # ctdFindProfiles()\n", sep = "", unindent = 1)
+        oceDebug(debug, "END ctdFindProfiles()\n", sep = "", unindent = 1)
         return(casts)
     }
 }
@@ -2443,9 +2443,7 @@ ctdFindProfilesRBR <- function(x, direction = "descending", arr.ind = FALSE, deb
     } else if (!inherits(x, "ctd")) {
         stop("x must be of class \"rsk\" or \"ctd\"")
     }
-    oceDebug(debug, "ctdFindProfilesRBR(x, direction=", direction, ", arr.ind=", arr.ind, ", debug=", debug, ") {\n",
-        sep = "", unindent = 1
-    )
+    oceDebug(debug, "ctdFindProfilesRBR(x, direction=", direction, ", arr.ind=", arr.ind, ", debug=", debug, ") START\n", sep = "", unindent = 1)
     if (identical(direction, "ascending")) {
         dir <- "UP"
     } else if (identical(direction, "descending")) {
@@ -2500,7 +2498,7 @@ ctdFindProfilesRBR <- function(x, direction = "descending", arr.ind = FALSE, deb
         print(data.frame(start = start, end = end))
     }
     if (identical(arr.ind, TRUE)) {
-        oceDebug(debug, "} # ctdFindProfilesRBR()\n", sep = "", unindent = 1)
+        oceDebug(debug, "END ctdFindProfilesRBR()\n", sep = "", unindent = 1)
         return(data.frame(start = start, end = end))
     } else {
         ncasts <- length(start)
@@ -2526,7 +2524,7 @@ ctdFindProfilesRBR <- function(x, direction = "descending", arr.ind = FALSE, deb
             )
             casts[[i]] <- cast
         }
-        oceDebug(debug, "} # ctdFindProfilesRBR()\n", sep = "", unindent = 1)
+        oceDebug(debug, "END ctdFindProfilesRBR()\n", sep = "", unindent = 1)
         return(casts)
     }
 }
@@ -2686,7 +2684,7 @@ ctdFindProfilesRBR <- function(x, direction = "descending", arr.ind = FALSE, deb
 ctdTrim <- function(
     x, method, removeDepthInversions = FALSE,
     parameters = NULL, indices = FALSE, debug = getOption("oceDebug")) {
-    oceDebug(debug, "ctdTrim() {\n", unindent = 1)
+    oceDebug(debug, "ctdTrim() START\n", unindent = 1)
     methodIsFunction <- !missing(method) && is.function(method)
     if (!inherits(x, "ctd")) {
         stop("method is only for objects of class '", "ctd", "'")
@@ -2694,7 +2692,7 @@ ctdTrim <- function(
     pressure <- fillGap(x[["pressure"]], rule = 2)
     if (1 == length(unique(diff(pressure)))) {
         oceDebug(debug, "diff(p) is constant, so return input unaltered\n", unindent = 1)
-        oceDebug(debug, "} # ctdTrim()\n", unindent = 1)
+        oceDebug(debug, "END ctdTrim()\n", unindent = 1)
         return(x)
     }
     if (!("scan" %in% names(x@data))) {
@@ -3001,7 +2999,7 @@ ctdTrim <- function(
         }
         res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep = "", collapse = ""))
     }
-    oceDebug(debug, "} # ctdTrim()\n", unindent = 1)
+    oceDebug(debug, "END ctdTrim()\n", unindent = 1)
     res
 }
 
@@ -3498,7 +3496,7 @@ setMethod(
             warning("In plot,ctd-method() : 'fill' is outdated; use 'colCoastline' instead", call. = FALSE)
         }
         if (missing(which)) {
-            oceDebug(debug, "plot,ctd-method(..., eos=\"", eos, "\", inset=", inset, ", ...) {\n", sep = "", style = "bold", unindent = 1)
+            oceDebug(debug, "plot,ctd-method(..., eos=\"", eos, "\", inset=", inset, ", ...) START\n", sep = "", unindent = 1)
             dt <- x@metadata$deploymentType
             if (is.null(dt)) {
                 which <- c(1, 2, 3, 5)
@@ -3548,7 +3546,7 @@ setMethod(
             }
         } else {
             oceDebug(debug, "plot,ctd-method(..., which=c(", paste(which, collapse = ",", sep = ""),
-                "), eos=\"", eos, "\", inset=", inset, ", ...) {\n",
+                "), eos=\"", eos, "\", inset=", inset, ", ...) START\n",
                 sep = "", unindent = 1
             )
         }
@@ -3855,7 +3853,7 @@ setMethod(
                 }
                 if (!is.null(x[["latitude"]]) && !is.null(x[["longitude"]]) &&
                     any(is.finite(x[["latitude"]])) && any(is.finite(x[["longitude"]]))) {
-                    oceDebug(debug, "plot(ctd, ...) { # of type MAP\n")
+                    oceDebug(debug, "plot(ctd, ...) of type map START\n")
                     # Calculate span, if not given
                     if (missing(span)) {
                         oceDebug(debug, "'span' not given\n")
@@ -4051,7 +4049,7 @@ setMethod(
                     )
                 }
                 mar <- omar # recover mar, which was altered for multi-panel plots
-                oceDebug(debug, "} # plot(ctd, ...) of type \"map\"\n", unindent = 1)
+                oceDebug(debug, "END plot(ctd, ...) of type \"map\"\n", unindent = 1)
             } else if (which[w] == "index") {
                 oceDebug(debug, "handling which[", w, "]=\"", whichOrig[w], "\" as a special case\n", sep = "")
                 plotProfile(x,
@@ -4172,7 +4170,7 @@ setMethod(
                 }
             }
         }
-        oceDebug(debug, "} # plot,ctd-method()\n", unindent = 1)
+        oceDebug(debug, "END plot,ctd-method()\n", unindent = 1)
         invisible(NULL)
     }
 )
@@ -4451,7 +4449,7 @@ read.ctd <- function(
     if (is.na(file)) {
         stop("cannot read a NA file")
     }
-    oceDebug(debug, "read.ctd(..., type=", if (is.null(type)) "NULL" else "\"", type, "\") {\n", sep = "")
+    oceDebug(debug, "read.ctd(..., type=", if (is.null(type)) "NULL" else "\"", type, "\") START\n", sep = "")
     # Special case: ruskin files are handled by read.rsk()
     if (is.character(file) && length(grep(".rsk$", file))) {
         return(read.rsk(file = file, debug = debug))
@@ -4562,7 +4560,7 @@ parseLatLon <- function(line, debug = getOption("oceDebug")) {
     # degree signs will be '?' by prior conversion; make them blank
     x <- gsub("\\?", " ", x)
     # positive <- TRUE
-    oceDebug(debug, "parseLatLon(\"", line, "\") {\n", sep = "")
+    oceDebug(debug, "parseLatLon(\"", line, "\") START\n", sep = "")
     oceDebug(debug, "  step 1. \"", x, "\" (as provided)\n", sep = "")
     x <- sub("^[ =a-z*:]*", "", x, ignore.case = TRUE)
     oceDebug(debug, "  step 2. \"", x, "\" (now should have no header text or symbols)\n", sep = "")
@@ -4590,7 +4588,7 @@ parseLatLon <- function(line, debug = getOption("oceDebug")) {
     if (is.na(res)) {
         warning("cannot decode longitude or latitude from '", line, "'")
     }
-    oceDebug(debug, "} # parseLatLon()\n", unindent = 1)
+    oceDebug(debug, "END parseLatLon()\n", unindent = 1)
     res
 }
 
@@ -4847,8 +4845,8 @@ plotTS <- function(
         "type=\"", type, "\", ",
         "mgp=c(", paste(mgp, collapse = ","), "), ",
         "mar=c(", paste(mar, collapse = ","), "), ",
-        "debug=", debug, ", ...) {\n",
-        sep = "", unindent = 1, style = "bold"
+        "debug=", debug, ", ...) START\n",
+        sep = "", unindent = 1
     )
     eos <- match.arg(eos, c("unesco", "gsw"))
     xat <- NULL
@@ -5102,7 +5100,7 @@ plotTS <- function(
     xat <- seq(xaxp[1], xaxp[2], length.out = 1 + xaxp[3])
     yaxp <- par("yaxp")
     yat <- seq(yaxp[1], yaxp[2], length.out = 1 + yaxp[3])
-    oceDebug(debug, "} # plotTS(...)\n", sep = "", unindent = 1, style = "bold")
+    oceDebug(debug, "END plotTS(...)\n", sep = "", unindent = 1)
     invisible(list(xat = xat, yat = yat))
 }
 
@@ -5201,8 +5199,8 @@ drawIsopycnals <- function(
     debug = getOption("oceDebug")) {
     oceDebug(debug, "drawIsopycnals(nlevels=", nlevels,
         "..., gridIsopycnals=", paste(gridIsopycnals, collapse = " "),
-        ", rho1000=", rho1000, ", ...){\n",
-        sep = "", unindent = 1, style = "bold"
+        ", rho1000=", rho1000, ", ...) START\n",
+        sep = "", unindent = 1
     )
     trimIsopycnalLine <- function(contourline, longitude, latitude, eos = "unesco") {
         # See sandbox/issues/20xx/2046/2046_0[1:3].R, noting that here
@@ -5390,7 +5388,7 @@ drawIsopycnals <- function(
     } else {
         stop(vectorShow(gridIsopycnals, msg = "gridIsopycnals must be either NULL or a two-element integer vector, but it is"))
     }
-    oceDebug(debug, "} # drawIsopycnals(...)\n", sep = "", unindent = 1, style = "bold")
+    oceDebug(debug, "END drawIsopycnals(...)\n", sep = "", unindent = 1)
 }
 
 
@@ -5638,8 +5636,8 @@ plotProfile <- function(
         ", col=", col,
         ", cex=", cex,
         ", pch=", pch,
-        ", ...) {\n",
-        sep = "", style = "bold", unindent = 1
+        ", ...) START\n",
+        sep = "", unindent = 1
     )
     eos <- match.arg(eos, c("unesco", "gsw"))
     if (missing(mar)) {
@@ -5663,8 +5661,8 @@ plotProfile <- function(
                                 df = df, keepNA = FALSE, debug = getOption("oceDebug", 0)) {
         oceDebug(debug, "plotJustProfile(...,",
             argShow(xtype),
-            argShow(col), ", debug=", debug, ") {\n",
-            sep = "", style = "bold", unindent = 1
+            argShow(col), ", debug=", debug, ") START\n",
+            sep = "", unindent = 1
         )
         if (is.null(xlab)) {
             xlab <- ""
@@ -5687,7 +5685,7 @@ plotProfile <- function(
         } else if (type != "n") {
             stop("type is \"", type, "\" but only \"b\", \"l\", \"o\" and \"p\" are allowed")
         }
-        oceDebug(debug, "} # plotJustProfile\n", style = "bold", unindent = 1)
+        oceDebug(debug, "END plotJustProfile\n", unindent = 1)
     } # plotJustProfile
     # if (!inherits(x, "ctd"))
     #    stop("method is only for objects of class '", "ctd", "'")
@@ -6802,5 +6800,5 @@ plotProfile <- function(
             abline(h = seq(at[1], at[2], length.out = at[3] + 1), col = col.grid, lty = lty.grid)
         }
     }
-    oceDebug(debug, "} # plotProfile()\n", style = "bold", unindent = 1)
+    oceDebug(debug, "END plotProfile()\n", unindent = 1)
 }

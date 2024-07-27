@@ -72,7 +72,7 @@ read.ctd.saiv <- function(file, encoding = "latin1", debug = getOption("oceDebug
         stop("must supply 'file'")
     }
     debug <- max(0L, as.integer(debug))
-    oceDebug(debug, "read.ctd.saiv(file=\"", file, "\", ...) {\n", unindent = 1, style = "bold")
+    oceDebug(debug, "read.ctd.saiv(file=\"", file, "\", ...) START\n", unindent = 1)
     if (!is.character(file)) {
         stop("'file' must be a character value")
     }
@@ -201,5 +201,6 @@ read.ctd.saiv <- function(file, encoding = "latin1", debug = getOption("oceDebug
     dno[dataNames] <- dataNamesOriginal
     res@metadata$dataNamesOriginal <- dno
     res@metadata$units <- units
+    oceDebug(debug, "END read.ctd.saiv()\n", sep="", unindent=1)
     return(res)
 }

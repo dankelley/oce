@@ -81,8 +81,8 @@ paletteCalculations <- function(
         ", width=", width, ", pos=", pos,
         ", zlab=", if (missing(zlab)) "(missing)" else zlab,
         ", maidiff=c(", paste(maidiff, collapse = ","), ")",
-        ", debug=", debug, ") {\n",
-        sep = "", style = "bold", unindent = 1
+        ", debug=", debug, ") START\n",
+        sep = "", unindent = 1
     )
     haveZlab <- !missing(zlab) && !is.null(zlab) && sum(nchar(zlab)) > 0
     # 2014-04-02 {
@@ -162,7 +162,7 @@ paletteCalculations <- function(
     pc$mai1f <- pc$mai1f + maidiff
     oceDebug(debug, "pc$mail1: ", paste(round(pc$mai1, 2), sep = " "), "\n")
     oceDebug(debug, "pc$mailf: ", paste(round(pc$mai1f, 2), sep = " "), "\n")
-    oceDebug(debug, "} # paletteCalculations\n", style = "bold", sep = "", unindent = 1)
+    oceDebug(debug, "END paletteCalculations\n", sep = "", unindent = 1)
     pc
 }
 
@@ -320,8 +320,8 @@ drawPalette <- function(
         argShow(at),
         argShow(labels),
         argShow(fullpage),
-        "...) {\n",
-        sep = "", unindent = 1, style = "bold"
+        "...) START\n",
+        sep = "", unindent = 1
     )
     atGiven <- !is.null(at)
     breaksGiven <- !missing(breaks)
@@ -660,7 +660,7 @@ drawPalette <- function(
     }
     oceDebug(debug, vectorShow(par("mar")))
     oceDebug(debug, vectorShow(par("mai")))
-    oceDebug(debug, "} # drawPalette()\n", unindent = 1, style = "bold")
+    oceDebug(debug, "END drawPalette()\n", unindent = 1)
     invisible(NULL)
 }
 
@@ -1018,8 +1018,8 @@ imagep <- function(
         argShow(mai.palette),
         argShow(breaks),
         argShow(add, last = TRUE),
-        ", ...)\n",
-        sep = "", style = "bold", unindent = 1
+        ", ...) START\n",
+        sep = "", unindent = 1
     )
     zlabPosition <- match.arg(zlabPosition)
     if (!is.logical(flipy)) {
@@ -1081,7 +1081,7 @@ imagep <- function(
                 breaks = breaks, col = col, useRaster = useRaster, # why useRaster?
                 add = TRUE
             )
-            oceDebug(debug, "} # imagep()\n", unindent = 1, style = "bold", sep = "")
+            oceDebug(debug, "END imagep()\n", unindent = 1, sep = "")
             return(invisible(list(xat = NULL, yat = NULL, decimate = decimate)))
         }
     } else {
@@ -1600,6 +1600,6 @@ imagep <- function(
     par(cex = ocex)
     oceDebug(debug, "at return, par(\"mai\")=c(", paste(format(par("mai"), digits = 2), collapse = ","), ")\n", sep = "")
     oceDebug(debug, "at return, par(\"mar\")=c(", paste(format(par("mar"), digits = 2), collapse = ","), ")\n", sep = "")
-    oceDebug(debug, "} # imagep()\n", unindent = 1, style = "bold", sep = "")
+    oceDebug(debug, "END imagep()\n", sep = "", unindent = 1)
     invisible(list(xat = xat, yat = yat, decimate = decimate))
 } # imagep()

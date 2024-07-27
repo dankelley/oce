@@ -99,7 +99,7 @@ read.ctd.aml <- function(file, format, encoding = "UTF-8-BOM", debug = getOption
         }
     }
     debug <- max(0L, as.integer(debug))
-    oceDebug(debug, "read.ctd.aml(file=\"", file, "\", ...) {\n", unindent = 1, style = "bold")
+    oceDebug(debug, "read.ctd.aml(file=\"", file, "\", ...) START\n", sep = "", unindent = 1)
     if (is.character(file) && 0 == file.info(file)$size) {
         stop("empty file")
     }
@@ -117,7 +117,7 @@ read.ctd.aml <- function(file, format, encoding = "UTF-8-BOM", debug = getOption
         on.exit(close(file))
     }
     getMetadataItem <- function(lines, name, numeric = TRUE, ignore.case = FALSE, debug = 0) {
-        oceDebug(debug, "getMetadataItem(lines, \"", name, "\", numeric=", numeric, ")\n", style = "bold", unindent = 1)
+        oceDebug(debug, "getMetadataItem(lines, \"", name, "\", numeric=", numeric, ")\n", sep = "", unindent = 1)
         l <- grep(paste0("^", name, "="), lines, ignore.case = ignore.case)
         res <- NA
         if (length(l) > 0L) {
@@ -132,7 +132,7 @@ read.ctd.aml <- function(file, format, encoding = "UTF-8-BOM", debug = getOption
             }
         }
         oceDebug(debug, "returning ", res, "\n")
-        oceDebug(debug, "#} getMetadataItem()\n", style = "bold", unindent = 1)
+        oceDebug(debug, "END getMetadataItem()\n", unindent = 1)
         res
     }
     lines <- readLines(file, warn = FALSE)
@@ -254,6 +254,6 @@ read.ctd.aml <- function(file, format, encoding = "UTF-8-BOM", debug = getOption
         res@metadata$units$depth <- list(unit = expression(m), scale = "")
     }
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep = "", collapse = ""))
-    oceDebug(debug, "} # read.ctd.aml() {\n", unindent = 1, style = "bold")
+    oceDebug(debug, "END read.ctd.aml()\n", unindent = 1)
     res
 }

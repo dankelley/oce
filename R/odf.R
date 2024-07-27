@@ -190,7 +190,7 @@ setMethod(
     signature = signature("odf"),
     definition = function(x, blanks = TRUE,
                           debug = getOption("oceDebug")) {
-        oceDebug(debug, "plot,odf-method(..., blanks=", blanks, "...) {\n", sep = "", unindent = 1)
+        oceDebug(debug, "plot,odf-method(..., blanks=", blanks, "...) START\n", sep = "", unindent = 1)
         data <- x@data
         dataNames <- names(data)
         # At the start, n is the number of non-time variables, but
@@ -246,7 +246,7 @@ setMethod(
                 }
             }
         }
-        oceDebug(debug, "} # plot,odf-method\n", sep = "", unindent = 1)
+        oceDebug(debug, "END plot,odf-method\n", sep = "", unindent = 1)
     }
 )
 
@@ -542,7 +542,7 @@ findInHeader <- function(key, lines, returnOnlyFirst = TRUE, numeric = FALSE, pr
 #'
 #' @family things related to odf data
 ODFNames2oceNames <- function(ODFnames, columns = NULL, PARAMETER_HEADER = NULL, debug = getOption("oceDebug")) {
-    oceDebug(debug, "ODFNames2oceNames() {\n", unindent = 1, sep = "", style = "bold")
+    oceDebug(debug, "ODFNames2oceNames() START\n", unindent = 1, sep = "")
     # unused? n <- length(ODFnames)
     names <- ODFnames
     # If 'name' is mentioned in columns, then use columns and ignore the lookup table.
@@ -718,7 +718,7 @@ ODFNames2oceNames <- function(ODFnames, columns = NULL, PARAMETER_HEADER = NULL,
     oceDebug(debug, "STAGE 2 names: ", paste(names, collapse = " "), "\n")
     names <- unduplicateNames(names)
     oceDebug(debug, "STAGE 3 names (i.e. after unduplicating): ", paste(names, collapse = " "), "\n")
-    oceDebug(debug, "} # ODFNames2oceNames()\n", unindent = 1, sep = "", style = "bold")
+    oceDebug(debug, "END ODFNames2oceNames()\n", unindent = 1, sep = "")
     list(names = names)
 }
 
@@ -1030,10 +1030,7 @@ read.odf <- function(file, columns = NULL, header = "list", exclude = NULL, enco
         }
     }
     debug <- as.integer(min(max(debug, 0), 3))
-    oceDebug(debug, "read.odf(\"", file, "\", exclude=",
-        if (is.null(exclude)) "NULL" else paste0("'", exclude, "'"), ", ...) {\n",
-        unindent = 1, sep = "", style = "bold"
-    )
+    oceDebug(debug, "read.odf(\"", file, "\", exclude=", if (is.null(exclude)) "NULL" else paste0("'", exclude, "'"), ", ...) START\n", unindent = 1, sep = "")
     if (!is.null(header)) {
         if (!is.character(header)) {
             stop("the header argument must be NULL, \"character\", or \"list\"")
@@ -1497,7 +1494,7 @@ read.odf <- function(file, columns = NULL, header = "list", exclude = NULL, enco
             sep = ""
         )
     )
-    oceDebug(debug, "} # read.odf()\n", sep = "", style = "bold", unindent = 1)
+    oceDebug(debug, "} # read.odf()\n", sep = "", unindent = 1)
     res
 }
 
@@ -1547,7 +1544,7 @@ read.ctd.odf <- function(
             stop("empty file \"", file, "\"")
         }
     }
-    oceDebug(debug, "read.ctd.odf(\"", file, "\", ...) {\n", sep = "", unindent = 1, style = "bold")
+    oceDebug(debug, "read.ctd.odf(\"", file, "\", ...) START\n", sep = "", unindent = 1)
     if (!is.null(columns)) warning("'columns' is ignored by read.ctd.odf() at present")
     odf <- read.odf(file = file, columns = columns, exclude = exclude, debug = debug - 1)
     res <- as.ctd(odf, debug = debug - 1)
@@ -1565,6 +1562,6 @@ read.ctd.odf <- function(
     }
     res@metadata$pressureType <- "sea"
     res@metadata$deploymentType <- deploymentType
-    oceDebug(debug, "} # read.ctd.odf()\n", unindent = 1, style = "bold")
+    oceDebug(debug, "END read.ctd.odf()\n", unindent = 1)
     res
 }

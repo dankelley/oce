@@ -5,7 +5,7 @@
 \alias{oce.debug}
 \title{Print a Debugging Message}
 \usage{
-oceDebug(debug = 0, ..., style = "plain", unindent = 0, sep = "")
+oceDebug(debug = 0, ..., unindent = 0, sep = "", style = "plain")
 }
 \arguments{
 \item{debug}{an integer, less than or equal to zero for no message, and
@@ -15,6 +15,12 @@ are treated like 4.}
 \item{\dots}{items to be supplied to \code{\link[=cat]{cat()}}, which does the
 printing.  Note that no newline will be printed unless \dots
 contains a string with a newline character (as in the example).}
+
+\item{unindent}{integer giving the number of levels to un-indent,
+e.g. for start and end lines from a called function.}
+
+\item{sep}{character to insert between elements of \code{...}, by passing
+it to \code{\link[=cat]{cat()}}.}
 
 \item{style}{either a string or a function. If a string,
 it must be \code{"plain"} (the default) for plain text,
@@ -27,12 +33,6 @@ through latex.
 If \code{style} is a function, it must prepend and postpend the text
 with control codes, as in the cyan-coloured example; note that
 \CRANpkg{crayon} provides many functions that work well for \code{style}.}
-
-\item{unindent}{integer giving the number of levels to un-indent,
-e.g. for start and end lines from a called function.}
-
-\item{sep}{character to insert between elements of \code{...}, by passing
-it to \code{\link[=cat]{cat()}}.}
 }
 \description{
 Print an indented debugging message.

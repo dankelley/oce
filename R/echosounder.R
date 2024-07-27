@@ -612,7 +612,7 @@ setMethod(
         dots <- list(...)
         res <- list(xat = NULL, yat = NULL)
         dotsNames <- names(dots)
-        oceDebug(debug, "plot() { # for echosounder\n", unindent = 1, style = "bold")
+        oceDebug(debug, "plot() for echosounder START\n", unindent = 1)
         lw <- length(which)
         if (length(beam) < lw) {
             beam <- rep(beam, lw)
@@ -835,7 +835,7 @@ setMethod(
                 )
             }
         }
-        oceDebug(debug, "} # plot.echosounder()\n", unindent = 1, style = "bold")
+        oceDebug(debug, "END plot.echosounder()\n", unindent = 1)
         invisible(res)
     }
 )
@@ -913,7 +913,7 @@ read.echosounder <- function(
             stop("empty file \"", file, "\"")
         }
     }
-    oceDebug(debug, "read.echosounder(file=\"", file, "\", tz=\"", tz, "\", debug=", debug, ") {\n", sep = "", unindent = 1, style = "bold")
+    oceDebug(debug, "read.echosounder(file=\"", file, "\", tz=\"", tz, "\", debug=", debug, ") START\n", sep = "", unindent = 1)
     filename <- NULL
     if (is.character(file)) {
         filename <- fullFilename(file)
@@ -1301,6 +1301,6 @@ read.echosounder <- function(
         )
     )
     .C("biosonics_free_storage", PACKAGE = "oce") # clear temporary storage space
-    oceDebug(debug, "} read.echosounder()\n", sep = "", unindent = 1, style = "bold")
+    oceDebug(debug, "END read.echosounder()\n", sep = "", unindent = 1)
     res
 }

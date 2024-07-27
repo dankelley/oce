@@ -339,7 +339,7 @@ setMethod(
 setMethod("handleFlags",
     signature = c(object = "adp", flags = "ANY", actions = "ANY", where = "ANY", debug = "ANY"),
     definition = function(object, flags = NULL, actions = NULL, where = NULL, debug = getOption("oceDebug")) {
-        oceDebug(debug, "handleFlags,adp-method {\n", sep = "", style = "bold", unindent = 1)
+        oceDebug(debug, "handleFlags,adp-method START\n", sep = "", unindent = 1)
         # DEVELOPER 1: alter the next comment to explain your setup
         names <- names(object[["flags"]])
         for (name in names) {
@@ -361,7 +361,7 @@ setMethod("handleFlags",
             stop("names of flags and actions must match")
         }
         res <- handleFlagsInternal(object = object, flags = flags, actions = actions, where = where, debug = debug - 1L)
-        oceDebug(debug, "} # handleFlags,adp-method()\n", sep = "", style = "bold", unindent = 1)
+        oceDebug(debug, "END handleFlags,adp-method()\n", sep = "", unindent = 1)
         res
     }
 )
@@ -1110,8 +1110,7 @@ setMethod(
             if ("v" %in% names(x@metadata$flags)) {
                 vdim <- dim(x@metadata$flags$v)
                 res@metadata$flags$v <- x@metadata$flags$v[, keep, , drop = FALSE]
-                oceDebug(
-                    debug, "subsetting flags$v original dim=",
+                oceDebug(debug, "subsetting flags$v original dim=",
                     paste(vdim, collapse = "x"), "; new dim=",
                     paste(dim(res@metadata$flags$v), collapse = "x"), "\n"
                 )
@@ -1381,7 +1380,7 @@ read.adp <- function(file, from, to, by, tz = getOption("oceTz"), longitude = NA
         ", from=", if (fromGiven) format(from) else "(missing)",
         ", to=", if (toGiven) format(to) else "(missing)",
         ", by=", if (byGiven) format(by) else "(missing)",
-        ", manufacturer=\"", if (missing(manufacturer)) "(missing)" else manufacturer, "\", ...) {\n",
+        ", manufacturer=\"", if (missing(manufacturer)) "(missing)" else manufacturer, "\", ...) START\n",
         sep = "", unindent = 1
     )
     if (!fromGiven) {
@@ -1431,7 +1430,7 @@ read.adp <- function(file, from, to, by, tz = getOption("oceTz"), longitude = NA
             )
         }
     }
-    oceDebug(debug, "} # read.adp()\n", unindent = 1)
+    oceDebug(debug, "END read.adp()\n", unindent = 1)
     res
 }
 
@@ -1811,7 +1810,7 @@ setMethod(
         theCall <- paste(theCall, collapse = " ")
         theCall <- gsub("[ ]+", " ", theCall)
         theCall <- gsub(".local", "plot,adp-method", theCall)
-        oceDebug(debug, theCall, " {\n", style = "bold", sep = "", unindent = 1)
+        oceDebug(debug, theCall, " START\n", sep = "", unindent = 1)
         # if (is.ad2cp(x))
         #    return(plotAD2CP(x, if (!missing(which)) which else NULL, col=col, cex=cex, lwd=lwd, type=type, ...))
         dots <- list(...)
@@ -3161,7 +3160,7 @@ setMethod(
             res$xat <- ats$xat
             res$yat <- ats$yat
         }
-        oceDebug(debug, "} # plot,adp-method()\n", unindent = 1, style = "bold")
+        oceDebug(debug, "END plot,adp-method()\n", unindent = 1)
         invisible(res)
     }
 )
@@ -3192,7 +3191,7 @@ toEnuAdp <- function(x, declination = 0, debug = getOption("oceDebug")) {
         stop("does not work with ad2cp files, which might have several velocity streams")
     }
     debug <- max(0L, as.integer(min(debug, 3)))
-    oceDebug(debug, "toEnuAdp() {\n", unindent = 1)
+    oceDebug(debug, "toEnuAdp() START\n", unindent = 1)
     coord <- x[["oceCoordinate"]]
     if (coord == "beam") {
         x <- xyzToEnuAdp(beamToXyzAdp(x, debug = debug - 1), declination = declination, debug = debug - 1)
@@ -3205,7 +3204,7 @@ toEnuAdp <- function(x, declination = 0, debug = getOption("oceDebug")) {
     } else {
         warning("toEnuAdp cannot convert from coordinate system ", coord, " to ENU, so returning argument as-is")
     }
-    oceDebug(debug, "} # toEnuAdp()\n", unindent = 1)
+    oceDebug(debug, "END toEnuAdp()\n", unindent = 1)
     x
 }
 
@@ -3258,7 +3257,7 @@ toEnuAdp <- function(x, declination = 0, debug = getOption("oceDebug")) {
 #'
 #' @family things related to adp data
 beamUnspreadAdp <- function(x, count2db = c(0.45, 0.45, 0.45, 0.45), asMatrix = FALSE, debug = getOption("oceDebug")) {
-    oceDebug(debug, "beamUnspreadAdp(...) {\n", unindent = 1)
+    oceDebug(debug, "beamUnspreadAdp(...) START\n", unindent = 1)
     if (!inherits(x, "adp")) {
         stop("method is only for objects of class adp")
     }
@@ -3294,7 +3293,7 @@ beamUnspreadAdp <- function(x, count2db = c(0.45, 0.45, 0.45, 0.45), asMatrix = 
         res@metadata$oceBeamUnspreaded <- TRUE
     }
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(expr = match.call()), sep = "", collapse = ""))
-    oceDebug(debug, "} # beamUnspreadAdp()\n", unindent = 1)
+    oceDebug(debug, "END beamUnspreadAdp()\n", unindent = 1)
     res
 }
 
@@ -3370,12 +3369,12 @@ beamToXyzAdp <- function(x, debug = getOption("oceDebug")) {
         stop("input must be in beam coordinates")
     }
     if (is.ad2cp(x)) {
-        oceDebug(debug, "beamToXyzAdp(x, debug=", debug, ") {\n", sep = "", unindent = 1)
+        oceDebug(debug, "beamToXyzAdp(x, debug=", debug, ") START\n", sep = "", unindent = 1)
         res <- beamToXyzAdpAD2CP(x = x, debug = debug - 1)
-        oceDebug(debug, "} # beamToXyzAdp()\n", unindent = 1)
+        oceDebug(debug, "END beamToXyzAdp()\n", unindent = 1)
         return(res)
     }
-    oceDebug(debug, "beamToXyzAdp(x, debug=", debug, ") {\n", sep = "", unindent = 1)
+    oceDebug(debug, "beamToXyzAdp(x, debug=", debug, ") START\n", sep = "", unindent = 1)
     nb <- x[["numberOfBeams"]]
     if (is.null(nb)) {
         stop("missing x[[\"numberOfBeams\"]]")
@@ -3448,7 +3447,7 @@ beamToXyzAdp <- function(x, debug = getOption("oceDebug")) {
         stop("adp type must be either \"rdi\" or \"nortek\" or \"sontek\"")
     }
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(expr = match.call()), sep = "", collapse = ""))
-    oceDebug(debug, "} # beamToXyzAdp()\n", unindent = 1)
+    oceDebug(debug, "END beamToXyzAdp()\n", unindent = 1)
     res
 }
 
@@ -3488,7 +3487,7 @@ beamToXyzAdp <- function(x, debug = getOption("oceDebug")) {
 #' @family things related to adp data
 beamToXyzAdpAD2CP <- function(x, debug = getOption("oceDebug")) {
     debug <- if (debug > 0) 1 else 0
-    oceDebug(debug, "beamToXyzAdpAD2CP(x, debug=", debug, ") {\n", sep = "", unindent = 1)
+    oceDebug(debug, "beamToXyzAdpAD2CP(x, debug=", debug, ") START\n", sep = "", unindent = 1)
     if (!inherits(x, "adp")) {
         stop("method is only for objects of class \"adp\"")
     }
@@ -3578,7 +3577,7 @@ beamToXyzAdpAD2CP <- function(x, debug = getOption("oceDebug")) {
             sep = ""
         )
     )
-    oceDebug(debug, "} # beamToXyzAdpAD2CP()\n", unindent = 1)
+    oceDebug(debug, "END beamToXyzAdpAD2CP()\n", unindent = 1)
     res
 }
 
@@ -3685,7 +3684,7 @@ xyzToEnuAdp <- function(x, declination = 0, debug = getOption("oceDebug")) {
     if (!inherits(x, "adp")) {
         stop("method is only for objects of class '", "adp", "'")
     }
-    oceDebug(debug, "xyzToEnuAdp(x, declination=", declination, ", debug=", debug, ") {\n", sep = "", unindent = 1)
+    oceDebug(debug, "xyzToEnuAdp(x, declination=", declination, ", debug=", debug, ") START\n", sep = "", unindent = 1)
     originalDeclination <- declination
     noDeclination <- is.null(declination)
     if (noDeclination) {
@@ -3897,7 +3896,7 @@ xyzToEnuAdp <- function(x, declination = 0, debug = getOption("oceDebug")) {
         res@processingLog,
         paste("xyzToEnuAdp(x", ", declination=", originalDeclination, ", debug=", debug, ")", sep = "")
     )
-    oceDebug(debug, "} # xyzToEnuAdp()\n", unindent = 1)
+    oceDebug(debug, "END xyzToEnuAdp()\n", unindent = 1)
     res
 } # xyzToEnuAdp
 
@@ -3934,7 +3933,7 @@ xyzToEnuAdpAD2CP <- function(x, declination = 0, debug = getOption("oceDebug")) 
         stop("does not work with ad2cp files, which might have several velocity streams")
     }
     debug <- if (debug > 0) 1 else 0
-    oceDebug(debug, "xyzToEnuAdpAD2CP(x, declination=", declination, ", debug=", debug, ") {\n", sep = "", unindent = 1)
+    oceDebug(debug, "xyzToEnuAdpAD2CP(x, declination=", declination, ", debug=", debug, ") START\n", sep = "", unindent = 1)
     if (!inherits(x, "adp")) {
         stop("method is only for objects of class '", "adp", "'")
     }
@@ -4036,7 +4035,7 @@ xyzToEnuAdpAD2CP <- function(x, declination = 0, debug = getOption("oceDebug")) 
             sep = ""
         )
     )
-    oceDebug(debug, "} # xyzToEnuAdpAD2CP()\n", unindent = 1)
+    oceDebug(debug, "END xyzToEnuAdpAD2CP()\n", unindent = 1)
     res
 }
 
@@ -4164,7 +4163,7 @@ display.bytes <- function(b, label = "", ...) {
 #'
 #' @family things related to adp data
 subtractBottomVelocity <- function(x, despike = FALSE, debug = getOption("oceDebug")) {
-    oceDebug(debug, "subtractBottomVelocity(x) {\n", unindent = 1)
+    oceDebug(debug, "subtractBottomVelocity(x) START\n", unindent = 1)
     if (!("bv" %in% names(x@data))) {
         warning("there is no bottom velocity in this object")
         return(x)
@@ -4185,8 +4184,8 @@ subtractBottomVelocity <- function(x, despike = FALSE, debug = getOption("oceDeb
             stop("despike must be a logical value or a function")
         }
     }
-    oceDebug(debug, "} # subtractBottomVelocity()\n", unindent = 1)
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(expr = match.call()), sep = "", collapse = ""))
+    oceDebug(debug, "END subtractBottomVelocity()\n", unindent = 1)
     res
 }
 
@@ -4231,7 +4230,7 @@ subtractBottomVelocity <- function(x, despike = FALSE, debug = getOption("oceDeb
 #'
 #' @family things related to adp data
 binmapAdp <- function(x, debug = getOption("oceDebug")) {
-    oceDebug(debug, "binmap(x, debug) {\n", unindent = 1)
+    oceDebug(debug, "binmap() START\n", unindent = 1)
     if (!inherits(x, "adp")) {
         stop("x must be an \"adp\" object")
     }
@@ -4310,6 +4309,7 @@ binmapAdp <- function(x, debug = getOption("oceDebug")) {
     res@data$a <- abm
     res@data$q <- qbm
     res@data$g <- gbm
+    oceDebug(debug, "END binmap()\n", unindent = 1)
     res
 }
 
@@ -4424,7 +4424,7 @@ adpEnsembleAverage <- function(x, n = 5, leftover = FALSE, na.rm = TRUE, ...) {
 #' ADP <- adpConvertRawToNumeric(adp)
 #' ADP[["a"]][, , 1][, 1]
 adpConvertRawToNumeric <- function(object = NULL, variables = NULL, debug = getOption("oceDebug")) {
-    oceDebug(debug, "adpConvertRawToNumeric() {\n", sep = "", unindent = 1, style = "bold")
+    oceDebug(debug, "adpConvertRawToNumeric() START\n", sep = "", unindent = 1)
     if (!inherits(object, "adp")) {
         stop("object must be an adp object")
     }
@@ -4459,7 +4459,7 @@ adpConvertRawToNumeric <- function(object = NULL, variables = NULL, debug = getO
         object[[variable]] <- object[[variable, "numeric"]]
     }
     object@processingLog <- processingLogAppend(object@processingLog, paste(deparse(match.call()), sep = "", collapse = ""))
-    oceDebug(debug, "} # adpConvertRawToNumeric()\n", sep = "", unindent = 1, style = "bold")
+    oceDebug(debug, "END adpConvertRawToNumeric()\n", sep = "", unindent = 1)
     object
 }
 
@@ -4506,7 +4506,7 @@ adpConvertRawToNumeric <- function(object = NULL, variables = NULL, debug = getO
 #'
 #' @export
 adpFlagPastBoundary <- function(x = NULL, fields = NULL, df = 20, trim = 0.15, good = 1, bad = 4, debug = getOption("oceDebug")) {
-    oceDebug(debug, "adpFlagPastBoundary() {\n", sep = "", unindent = 1, style = "bold")
+    oceDebug(debug, "adpFlagPastBoundary() START\n", sep = "", unindent = 1)
     if (!inherits(x, "adp")) {
         stop("x must be an adp object")
     }
@@ -4563,7 +4563,7 @@ adpFlagPastBoundary <- function(x = NULL, fields = NULL, df = 20, trim = 0.15, g
         oceDebug(debug, "handled field '", f, "'\n", sep = "")
     }
     x@processingLog <- processingLogAppend(x@processingLog, paste(deparse(match.call()), sep = "", collapse = ""))
-    oceDebug(debug, "} # adpFlagPastBoundary()\n", sep = "", unindent = 1, style = "bold")
+    oceDebug(debug, "END adpFlagPastBoundary()\n", sep = "", unindent = 1)
     return(x)
 }
 
@@ -4614,7 +4614,7 @@ setMethod(
     f = "applyMagneticDeclination",
     signature(object = "adp", declination = "ANY", debug = "ANY"),
     definition = function(object, declination = 0.0, debug = getOption("oceDebug")) {
-        oceDebug(debug, "applyMagneticDeclinationAdp(object, declination=", declination, ") {\n", sep = "", unindent = 1)
+        oceDebug(debug, "applyMagneticDeclinationAdp(object, declination=", declination, ") START\n", sep = "", unindent = 1)
         if (is.ad2cp(object)) {
             stop("this function does not work yet for AD2CP data")
         }
@@ -4662,7 +4662,7 @@ setMethod(
             res@processingLog,
             paste0("applyMagneticDeclinationAdp(object, declination=", declination[1], ")")
         )
-        oceDebug(debug, "} # applyMagneticDeclinationAdp\n", unindent = 1)
+        oceDebug(debug, "END applyMagneticDeclinationAdp\n", unindent = 1)
         res
     }
 )

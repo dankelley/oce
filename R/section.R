@@ -1512,7 +1512,7 @@ setMethod(
             ", xlim=c(", paste(xlim, collapse = ","), ")",
             ", ylim=c(", paste(ylim, collapse = ","), ")",
             ", showBottom=", showBottom,
-            ", ...) {\n",
+            ", ...) START\n",
             sep = "", unindent = 1
         )
         # Contour and image plots, e.g. for which="temperature" and so forth, require
@@ -1591,7 +1591,7 @@ setMethod(
                 ", span=", if (missing(span)) "(missing)" else span,
                 ", showStations=", showStations,
                 ", showBottom=", showBottom,
-                ", axes=", axes, ", ...) {\n",
+                ", axes=", axes, ", ...) START\n",
                 sep = "", unindent = 1
             )
             ztype <- match.arg(ztype)
@@ -2202,7 +2202,7 @@ setMethod(
                 # par("usr"=c(usr[1], usr[2], -usr[3], usr[4]))
             }
             par(mar = omar)
-            oceDebug(debug, "} # plotSubsection()\n", unindent = 1)
+            oceDebug(debug, "END plotSubsection()\n", unindent = 1)
         }
         opar <- par(no.readonly = TRUE)
         if (length(which) > 1) {
@@ -2404,7 +2404,7 @@ setMethod(
                 )
             }
         }
-        oceDebug(debug, "} # plot.section()\n", unindent = 1)
+        oceDebug(debug, "END plot.section()\n", unindent = 1)
         invisible(res)
     }
 )
@@ -2492,7 +2492,7 @@ read.section <- function(
             stop("empty file \"", file, "\"")
         }
     }
-    oceDebug(debug, "read.section(file=\"", file, "\", ...) {\n", unindent = 1)
+    oceDebug(debug, "read.section(file=\"", file, "\", ...) START\n", unindent = 1)
     if (!missing(directory)) {
         if (!missing(file)) {
             stop("cannot specify both 'file' and 'directory'")
@@ -2672,7 +2672,7 @@ read.section <- function(
         processingLog <- paste(deparse(match.call()), sep = "", collapse = "")
     }
     res@processingLog <- processingLogAppend(res@processingLog, processingLog)
-    oceDebug(debug, "} # read.section()\n", unindent = 1)
+    oceDebug(debug, "END read.section()\n", unindent = 1)
     res
 }
 
@@ -2752,7 +2752,7 @@ sectionGrid <- function(section, p, method = "approx", trim = TRUE, debug = getO
     oceDebug(debug, "sectionGrid(section, p, ",
         "method=\"", if (is.function(method)) "(function)" else method, "\", ",
         "p=", if (missing(p)) "(missing)" else paste("c(", paste(p, collapse = ","), ")", sep = ""), ", ",
-        "trim=", trim, ", ...) {\n",
+        "trim=", trim, ", ...) START\n",
         sep = "", unindent = 1
     )
     n <- length(section@data$station)
@@ -2826,7 +2826,7 @@ sectionGrid <- function(section, p, method = "approx", trim = TRUE, debug = getO
         }
     }
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep = "", collapse = ""))
-    oceDebug(debug, "} # sectionGrid\n", unindent = 1)
+    oceDebug(debug, "END sectionGrid\n", unindent = 1)
     res
 }
 
@@ -3006,7 +3006,7 @@ sectionSmooth <- function(
     # pin debug, since we only call one function, interpBarnes() that uses debug
     debug <- if (debug > 2) 2 else if (debug < 0) 0 else debug
     oceDebug(debug, "sectionSmooth(section,method=\"",
-        if (is.character(method)) method else "(function)", "\", ...) {\n",
+        if (is.character(method)) method else "(function)", "\", ...) START\n",
         sep = "", unindent = 1
     )
     stations <- section[["station"]]
@@ -3294,7 +3294,7 @@ sectionSmooth <- function(
         }
     }
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep = "", collapse = ""))
-    oceDebug(debug, "} # sectionSmooth()\n", unindent = 1)
+    oceDebug(debug, "END sectionSmooth()\n", unindent = 1)
     res
 }
 
@@ -3375,7 +3375,7 @@ sectionSmooth <- function(
 #' @family things related to section data
 as.section <- function(salinity, temperature, pressure, longitude, latitude, station, sectionId = "", debug = getOption("oceDebug")) {
     debug <- as.integer(min(1, max(0, debug))) # make it be 0 or 1
-    oceDebug(debug, "as.section() {\n", sep = "", style = "bold", unindent = 1)
+    oceDebug(debug, "as.section() START\n", sep = "", unindent = 1)
     if (missing(salinity)) {
         stop("argument 'salinity' is missing")
     }
@@ -3500,7 +3500,7 @@ as.section <- function(salinity, temperature, pressure, longitude, latitude, sta
     res@metadata$time <- numberAsPOSIXct(unlist(lapply(ctds, function(x) x[["time"]][1])))
     res@data <- list(station = ctds)
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep = "", collapse = ""))
-    oceDebug(debug, "} # as.section()\n", sep = "", style = "bold", unindent = 1)
+    oceDebug(debug, "END as.section()\n", sep = "", unindent = 1)
     res
 }
 
@@ -3532,7 +3532,7 @@ as.section <- function(salinity, temperature, pressure, longitude, latitude, sta
 #'
 #' @author Dan Kelley
 addSpine <- function(section, spine, debug = getOption("oceDebug")) {
-    oceDebug(debug, "addSpine(..., spine=", argShow(spine), ") {\n", sep = "", style = "bold", unindent = 1)
+    oceDebug(debug, "addSpine(..., spine=", argShow(spine), ") START\n", sep = "", unindent = 1)
     if (missing(section)) {
         stop("must provide 'section' argument")
     }
@@ -3557,7 +3557,7 @@ addSpine <- function(section, spine, debug = getOption("oceDebug")) {
     } else {
         stop("'spine' must be a list or data frame containing two items, named 'longitude' and 'latitude'")
     }
-    oceDebug(debug, "} # addSpine()\n", sep = "", style = "bold", unindent = 1)
+    oceDebug(debug, "END addSpine()\n", sep = "", unindent = 1)
     res
 }
 

@@ -44,7 +44,7 @@ read.ctd.ssda <- function(
         }
     }
     debug <- max(0L, as.integer(debug))
-    oceDebug(debug, "read.ctd.ssda(file=\"", file, "\") {\n", sep = "", style = "bold", unindent = 1)
+    oceDebug(debug, "read.ctd.ssda(file=\"", file, "\") START\n", sep = "", unindent = 1)
     if (is.character(file)) {
         filesize <- file.info(file)$size
         if (is.na(filesize) || 0L == filesize) {
@@ -145,6 +145,6 @@ read.ctd.ssda <- function(
         res@processingLog,
         paste(deparse(match.call()), sep = "", collapse = "")
     )
-    oceDebug(debug, "} # read.ctd.ssda()\n", sep = "", style = "bold", unindent = 1)
+    oceDebug(debug, "END read.ctd.ssda()\n", sep = "", unindent = 1)
     res
 }

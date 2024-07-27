@@ -45,12 +45,12 @@ read.netcdf <- function(file, ..., encoding = NA, debug = getOption("oceDebug"))
     if (!requireNamespace("ncdf4", quietly = TRUE)) {
         stop("must install.packages(\"ncdf4\") to read netcdf data")
     }
-    oceDebug(debug, "read.netcdf() {\n", unindent = 1)
+    oceDebug(debug, "read.netcdf() START\n", unindent = 1)
     f <- ncdf4::nc_open(file)
     res <- new("oce")
     names <- names(f$var)
     for (name in names) {
-        oceDebug(debug, "  name=\"", name, "\"\n")
+        oceDebug(debug, "name=\"", name, "\"\n")
         if (grepl("^history_", name, ignore.case = TRUE)) {
             next
         }
@@ -110,6 +110,6 @@ read.netcdf <- function(file, ..., encoding = NA, debug = getOption("oceDebug"))
         res@metadata$time <- ncdf4::ncatt_get(f, 0, "time")$value
     }
     res@processingLog <- processingLogAppend(res@processingLog, paste("read.netcdf(\"", file, "\")", sep = ""))
-    oceDebug(debug, "} # read.netcdf()\n", unindent = 1)
+    oceDebug(debug, "END read.netcdf()\n", unindent = 1)
     res
 }

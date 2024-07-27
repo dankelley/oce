@@ -1132,7 +1132,7 @@ setMethod(
 #' `data` slot, if `object` contains flag values that have
 #' actions that alter the data.
 handleFlagsInternal <- function(object, flags, actions, where, debug = 0) {
-    oceDebug(debug, "handleFlagsInternal() {\n", sep = "", unindent = 1)
+    oceDebug(debug, "handleFlagsInternal() START\n", sep = "", unindent = 1)
     if (debug > 0L) {
         cat("flags=c(", paste(flags, collapse = ","), ")\n", sep = "")
         cat("actions=c(", paste(actions, collapse = ","), ")\n", sep = "")
@@ -1274,7 +1274,7 @@ handleFlagsInternal <- function(object, flags, actions, where, debug = 0) {
             collapse = " ", sep = ""
         )
     )
-    oceDebug(debug, "} # handleFlagsInternal()\n", sep = "", unindent = 1)
+    oceDebug(debug, "END handleFlagsInternal()\n", sep = "", unindent = 1)
     object
 }
 
@@ -1371,7 +1371,7 @@ setMethod("setFlags",
 
 setFlagsInternal <- function(object, name = NULL, i = NULL, value = NULL, debug = getOption("oceDebug")) {
     oceDebug(debug, "setFlagsInternal(object, name=\"", name, "\", value=", value,
-        ", i=", paste(i, collapse = " "), ", debug=", debug, ") {\n",
+        ", i=", paste(i, collapse = " "), ", debug=", debug, ") START\n",
         sep = "", unindent = 1
     )
     res <- object
@@ -1447,7 +1447,7 @@ setFlagsInternal <- function(object, name = NULL, i = NULL, value = NULL, debug 
             collapse = ""
         )
     )
-    oceDebug(debug, "} # setFlagsInternal \n", unindent = 1)
+    oceDebug(debug, "END setFlagsInternal()\n", unindent = 1)
     res
 }
 
@@ -1473,7 +1473,7 @@ setMethod("initializeFlags",
 #' @templateVar details This is a low-level internal function used by user-accessible functions.
 #' @template initializeFlagsTemplate
 initializeFlagsInternal <- function(object, name = NULL, value = NULL, debug = getOption("oceDebug")) {
-    oceDebug(debug, "initializeFlagsInternal(object, name=\"", name, "\", value, debug=", debug, ") {", sep = "", unindent = 1)
+    oceDebug(debug, "initializeFlagsInternal(object, name=\"", name, "\", value, debug=", debug, ") START\n", sep = "", unindent = 1)
     res <- object
     if (is.null(name)) {
         stop("must supply name")
@@ -1518,7 +1518,7 @@ initializeFlagsInternal <- function(object, name = NULL, value = NULL, debug = g
             )
         )
     }
-    oceDebug(debug, "} # initializeFlagsInternal", sep = "", unindent = 1)
+    oceDebug(debug, "END initializeFlagsInternal", sep = "", unindent = 1)
     res
 }
 
@@ -1551,7 +1551,7 @@ setMethod("initializeFlagScheme",
 #' @templateVar details This is a low-level internal function used mainly by experts.
 #' @template initializeFlagSchemeTemplate
 initializeFlagSchemeInternal <- function(object, name = NULL, mapping = NULL, default = NULL, update = NULL, debug = 0) {
-    oceDebug(debug, "initializeFlagSchemeInternal(object, name=\"", name, "\", debug=", debug, ") {", sep = "", unindent = 1)
+    oceDebug(debug, "initializeFlagSchemeInternal(object, name=\"", name, "\", debug=", debug, ") START", sep = "", unindent = 1)
     if (is.null(name)) {
         stop("must supply 'name'")
     }
@@ -1646,7 +1646,7 @@ initializeFlagSchemeInternal <- function(object, name = NULL, mapping = NULL, de
             sep = ""
         )
     )
-    oceDebug(debug, "} # initializeFlagSchemeInternal", sep = "", unindent = 1)
+    oceDebug(debug, "END initializeFlagSchemeInternal", sep = "", unindent = 1)
     res
 }
 

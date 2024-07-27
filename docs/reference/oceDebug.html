@@ -58,7 +58,7 @@ level.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">oceDebug</span><span class="op">(</span>debug <span class="op">=</span> <span class="fl">0</span>, <span class="va">...</span>, style <span class="op">=</span> <span class="st">"plain"</span>, unindent <span class="op">=</span> <span class="fl">0</span>, sep <span class="op">=</span> <span class="st">""</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">oceDebug</span><span class="op">(</span>debug <span class="op">=</span> <span class="fl">0</span>, <span class="va">...</span>, unindent <span class="op">=</span> <span class="fl">0</span>, sep <span class="op">=</span> <span class="st">""</span>, style <span class="op">=</span> <span class="st">"plain"</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -77,6 +77,16 @@ printing.  Note that no newline will be printed unless ...
 contains a string with a newline character (as in the example).</p></dd>
 
 
+<dt id="arg-unindent">unindent<a class="anchor" aria-label="anchor" href="#arg-unindent"></a></dt>
+<dd><p>integer giving the number of levels to un-indent,
+e.g. for start and end lines from a called function.</p></dd>
+
+
+<dt id="arg-sep">sep<a class="anchor" aria-label="anchor" href="#arg-sep"></a></dt>
+<dd><p>character to insert between elements of <code>...</code>, by passing
+it to <code><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat()</a></code>.</p></dd>
+
+
 <dt id="arg-style">style<a class="anchor" aria-label="anchor" href="#arg-style"></a></dt>
 <dd><p>either a string or a function. If a string,
 it must be <code>"plain"</code> (the default) for plain text,
@@ -88,16 +98,6 @@ through latex.</p>
 <p>If <code>style</code> is a function, it must prepend and postpend the text
 with control codes, as in the cyan-coloured example; note that
 <a href="https://CRAN.R-project.org/package=crayon" class="external-link"><span class="pkg">crayon</span></a> provides many functions that work well for <code>style</code>.</p></dd>
-
-
-<dt id="arg-unindent">unindent<a class="anchor" aria-label="anchor" href="#arg-unindent"></a></dt>
-<dd><p>integer giving the number of levels to un-indent,
-e.g. for start and end lines from a called function.</p></dd>
-
-
-<dt id="arg-sep">sep<a class="anchor" aria-label="anchor" href="#arg-sep"></a></dt>
-<dd><p>character to insert between elements of <code>...</code>, by passing
-it to <code><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat()</a></code>.</p></dd>
 
 </dl></div>
     <div class="section level2">

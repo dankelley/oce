@@ -513,7 +513,7 @@ setMethod(
                           xlim, ylim, xaxs = "i", yaxs = "r",
                           debug = getOption("oceDebug"),
                           ...) {
-        oceDebug(debug, "plot.sealevel(..., mar=c(", paste(mar, collapse = ", "), "), ...) {\n", sep = "", unindent = 1)
+        oceDebug(debug, "plot.sealevel(..., mar=c(", paste(mar, collapse = ", "), "), ...) START\n", sep = "", unindent = 1)
         xlimGiven <- !missing(xlim)
         ylimGiven <- !missing(ylim)
         titlePlot <- function(x) {
@@ -700,7 +700,7 @@ setMethod(
                 par(mar = omar)
             }
         }
-        oceDebug(debug, "} # plot.sealevel()\n", unindent = 1)
+        oceDebug(debug, "END plot.sealevel()\n", unindent = 1)
         invisible(NULL)
     }
 )
@@ -768,7 +768,7 @@ read.sealevel <- function(
             stop("empty file \"", file, "\"")
         }
     }
-    oceDebug(debug, "read.sealevel(file=\"", file, "\", ...) {\n", sep = "", unindent = 1)
+    oceDebug(debug, "read.sealevel(file=\"", file, "\", ...) START\n", sep = "", unindent = 1)
     filename <- "?"
     if (is.character(file)) {
         filename <- fullFilename(file)
@@ -1009,5 +1009,6 @@ read.sealevel <- function(
         res@processingLog,
         paste("read.sealevel(file=\"", filename, "\", tz=\"", tz, "\")", sep = "", collapse = "")
     )
+    oceDebug(debug, "END read.sealevel()\n", unindent = 1)
     res
 }

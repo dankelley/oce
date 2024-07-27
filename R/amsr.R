@@ -235,7 +235,7 @@ setMethod(
     signature(x = "amsr", i = "ANY", j = "ANY"),
     definition = function(x, i, j, ...) { # [[,amsr-method
         debug <- getOption("oceDebug")
-        oceDebug(debug, "amsr [[ {\n", unindent = 1)
+        oceDebug(debug, "amsr [[ START\n", unindent = 1)
         if (missing(i)) {
             stop("Must name a amsr item to retrieve, e.g. '[[\"SST\"]]'", call. = FALSE)
         }
@@ -258,7 +258,7 @@ setMethod(
                 ))
             }
             if (is.character(i) && !is.na(pmatch(i, names(x@metadata)))) {
-                oceDebug(debug, "} # amsr [[\n", unindent = 1)
+                oceDebug(debug, "END amsr [[\n", unindent = 1)
                 return(x@metadata[[i]])
             }
             namesAllowed <- c(names(x@data), dataDerived)
@@ -456,7 +456,7 @@ setMethod(
     definition = function(x, subset, ...) { # subset,amsr-method
         dots <- list(...)
         debug <- if ("debug" %in% names(dots)) dots$debug else 0
-        oceDebug(debug, "subset,amsr-method() {\n", style = "bold", sep = "", unindent = 1)
+        oceDebug(debug, "subset,amsr-method() START\n", sep = "", unindent = 1)
         res <- x
         subsetString <- paste(deparse(substitute(expr = subset, env = environment())), collapse = " ")
         type <- amsrType(x)
@@ -511,7 +511,7 @@ setMethod(
             stop("may only subset by longitude or latitude")
         }
         res@processingLog <- processingLogAppend(res@processingLog, paste("subset(x, subset=", subsetString, ")", sep = ""))
-        oceDebug(debug, "} # subset,amsr-method()\n", style = "bold", sep = "", unindent = 1)
+        oceDebug(debug, "END subset,amsr-method()\n", sep = "", unindent = 1)
         res
     }
 )
@@ -597,17 +597,14 @@ setMethod(
     f = "plot",
     signature = signature("amsr"),
     # FIXME: how to let it default on band??
-    definition = function(x, y, asp = NULL, # plot,amsr-method
+    definition = function(x, y, asp = NULL,
                           breaks, col, colormap, zlim, zlab,
                           # FIXME: how do the old-format categories map to new ones?  (They don't
                           # seem to.)  For now, the next argument is just for new-format.
                           missingColor,
                           debug = getOption("oceDebug"), ...) {
         dots <- list(...)
-        oceDebug(debug, "plot.amsr(..., y=c(",
-            if (missing(y)) "(missing)" else y, ", ...) {\n",
-            sep = "", style = "bold", unindent = 1
-        )
+        oceDebug(debug, "plot.amsr(..., y=c(", if (missing(y)) "(missing)" else y, ", ...) START\n", sep = "", unindent = 1)
         zlimGiven <- !missing(zlim)
         type <- amsrType(x)
         oceDebug(debug, "amsr type: ", type, "\n")
@@ -682,8 +679,10 @@ setMethod(
         }
         oceDebug(debug, "calling imagep() with asp=", asp, "\n", sep = "")
         # the return value from imagep() has things we want below
-        i <- imagep(lon, lat, z, colormap = colormap, asp = asp,
-            zlab = if (missing(zlab)) y else zlab, debug = debug - 1, ...)
+        i <- imagep(lon, lat, z,
+            colormap = colormap, asp = asp,
+            zlab = if (missing(zlab)) y else zlab, debug = debug - 1, ...
+        )
         # Handle missing-data codes by redrawing the (possibly decimated) image. Perhaps
         # imagep() should be able to do this, but imagep() is a long function
         # with a lot of interlocking arguments so I'll start by doing this
@@ -755,7 +754,7 @@ setMethod(
             stop("type ", type, " not understood; only types 1 and 2 are handled")
         }
         box()
-        oceDebug(debug, "} # plot.amsr()\n", sep = "", style = "bold", unindent = 1)
+        oceDebug(debug, "END plot.amsr()\n", sep = "", unindent = 1)
     }
 ) # plot,amsr-method
 
@@ -854,7 +853,7 @@ download.amsr <- function(
     year = NULL, month, day, destdir = ".",
     server = "https://data.remss.com/amsr2/ocean/L3/v08.2", type = "3day",
     debug = 0) {
-    oceDebug(debug, "download.amsr(type=\"", type, "\", ...) {\n", sep = "", unindent = 1)
+    oceDebug(debug, "download.amsr(type=\"", type, "\", ...) START\n", sep = "", unindent = 1)
     if (!type %in% c("3day", "daily", "weekly", "monthly")) {
         stop("type=\"", type, "\" not permitted; try \"3day\", \"daily\", \"weekly\" or \"monthly\"")
     }
@@ -962,14 +961,14 @@ download.amsr <- function(
     destfile <- paste(destdir, file, sep = "/")
     if (file.exists(destfile)) {
         oceDebug(debug, "using existing file \"", destfile, "\"\n", sep = "")
-        oceDebug(debug, "} # download.amsr\n", sep = "", style = "bold", unindent = 1)
+        oceDebug(debug, "END download.amsr()\n", sep = "", unindent = 1)
         return(destfile)
     }
     ok <- try(download.file(url, destfile))
     if (inherits(ok, "try-error")) {
         stop("could not download \"", url, "\" to local file \"", destfile, "\"")
     }
-    oceDebug(debug, "} # download.amsr\n", sep = "", unindent = 1)
+    oceDebug(debug, "END download.amsr()\n", sep = "", unindent = 1)
     destfile
 }
 #<2023-07-29> download.amsr <- function(year, month, day, destdir=".", server="http://data.remss.com/amsr2/bmaps_v08")
@@ -1057,7 +1056,7 @@ read.amsr <- function(file, encoding = NA, debug = getOption("oceDebug")) {
     if (0L == file.info(file)$size) {
         stop("empty file \"", file, "\"")
     }
-    oceDebug(debug, "read.amsr(file=\"", file, "\",", ", debug=", debug, ") {\n", sep = "", unindent = 1)
+    oceDebug(debug, "read.amsr(file=\"", file, "\",", ", debug=", debug, ") START\n", sep = "", unindent = 1)
     isgz <- grepl(".gz$", file)
     isncdf <- grepl(".nc$", file)
     if (!any(c(isgz, isncdf))) { # also rechecked later
@@ -1230,7 +1229,7 @@ read.amsr <- function(file, encoding = NA, debug = getOption("oceDebug")) {
         res@processingLog,
         paste0("read.amsr(file=\"", filename, "\")")
     )
-    oceDebug(debug, "} # read.amsr()\n", sep = "", unindent = 1)
+    oceDebug(debug, "END read.amsr()\n", sep = "", unindent = 1)
     res
 }
 

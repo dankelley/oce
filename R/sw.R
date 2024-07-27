@@ -288,7 +288,7 @@ swRrho <- function(
     if (!inherits(ctd, "oce")) {
         stop("method is only for objects of class 'oce'")
     }
-    oceDebug(debug, "swRho(..., sense=\"", sense, "\", eos=\"", eos, "\")\n")
+    oceDebug(debug, "swRho(..., sense=\"", sense, "\", eos=\"", eos, "\") START\n")
     temperature <- ctd[["temperature"]]
     pressure <- ctd[["pressure"]]
     salinity <- ctd[["salinity"]] # overwrites
@@ -487,7 +487,7 @@ swRrho <- function(
 #'
 #' @family functions that calculate seawater properties
 swN2 <- function(pressure, sigmaTheta = NULL, derivs, df, debug = getOption("oceDebug"), ...) {
-    oceDebug(debug, "swN2(...) ...\n", sep = "", unindent = 1)
+    oceDebug(debug, "swN2(...) START\n", sep = "", unindent = 1)
     # cat("swN2(..., df=", df, ")\n",sep="")
     # useSmoothing <- !missing(df) && is.finite(df)
     if (inherits(pressure, "oce")) {
@@ -567,7 +567,7 @@ swN2 <- function(pressure, sigmaTheta = NULL, derivs, df, debug = getOption("oce
     # uses a standardized rho_0. But it's from some official source I think.
     # Must check this. (UNESCO book?)
     res <- ifelse(ok, 9.8 * 9.8 * 1e-4 * sigmaThetaDeriv, NA)
-    oceDebug(debug, "... # swN2()\n", sep = "", unindent = 1)
+    oceDebug(debug, "END swN2()\n", sep = "", unindent = 1)
     res
 }
 
@@ -1564,7 +1564,7 @@ swThermalConductivity <- function(salinity, temperature = NULL, pressure = NULL)
 swDepth <- function(pressure, latitude = 45, eos = getOption("oceEOS", default = "gsw"),
                     debug = getOption("oceDebug")) {
     # FIXME-gsw need a gsw version but it is not in the C library as of Dec 2014
-    oceDebug(debug, "swDepth(...) ...\n", sep = "", unindent = 1)
+    oceDebug(debug, "swDepth(...) START\n", sep = "", unindent = 1)
     if (missing(pressure)) {
         stop("must provide pressure")
     }
@@ -1598,7 +1598,7 @@ swDepth <- function(pressure, latitude = 45, eos = getOption("oceEOS", default =
         )
         dim(res) <- dim(l$pressure)
     }
-    oceDebug(debug, "... # swDepth()\n", sep = "", unindent = 1)
+    oceDebug(debug, "END swDepth()\n", sep = "", unindent = 1)
     res
 }
 
@@ -2174,7 +2174,7 @@ swSigmaTheta <- function(
     if (missing(salinity)) {
         stop("must provide salinity")
     }
-    oceDebug(debug, "swSigmaTheta() ...\n")
+    oceDebug(debug, "swSigmaTheta() START\n")
     if (inherits(salinity, "oce")) {
         x <- salinity # store this for clarity
         oceDebug(debug, "  first parameter is an oce object, so extracting data from it\n")
@@ -3341,7 +3341,7 @@ swConservativeTemperature <- function(
     }
     if (inherits(salinity, "oce")) {
         x <- salinity # store this for clarity
-        oceDebug(debug, "swConservativeTemperature() with an oce object as first argument ...\n")
+        oceDebug(debug, "swConservativeTemperature() with an oce object as first argument START\n")
         location <- locationForGsw(x)
         if (is.null(longitude)) {
             longitude <- location$longitude

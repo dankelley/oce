@@ -64,7 +64,7 @@
 #' }
 #' @author Dan Kelley
 adpRdiFileTrim <- function(infile, n = 100L, outfile, debug = getOption("oceDebug")) {
-    oceDebug(debug, "adpRdiFileTrim(infile=\"", infile, "\", n=", n, ", debug=", debug, ") { #\n", unindent = 1)
+    oceDebug(debug, "adpRdiFileTrim(infile=\"", infile, "\", n=", n, ", debug=", debug, ") START\n", unindent = 1)
     debug <- ifelse(debug < 1, 0L, ifelse(debug < 2, 1, 2))
     if (missing(infile)) {
         stop("must provide 'infile'")
@@ -86,7 +86,7 @@ adpRdiFileTrim <- function(infile, n = 100L, outfile, debug = getOption("oceDebu
     last <- r$start[n + 1L] - 1L
     buf <- readBin(infile, "raw", n = last)
     writeBin(buf, outfile, useBytes = TRUE)
-    oceDebug(debug, "} # adpRdiFileTrim\n", unindent = 1)
+    oceDebug(debug, "END adpRdiFileTrim()\n", unindent = 1)
     outfile
 }
 
@@ -96,7 +96,7 @@ decodeHeaderRDI <- function(buf, debug = getOption("oceDebug"), tz = getOption("
     byte2 <- as.raw(0x7f)
     #<<>> byte2 <- as.raw(0x79)
     # header length 6+2*numberOfDataTypes bytes (see e.g. Figure 44, page 160 of Surveyor docs)
-    oceDebug(debug, "decodeHeaderRDI(buf, debug=", debug, ") {\n", unindent = 1)
+    oceDebug(debug, "decodeHeaderRDI(buf, debug=", debug, ") START\n", unindent = 1)
     if (buf[1] != byte1 || buf[2] != byte2) {
         stop("first two bytes in file must be 0x", byte1, " 0x", byte2, ", but they are 0x", buf[1], " 0x", buf[2])
     }
@@ -468,7 +468,7 @@ decodeHeaderRDI <- function(buf, debug = getOption("oceDebug"), tz = getOption("
         haveBinaryFixedAttitudeHeader = any(codes[, 1] == 0x00 & codes[, 2] == 0x30),
         haveActualData = haveActualData
     )
-    oceDebug(debug, "} # decodeHeaderRDI()\n", unindent = 1)
+    oceDebug(debug, "END decodeHeaderRDI()\n", unindent = 1)
     res
 } # decodeHeaderRDI
 
@@ -822,6 +822,7 @@ read.adp.rdi <- function(
     longitude = NA, latitude = NA, type = c("workhorse"), which, encoding = NA,
     monitor = FALSE, despike = FALSE, processingLog, testing = FALSE,
     debug = getOption("oceDebug"), ...) {
+    oceDebug(debug, "read.adp.rdi() START\n", unindent = 1)
     byte1 <- as.raw(0x7f)
     byte2 <- as.raw(0x7f)
     #<<>> byte2 <- as.raw(0x79)
@@ -853,7 +854,7 @@ read.adp.rdi <- function(
         ", from=", if (fromGiven) format(from) else "(missing)",
         ", to=", if (toGiven) format(to) else "(missing)",
         ", by=", if (byGiven) format(by) else "(missing)",
-        "...) {\n",
+        "...) START\n",
         unindent = 1, sep = ""
     )
     if (!fromGiven) {
@@ -1681,11 +1682,13 @@ read.adp.rdi <- function(
                 print(unhandled)
             }
             if (length(warningUnknownCode) > 0) {
-                warning("Encountered some unhandled segment codes, as listed in the following warnings.\n",
+                warning(
+                    "Encountered some unhandled segment codes, as listed in the following warnings.\n",
                     "Note that several Teledyne RDI manuals\n",
                     "describe such codes; see e.g. Table 33 of Teledyne RD Instruments, 2014.\n",
                     "Ocean Surveyor/Ocean Observer Technical Manual.\n",
-                    "P/N 95A-6012-00 April 2014 (OS_TM_Apr14.pdf)\n")
+                    "P/N 95A-6012-00 April 2014 (OS_TM_Apr14.pdf)\n"
+                )
                 for (name in names(warningUnknownCode)) {
                     # Recognize some cases:
                     # 0x40 0x30 through 0xFC 0x30: Binary Variable Attitude Data
@@ -2149,6 +2152,6 @@ read.adp.rdi <- function(
     res@metadata$units$rollStd <- list(unit = expression(degree), scale = "")
     res@metadata$units$attitude <- list(unit = expression(degree), scale = "")
     res@metadata$units$depth <- list(unit = expression(m), scale = "")
-    oceDebug(debug, "} # read.adp.rdi()\n", unindent = 1)
+    oceDebug(debug, "END read.adp.rdi()\n", unindent = 1)
     res
 }

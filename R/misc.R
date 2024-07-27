@@ -503,7 +503,7 @@ read.woa <- function(file, name, positive = FALSE, encoding = NA) {
 
 shortenTimeString <- function(t, debug = getOption("oceDebug")) {
     tc <- as.character(t)
-    oceDebug(debug, "shortenTimeString() {\n", sep = "", unindent = 1)
+    oceDebug(debug, "shortenTimeString() START\n", sep = "", unindent = 1)
     oceDebug(debug, "A: '", paste(t, collapse = "' '"), "'\n")
     tc <- gsub(" [A-Z]{3}$", "", tc) # remove timezone
     if (all(grepl("^[0-9]{4}", tc))) {
@@ -525,7 +525,7 @@ shortenTimeString <- function(t, debug = getOption("oceDebug")) {
     tc <- gsub("^\\s*", "", tc)
     tc <- gsub("\\s*$", "", tc)
     oceDebug(debug, "D: '", paste(tc, collapse = "' '"), "'\n", sep = "")
-    oceDebug(debug, "}\n", unindent = 1)
+    oceDebug(debug, "END shortenTimeString()\n", unindent = 1)
     tc
 }
 
@@ -1427,7 +1427,7 @@ plotTaylor <- function(x, y, scale, pch = 1, col = 1, labels, pos = 2, cex = 1) 
 #' library(oce)
 #' formatPosition(prettyPosition(10 + 1:10 / 60 + 2.8 / 3600))
 prettyPosition <- function(x, debug = getOption("oceDebug")) {
-    oceDebug(debug, "prettyPosition(...) {\n", sep = "", unindent = 1)
+    oceDebug(debug, "prettyPosition(...) START\n", sep = "", unindent = 1)
     r <- diff(range(x, na.rm = TRUE))
     oceDebug(debug, "range(x)=", range(x), ", r=", r, "\n")
     if (r > 5) {
@@ -1454,7 +1454,7 @@ prettyPosition <- function(x, debug = getOption("oceDebug")) {
         res <- (1 / 3600) * pretty(3600 * x)
         if (debug) cat("case 5: res=", res, "\n")
     }
-    oceDebug(debug, "} # prettyPosition\n", unindent = 1)
+    oceDebug(debug, "END prettyPosition()\n", unindent = 1)
     res
 }
 
@@ -1594,7 +1594,7 @@ retime <- function(x, a, b, t0, debug = getOption("oceDebug")) {
     if (missing(t0)) {
         stop("must give argument 't0'")
     }
-    oceDebug(debug, paste("retime.adv(x, a=", a, ", b=", b, ", t0=\"", format(t0), "\")\n"), sep = "", unindent = 1)
+    oceDebug(debug, paste("retime.adv(x, a=", a, ", b=", b, ", t0=\"", format(t0), "\") START\n"), sep = "", unindent = 1)
     res <- x
     oceDebug(debug, "retiming x@data$time")
     res@data$time <- x@data$time + a + b * (as.numeric(x@data$time) - as.numeric(t0))
@@ -1603,7 +1603,7 @@ retime <- function(x, a, b, t0, debug = getOption("oceDebug")) {
         res@data$timeSlow <- x@data$timeSlow + a + b * (as.numeric(x@data$timeSlow) - as.numeric(t0))
     }
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep = "", collapse = ""))
-    oceDebug(debug, "} # retime.adv()\n", unindent = 1)
+    oceDebug(debug, "END retime.adv()\n", unindent = 1)
     res
 }
 
@@ -2270,8 +2270,8 @@ fullFilename <- function(filename) {
 resizableLabel <- function(item, axis = "x", sep, unit = NULL, debug = getOption("oceDebug")) {
     oceDebug(debug, "resizableLabel(item=\"", item,
         "\", axis=\"", axis,
-        "\", sep=\"", if (missing(sep)) "(missing)" else sep, "\", ...) {\n",
-        sep = "", unindent = 1, style = "bold"
+        "\", sep=\"", if (missing(sep)) "(missing)" else sep, "\", ...) START\n",
+        sep = "", unindent = 1
     )
     if (missing(item)) {
         stop("must provide 'item'")
@@ -2669,7 +2669,7 @@ resizableLabel <- function(item, axis = "x", sep, unit = NULL, debug = getOption
     whichAxis <- if (axis == "x") 1 else 2
     spaceAvailable <- abs(par("fin")[whichAxis])
     fraction <- spaceNeeded / spaceAvailable
-    oceDebug(debug, "} # resizableLabel\n", unindent = 1, style = "bold")
+    oceDebug(debug, "END resizableLabel\n", unindent = 1)
     if (fraction < 1) full else abbreviated
 }
 
@@ -3499,7 +3499,7 @@ interpBarnes <- function(
         argShow(iterations),
         argShow(trim),
         argShow(pregrid, last = TRUE),
-        ") {\n",
+        ") START\n",
         unindent = 1, sep = ""
     )
     if (!is.vector(x)) {
@@ -3610,7 +3610,7 @@ interpBarnes <- function(
         )
     }
     oceDebug(debug, sprintf("filled %.3f%% of z matrix\n", 100 * sum(is.finite(rval$zg)) / prod(dim(rval$zg))))
-    oceDebug(debug, "} # interpBarnes(...)\n", unindent = 1, sep = "")
+    oceDebug(debug, "END interpBarnes(...)\n", unindent = 1, sep = "")
     rval
 }
 

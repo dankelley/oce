@@ -35,7 +35,7 @@ angleShift <- function(angle) {
 # Change some projection names, and fix problem with ortho (which lacks full inverse coverage
 # unless a spherical earth is used).
 repairProjection <- function(projection, longlatProj, debug = getOption("oceDebug")) {
-    oceDebug(debug, "repairProjection(projection=\"", projection, "\", longlatProj=\"", longlatProj, "\"\n", sep = "", unindent = 1)
+    oceDebug(debug, "repairProjection(projection=\"", projection, "\", longlatProj=\"", longlatProj, "\") START\n", sep = "", unindent = 1)
     if (grepl("latlon( |$)", projection)) {
         warning("converting old name 'latlon' to new name 'latlong'\n")
         projection <- gsub("latlon", "latlong", projection)
@@ -68,7 +68,7 @@ repairProjection <- function(projection, longlatProj, debug = getOption("oceDebu
             }
         }
     }
-    oceDebug(debug, "} #repairProjection()\n", sep = "", unindent = 1)
+    oceDebug(debug, "END repairProjection()\n", sep = "", unindent = 1)
     list(projection = projection, longlatProj = longlatProj)
 }
 
@@ -106,7 +106,7 @@ oceProject <- function(xy, proj, inv = FALSE, debug = getOption("oceDebug")) {
     if (!requireNamespace("sf", quietly = TRUE)) {
         stop("must install.packages(\"sf\") to do map projections")
     }
-    oceDebug(debug, "oceProject(xy, proj=\"", proj, "\", inv=", inv, ", ...) {\n", sep = "", unindent = 1, style = "bold")
+    oceDebug(debug, "oceProject(xy, proj=\"", proj, "\", inv=", inv, ", ...) START\n", sep = "", unindent = 1)
     repairedProjection <- repairProjection(proj, longlatProjInitial, debug = debug)
     proj <- repairedProjection$projection
     longlatProj <- repairedProjection$longlatProj
@@ -155,7 +155,7 @@ oceProject <- function(xy, proj, inv = FALSE, debug = getOption("oceDebug")) {
     }
     XY[na, ] <- NA
     options(warn = owarn)
-    oceDebug(debug, "} # oceProject\n", sep = "", unindent = 1, style = "bold")
+    oceDebug(debug, "END oceProject\n", sep = "", unindent = 1)
     XY
 }
 
@@ -185,7 +185,7 @@ oceProject <- function(xy, proj, inv = FALSE, debug = getOption("oceDebug")) {
 #'
 #' @author Dan Kelley
 usrLonLat <- function(n = 25, debug = getOption("oceDebug")) {
-    oceDebug(debug, "usrLonLat(n=", n, ", debug=", debug, ") {\n", unindent = 1, sep = "", style = "bold")
+    oceDebug(debug, "usrLonLat(n=", n, ", debug=", debug, ") START\n", unindent = 1, sep = "")
     usr <- par("usr")
     oceDebug(debug, "usr=", paste(usr, collapse = " "), "\n", sep = "")
     if (length(grep("wintri", .Projection()$projection))) {
@@ -251,7 +251,7 @@ usrLonLat <- function(n = 25, debug = getOption("oceDebug")) {
         lonmin, lonmax, latmin, latmax
     ))
     oceDebug(debug, "nok=", nok, ", n=", n, ", nok/n=", nok / n, "\n")
-    oceDebug(debug, "} # usrLonLat()\n", unindent = 1, style = "bold")
+    oceDebug(debug, "END usrLonLat()\n", unindent = 1)
     rval <- list(
         lonmin = lonmin, lonmax = lonmax, latmin = latmin, latmax = latmax,
         ok = nok / n > 0.5 && is.finite(lonmin) && is.finite(lonmax) && is.finite(latmin) && is.finite(latmax)
@@ -577,7 +577,7 @@ mapAxis <- function(
         ", longitude=", if (length(longitude)) c(longitude[1], "...") else "NULL",
         ", latitude=", if (length(latitude)) c(latitude[1], "...") else "NULL",
         ", axisStyle=", axisStyle,
-        ") { \n",
+        ") START\n",
         unindent = 1, sep = ""
     )
     if (length(axisStyle) != 1) {
@@ -680,7 +680,7 @@ mapAxis <- function(
     if (4 %in% side) {
         oceDebug(debug, "drawing axis on side 4 NOT CODED YET\n")
     }
-    oceDebug(debug, "} # mapAxis()\n", sep = "", unindent = 1, style = "bold")
+    oceDebug(debug, "END mapAxis()\n", sep = "", unindent = 1)
 }
 
 
@@ -766,12 +766,12 @@ mapAxis <- function(
 #' (as for the built-in `coastlineWorld` dataset), try Clark Richards' method
 #' (<https://github.com/dankelley/oce/issues/2217>, as below.
 #'
-#'\preformatted{
+#' \preformatted{
 #' # Start with z=z(lon,lat), with lon bound by 0 and 360
 #' z2 <- rbind(z[lon > 180, ], z[lon <= 180, ])
 #' lon2 <- lon + 180
 #' mapContour(lon2, lat, z2)
-#'}
+#' }
 #'
 #' @seealso A map must first have been created with [mapPlot()].
 #'
@@ -792,8 +792,9 @@ mapContour <- function(
     col = par("fg"), lty = par("lty"), lwd = par("lwd"),
     debug = getOption("oceDebug")) {
     oceDebug(debug, "mapContour(..., labcex=", labcex, ", drawlabels=", drawlabels,
-        ", ...) {\n",
-        sep = "", unindent = 1, style = "bold")
+        ", ...) START\n",
+        sep = "", unindent = 1
+    )
     if ("none" == .Projection()$type) {
         stop("must create a map first, with mapPlot()\n")
     }
@@ -846,7 +847,7 @@ mapContour <- function(
     }
     colUnderLabel <- "white" # use a variable in case we want to add as an arg
     for (ilevel in 1:nlevels) {
-        oceDebug(debug, "contouring at level[", ilevel, "] = ", levels[ilevel], "\n", sep="")
+        oceDebug(debug, "contouring at level[", ilevel, "] = ", levels[ilevel], "\n", sep = "")
         label <- as.character(levels[ilevel]) # ignored unless drawlabels=TRUE
         w <- 1.0 * strwidth(levels[ilevel], "user", cex = labcex[1]) # ignored unless drawlabels=TRUE
         h <- 1.0 * strheight(label, "user", cex = labcex[1]) # ignored unless drawlabels=TRUE
@@ -955,7 +956,7 @@ mapContour <- function(
             }
         }
     }
-    oceDebug(debug, "} # mapContour()\n", sep = "", unindent = 1, style = "bold")
+    oceDebug(debug, "END mapContour()\n", sep = "", unindent = 1)
 }
 
 #' Draw a Coordinate System
@@ -2015,8 +2016,7 @@ mapPlot <- function(
     cex, cex.axis = 1, mgp = c(0, 0.5, 0), drawBox = TRUE, showHemi = TRUE,
     polarCircle = 0, lonlabels = TRUE, latlabels = TRUE,
     projection = "+proj=moll", tissot = FALSE, trim = TRUE,
-    debug = getOption("oceDebug"),
-    ...) {
+    debug = getOption("oceDebug"), ...) {
     debug <- max(0, min(debug, 3))
     oceDebug(debug, "mapPlot(longitude, latitude,",
         argShow(longitudelim),
@@ -2027,8 +2027,8 @@ mapPlot <- function(
         } else if (!missing(projection)) paste("projection=", projection, "\",", sep = ""),
         argShow(grid),
         argShow(geographical),
-        ", ...) {\n",
-        sep = "", unindent = 1, style = "bold"
+        ", ...) START\n",
+        sep = "", unindent = 1
     )
     dots <- list(...)
     if (1 == length(grid)) {
@@ -2601,7 +2601,7 @@ mapPlot <- function(
         }
         options(warn = options$warn)
     }
-    oceDebug(debug, "} # mapPlot()\n", sep = "", unindent = 1, style = "bold")
+    oceDebug(debug, "END mapPlot()\n", sep = "", unindent = 1)
 }
 
 
@@ -2690,8 +2690,8 @@ mapGrid <- function(
         argShow(dlongitude), argShow(dlatitude),
         argShow(longitude), argShow(latitude),
         argShow(longitudelim), argShow(latitudelim),
-        "...) {\n",
-        unindent = 1, sep = "", style = "bold"
+        "...) START\n",
+        sep = "", unindent = 1
     )
     if ("none" == .Projection()$type) {
         stop("must create a map first, with mapPlot()\n")
@@ -2895,7 +2895,7 @@ mapGrid <- function(
             }
         }
     }
-    oceDebug(debug, "} # mapGrid()\n", unindent = 1, sep = "", style = "bold")
+    oceDebug(debug, "END mapGrid()\n", unindent = 1, sep = "")
     invisible(as.data.frame(rval))
 }
 
@@ -3251,7 +3251,7 @@ mapLines <- function(longitude, latitude, greatCircle = FALSE, ...) {
 #'
 #' @author Dan Kelley
 mapPoints <- function(longitude, latitude, debug = getOption("oceDebug"), ...) {
-    oceDebug(debug, "mapPoints() {\n", unindent = 1, sep = "")
+    oceDebug(debug, "mapPoints() START\n", unindent = 1, sep = "")
     if ("none" == .Projection()$type) {
         stop("must create a map first, with mapPlot()\n")
     }
@@ -3277,7 +3277,7 @@ mapPoints <- function(longitude, latitude, debug = getOption("oceDebug"), ...) {
         xy <- lonlat2map(longitude, latitude, debug = debug - 1)
         points(xy$x, xy$y, ...)
     }
-    oceDebug(debug, "} # mapPoints()\n", unindent = 1, sep = "")
+    oceDebug(debug, "END mapPoints()\n", unindent = 1, sep = "")
 }
 
 #' Add Arrows to a Map
@@ -3812,7 +3812,7 @@ mapImage <- function(longitude, latitude, z, zlim, zclip = FALSE,
     } else {
         gridder
     }, ", ...)
-        {\n", sep = "", unindent = 1)
+        START\n", sep = "", unindent = 1)
 
     if ("data" %in% slotNames(longitude)) {
         if (3 == sum(c("longitude", "latitude", "z") %in% names(longitude@data))) {
@@ -4131,7 +4131,7 @@ mapImage <- function(longitude, latitude, z, zlim, zclip = FALSE,
             lwd = lwd, lty = lty, fillOddEven = FALSE
         )
     }
-    oceDebug(debug, "} # mapImage()\n", unindent = 1)
+    oceDebug(debug, "END mapImage()\n", unindent = 1)
     invisible(NULL)
 }
 
@@ -4403,7 +4403,7 @@ knownProj4 <- c(
 #'
 #' @author Dan Kelley
 lonlat2map <- function(longitude, latitude, projection = "", debug = getOption("oceDebug")) {
-    oceDebug(debug, "lonlat2map(longitude, latitude, projection=\"", projection, "\") ...\n", sep = "", unindent = 1, style = "bold")
+    oceDebug(debug, "lonlat2map(longitude, latitude, projection=\"", projection, "\") START\n", sep = "", unindent = 1)
     if (missing(longitude)) {
         stop("must supply longitude")
     }
@@ -4439,6 +4439,6 @@ lonlat2map <- function(longitude, latitude, projection = "", debug = getOption("
     }
     XY <- oceProject(xy = cbind(longitude, latitude), proj = projection, inv = FALSE, debug = debug - 1)
     .Projection(list(type = "proj4", projection = projection))
-    oceDebug(debug, "# ... lonlat2map\n", sep = "", unindent = 1, style = "bold")
+    oceDebug(debug, "END lonlat2map()\n", sep = "", unindent = 1)
     list(x = XY[, 1], y = XY[, 2])
 }

@@ -75,7 +75,7 @@ decodeHeaderNortek <- function(
     debug = getOption("oceDebug"),
     ...) {
     type <- match.arg(type)
-    oceDebug(debug, "decodeHeaderNortek(buf, type=\"", type, "\", ...) {\n", sep = "", unindent = 1)
+    oceDebug(debug, "decodeHeaderNortek(buf, type=\"", type, "\", ...) START\n", sep = "", unindent = 1)
     oceDebug(debug, "buf starts:", buf[1:20], "\n")
     degToRad <- atan2(1, 1) / 45
     syncCode <- as.raw(0xa5)
@@ -747,7 +747,7 @@ read.adp.nortek <- function(
     monitor = FALSE, despike = FALSE, processingLog,
     debug = getOption("oceDebug"),
     ...) {
-    oceDebug(debug, "read.adp.nortek(...)\n", sep = "", unindent = 1)
+    oceDebug(debug, "read.adp.nortek(...) START\n", sep = "", unindent = 1)
     if (missing(file)) {
         stop("must supply 'file'")
     }
@@ -1245,5 +1245,6 @@ read.adp.nortek <- function(
         processingLog <- paste("read.adp.nortek(file=\"", filename, "\", from=", from, ", to=", to, ", by=", by, ")", sep = "")
     }
     res@processingLog <- processingLogItem(processingLog)
+    oceDebug(debug, "END read.adp.nortek(...)\n", sep = "", unindent = 1)
     res
 } # read.adp.nortek()

@@ -9,7 +9,7 @@
         oceMgp = c(2.0, 0.7, 0),
         oceTimeFormat = "%Y-%m-%d %H:%M:%S",
         oceTz = "UTC",
-        oceUnitBracket = "[", # or "("
+        oceUnitBracket = "[", # or parenthesis
         webtide = "/usr/local/WebTide"
     )
     toset <- !(names(opOce) %in% names(op))

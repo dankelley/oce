@@ -157,7 +157,7 @@ setMethod(
         res <- NULL
         dots <- list(...)
         debug <- if ("debug" %in% names(dots)) dots$debug else 0
-        oceDebug(debug, "[[,argo-method(\"", i, "\") ...\n", sep = "", style = "bold", unindent = 1)
+        oceDebug(debug, "[[,argo-method(\"", i, "\") ...\n", sep = "", unindent = 1)
         metadataDerived <- c("ID", "cycle", "*Flag", "*Unit")
         dataDerived <- c(
             "profile", "CT", "N2", "SA", "sigmaTheta",
@@ -378,7 +378,6 @@ setMethod(
             oceDebug(debug, "calling lowest-level oce '[[' method (in AllClass.R)\n")
             res <- callNextMethod() # [[ defined in R/AllClass.R
         }
-        # oceDebug(debug, "# [[,argo-method\n", sep = "", style = "bold", unindent = 1)
         res
     }
 ) # [[
@@ -712,7 +711,7 @@ setMethod(
         dotsNames <- names(dots)
         withinGiven <- length(dots) && ("within" %in% dotsNames)
         debug <- if (length(dots) && ("debug" %in% names(dots))) dots$debug else getOption("oceDebug")
-        oceDebug(debug, "subset,argo-method() {\n", sep = "", unindent = 1, style = "bold")
+        oceDebug(debug, "subset,argo-method() START\n", sep = "", unindent = 1)
         if (withinGiven) {
             oceDebug(debug, "subsetting with 'within' method\n")
             polygon <- dots$within
@@ -918,7 +917,7 @@ setMethod(
                 res@processingLog <- processingLogAppend(res@processingLog, paste("subset.argo(x, subset=", subsetString, ")", sep = ""))
             }
         }
-        oceDebug(debug, "} # subset,argo-method\n", sep = "", unindent = 1, style = "bold")
+        oceDebug(debug, "END subset,argo-method\n", sep = "", unindent = 1)
         res
     }
 )
@@ -1016,7 +1015,7 @@ ncdfFixMatrix <- function(x) {
 #' @family things related to argo data
 #' @author Dan Kelley and Clark Richards
 argoGrid <- function(argo, p, debug = getOption("oceDebug"), ...) {
-    oceDebug(debug, "argoGrid() {\n", sep = "", unindent = 1)
+    oceDebug(debug, "argoGrid() START\n", sep = "", unindent = 1)
     warningMessages <- NULL
     dim <- dim(argo@data$pressure)
     # ndepth <- dim[1]
@@ -1313,7 +1312,7 @@ read.argo <- function(file, encoding = NA, debug = getOption("oceDebug"), proces
             #on.exit(ncdf4::nc_close(file))
         }
     }
-    oceDebug(debug, "read.argo(file=\"", filename, "\", ...) {\n", sep = "", unindent = 1, style = "bold")
+    oceDebug(debug, "read.argo(file=\"", filename, "\", ...) START\n", sep = "", unindent = 1)
     varNames <- names(file$var)
     # 'lc' will be TRUE if the data names are in lower case
     lc <- "data_type" %in% varNames
@@ -1891,7 +1890,7 @@ read.argo <- function(file, encoding = NA, debug = getOption("oceDebug"), proces
     # Record a log item
     res@processingLog <- processingLogAppend(res@processingLog, paste("read.argo(file=\"", filename, "\")", sep = ""))
     ncdf4::nc_close(file)
-    oceDebug(debug, "} # read.argo()\n", sep = "", unindent = 1, style = "bold")
+    oceDebug(debug, "END read.argo()\n", sep = "", unindent = 1)
     res
 }
 
@@ -2118,8 +2117,8 @@ setMethod(
             argShow(mgp),
             argShow(mar),
             argShow(cex),
-            " ...) {\n",
-            sep = "", unindent = 1, style = "bold"
+            " ...) START\n",
+            sep = "", unindent = 1
         )
         coastline <- match.arg(coastline)
         nw <- length(which)
@@ -2378,7 +2377,7 @@ setMethod(
                 stop("Unknown value of which=", which[w], "\n", call. = FALSE)
             }
         }
-        oceDebug(debug, "} # plot.argo()\n", unindent = 1, style = "bold")
+        oceDebug(debug, "END plot.argo()\n", unindent = 1)
         invisible(NULL)
     }
 )

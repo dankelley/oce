@@ -673,7 +673,7 @@ read.met <- function(
             stop("empty file \"", file, "\"")
         }
     }
-    oceDebug(debug, "read.met(file=\"", file, "\", ...) {\n", sep = "", unindent = 1, style = "bold")
+    oceDebug(debug, "read.met(file=\"", file, "\", ...) START\n", sep = "", unindent = 1)
     if (!is.character(file)) {
         stop("'file' must be a string")
     }
@@ -714,7 +714,7 @@ read.met <- function(
     } else {
         stop("cannot handle file type '", type, "'")
     }
-    oceDebug(debug, "} # read.met()\n", unindent = 1, style = "bold")
+    oceDebug(debug, "END read.met()\n", unindent = 1)
     res
 }
 
@@ -728,8 +728,8 @@ read.met.csv1 <- function(
         stop("must supply 'file'")
     }
     oceDebug(debug, "read.met.csv1(\"", file, "\", skip=", if (is.null(skip)) "NULL" else skip,
-        ", encoding=\"", encoding, "\", tz=\"", tz, "\") {\n",
-        sep = "", unindent = 1, style = "bold"
+        ", encoding=\"", encoding, "\", tz=\"", tz, "\") START\n",
+        sep = "", unindent = 1
     )
     # I thank Ivan Krylov for telling me that the 'encoding' arg belongs in the
     # file() call, not the readLines() call.
@@ -969,7 +969,7 @@ read.met.csv1 <- function(
             sep = "", collapse = ""
         )
     )
-    oceDebug(debug, "} # read.met.csv1()\n", unindent = 1, style = "bold")
+    oceDebug(debug, "END read.met.csv1()\n", unindent = 1)
     res
 }
 
@@ -983,9 +983,7 @@ read.met.csv2 <- function(
     if (missing(file)) {
         stop("must supply 'file'")
     }
-    oceDebug(debug, "read.met.csv2(\"", file, "\", skip=", skip, ", encoding=\"", encoding, "\") { # for either type 2 or 3 \n",
-        sep = "", unindent = 1, style = "bold"
-    )
+    oceDebug(debug, "read.met.csv2(\"", file, "\", skip=", skip, ", encoding=\"", encoding, "\") with type 2 or 3 START\n", sep = "", unindent = 1)
     # I thank Ivan Krylov for telling me that the 'encoding' arg belongs in the
     # file() call, not the readLines() call.
     if (is.character(file)) {
@@ -1191,14 +1189,14 @@ read.met.csv2 <- function(
             sep = "", collapse = ""
         )
     )
-    oceDebug(debug, "} # read.met.csv2()\n", unindent = 1, style = "bold")
+    oceDebug(debug, "END read.met.csv2()\n", unindent = 1)
     res
 }
 
 read.met.xml2 <- function(
     file, skip = NULL, tz = getOption("oceTz"),
     debug = getOption("oceDebug")) {
-    oceDebug(debug, "read.met.xml2(file=\"", file, "\", ...) {\n", sep = "", unindent = 1, style = "bold")
+    oceDebug(debug, "read.met.xml2(file=\"", file, "\", ...) START\n", sep = "", unindent = 1)
     if (!requireNamespace("XML", quietly = TRUE)) {
         stop("must install.packages(\"XML\") to read rsk data")
     }
@@ -1317,7 +1315,7 @@ read.met.xml2 <- function(
             sep = ""
         )
     )
-    oceDebug(debug, "} # read.met.xml2()\n", unindent = 1, style = "bold")
+    oceDebug(debug, "END read.met.xml2()\n", unindent = 1)
     res
 }
 
@@ -1388,7 +1386,7 @@ setMethod(
     f = "plot",
     signature = signature("met"),
     definition = function(x, which = 1:4, mgp, mar, tformat, debug = getOption("oceDebug")) {
-        oceDebug(debug, "plot.met() {\n", unindent = 1)
+        oceDebug(debug, "plot.met() START\n", unindent = 1)
         if (missing(mgp)) {
             mgp <- getOption("oceMgp")
         }
@@ -1422,6 +1420,6 @@ setMethod(
                 oce.plot.ts(x@data$time, x@data$direction, ylab = resizableLabel("Direction [deg]", "y"), tformat = tformat)
             }
         }
-        oceDebug(debug, "} # plot.met()\n", unindent = 1)
+        oceDebug(debug, "END plot.met()\n", unindent = 1)
     }
 )

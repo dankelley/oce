@@ -37,7 +37,7 @@ read.adv.sontek.serial <- function(
         ", deltat=", deltat,
         ", debug=", debug,
         ", monitor=", monitor,
-        ", processingLog=(not shown)) {\n",
+        ", processingLog=(not shown)) START\n",
         sep = ""
     ), unindent = 1)
     if (is.null(start) || is.numeric(start)) {
@@ -247,7 +247,7 @@ read.adv.sontek.adr <- function(
     }
     # The binary format is documented in Appendix 2.2.3 of the Sontek ADV
     # operation Manual - Firmware Version 4.0 (Oct 1997).
-    oceDebug(debug, "read.adv.sontek.adr() {\n", unindent = 1)
+    oceDebug(debug, "read.adv.sontek.adr() START\n", unindent = 1)
     if (is.character(file)) {
         filename <- fullFilename(file)
         file <- file(file, "rb")
@@ -904,7 +904,7 @@ read.adv.sontek.text <- function(
 #' @family things related to adv data
 #' @family functions that trim data files
 advSontekAdrFileTrim <- function(infile, n = 100, outfile, debug = getOption("oceDebug")) {
-    oceDebug(debug, "advSontekAdrFileTrim(\"", infile, "\", n=", n, ", ...) {\n", sep = "", unindent = 1)
+    oceDebug(debug, "advSontekAdrFileTrim(\"", infile, "\", n=", n, ", ...) START\n", sep = "", unindent = 1)
     if (missing(infile)) {
         stop("provide infile")
     }
@@ -932,6 +932,6 @@ advSontekAdrFileTrim <- function(infile, n = 100, outfile, debug = getOption("oc
     bufOut <- buf[seq_len(bytesToRead)]
     oceDebug(debug, vectorShow(bufOut))
     writeBin(bufOut, outfile, useBytes = TRUE)
-    oceDebug(debug, "} # advSontekAdrFileTrim\n", unindent = 1)
+    oceDebug(debug, "END advSontekAdrFileTrim\n", unindent = 1)
     outfile
 }

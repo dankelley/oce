@@ -184,16 +184,16 @@ binApply2D <- function(x, y, f, xbreaks, ybreaks, FUN, include.lowest = FALSE, .
     }
     res <- matrix(NA_real_, nrow = nxbreaks - 1, ncol = nybreaks - 1)
     ycut <- cut(y, ybreaks, labels = FALSE, include.lowest = include.lowest)
-    F <- split(f, ycut)
-    X <- split(x, ycut)
+    Fs <- split(f, ycut)
+    Xs <- split(x, ycut)
     # cat("next is F before loop\n");print(F)
     # cat("next is X before loop\n");print(X)
-    for (iF in seq_along(F)) {
-        xcut <- cut(X[[iF]], xbreaks, labels = FALSE, include.lowest = include.lowest)
-        FF <- split(F[[iF]], xcut)
+    for (iF in seq_along(Fs)) {
+        xcut <- cut(Xs[[iF]], xbreaks, labels = FALSE, include.lowest = include.lowest)
+        FF <- split(Fs[[iF]], xcut)
         # browser()
         ii <- as.integer(names(FF))
-        jj <- as.integer(names(F)[[iF]])
+        jj <- as.integer(names(Fs)[[iF]])
         resiijj <- unlist(lapply(FF, FUN, ...))
         # message(vectorShow(dim(res)))
         # message("ii=", paste(ii, collapse=" "), ", jj=", paste(jj, collapse=" "),
@@ -541,7 +541,7 @@ binCount2D <- function(x, y, xbreaks, ybreaks, flatten = FALSE, include.lowest =
 binMean2D <- function(x, y, f, xbreaks, ybreaks, flatten = FALSE,
                       fill = FALSE, fillgap = -1, include.lowest = FALSE, na.rm = FALSE,
                       debug = getOption("oceDebug")) {
-    oceDebug(debug, "binMean2D() ...\n", sep = "", unindent = 1, style = "bold")
+    oceDebug(debug, "binMean2D() START\n", sep = "", unindent = 1)
     if (missing(x)) {
         stop("must supply 'x'")
     }
@@ -615,7 +615,7 @@ binMean2D <- function(x, y, f, xbreaks, ybreaks, flatten = FALSE,
         res2$n <- as.vector(res$number)
         res <- res2
     }
-    oceDebug(debug, "... binMean2D() completed without problems\n", sep = "", unindent = 1, style = "bold")
+    oceDebug(debug, "END binMean2D()\n", sep = "", unindent = 1)
     res
 } # binMean2D
 

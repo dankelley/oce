@@ -334,7 +334,7 @@ setMethod(
     signature = signature("lobo"),
     definition = function(x, which = c(1, 2, 3), mgp = getOption("oceMgp"), mar = c(mgp[2] + 1, mgp[1] + 1, 1, mgp[1] + 1.25),
                           debug = getOption("oceDebug"), ...) {
-        oceDebug(debug, "plot.lobo(...)\n", sep = "")
+        oceDebug(debug, "plot.lobo(...) START\n", sep = "")
         opar <- par(no.readonly = TRUE)
         nw <- length(which)
         oceDebug(debug, "which:", which, "\n")
@@ -366,6 +366,7 @@ setMethod(
                 oce.plot.ts(x[["time"]], x[["fluorescence"]], ylab = resizableLabel("fluorescence", axis = "y"), debug = debug - 1, ...)
             }
         }
+        oceDebug(debug, "END plot.lobo(...)\n", sep = "")
     }
 )
 
