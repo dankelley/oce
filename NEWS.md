@@ -27,6 +27,7 @@
 * Change `resizableLabel()` to handle `item=`"N"` (issue #2197).
 * Change `summary()` to skip time in the threenum table (issue #2198).
 * Change `sunAngle()` to handle vector arguments better (issue #2178).
+* Change `sunAngle()` to detect non-logical values of `useRefraction` (issue #2225).
 * Change some byte-level work from C to C++ to improve maintainability (issue #2201).
 
 # oce 1.8.2 (on CRAN)
