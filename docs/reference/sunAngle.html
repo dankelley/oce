@@ -66,9 +66,7 @@ based on "The Astronomical Almanac".</p>
 <dd><p>time, either a POSIXt object (converted to timezone <code>"UTC"</code>,
 if it is not already in that timezone), or a value (character or numeric)
 that can be converted to a time with <code><a href="https://rdrr.io/r/base/as.POSIXlt.html" class="external-link">as.POSIXct()</a></code>, assuming the
-timezone to be <code>"UTC"</code>. Note that <code>time</code> may be a single value or a vector
-of values; in the latter case, <code>longitude</code>, <code>latitude</code> and <code>useRefraction</code>
-are all made to be of the same length as <code>time</code>, by calling <code><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep()</a></code>.</p></dd>
+timezone to be <code>"UTC"</code>.</p></dd>
 
 
 <dt id="arg-longitude">longitude<a class="anchor" aria-label="anchor" href="#arg-longitude"></a></dt>
@@ -95,6 +93,16 @@ atmospheric refraction.</p></dd>
 <li><p><code>rightAscension</code> angle in degrees, computed with <code><a href="sunDeclinationRightAscension.html">sunDeclinationRightAscension()</a></code>.
 <img src="figures/starCoords.png" width="400"></p></li>
 </ul></div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>Note that <code>time</code> may be a single value or a vector
+of values; in the latter case, <code>longitude</code>, <code>latitude</code> and <code>useRefraction</code>
+are all made to be of the same length as <code>time</code>, by calling <code><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep()</a></code>. This
+handles the case of finding a time-series of angles at a given spatial
+location.  For other cases of non-unit-length arguments, consider
+using <code><a href="https://rdrr.io/r/base/expand.grid.html" class="external-link">expand.grid()</a></code> to create same-length arguments to fit
+a given need.</p>
+    </div>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
     <p>Regarding <code>declination</code> and <code>rightAscension</code>, see
