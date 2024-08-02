@@ -102,6 +102,9 @@ sunAngle <- function(t, longitude = 0.0, latitude = 0.0, useRefraction = FALSE) 
     nt <- length(t)
     nlongitude <- length(longitude)
     nlatitude <- length(latitude)
+    if (!is.logical(useRefraction)) {
+        stop("useRefraction must be a logical value")
+    }
     nuseRefraction <- length(useRefraction)
     if (nlongitude != nlatitude) {
         stop("lengths of longitude and latitude must match")
