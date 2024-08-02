@@ -23,7 +23,10 @@ revdepcheck::revdep_check(num_workers = 4)
 
 ## Remote Checks via Github Actions
 
-No errors were detected from the `R-CMD-check` and `R-hub` github actions.
+1. The `R-CMD-check` github action passed without errors.
+2. The `R-CMD-check` github action failed because it could not build the `ncdf`
+   package. This error is not caused by the `oce` code, so I do not think it
+   counts as a failure for `oce`.
 
 ## Remote Windows Checks
 
