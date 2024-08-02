@@ -6,7 +6,7 @@ requireNamespace(c("codemetar", "devtools", "urlchecker", "rhub", "revdepcheck")
 if (FALSE) {
     codemetar::write_codemeta()
 } else {
-   message("run 'codemetar::write_codemeta()' and then git push")
+    message("run 'codemetar::write_codemeta()' and then git push")
 }
 t <- devtools::spell_check()
 stopifnot(t == "No spelling errors found.")
@@ -30,16 +30,16 @@ devtools::check_win_oldrelease()
 # if there is any point in keeping the next.  Oh, and bonus: the
 # tests in the next block often don't report for half a day.
 if (FALSE) {
-    rhub::check_for_cran(email="Dan.Kelley@Dal.Ca", show_status=FALSE)
-    rhub::check(platform="debian-clang-devel", show_status=FALSE)
+    rhub::check_for_cran(email = "Dan.Kelley@Dal.Ca", show_status = FALSE)
+    rhub::check(platform = "debian-clang-devel", show_status = FALSE)
 }
 #> rhub::platforms()
-#debian-clang-devel:
+# debian-clang-devel:
 #    Debian Linux, R-devel, clang, ISO-8859-15 locale
 #> rhub::check_rhub()
 
 # Reverse dependency checks.
 # remotes::install_github("r-lib/revdepcheck")
 revdepcheck::revdep_reset()
-revdepcheck::revdep_check(num_workers=4)
+revdepcheck::revdep_check(num_workers = 4)
 message("run following if desired: pkgdown::build_site()")
