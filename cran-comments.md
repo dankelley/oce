@@ -21,6 +21,10 @@ revdepcheck::revdep_reset()
 revdepcheck::revdep_check(num_workers = 4)
 ```
 
+## Remote Checks via Github Actions
+
+No errors were detected from the `R-CMD-check` and `R-hub` github actions.
+
 ## Remote Windows Checks
 
 No errors were detected from the following tests.
