@@ -39,7 +39,7 @@ temperature68=15, and pressure=0).
 If \code{eos="unesco"}, the calculation is done by a bisection root search
 on the UNESCO formula relating salinity to conductivity, temperature, and
 pressure (see \code{\link[=swSCTp]{swSCTp()}}).  If it is \code{"gsw"} then the
-Gibbs-SeaWater formulation is used, via \code{\link[=gsw_C_from_SP]{gsw_C_from_SP()}}.
+Gibbs-SeaWater formulation is used, via \code{\link[gsw:gsw_C_from_SP]{gsw::gsw_C_from_SP()}}.
 }
 \examples{
 stopifnot(abs(1.0 - swCSTp(35, T90fromT68(15), 0, eos = "unesco")) < 1e-7)
