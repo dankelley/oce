@@ -641,7 +641,7 @@ swPressure <- function(depth, latitude = 45, eos = getOption("oceEOS", default =
 #' If `eos="unesco"`, the calculation is done by a bisection root search
 #' on the UNESCO formula relating salinity to conductivity, temperature, and
 #' pressure (see [swSCTp()]).  If it is `"gsw"` then the
-#' Gibbs-SeaWater formulation is used, via [gsw_C_from_SP()].
+#' Gibbs-SeaWater formulation is used, via [gsw::gsw_C_from_SP()].
 #'
 #' @param salinity practical salinity, or a CTD object (in which case its
 #' temperature and pressure are used, and the next two arguments are ignored)
