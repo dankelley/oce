@@ -11,7 +11,8 @@ swSigmaTheta(
   referencePressure = 0,
   longitude = NULL,
   latitude = NULL,
-  eos = getOption("oceEOS", default = "gsw")
+  eos = getOption("oceEOS", default = "gsw"),
+  debug = getOption("oceDebug")
 )
 }
 \arguments{
@@ -41,6 +42,14 @@ see \dQuote{Details}).}
 
 \item{eos}{equation of state, either \code{"unesco"} (references 1 and 2)
 or \code{"gsw"} (references 3 and 4).}
+
+\item{debug}{an integer specifying whether debugging information is
+to be printed during the processing. This is a general parameter that
+is used by many \code{oce} functions. Generally, setting \code{debug=0}
+turns off the printing, while higher values suggest that more information
+be printed. If one function calls another, it usually reduces the value of
+\code{debug} first, so that a user can often obtain deeper debugging
+by specifying higher \code{debug} values.}
 }
 \value{
 Potential density anomaly (kg/m\eqn{^3}{^3}), defined as
@@ -78,8 +87,8 @@ Other functions that calculate seawater properties:
 \code{\link{computableWaterProperties}()},
 \code{\link{locationForGsw}()},
 \code{\link{swAbsoluteSalinity}()},
-\code{\link{swAlphaOverBeta}()},
 \code{\link{swAlpha}()},
+\code{\link{swAlphaOverBeta}()},
 \code{\link{swBeta}()},
 \code{\link{swCSTp}()},
 \code{\link{swConservativeTemperature}()},
@@ -93,17 +102,20 @@ Other functions that calculate seawater properties:
 \code{\link{swSCTp}()},
 \code{\link{swSR}()},
 \code{\link{swSTrho}()},
+\code{\link{swSigma}()},
 \code{\link{swSigma0}()},
 \code{\link{swSigma1}()},
 \code{\link{swSigma2}()},
 \code{\link{swSigma3}()},
 \code{\link{swSigma4}()},
 \code{\link{swSigmaT}()},
-\code{\link{swSigma}()},
 \code{\link{swSoundAbsorption}()},
 \code{\link{swSoundSpeed}()},
 \code{\link{swSpecificHeat}()},
 \code{\link{swSpice}()},
+\code{\link{swSpiciness0}()},
+\code{\link{swSpiciness1}()},
+\code{\link{swSpiciness2}()},
 \code{\link{swSstar}()},
 \code{\link{swTFreeze}()},
 \code{\link{swTSrho}()},

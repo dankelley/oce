@@ -42,16 +42,16 @@ Other things related to ctd data:
 \code{\link{[[<-,ctd-method}},
 \code{\link{as.ctd}()},
 \code{\link{cnvName2oceName}()},
+\code{\link{ctd}},
 \code{\link{ctd-class}},
 \code{\link{ctd.cnv.gz}},
 \code{\link{ctdDecimate}()},
-\code{\link{ctdFindProfilesRBR}()},
 \code{\link{ctdFindProfiles}()},
+\code{\link{ctdFindProfilesRBR}()},
 \code{\link{ctdRaw}},
 \code{\link{ctdRepair}()},
 \code{\link{ctdTrim}()},
 \code{\link{ctd_aml.csv.gz}},
-\code{\link{ctd}},
 \code{\link{d200321-001.ctd.gz}},
 \code{\link{d201211_0011.cnv.gz}},
 \code{\link{handleFlags,ctd-method}},
@@ -63,15 +63,15 @@ Other things related to ctd data:
 \code{\link{plotProfile}()},
 \code{\link{plotScan}()},
 \code{\link{plotTS}()},
+\code{\link{read.ctd}()},
 \code{\link{read.ctd.aml}()},
 \code{\link{read.ctd.itp}()},
 \code{\link{read.ctd.odf}()},
 \code{\link{read.ctd.odv}()},
 \code{\link{read.ctd.saiv}()},
 \code{\link{read.ctd.sbe}()},
-\code{\link{read.ctd.woce.other}()},
 \code{\link{read.ctd.woce}()},
-\code{\link{read.ctd}()},
+\code{\link{read.ctd.woce.other}()},
 \code{\link{setFlags,ctd-method}},
 \code{\link{subset,ctd-method}},
 \code{\link{summary,ctd-method}},
@@ -80,14 +80,14 @@ Other things related to ctd data:
 \code{\link{write.ctd}()}
 
 Other functions that read ctd data: 
+\code{\link{read.ctd}()},
 \code{\link{read.ctd.aml}()},
 \code{\link{read.ctd.itp}()},
 \code{\link{read.ctd.odf}()},
 \code{\link{read.ctd.saiv}()},
 \code{\link{read.ctd.sbe}()},
-\code{\link{read.ctd.woce.other}()},
 \code{\link{read.ctd.woce}()},
-\code{\link{read.ctd}()}
+\code{\link{read.ctd.woce.other}()}
 }
 \author{
 Dan Kelley, with help from Liam MacNeil

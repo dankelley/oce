@@ -9,7 +9,8 @@ swRrho(
   sense = c("diffusive", "finger"),
   smoothingLength = 10,
   df,
-  eos = getOption("oceEOS", default = "gsw")
+  eos = getOption("oceEOS", default = "gsw"),
+  debug = getOption("oceDebug")
 )
 }
 \arguments{
@@ -27,25 +28,32 @@ within a depth interval of \code{smoothingLength} metres.}
 \item{df}{if given, this is provided to \code{\link[=smooth.spline]{smooth.spline()}}.}
 
 \item{eos}{equation of state, either \code{"unesco"} or \code{"gsw"}.}
+
+\item{debug}{an integer specifying whether debugging information is
+to be printed during the processing. This is a general parameter that
+is used by many \code{oce} functions. Generally, setting \code{debug=0}
+turns off the printing, while higher values suggest that more information
+be printed. If one function calls another, it usually reduces the value of
+\code{debug} first, so that a user can often obtain deeper debugging
+by specifying higher \code{debug} values.}
 }
 \value{
 Density ratio defined in either the \code{"diffusive"} or
 \code{"finger"} sense.
 }
 \description{
-Compute density ratio
+Compute density ratio for a \code{ctd} object.  An error (perhaps with some hints)
+is issued for any other type of object.
 }
 \details{
-This computes Rrho (density ratio) from a \code{ctd} object.
-
-If \code{eos="unesco"}, this is done by calculating salinity and
+If \code{eos="unesco"}, the work is done by calculating salinity and
 potential-temperature derivatives from smoothing splines whose properties
 are governed by \code{smoothingLength} or \code{df}.  If
 \code{sense="diffusive"} the definition is
 \eqn{(beta*dS/dz)/(alpha*d(theta)/dz)}{(beta*dS/dz)/(alpha*d(theta)/dz)} and
 the reciprocal for \code{"finger"}.
 
-If \code{eos="gsw"}, this is done by extracting absolute salinity and
+If \code{eos="gsw"}, the work is done by extracting absolute salinity and
 conservative temperature, smoothing with a smoothing spline as in the
 \code{"unesco"} case, and then calling \code{\link[gsw:gsw_Turner_Rsubrho]{gsw::gsw_Turner_Rsubrho()}}
 on these smoothed fields. Since the gsw function works on mid-point
@@ -74,8 +82,8 @@ Other functions that calculate seawater properties:
 \code{\link{computableWaterProperties}()},
 \code{\link{locationForGsw}()},
 \code{\link{swAbsoluteSalinity}()},
-\code{\link{swAlphaOverBeta}()},
 \code{\link{swAlpha}()},
+\code{\link{swAlphaOverBeta}()},
 \code{\link{swBeta}()},
 \code{\link{swCSTp}()},
 \code{\link{swConservativeTemperature}()},
@@ -88,18 +96,21 @@ Other functions that calculate seawater properties:
 \code{\link{swSCTp}()},
 \code{\link{swSR}()},
 \code{\link{swSTrho}()},
+\code{\link{swSigma}()},
 \code{\link{swSigma0}()},
 \code{\link{swSigma1}()},
 \code{\link{swSigma2}()},
 \code{\link{swSigma3}()},
 \code{\link{swSigma4}()},
-\code{\link{swSigmaTheta}()},
 \code{\link{swSigmaT}()},
-\code{\link{swSigma}()},
+\code{\link{swSigmaTheta}()},
 \code{\link{swSoundAbsorption}()},
 \code{\link{swSoundSpeed}()},
 \code{\link{swSpecificHeat}()},
 \code{\link{swSpice}()},
+\code{\link{swSpiciness0}()},
+\code{\link{swSpiciness1}()},
+\code{\link{swSpiciness2}()},
 \code{\link{swSstar}()},
 \code{\link{swTFreeze}()},
 \code{\link{swTSrho}()},

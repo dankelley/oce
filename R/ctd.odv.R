@@ -38,7 +38,7 @@ read.ctd.odv <- function(
             stop("empty file \"", file, "\"")
         }
     }
-    oceDebug(debug, "read.ctd.odv() {\n", unindent = 1)
+    oceDebug(debug, "read.ctd.odv() START\n", unindent = 1)
     filename <- ""
     if (is.character(file)) {
         filename <- fullFilename(file)
@@ -323,6 +323,6 @@ read.ctd.odv <- function(
         res@data[[i]] <- numberAsPOSIXct(unlist(lapply(D, function(t) if (nchar(t) > 0) as.POSIXct(t, tz = "UTC") else NA)))
     }
     res@processingLog <- processingLogAppend(res, paste("read.ctd.odv(file=\"", filename, "\", ...)", sep = ""))
-    oceDebug(debug, "} # read.ctd.odv\n", unindent = 1)
+    oceDebug(debug, "END read.ctd.odv\n", unindent = 1)
     res
 }

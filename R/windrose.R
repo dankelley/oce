@@ -157,7 +157,7 @@ setMethod(
 #'
 #' @author Dan Kelley, with considerable help from Alex Deckmyn.
 as.windrose <- function(x, y, dtheta = 15.0, debug = getOption("oceDebug")) {
-    oceDebug(debug, "as.windrose(x, y, dtheta=", dtheta, ", debug=", debug, ") {\n", sep = "", unindent = 1)
+    oceDebug(debug, "as.windrose(x, y, dtheta=", dtheta, ", debug=", debug, ") START\n", sep = "", unindent = 1)
     if (inherits(x, "met")) {
         tmp <- x
         x <- tmp[["u"]]
@@ -211,7 +211,7 @@ as.windrose <- function(x, y, dtheta = 15.0, debug = getOption("oceDebug")) {
     )
     res@metadata$dtheta <- dtheta
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep = "", collapse = ""))
-    oceDebug(debug, "} # as.windrose()\n", sep = "", unindent = 1)
+    oceDebug(debug, "END as.windrose()\n", sep = "", unindent = 1)
     res
 }
 
@@ -278,7 +278,7 @@ setMethod(
         if (!inherits(x, "windrose")) {
             stop("method is only for objects of class '", "windrose", "'")
         }
-        oceDebug(debug, "plot.windrose() {\n", sep = "", unindent = 1)
+        oceDebug(debug, "plot.windrose() START\n", sep = "", unindent = 1)
         type <- match.arg(type)
         convention <- match.arg(convention)
         nt <- length(x@data$theta)
@@ -375,7 +375,7 @@ setMethod(
             }
             title(paste("Fiveum (max ", sprintf(max, fmt = "%.3g"), ")", sep = ""))
         }
-        oceDebug(debug, "} # plot.windrose()\n", sep = "", unindent = 1)
+        oceDebug(debug, "END plot.windrose()\n", sep = "", unindent = 1)
         invisible(NULL)
     }
 )

@@ -261,7 +261,7 @@ as.cm <- function(
     time, u = NULL, v = NULL,
     pressure = NULL, conductivity = NULL, temperature = NULL, salinity = NULL,
     longitude = NA, latitude = NA, filename = "", debug = getOption("oceDebug")) {
-    oceDebug(debug, "as.ctd() {\n", unindent = 1)
+    oceDebug(debug, "as.ctd() START\n", unindent = 1)
     rpd <- atan2(1, 1) / 45 # radians per degree (avoid 'pi')
     # Catch special cases
     firstArgIsOce <- inherits(time, "oce")
@@ -399,7 +399,7 @@ as.cm <- function(
         res@processingLog,
         paste(deparse(match.call()), sep = "", collapse = "")
     )
-    oceDebug(debug, "} # as.cm()\n", unindent = 1)
+    oceDebug(debug, "END as.cm()\n", unindent = 1)
     res
 }
 
@@ -536,19 +536,17 @@ read.cm <- function(
             stop("empty file \"", file, "\"")
         }
     }
-    oceDebug(debug, "read.cm(file=\"", file,
-        "\", from=", format(from),
-        ", to=", if (missing(to)) "(missing)" else format(to), ", by=", by, "type=", type, ", ...) {\n",
-        sep = "", unindent = 1
-    )
+    oceDebug(debug, "read.cm(file=\"", file, "\", from=", format(from), ", to=", if (missing(to)) "(missing)" else format(to), ", by=", by, "type=", type, ", ...) START\n", sep = "", unindent = 1)
     type <- match.arg(type)
     if (type == "s4") {
-        read.cm.s4(
+        res <- read.cm.s4(
             file = file, from = from, to = to, by = by, tz = tz,
             longitude = longitude, latitude = latitude,
             encoding = encoding, monitor = monitor, debug = debug - 1,
             processingLog = processingLog
         )
+        oceDebug(debug, "END read.cm()\n", sep = "", unindent = 1)
+        return(res)
     } else {
         stop("unknown type of current meter")
     }
@@ -557,6 +555,8 @@ read.cm <- function(
 read.cm.s4 <- function(
     file, from = 1, to, by = 1, tz = getOption("oceTz"), longitude = NA, latitude = NA,
     monitor = FALSE, encoding = "latin1", debug = getOption("oceDebug"), processingLog) {
+    debug <- max(0, min(debug, 1))
+    oceDebug(debug, "read.cm.s4(file=\"", file, "\", from=", format(from), ", to=", if (missing(to)) "(missing)" else format(to), ", by=", by, ", ...) START\n", sep = "", unindent = 1)
     if (missing(file)) {
         stop("must supply 'file'")
     }
@@ -568,14 +568,6 @@ read.cm.s4 <- function(
             stop("empty file \"", file, "\"")
         }
     }
-    if (debug > 1) {
-        debug <- 1L
-    }
-    oceDebug(debug, "read.cm.s4(file=\"", file,
-        "\", from=", format(from),
-        ", to=", if (missing(to)) "(missing)" else format(to), ", by=", by, ", ...) {\n",
-        sep = "", unindent = 1
-    )
     if (is.character(file)) {
         filename <- fullFilename(file)
         file <- file(file, "r", encoding = encoding)
@@ -712,7 +704,7 @@ read.cm.s4 <- function(
     if (missing(processingLog)) processingLog <- paste(deparse(match.call()), sep = "", collapse = "")
     res@processingLog <- processingLogAppend(res@processingLog, processingLog)
     warning("assuming the compass heading is magnetic; consider using applyMagneticDeclination()")
-    oceDebug(debug, "} # read.cm()\n", unindent = 1)
+    oceDebug(debug, "END read.cm()\n", unindent = 1)
     res
 }
 
@@ -829,7 +821,7 @@ setMethod(
                           tformat,
                           debug = getOption("oceDebug"),
                           ...) {
-        oceDebug(debug, "plot.cm() {\n", unindent = 1)
+        oceDebug(debug, "plot.cm() START\n", unindent = 1)
         oceDebug(debug, "  par(mar)=", paste(par("mar"), collapse = " "), "\n")
         oceDebug(debug, "  par(mai)=", paste(par("mai"), collapse = " "), "\n")
         if (3 != sum(c("time", "u", "v") %in% names(x@data))) {
@@ -1001,7 +993,7 @@ setMethod(
                 stop("unknown value of which (", which[w], ")")
             }
         }
-        oceDebug(debug, "} # plot.cm()\n", unindent = 1)
+        oceDebug(debug, "END plot.cm()\n", unindent = 1)
         invisible(NULL)
     }
 )
@@ -1035,7 +1027,7 @@ setMethod(
     f = "applyMagneticDeclination",
     signature(object = "cm", declination = "ANY", debug = "ANY"),
     definition = function(object, declination = 0.0, debug = getOption("oceDebug")) {
-        oceDebug(debug, "applyMagneticDeclination,cm-method(object, declination=", declination, ") {\n", sep = "", unindent = 1)
+        oceDebug(debug, "applyMagneticDeclination,cm-method(object, declination=", declination, ") START\n", sep = "", unindent = 1)
         if (length(declination) != 1L) {
             stop("length of 'declination' must equal 1")
         }
@@ -1070,7 +1062,7 @@ setMethod(
             res@processingLog,
             paste0("applyMagneticDeclinationCm(x, declination=", declination[1], ")")
         )
-        oceDebug(debug, "} # applyMagneticDeclinationCm\n", unindent = 1)
+        oceDebug(debug, "END applyMagneticDeclinationCm\n", unindent = 1)
         res
     }
 )

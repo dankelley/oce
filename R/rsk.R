@@ -363,8 +363,7 @@ as.rsk <- function(
     sampleInterval = NA,
     debug = getOption("oceDebug")) {
     debug <- min(debug, 1)
-    oceDebug(debug, "as.rsk(..., filename=\"", filename, "\",
-        serialNumber=\"", serialNumber, "\")\n", sep = "", unindent = 1)
+    oceDebug(debug, "as.rsk(..., filename=\"", filename, "\", serialNumber=\"", serialNumber, "\") START\n", sep = "", unindent = 1)
     if (inherits(time, "oce")) {
         stop("cannot coerce from general oce object to rsk; submit an issue if you need this")
     }
@@ -395,7 +394,7 @@ as.rsk <- function(
             res@data[[item]] <- columns[[item]]
         }
     }
-    oceDebug(debug, "} # as.rsk()\n", sep = "", unindent = 1)
+    oceDebug(debug, "END as.rsk()\n", sep = "", unindent = 1)
     res
 }
 
@@ -507,7 +506,7 @@ setMethod(
                           main = "",
                           debug = getOption("oceDebug"),
                           ...) {
-        oceDebug(debug, "plot.rsk(..., which=", which, ", ...) {\n", unindent = 1)
+        oceDebug(debug, "plot.rsk(..., which=", which, ", ...) START\n", unindent = 1)
         dotsNames <- names(list(...))
         # FIXME: In the below, we could be more clever for single-panel plots
         # but it may be better to get users out of the habit of supplying xlim
@@ -577,7 +576,7 @@ setMethod(
                 }
             }
         }
-        oceDebug(debug, "} # plot.rsk()\n", unindent = 1)
+        oceDebug(debug, "END plot.rsk()\n", unindent = 1)
         invisible(NULL)
     }
 )
@@ -745,9 +744,8 @@ read.rsk <- function(
     debug <- max(0, min(debug, 2))
     oceDebug(debug, "read.rsk(file=\"", file, "\", from=", format(from),
         ", to=", if (missing(to)) "(not given)" else format(to),
-        ", by=", by,
-        ", type=", if (missing(type)) "(missing)" else type,
-        ", tz=\"", tz, "\", ...) {\n",
+        ", by=", by, ", type=", if (missing(type)) "(missing)" else type,
+        ", tz=\"", tz, "\", ...) START\n",
         sep = "", unindent = 1
     )
     filename <- file
@@ -1147,7 +1145,7 @@ read.rsk <- function(
         }
         res@metadata$pressureAtmospheric <- pressureAtmospheric
         res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep = "", collapse = ""))
-        oceDebug(debug, "} # read.rsk()\n", sep = "", unindent = 1)
+        oceDebug(debug, "END read.rsk()\n", sep = "", unindent = 1)
         return(res)
     } else if (!(missing(type)) && type == "txt") {
         oceDebug("RBR txt format\n")
@@ -1265,7 +1263,7 @@ read.rsk <- function(
         oceDebug(debug, "measurementEnd =", format(measurementEnd), "\n")
         oceDebug(debug, "measurementDeltat  =", measurementDeltat, "\n")
         serialNumber <- strsplit(header[1], "[\t ]+")[[1]][4]
-        oceDebug(debug, "serialNumber=", serialNumber, "\n")
+        oceDebug(debug, "serialNumber =", serialNumber, "\n")
         # Now that we know the logging times, we can work with 'from 'and 'to'
         if (inherits(from, "POSIXt") || inherits(from, "character")) {
             if (!inherits(to, "POSIXt") && !inherits(to, "character")) {
@@ -1295,7 +1293,7 @@ read.rsk <- function(
         pushBack(line, file)
         line <- gsub("[ ]+$", "", gsub("^[ ]+", "", line))
         nvar <- length(strsplit(line, "[ ]+")[[1]])
-        oceDebug(debug, " data line '", line, "' reveals ", nvar, " data per line\n", sep = "")
+        oceDebug(debug, "data line '", line, "' reveals ", nvar, " data per line\n", sep = "")
         d <- scan(file, character(), quiet = TRUE) # read whole file (it's too tricky to bisect times with text data)
         n <- length(d) / nvar
         oceDebug(debug, "file has", length(d), "items; assuming", nvar, "items per line, based on first line\n")
@@ -1370,7 +1368,7 @@ read.rsk <- function(
         processingLog <- paste(deparse(match.call()), sep = "", collapse = "")
     }
     res@processingLog <- processingLogAppend(res@processingLog, processingLog)
-    oceDebug(debug, "} # read.rsk()\n", sep = "", unindent = 1)
+    oceDebug(debug, "END read.rsk()\n", sep = "", unindent = 1)
     res
 }
 
@@ -1417,7 +1415,7 @@ rsk2ctd <- function(
     x, pressureAtmospheric = 0, longitude = NULL, latitude = NULL,
     ship = NULL, cruise = NULL, station = NULL, deploymentType = NULL,
     debug = getOption("oceDebug")) {
-    oceDebug(debug, "rsk2ctd(...) {\n", sep = "", unindent = 1)
+    oceDebug(debug, "rsk2ctd(...) START\n", sep = "", unindent = 1)
     res <- new("ctd")
     res@metadata <- x@metadata
     # The user may have already inserted some metadata, even if read.rsk() didn't, so
@@ -1564,7 +1562,7 @@ rsk2ctd <- function(
             unit = list(unit = expression(), scale = "PSS-78")
         )
     }
-    oceDebug(debug, "} # rsk2ctd()\n", sep = "", unindent = 1)
+    oceDebug(debug, "END rsk2ctd()\n", sep = "", unindent = 1)
     res@processingLog <- processingLogAppend(
         res@processingLog,
         paste("rsk2ctd(..., pressureAtmospheric=", pressureAtmospheric, ", debug)\n",

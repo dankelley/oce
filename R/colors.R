@@ -47,7 +47,7 @@ colormap_colorize <- function(
         "colormap=", if (is.null(colormap)) "(missing)" else colormap, ",",
         "segments=", segments, ",",
         "missingColor=", missingColor,
-        ") { # an internal function\n",
+        ") START\n",
         sep = "", unindent = 1
     )
     if (is.null(colormap)) {
@@ -168,7 +168,7 @@ colormap_colorize <- function(
     }
     res <- list(zlim = zlim, breaks = breaks, col = col, zcol = zcol, missingColor = missingColor)
     class(res) <- c("list", "colormap")
-    oceDebug(debug, "} # colormap_colorize(), an internal function\n", sep = "", unindent = 1)
+    oceDebug(debug, "END colormap_colorize()\n", sep = "", unindent = 1)
     res
 }
 
@@ -250,7 +250,7 @@ colormapGmtNumeric <- function(x0, x1, col0, col1, bpl = 1) {
 #'
 #' @family things related to colors
 colormapGMT <- function(name, debug = getOption("oceDebug")) {
-    oceDebug(debug, "colormapGMT(name=\"", name, "...)\n", sep = "", unindent = 1)
+    oceDebug(debug, "colormapGMT(name=\"", name, "...) START\n", sep = "", unindent = 1)
     if (name %in% colormapNames) {
         oceDebug(debug, "case 1: built-in GMT name\n")
         if (name == "gmt_relief") {
@@ -441,7 +441,7 @@ colormapGMT <- function(name, debug = getOption("oceDebug")) {
     # colbreaks <- colormapGmtNumeric(d$x0, d$x1, d$col0, d$col1)
     res <- list(x0 = d$x0, x1 = d$x1, col0 = col0, col1 = col1, breaks = d$x0, col = col, missingColor = N)
     class(res) <- c("list", "colormap")
-    oceDebug(debug, "} # colormapGMT()\n", sep = "", unindent = 1)
+    oceDebug(debug, "END colormapGMT()\n", sep = "", unindent = 1)
     res
 }
 
@@ -671,8 +671,7 @@ colormap <- function(
     z = NULL, zlim, zclip = FALSE, breaks, col = oceColorsViridis,
     name, x0, x1, col0, col1, blend = 0, missingColor, debug = getOption("oceDebug")) {
     debug <- min(max(0, debug), 1)
-    # oceDebug(debug, gsub(" = [^,)]*", "", deparse(expr=match.call())), " {\n", style="bold", sep="", unindent=1)
-    oceDebug(debug, "colormap(...) {\n", sep = "", style = "bold", unindent = 1)
+    oceDebug(debug, "colormap(...) START\n", sep = "", unindent = 1)
     zKnown <- !is.null(z)
     zlimKnown <- !missing(zlim)
     breaksKnown <- !missing(breaks)
@@ -716,7 +715,7 @@ colormap <- function(
     }
     # Case C: 'name' was given: only 'name' and possibly 'z' are examined.
     if (case == "C") {
-        oceDebug(debug, "Case C: name given\n", style = "bold")
+        oceDebug(debug, "Case C: name given\n")
         for (disallowed in c("zlim", "breaks", "col", "x0", "col0", "x1", "col1", "missingColor")) {
             if (get(paste0(disallowed, "Known"))) {
                 stop("cannot supply '", disallowed, "' since 'name' was supplied (i.e. in Case C)\n")
@@ -729,11 +728,11 @@ colormap <- function(
         if (zKnown) {
             res$zcol <- res$colfunction(z)
         }
-        oceDebug(debug, "} # colormap() case C\n", style = "bold", sep = "", unindent = 1)
+        oceDebug(debug, "END colormap() case C\n", sep = "", unindent = 1)
         return(res)
     } # end of case C
     if (case == "B") { # x0 col0 x1 col1
-        oceDebug(debug, "Case B\n", style = "bold")
+        oceDebug(debug, "Case B\n")
         if (!(x0Known && col0Known && x1Known && col1Known)) {
             stop("'x0', 'col0', 'x1', 'col1' must all be supplied, if any is supplied")
         }
@@ -793,7 +792,7 @@ colormap <- function(
             breaks = breaks, col = col, zcol = zcol
         )
         class(res) <- c("list", "colormap")
-        oceDebug(debug, "} # colormap() case B\n", style = "bold", sep = "", unindent = 1)
+        oceDebug(debug, "END colormap() case B\n", sep = "", unindent = 1)
         return(res)
     } # end of case B
     oceDebug(debug, "case 3: name not given, x0 (and related) not given\n")
@@ -875,18 +874,14 @@ colormap <- function(
     res$zclip <- zclip
     res$colfunction <- function(z) res$col0[findInterval(z, res$x0)]
     class(res) <- c("list", "colormap")
-    oceDebug(debug, "} # colormap() case A\n", style = "bold", sep = "", unindent = 1)
+    oceDebug(debug, "END colormap() case A\n", sep = "", unindent = 1)
     res
 }
 
 # keeping this (which was called 'colormap' until 2014-05-07), but not in NAMESPACE.
 colormap_colormap <- function(name, x0, x1, col0, col1, n = 1, zclip = FALSE, debug = getOption("oceDebug")) {
     nameKnown <- !missing(name)
-    oceDebug(debug, "colormap_colormap(name=",
-        if (nameKnown) paste0("\"", name, "\"") else "(MISSING)",
-        ", ...) {\n",
-        sep = "", unindent = 1
-    )
+    oceDebug(debug, "colormap_colormap(name=", if (nameKnown) paste0("\"", name, "\"") else "(MISSING)", ", ...) START\n", sep = "", unindent = 1)
     if (nameKnown) {
         oceDebug(debug, "name was specified, so using colormapGMT() to compute colormap\n")
         res <- colormapGMT(name, debug = debug - 1)
@@ -936,7 +931,7 @@ colormap_colormap <- function(name, x0, x1, col0, col1, n = 1, zclip = FALSE, de
     }
     res$zclip <- zclip
     class(res) <- c("list", "colormap")
-    oceDebug(debug, "} # colormap_colormap()\n", sep = "", unindent = 1)
+    oceDebug(debug, "END colormap_colormap()\n", sep = "", unindent = 1)
     res
 }
 

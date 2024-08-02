@@ -277,7 +277,8 @@ read.ctd.woce <- function(
         }
     }
     if (is.character(file) && length(grep("\\*", file))) {
-        oceDebug(debug, "read.ctd.woce(file=\"", file, "\") { # will read a series of files\n", unindent = 1)
+        oceDebug(debug, "read.ctd.woce(file=\"", file, "\") START\n", sep = "", unindent = 1)
+        oceDebug(debug, "reading a series of files\n")
         files <- list.files(pattern = file)
         nfiles <- length(files)
         if (monitor) {
@@ -290,11 +291,11 @@ read.ctd.woce <- function(
                 setTxtProgressBar(pb, i)
             }
         }
-        oceDebug(debug, "} # read.ctd.woce() {\n")
+        oceDebug(debug, "END read.ctd.woce()\n")
         return(res)
     }
     # FIXME: should have an argument that selects CTDSAL or SALNTY
-    oceDebug(debug, "read.ctd.woce(file=\"", file, "\", ..., debug=", debug, ", ...) {\n", sep = "", unindent = 1)
+    oceDebug(debug, "read.ctd.woce(file=\"", file, "\", ..., debug=", debug, ", ...) START\n", sep = "", unindent = 1)
     if (is.character(file)) {
         filename <- fullFilename(file)
         file <- file(file, "r", encoding = encoding)
@@ -638,7 +639,7 @@ read.ctd.woce <- function(
     if (waterDepthWarning) {
         res@processingLog <- processingLogAppend(res@processingLog, "inferred water depth from maximum pressure")
     }
-    oceDebug(debug, "} # read.ctd.woce()\n", unindent = 1) # FIXME: use S4 for ctd / woce
+    oceDebug(debug, "END read.ctd.woce()\n", unindent = 1) # FIXME: use S4 for ctd / woce
     # res@metadata$units$pressure <- list(unit=expression(dbar), scale="")
     res@metadata$units <- units
     res@metadata$dataNamesOriginal <- dataNamesOriginal

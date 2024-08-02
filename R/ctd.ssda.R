@@ -29,8 +29,9 @@
 #' @family functions that read ctd data
 #'
 #' @author Dan Kelley, with help from Liam MacNeil
-read.ctd.ssda <- function(file, encoding="latin1", debug=getOption("oceDebug"), processingLog)
-{
+read.ctd.ssda <- function(
+    file, encoding = "latin1",
+    debug = getOption("oceDebug"), processingLog) {
     if (missing(file)) {
         stop("must supply 'file'")
     }
@@ -43,7 +44,7 @@ read.ctd.ssda <- function(file, encoding="latin1", debug=getOption("oceDebug"), 
         }
     }
     debug <- max(0L, as.integer(debug))
-    oceDebug(debug, "read.ctd.ssda(file=\"", file, "\") {\n", sep="", style="bold", unindent=1)
+    oceDebug(debug, "read.ctd.ssda(file=\"", file, "\") START\n", sep = "", unindent = 1)
     if (is.character(file)) {
         filesize <- file.info(file)$size
         if (is.na(filesize) || 0L == filesize) {
@@ -51,7 +52,7 @@ read.ctd.ssda <- function(file, encoding="latin1", debug=getOption("oceDebug"), 
         }
     }
     if (is.character(file)) {
-        file <- file(file, "r", encoding=encoding)
+        file <- file(file, "r", encoding = encoding)
         on.exit(close(file))
     }
     lines <- readLines(file)
@@ -61,8 +62,8 @@ read.ctd.ssda <- function(file, encoding="latin1", debug=getOption("oceDebug"), 
         stop("cannot find 'Lines :' in the data file.")
     }
     # how many lines might there be in between?
-    names <- strsplit(gsub("^;[ ]*", "", lines[dataStart+2L]), "[ ]+")[[1]]
-    #message("next are names:");print(names)
+    names <- strsplit(gsub("^;[ ]*", "", lines[dataStart + 2L]), "[ ]+")[[1]]
+    # message("next are names:");print(names)
     namesOriginal <- names
     # Use standard oce names for some things.
     # (Thanks to Liam MacNeil for pointing these out.)
@@ -80,20 +81,22 @@ read.ctd.ssda <- function(file, encoding="latin1", debug=getOption("oceDebug"), 
     names <- gsub("SALIN", "salinity", names)
     names <- gsub("SIGMA", "sigma", names)
     names <- gsub("Temp.", "temperature", names)
-    d <- read.table(text=lines, skip=dataStart + 4, col.names=names, header=FALSE, encoding=encoding)
+    d <- read.table(text = lines, skip = dataStart + 4, col.names = names, header = FALSE, encoding = encoding)
     # Lon and lat are in an odd system, with e.g. 12.34 meaning 12deg+34minutes.
     lon <- as.numeric(d$longitude[1])
     londeg <- floor(lon / 100)
-    lonmin <- lon - londeg*100
+    lonmin <- lon - londeg * 100
     longitude <- londeg + lonmin / 60.0
     oceDebug(debug, "lon=", lon, " deg=", londeg, " min=", lonmin, " -> longitude=", longitude, "\n")
     lat <- as.numeric(gsub("N", "", d$latitude[1]))
     latdeg <- floor(lat / 100)
-    latmin <- lat - latdeg*100
+    latmin <- lat - latdeg * 100
     latitude <- latdeg + latmin / 60.0
     oceDebug(debug, "lat=", lat, " deg=", latdeg, " min=", latmin, " -> latitude=", latitude, "\n")
-    res <- as.ctd(salinity=d$salinity, temperature=d$temperature, pressure=d$pressure,
-        longitude=longitude, latitude=latitude)
+    res <- as.ctd(
+        salinity = d$salinity, temperature = d$temperature, pressure = d$pressure,
+        longitude = longitude, latitude = latitude
+    )
     # Save header and original names
     res@metadata$header <- header
     dno <- list()
@@ -104,13 +107,13 @@ read.ctd.ssda <- function(file, encoding="latin1", debug=getOption("oceDebug"), 
     # Now add in non-standard data
     for (n in names(d)) {
         if (!n %in% c(c("salinity", "pressure", "temperature", "latitude", "longitude"))) {
-            res <- oceSetData(res, n, d[[n]], note=NULL)
+            res <- oceSetData(res, n, d[[n]], note = NULL)
         }
     }
     # Add in time, removing the components (which serve no purpose)
     if (all(c("IntDT", "IntDT.1") %in% names(d))) {
-        time <- as.POSIXct(paste(d$IntDT, d$IntDT.1), "%d.%m.%Y %H:%M:%S", tz="UTC")
-        res <- oceSetData(res, "time", time, note=NULL)
+        time <- as.POSIXct(paste(d$IntDT, d$IntDT.1), "%d.%m.%Y %H:%M:%S", tz = "UTC")
+        res <- oceSetData(res, "time", time, note = NULL)
         res@data$IntDT <- NULL
         res@data$IntDT.1 <- NULL
     }
@@ -118,28 +121,30 @@ read.ctd.ssda <- function(file, encoding="latin1", debug=getOption("oceDebug"), 
     if ("oxygenVoltage" %in% names(res@data)) {
         # file has in mV but oce uses V
         res@data$oxygenVoltage <- 0.001 * res@data$oxygenVoltage
-        res@metadata$units$oxygenVoltage <- list(unit=expression(V), scale="")
+        res@metadata$units$oxygenVoltage <- list(unit = expression(V), scale = "")
     }
     if ("oxygenSaturation" %in% names(res@data)) {
-        res@metadata$units$oxygenSaturation<- list(unit=expression(percent), scale="")
+        res@metadata$units$oxygenSaturation <- list(unit = expression(percent), scale = "")
     }
     if ("oxygenMg" %in% names(res@data)) {
-        res@metadata$units$oxygenMg <- list(unit=expression(mg/L), scale="")
+        res@metadata$units$oxygenMg <- list(unit = expression(mg / L), scale = "")
     }
     if ("oxygenMl" %in% names(res@data)) {
-        res@metadata$units$oxygenMl <- list(unit=expression(mL/L), scale="")
+        res@metadata$units$oxygenMl <- list(unit = expression(mL / L), scale = "")
     }
     if ("conductivity" %in% names(res@data)) {
-        res@metadata$units$conductivity <- list(unit=expression(mS/cm), scale="")
+        res@metadata$units$conductivity <- list(unit = expression(mS / cm), scale = "")
     }
     if ("sigma" %in% names(res@data)) {
-        res@metadata$units$sigma <- list(unit=expression(kg/m^3), scale="")
+        res@metadata$units$sigma <- list(unit = expression(kg / m^3), scale = "")
     }
     if ("PAR" %in% names(res@data)) {
-        res@metadata$units$PAR <- list(unit=expression(pffr), scale="")
+        res@metadata$units$PAR <- list(unit = expression(pffr), scale = "")
     }
-    res@processingLog <- processingLogAppend(res@processingLog,
-        paste(deparse(match.call()), sep="", collapse=""))
-    oceDebug(debug, "} # read.ctd.ssda()\n", sep="", style="bold", unindent=1)
+    res@processingLog <- processingLogAppend(
+        res@processingLog,
+        paste(deparse(match.call()), sep = "", collapse = "")
+    )
+    oceDebug(debug, "END read.ctd.ssda()\n", sep = "", unindent = 1)
     res
 }

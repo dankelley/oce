@@ -7,23 +7,20 @@
 mapLongitudeLatitudeXY(longitude, latitude)
 }
 \arguments{
-\item{longitude}{numeric vector of the longitudes of points, or an object from which
-both latitude and longitude can be inferred (e.g. a coastline file, or the
-return value from \code{\link[=mapLocator]{mapLocator()}}), in which case the following
-two arguments are ignored.}
+\item{longitude}{numeric vector of the longitudes of points, or an
+object from which both latitude and longitude can be inferred (e.g.
+a coastline file, or the return value from \code{\link[=mapLocator]{mapLocator()}}), in
+which case the following two arguments are ignored.}
 
-\item{latitude}{numeric vector of latitudes of points, needed only if they cannot
-be inferred from the first argument.}
+\item{latitude}{numeric vector of latitudes of points, needed only
+if they cannot be inferred from the first argument.}
 }
 \value{
 A list containing \code{x} and \code{y}.
 }
 \description{
 Find (x, y) values corresponding to (longitude, latitude) values, using the
-present projection.
-}
-\details{
-This is mainly a wrapper around \code{\link[=lonlat2map]{lonlat2map()}}.
+present projection. This is mainly a wrapper around \code{\link[=lonlat2map]{lonlat2map()}}.
 }
 \examples{
 \donttest{
@@ -60,6 +57,7 @@ Other functions related to maps:
 \code{\link{mapText}()},
 \code{\link{mapTissot}()},
 \code{\link{oceCRS}()},
+\code{\link{oceProject}()},
 \code{\link{shiftLongitude}()},
 \code{\link{usrLonLat}()},
 \code{\link{utm2lonlat}()}

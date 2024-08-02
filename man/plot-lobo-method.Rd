@@ -81,8 +81,8 @@ Other things related to lobo data:
 \code{\link{[[,lobo-method}},
 \code{\link{[[<-,lobo-method}},
 \code{\link{as.lobo}()},
-\code{\link{lobo-class}},
 \code{\link{lobo}},
+\code{\link{lobo-class}},
 \code{\link{read.lobo}()},
 \code{\link{subset,lobo-method}},
 \code{\link{summary,lobo-method}}

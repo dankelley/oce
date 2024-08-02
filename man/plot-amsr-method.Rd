@@ -13,6 +13,7 @@
   col,
   colormap,
   zlim,
+  zlab,
   missingColor,
   debug = getOption("oceDebug"),
   ...
@@ -21,40 +22,46 @@
 \arguments{
 \item{x}{an \linkS4class{amsr} object.}
 
-\item{y}{character value indicating the name of the band to plot; if not provided,
-\code{SST} is used; see the documentation for the \linkS4class{amsr} class for a list of bands.}
+\item{y}{character value indicating the name of the band to plot;
+if not provided, \code{SST} (or a variant thereof) is used; see the
+documentation for the \linkS4class{amsr} class for a list of bands.}
 
 \item{asp}{optional numerical value giving the aspect ratio for plot.  The
 default value, \code{NULL}, means to use an aspect ratio of 1 for world views,
 and a value computed from \code{ylim}, if the latter is specified in the
 \code{...} argument.}
 
-\item{breaks}{optional numeric vector of the z values for breaks in the color scheme.
-If \code{colormap} is provided, it takes precedence over \code{breaks} and \code{col}.}
+\item{breaks}{optional numeric vector of the z values for breaks in
+the color scheme. If \code{colormap} is provided, it takes precedence
+over \code{breaks} and \code{col}.}
 
-\item{col}{optional argument, either a vector of colors corresponding to the breaks, of length
-1 less than the number of breaks, or a function specifying colors.
-If neither \code{col} or \code{colormap} is provided, then \code{col} defaults to
-\code{\link[=oceColorsTemperature]{oceColorsTemperature()}}.
-If \code{colormap} is provided, it takes precedence over \code{breaks} and \code{col}.}
+\item{col}{optional argument, either a vector of colors
+corresponding to the breaks, of length 1 less than the number of
+breaks, or a function specifying colors. If neither \code{col} or
+\code{colormap} is provided, then \code{col} defaults to
+\code{\link[=oceColorsTemperature]{oceColorsTemperature()}}. If \code{colormap} is provided, it takes
+precedence over \code{breaks} and \code{col}.}
 
 \item{colormap}{a specification of the colormap to use, as created
-with \code{\link[=colormap]{colormap()}}.  If \code{colormap} is NULL, which is the default, then
-a colormap is created to cover the range of data values, using
-\link{oceColorsTemperature} color scheme.
-If \code{colormap} is provided, it takes precedence over \code{breaks} and \code{col}.
-See \dQuote{Examples} for an example of using the "turbo" color scheme.}
+with \code{\link[=colormap]{colormap()}}.  If \code{colormap} is NULL, which is the default,
+then a colormap is created to cover the range of data values, using
+\link{oceColorsTemperature} color scheme. If \code{colormap} is provided, it
+takes precedence over \code{breaks} and \code{col}. See \dQuote{Examples} for
+an example of using the "turbo" color scheme.}
 
 \item{zlim}{optional numeric vector of length 2, giving the limits
 of the plotted quantity.  A reasonable default is computed, if this
 is not given.}
 
+\item{zlab}{optional character value that is shown in the top-right
+margin of the plot. If not given, this defaults to the name of the
+plotted variable.}
+
 \item{missingColor}{optional list specifying colors to use for
-non-data categories.  If not provided, a default is used.  For
-type 1, that default is
-\code{list(land="papayaWhip", none="lightGray", bad="gray", rain="plum", ice="mediumVioletRed")}.  For type 2, it is
-\code{list(coast="gray", land="papayaWhip", noObs="lightGray", seaIce="mediumVioletRed")}.  Any colors may be used in place of these,
-but the names must match, and all names must be present.}
+non-data categories.  If not provided, a default is used.  For type
+1, that default is \code{list(land="papayaWhip", none="lightGray", bad="gray", rain="plum", ice="mediumVioletRed")}.  For type 2, it
+is \code{list(coast="gray", land="papayaWhip", noObs="lightGray", seaIce="mediumVioletRed")}.  Any colors may be used in place of
+these, but the names must match, and all names must be present.}
 
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
@@ -93,8 +100,8 @@ lines(coastlineWorld[["longitude"]], coastlineWorld[["latitude"]])
 Other things related to amsr data: 
 \code{\link{[[,amsr-method}},
 \code{\link{[[<-,amsr-method}},
-\code{\link{amsr-class}},
 \code{\link{amsr}},
+\code{\link{amsr-class}},
 \code{\link{composite,amsr-method}},
 \code{\link{download.amsr}()},
 \code{\link{read.amsr}()},

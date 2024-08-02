@@ -35,7 +35,7 @@ angleShift <- function(angle) {
 # Change some projection names, and fix problem with ortho (which lacks full inverse coverage
 # unless a spherical earth is used).
 repairProjection <- function(projection, longlatProj, debug = getOption("oceDebug")) {
-    oceDebug(debug, "repairProjection(projection=\"", projection, "\", longlatProj=\"", longlatProj, "\"\n", sep = "", unindent = 1)
+    oceDebug(debug, "repairProjection(projection=\"", projection, "\", longlatProj=\"", longlatProj, "\") START\n", sep = "", unindent = 1)
     if (grepl("latlon( |$)", projection)) {
         warning("converting old name 'latlon' to new name 'latlong'\n")
         projection <- gsub("latlon", "latlong", projection)
@@ -68,7 +68,7 @@ repairProjection <- function(projection, longlatProj, debug = getOption("oceDebu
             }
         }
     }
-    oceDebug(debug, "} #repairProjection()\n", sep = "", unindent = 1)
+    oceDebug(debug, "END repairProjection()\n", sep = "", unindent = 1)
     list(projection = projection, longlatProj = longlatProj)
 }
 
@@ -80,28 +80,33 @@ repairProjection <- function(projection, longlatProj, debug = getOption("oceDebu
 #' after a year of tests ensuring that the results of the two packages were
 #' the same.)
 #'
-#' @param xy two-column numeric matrix specifying locations.  If `inv` is False, then `xy[,1]` will hold
-#' longitude and `xy[,2]` will hold latitude, but if `inv` is True, then the columns will be easting
+#' @param xy two-column numeric matrix specifying locations.  If `inv`
+#' is False, then `xy[,1]` will hold longitude and `xy[,2]` will hold
+#' latitude, but if `inv` is True, then the columns will be easting
 #' and northing values (in metres).
 #'
-#' @param proj a character value specifying the desired map projection.  See
-#' the `projection` parameter of [mapPlot()] for details, including a
-#' historical note dated 2023-04-11 about the now-deprecated `sp` package.
+#' @param proj a character value specifying the desired map
+#' projection.  See the `projection` parameter of [mapPlot()] for
+#' details, including a historical note dated 2023-04-11 about the
+#' now-deprecated `sp` package.
 #'
-#' @param inv logical value, False by default, indicating whether an inverse projection is requested.
-#'
-# @param use_ob_tran,legacy,passNA ignored in oce 1.0.3, and will be disallowed in oce 1.0.4.
+#' @param inv logical value, False by default, indicating whether an
+#' inverse projection is requested.
 #'
 #' @template debugTemplate
 #'
-#' @return A two-column matrix, with first column holding either
-#' `longitude` or `x`, and second column holding either
+#' @return `oceProject` returns a two-column matrix, with first column
+#' holding either `longitude` or `x`, and second column holding either
 #' `latitude` or `y`.
+#'
+#' @family functions related to maps
+#'
+#' @author Dan Kelley
 oceProject <- function(xy, proj, inv = FALSE, debug = getOption("oceDebug")) {
     if (!requireNamespace("sf", quietly = TRUE)) {
         stop("must install.packages(\"sf\") to do map projections")
     }
-    oceDebug(debug, "oceProject(xy, proj=\"", proj, "\", inv=", inv, ", ...) {\n", sep = "", unindent = 1, style = "bold")
+    oceDebug(debug, "oceProject(xy, proj=\"", proj, "\", inv=", inv, ", ...) START\n", sep = "", unindent = 1)
     repairedProjection <- repairProjection(proj, longlatProjInitial, debug = debug)
     proj <- repairedProjection$projection
     longlatProj <- repairedProjection$longlatProj
@@ -150,7 +155,7 @@ oceProject <- function(xy, proj, inv = FALSE, debug = getOption("oceDebug")) {
     }
     XY[na, ] <- NA
     options(warn = owarn)
-    oceDebug(debug, "} # oceProject\n", sep = "", unindent = 1, style = "bold")
+    oceDebug(debug, "END oceProject\n", sep = "", unindent = 1)
     XY
 }
 
@@ -158,29 +163,29 @@ oceProject <- function(xy, proj, inv = FALSE, debug = getOption("oceDebug")) {
 #' Calculate Geographic Coordinates of Plot Box
 #'
 #' Trace along the plot box, converting from xy coordinates to lonlat
-#' coordinates. The results are used by [mapGrid()]
-#' and [mapAxis()] to ignore out-of-frame grid
-#' lines and axis labels.
+#' coordinates. The results are used by [mapGrid()] and [mapAxis()] to
+#' ignore out-of-frame grid lines and axis labels.
 #'
 #' Some projections, such as `"wintri"`, have trouble inverting
 #' points that are "off the globe".  In such cases,
 #' the returned value has `lonmin`, `lonmax`, `latmin` and
 #' `latmax` set to `NA`, and `ok` set to `FALSE`.
 #'
-#' @param n number of points to check along each side of the plot box
+#' @param n number of points to check along each side of the plot box.
+#'
 #' @template debugTemplate
 #'
-#' @return A list containing numerical
-#' values `lonmin`, `lonmax`, `latmin`, and `latmax`, along
-#' with logical value `ok`. The last of these indicates
-#' whether at least one point on the plot box is invertible.
-#' Note that longitudes are in the range from -180 to 180 degrees.
-#'
-#' @author Dan Kelley
+#' @return `usrLonLat` returns a list containing numerical values
+#' `lonmin`, `lonmax`, `latmin`, and `latmax`, along with logical
+#' value `ok`. The last of these indicates whether at least one point
+#' on the plot box is invertible. Note that longitudes are in the
+#' range from -180 to 180 degrees.
 #'
 #' @family functions related to maps
+#'
+#' @author Dan Kelley
 usrLonLat <- function(n = 25, debug = getOption("oceDebug")) {
-    oceDebug(debug, "usrLonLat(n=", n, ", debug=", debug, ") {\n", unindent = 1, sep = "", style = "bold")
+    oceDebug(debug, "usrLonLat(n=", n, ", debug=", debug, ") START\n", unindent = 1, sep = "")
     usr <- par("usr")
     oceDebug(debug, "usr=", paste(usr, collapse = " "), "\n", sep = "")
     if (length(grep("wintri", .Projection()$projection))) {
@@ -246,7 +251,7 @@ usrLonLat <- function(n = 25, debug = getOption("oceDebug")) {
         lonmin, lonmax, latmin, latmax
     ))
     oceDebug(debug, "nok=", nok, ", n=", n, ", nok/n=", nok / n, "\n")
-    oceDebug(debug, "} # usrLonLat()\n", unindent = 1, style = "bold")
+    oceDebug(debug, "END usrLonLat()\n", unindent = 1)
     rval <- list(
         lonmin = lonmin, lonmax = lonmax, latmin = latmin, latmax = latmax,
         ok = nok / n > 0.5 && is.finite(lonmin) && is.finite(lonmax) && is.finite(latmin) && is.finite(latmax)
@@ -257,8 +262,7 @@ usrLonLat <- function(n = 25, debug = getOption("oceDebug")) {
 #' Coordinate Reference System Strings for Some Oceans
 #'
 #' Create a coordinate reference string (CRS), suitable for use as a
-#' `projection` argument to [mapPlot()] or
-#' [plot,coastline-method()].
+#' `projection` argument to [mapPlot()] or [plot,coastline-method()].
 #'
 #' @section Caution: This is a preliminary version of this function,
 #' with the results being very likely to change through the autumn of 2016,
@@ -273,10 +277,6 @@ usrLonLat <- function(n = 25, debug = getOption("oceDebug")) {
 #'
 #' @return string contain a CRS, which can be used as `projection`
 #' in [mapPlot()].
-#'
-#' @author Dan Kelley
-#'
-#' @family functions related to maps
 #'
 #' @examples
 #' \donttest{
@@ -295,6 +295,10 @@ usrLonLat <- function(n = 25, debug = getOption("oceDebug")) {
 #' plot(pacific, proj = oceCRS("North Pacific"), span = 12000, col = NULL)
 #' plot(pacific, proj = oceCRS("South Pacific"), span = 12000, col = NULL)
 #' }
+#'
+#' @family functions related to maps
+#'
+#' @author Dan Kelley
 oceCRS <- function(region) {
     regionChoices <- c(
         "North Atlantic", "South Atlantic", "Atlantic", "Arctic", "Antarctic",
@@ -340,6 +344,8 @@ oceCRS <- function(region) {
 #' @seealso [matrixShiftLongitude()] and [standardizeLongitude()].
 #'
 #' @family functions related to maps
+#'
+#' @author Dan Kelley
 shiftLongitude <- function(longitudes) {
     if (any(longitudes > 180)) longitudes - 360 else longitudes
 }
@@ -554,12 +560,11 @@ badFillFix2 <- function(x, y, xorig, yorig) {
 #' mapAxis(axisStyle = 5)
 #' }
 #'
-#' @author Dan Kelley
-#'
 #' @seealso A map must first have been created with [mapPlot()].
 #'
 #' @family functions related to maps
-# DEK: the neovim indenter messes up the next 4 lines.  I don't know why.
+#'
+#' @author Dan Kelley
 mapAxis <- function(
     side = 1:2, longitude = TRUE, latitude = TRUE,
     axisStyle = 1, tick = TRUE, line = NA, pos = NA, outer = FALSE, font = NA,
@@ -572,7 +577,7 @@ mapAxis <- function(
         ", longitude=", if (length(longitude)) c(longitude[1], "...") else "NULL",
         ", latitude=", if (length(latitude)) c(latitude[1], "...") else "NULL",
         ", axisStyle=", axisStyle,
-        ") { \n",
+        ") START\n",
         unindent = 1, sep = ""
     )
     if (length(axisStyle) != 1) {
@@ -675,24 +680,34 @@ mapAxis <- function(
     if (4 %in% side) {
         oceDebug(debug, "drawing axis on side 4 NOT CODED YET\n")
     }
-    oceDebug(debug, "} # mapAxis()\n", sep = "", unindent = 1, style = "bold")
+    oceDebug(debug, "END mapAxis()\n", sep = "", unindent = 1)
 }
 
 
 #' Add Contours on a Existing map
 #'
-#' Plot contours on an existing map.
+#' Draw contour lines to an existing map, using [mapLines()].
+#' Note that label placement in `mapContour` is handled differently
+#' than in [contour()].
 #'
-#' @param longitude numeric vector of longitudes of points to be plotted, or an object of
-#' class `topo` (see [topo-class]), in which case
-#' `longitude`, `latitude` and `z` are inferred from that object.
+#' @param longitude numeric vector of longitudes of points to be
+#' plotted, or an object of class `topo` (see [topo-class]), in which
+#' case `longitude`, `latitude` and `z` are inferred from that object.
+#' Importantly, the `longitude` system must match that of the
+#' [mapPlot()] call that made the underlying plot. If not, the
+#' contours can have spurious lines that run across the plot. See
+#' \sQuote{Dealing with longitude conventions} for a method
+#' of handling conflicting longitude conventions between [mapPlot()]
+#' and [mapContour()].
 #'
 #' @param latitude numeric vector of latitudes of points to be plotted.
 #'
-#' @param z matrix to be contoured. The number of rows and columns in `z`
-#' must equal the lengths of `longitude` and `latitude`, respectively.
+#' @param z matrix to be contoured. The number of rows and columns in
+#' `z` must equal the lengths of `longitude` and `latitude`,
+#' respectively.
 #'
-#' @param nlevels number of contour levels, if and only if `levels` is not supplied.
+#' @param nlevels number of contour levels, if and only if `levels` is
+#' not supplied.
 #'
 #' @param levels vector of contour levels.
 #'
@@ -700,25 +715,25 @@ mapAxis <- function(
 #' [contour()], this is an absolute size, not a multiple of
 #' [`par`]`("cex")`.
 #'
-#' @param drawlabels logical value or vector indicating whether to draw contour
-#' labels.  If the length of `drawlabels` is less than the number of
-#' levels specified, then [rep()] is used to increase the length,
-#' providing a value for each contour line. For those levels that are thus
-#' indicated, labels are added, at a spot where the contour line is
-#' closest to horizontal on the page. First, though, the region underneath
-#' the label is filled with the colour given by [`par`]`("bg")`.
-#' See \dQuote{Limitations} for notes on the status of contour
-#' labelling, and its limitations.
+#' @param drawlabels logical value or vector indicating whether to
+#' draw contour labels.  If the length of `drawlabels` is less than
+#' the number of levels specified, then [rep()] is used to increase
+#' the length, providing a value for each contour line. For those
+#' levels that are thus indicated, labels are added, at a spot where
+#' the contour line is closest to horizontal on the page. First,
+#' though, the region underneath the label is filled with the colour
+#' given by [`par`]`("bg")`. See \dQuote{Limitations} for notes on the
+#' status of contour labelling, and its limitations.
 #'
 #' @param underlay character value relating to handling labels. If
 #' this equals `"erase"` (which is the default), then the contour line
-#' is drawn  first, then the area under the label is erased (filled with
-#' white 'ink'), and then the label is drawn. This can be useful
-#' in drawing coarsely-spaced labelled contours on top of finely-spaced
-#' unlabelled contours. On the other hand, if `underlay` equals
-#' `"interrupt"`, then the contour line is interrupted in the
-#' region of the label, which is closer to the scheme used by the
-#' base [contour()] function.
+#' is drawn  first, then the area under the label is erased (filled
+#' with white 'ink'), and then the label is drawn. This can be useful
+#' in drawing coarsely-spaced labelled contours on top of
+#' finely-spaced unlabelled contours. On the other hand, if `underlay`
+#' equals `"interrupt"`, then the contour line is interrupted in the
+#' region of the label, which is closer to the scheme used by the base
+#' [contour()] function.
 #'
 #' @param col colour of the contour line, as for [`par`]`("col")`,
 #' except here `col` gets lengthened by calling [rep()],
@@ -732,24 +747,30 @@ mapAxis <- function(
 #'
 #' @template debugTemplate
 #'
-#' @details
-#' Adds contour lines to an existing map, using [mapLines()].
-#'
-#' The ability to label the contours was added in February, 2019, and
-#' how this works may change through the summer months of that year.
-#' Note that label placement in `mapContour` is handled differently
-#' than in [contour()].
-#'
 #' @section Sample of Usage:
 #' \preformatted{
 #' library(oce)
 #' data(coastlineWorld)
 #' if (requireNamespace("ocedata", quietly=TRUE)) {
-#'     data(levitus, package="ocedata")
-#'     par(mar=rep(1, 4))
-#'     mapPlot(coastlineWorld, projection="+proj=robin", col="lightgray")
-#'     mapContour(levitus[["longitude"]], levitus[["latitude"]], levitus[["SST"]])
+#'     data(levitus, package = "ocedata")
+#'     par(mar = rep(1, 4))
+#'     mapPlot(coastlineWorld, projection = "+proj=robin", col = "lightgray")
+#'     mapContour(levitus$longitude, levitus$latitude, levitus$SST)
 #' }
+#' }
+#'
+#' @section Dealing with longitude conventions:
+#'
+#' Suppose a map has been plotted using longitudes that are bound between -180
+#' and 180. To overlay contours defined with longitude bound between 0 and 360
+#' (as for the built-in `coastlineWorld` dataset), try Clark Richards' method
+#' (<https://github.com/dankelley/oce/issues/2217>, as below.
+#'
+#' \preformatted{
+#' # Start with z=z(lon,lat), with lon bound by 0 and 360
+#' z2 <- rbind(z[lon > 180, ], z[lon <= 180, ])
+#' lon2 <- lon + 180
+#' mapContour(lon2, lat, z2)
 #' }
 #'
 #' @seealso A map must first have been created with [mapPlot()].
@@ -770,13 +791,18 @@ mapContour <- function(
     # axes=TRUE, frame.plot=axes,
     col = par("fg"), lty = par("lty"), lwd = par("lwd"),
     debug = getOption("oceDebug")) {
-    oceDebug(debug, "mapContour() {\n", sep = "", unindent = 1, style = "bold")
+    oceDebug(debug, "mapContour(..., labcex=", labcex, ", drawlabels=", drawlabels,
+        ", ...) START\n",
+        sep = "", unindent = 1
+    )
     if ("none" == .Projection()$type) {
         stop("must create a map first, with mapPlot()\n")
     }
     if (missing(longitude)) {
         stop("must supply longitude")
     }
+    oceDebug(debug, vectorShow(nlevels))
+    oceDebug(debug, vectorShow(levels))
     if ("data" %in% slotNames(longitude) && # handle e.g. 'topo' class
         3 == sum(c("longitude", "latitude", "z") %in% names(longitude@data))) {
         z <- longitude@data$z
@@ -786,7 +812,7 @@ mapContour <- function(
     if (missing(latitude)) {
         stop("must supply latitude")
     }
-    if (missing(z)) {
+    if (missing(z) || length(z) < 1) {
         stop("must supply z")
     }
     if (!underlay %in% c("erase", "interrupt")) {
@@ -821,10 +847,10 @@ mapContour <- function(
     }
     colUnderLabel <- "white" # use a variable in case we want to add as an arg
     for (ilevel in 1:nlevels) {
-        oceDebug(debug, "contouring at level ", levels[ilevel], "\n")
+        oceDebug(debug, "contouring at level[", ilevel, "] = ", levels[ilevel], "\n", sep = "")
         label <- as.character(levels[ilevel]) # ignored unless drawlabels=TRUE
-        w <- 1.0 * strwidth(levels[ilevel], "user", cex = labcex) # ignored unless drawlabels=TRUE
-        h <- 1.0 * strheight(label, "user", cex = labcex) # ignored unless drawlabels=TRUE
+        w <- 1.0 * strwidth(levels[ilevel], "user", cex = labcex[1]) # ignored unless drawlabels=TRUE
+        h <- 1.0 * strheight(label, "user", cex = labcex[1]) # ignored unless drawlabels=TRUE
         oceDebug(debug > 1, "w=", w, ", h=", h, "\n")
         cl <- contourLines(
             x = longitude[xx],
@@ -930,7 +956,7 @@ mapContour <- function(
             }
         }
     }
-    oceDebug(debug, "} # mapContour()\n", sep = "", unindent = 1, style = "bold")
+    oceDebug(debug, "END mapContour()\n", sep = "", unindent = 1)
 }
 
 #' Draw a Coordinate System
@@ -948,7 +974,8 @@ mapContour <- function(
 #'
 #' @param L axis length in km.
 #'
-#' @param phi angle, in degrees counterclockwise, that the "x" axis makes to a line of latitude.
+#' @param phi angle, in degrees counterclockwise, that the "x" axis
+#' makes to a line of latitude.
 #'
 #' @param ... plotting arguments, passed to [mapArrows()];
 #' see \dQuote{Examples} for how to control the arrow-head size.
@@ -992,114 +1019,423 @@ mapCoordinateSystem <- function(longitude, latitude, L = 100, phi = 0, ...) {
     mapArrows(longitude, latitude, lonend[2], latend[2], ...)
 }
 
+
+# support for mapDrawDirectionField(): vectorized feather computation
+feathers <- function(u, step = 10, debug = 0) {
+    if (debug) message("initially u=", paste(u, collapse = " "))
+    fac <- 5 * step
+    pennant <- floor(u / fac)
+    if (debug) print(pennant)
+    u <- u - fac * pennant
+    u <- ifelse(u < 0, 0, u)
+    if (debug) message("after pennant, u=", paste(u, collapse = " "))
+    fac <- step
+    barb <- floor(u / fac)
+    u <- u - fac * barb
+    u <- ifelse(u < 0, 0, u)
+    if (debug) print(barb)
+    u <- ifelse(u < 0, 0, u)
+    if (debug) message("after barb, u=", paste(u, collapse = " "))
+    fac <- step / 2
+    demibarb <- floor(u / fac)
+    cbind(pennant, barb, demibarb)
+}
+
+# support for mapDrawDirectionField(): draw wind barbs
+windBarbs <- function(longitude, latitude, u, v,
+                      scale = 5, length = 0.2, step = 10, lwd = 1, col = 1,
+                      round10 = FALSE, debug = FALSE) {
+    scaleXY <- scale * 111e3 # per metre
+    lon0 <- longitude
+    lat0 <- latitude
+    theta <- 180 / pi * atan2(v, u)
+    # By default, not rounding to nearest 10deg, which I've seen suggested,
+    # but which seems way too coarse, to my mind.
+    if (round10) {
+        theta <- 10 * round(theta / 10)
+    }
+    S <- sinpi(theta / 180)
+    C <- cospi(theta / 180)
+    lat1 <- lat0 - S * scale
+    lon1 <- lon0 - C * scale / cospi(lat0 / 180)
+    xy0 <- lonlat2map(as.vector(lon0), as.vector(lat0))
+    x0 <- xy0$x
+    y0 <- xy0$y
+    xy1 <- lonlat2map(as.vector(lon1), as.vector(lat1))
+    x1 <- xy1$x
+    y1 <- xy1$y
+    thetaPage <- 180 / pi * atan2(y1 - y0, x1 - x0)
+    phi <- 70 # degrees to rotate barbs (70 by eye)
+    barbLwd <- lwd
+    barbCol <- col
+    flagCol <- col
+    D <- length
+    barbLength <- D * scaleXY
+    triangleWidth <- 2 * barbLength * cospi(phi / 180)
+    triangleLength <- 0.5 * triangleWidth / cospi(phi / 180) # or sin?
+    barbSpace <- barbLength * cospi(phi / 180)
+    ds <- D * cospi(phi / 180)
+    if (debug) {
+        cat(sprintf(
+            "scale: %.4f, barbLength: %.4f, barbSpace: %.4f, triangleWidth: %.4f\ntriangleLength: %.4f\n",
+            scale, barbLength, barbSpace, triangleWidth, triangleLength
+        ))
+    }
+    knots <- TRUE
+    speed <- sqrt(u^2 + v^2)
+    speedOrig <- speed
+    speed <- speedOrig * if (knots) 1 else 1.94384 # FIXME: factor likely wrong
+    speed <- 5L * as.integer(round(speed / 5))
+    Spage <- sinpi(thetaPage / 180)
+    Cpage <- cospi(thetaPage / 180)
+    if (debug) {
+        cat(sprintf("  lat0=%.1f lat1=%.1f\n", lat0, lat1))
+        cat(sprintf("  lon0=%.1f lon1=%.1f\n", lon0, lon1))
+        cat(sprintf(
+            "  theta=%.0f thetaPage=%.0f Spage=%.0f Cpage=%.0f scaleXY=%.0f\n",
+            theta, thetaPage, Spage, Cpage, scaleXY
+        ))
+    }
+    x1 <- x0 + scaleXY * Cpage
+    y1 <- y0 + scaleXY * Spage
+    notStill <- speed != 0
+    # points(x0[notStill], y0[notStill])
+    segments(x0[notStill], y0[notStill], x1[notStill], y1[notStill], col = barbCol, lwd = barbLwd)
+    f <- feathers(speed, step = step, debug = debug)
+    angleBarb <- thetaPage - phi
+    for (i in seq_along(x0)) {
+        fi <- f[i, ]
+        j <- sum(fi)
+        code <- c(rep(1, fi[["pennant"]]), rep(2, fi[["barb"]]), rep(3, fi[["demibarb"]]))
+        lowestNonzero <- identical(as.numeric(fi), c(0, 0, 1))
+        stagnant <- speedOrig[i] == 0
+        verySlow <- speedOrig[i] < 2.5
+        if (debug) {
+            cat(sprintf(
+                "i=%d, speed=%.2f, theta=%.2f, thetaPage=%.2f, f=%s, verySlow %s, lowestNonzero=%s\n",
+                i, speed[i], theta[i], thetaPage[i], paste(f[i, ], collapse = " "),
+                if (verySlow) "TRUE" else "FALSE",
+                if (lowestNonzero) "TRUE" else "FALSE"
+            ))
+            if (debug) {
+                text(x0[i], y0[i], round(speedOrig[i], 1), pos = 1, cex = 0.7, col = 2, font = 2)
+            }
+        }
+        if (stagnant) {
+            points(x0[i], y0[i], col = barbCol, cex = 0.5)
+        } else if (verySlow) {
+            segments(x0[i], y0[i], x1[i], y1[i], col = barbCol, lwd = barbLwd)
+        } else {
+            lastCode <- 0 # used to nudge triangles together
+            BLC <- barbLength * cospi(angleBarb[i] / 180)
+            BLS <- barbLength * sinpi(angleBarb[i] / 180)
+            s <- 1 # position of next item (0 at x0, 1 at x1)
+            for (jj in seq_len(j)) {
+                thisCode <- code[jj]
+                x0i <- x0[i]
+                y0i <- y0[i]
+                x1i <- x1[i]
+                y1i <- y1[i]
+                delta <- if (thisCode == 1) 2 else if (thisCode == 2) 1.0 else if (thisCode == 3) 0.6
+                if (debug) {
+                    cat(sprintf(
+                        "  jj: %d, code: %d, lastCode:%d, delta: %.3f",
+                        jj, code[jj], lastCode, delta
+                    ))
+                }
+                if (thisCode == 1) { # triangle
+                    if (debug) {
+                        cat("drawing with thisCode=", thisCode, "\n")
+                        cat(sprintf(
+                            "theta=%.4f, thetaPage=%.4f, barbSpace=%.4f, barbLength=%.4f, triangleLength=%.4f, triangleWidth=%.4f\n",
+                            theta[i], thetaPage[i],
+                            barbSpace,
+                            barbLength,
+                            triangleLength,
+                            triangleWidth
+                        ))
+                    }
+                    if (lastCode == 1) { # nudge triangles together
+                        s <- s + ds
+                    }
+                    x <- x0i + s * (x1i - x0i)
+                    y <- y0i + s * (y1i - y0i)
+                    xt <- x + c(
+                        0,
+                        -triangleLength * cospi((phi + thetaPage[i]) / 180),
+                        -triangleWidth * cospi(thetaPage[i] / 180)
+                    )
+                    yt <- y + c(
+                        0,
+                        -triangleLength * sinpi((phi + thetaPage[i]) / 180),
+                        -triangleWidth * sinpi(thetaPage[i] / 180)
+                    )
+                    if (debug) {
+                        cat(
+                            sprintf(
+                                "delta=%.3f s=%.3f thetaPage=%.3f scale=%.3f triangleWidth=%.4f triangleLength=%.4f\n",
+                                delta, s, thetaPage, scale, triangleWidth, triangleLength
+                            )
+                        )
+                    }
+                    polygon(xt, yt, col = flagCol, border = flagCol)
+                    s <- s - 3 * ds # (triangleWidth + barbSpace)
+                } else if (thisCode == 2 || thisCode == 3) { # barb
+                    if (lowestNonzero) {
+                        s <- s - ds # barbSpace / length
+                    }
+                    x <- x0i + s * (x1i - x0i)
+                    y <- y0i + s * (y1i - y0i)
+                    segments(x, y, x + delta * BLC, y + delta * BLS, col = barbCol, lwd = barbLwd)
+                    s <- s - ds
+                }
+                lastCode <- thisCode
+            }
+        }
+    }
+}
+
+# FIXME: if put into oce, document parameters, explain
+# plot, give an example, set up familial links with
+# sibling functions, etc.
+mapDirectionFieldBarbs <- function(
+    longitude, latitude, u, v,
+    scale = 1, length = 0.2, step = 10, col = par("fg"), lwd = par("lwd"),
+    debug = 0, ...) {
+    # Check (and flatten location and velocity parameters)
+    if (!is.vector(longitude)) {
+        stop("longitude must be a vector")
+    }
+    if (!is.vector(latitude)) {
+        stop("latitude must be a vector")
+    }
+    if (is.matrix(u) || is.matrix(v)) {
+        if (!is.matrix(u) || !is.matrix(v)) {
+            stop("if either of u or v is a matrix, then both must be")
+        }
+        if (!identical(dim(u), dim(v))) {
+            stop("u and v must have identical dimensions")
+        }
+        nlon <- length(longitude)
+        nlat <- length(latitude)
+        if (nlon != nrow(u)) {
+            stop("length of longitude must match number of rows in u")
+        }
+        if (nlat != ncol(u)) {
+            stop("length of latitude must match number of columns in u")
+        }
+        longitude <- matrix(rep(longitude, nlat), nrow = nlon)
+        latitude <- matrix(rep(latitude, nlon), byrow = TRUE, nrow = nlon)
+        longitude <- as.vector(longitude)
+        latitude <- as.vector(latitude)
+        u <- as.vector(u)
+        v <- as.vector(v)
+    }
+    longitude <- angleShift(longitude)
+    latitude <- angleShift(latitude)
+    ok <- is.finite(u) & is.finite(v)
+    windBarbs(longitude[ok], latitude[ok],
+        u = u[ok], v = v[ok],
+        scale = scale, length = length, step = step, debug = debug, col = col, lwd = lwd
+    )
+}
+
+
 #' Add a Direction Field to an Existing Map
 #'
-#' Plot a direction field on a existing map.
+#' Plot a direction field on a existing map, either using arrows,
+#' which is the oceanographic convention, or using wind barbs, which
+#' is a meteorological convention.
 #'
-#' Adds arrows for a direction field on an existing map.  There are different
-#' possibilities for how `longitude`, `latitude` and `u` and
-#' `v` match up.  In one common case, all four of these are matrices, e.g.
-#' output from a numerical model.  In another, `longitude` and
-#' `latitude` are the coordinates along the matrices, and are thus stored in
-#' vectors with lengths that match appropriately.
+#' As noted in the \dQuote{Description}, there are two styles. 1.
+#' *Arrow Style:* arrows are drawn from the stated locations in the
+#' direction of the flow defined by the (u,v) vector. This is the
+#' usual convention in oceanographic work. 2. *Barb Style:* to create
+#' "wind barbs", according to a convention used in meteorological
+#' charts. Unlike arrows, which indicate speed by the arrow length,
+#' barbs indicate speed by angled lines and possibly triangles located
+#' at the upstream end. Note that the meanings of the function
+#' parameters vary across the two styles.
 #'
-#' @param longitude,latitude numeric vectors of the starting points for arrows.
+#' The "arrow" style is quite common in the oceanographic literature.
+#' Arrows point in the direction of the velocity defined by `(u,v)`,
+#' and the length of those arrows is proportional to the speed,
+#' `sqrt(u^2+v^2)`.
 #'
-#' @param u,v numeric vectors of the components of a vector to be shown as a direction
-#'     field.
+#' By contrast, in the "barb" notation, the lines are of equal length
+#' (compared with distance on the ground), with speed being indicated
+#' with barbs. Many sources explain the notation, e.g.
+#' `https://www.weather.gov/hfo/windbarbinfo`. The lines extend from the
+#' observation longitude and latitude in the direction opposite to the
+#' velocity. Velocities are indicated by barbs, i.e. short line
+#' segments that extend at an angle to the main line and with pennants
+#' (triangles). Speed is given by a combination of pennants and barbs.
+#' A pennant represents 50 speed units, a long barb 10 units, and a
+#' short barb 5 units.  Summing these values gives the speed, rounded
+#' to 5 units.
 #'
-#' @param scale latitude degrees per unit of `u` or `v`.
+#' See \dQuote{Details} for a comparison of the "arrow" and "barb"
+#' styles for some made-up velocity data.
 #'
-#' @param length length of arrow heads, passed to [arrows()].
+#' There are two possibilities for how `longitude`, `latitude` are
+#' combined with `u` and `v`.
 #'
-#' @param code code of arrows, passed to [arrows()].
+#' 1. All four are vectors, and the matching is one-to-one. This is
+#' useful for showing velocities at particular individual locations,
+#' as in the \dQuote{Examples}.
 #'
-#' @param col color of arrows.  This may be a single color, or a matrix
-#'     of colors of the same dimension as `u`.
+#' 2. `longitude` and `latitude` are vectors, while `u` and `v` are
+#' matrices.  In this case, the lengths of `longitude` and `latitude`
+#' must equal the number of rows and columns in `u` and `v`,
+#' respectively.
 #'
-#' @param \dots optional arguments passed to [arrows()], e.g.
-#'     `angle` and `lwd` can be useful in differentiating different
-#'     fields.
+#' @param longitude,latitude numeric vectors of the starting points
+#' for arrows, or the locations of grid cells.
 #'
-#' @section Sample of Usage:
-#' \preformatted{
+#' @param u,v numeric vectors or matrices holding the components of a
+#' vector to be shown as a direction field.
+#'
+#' @param scale an indication of the length of the arrows or lines.
+#' For the "arrow" style, this is arrow length in latitude degrees per
+#' unit of velocity.  For the "barb" style, this is the length of all
+#' lines, regardless of the velocity, because in this style velocity
+#' is indicated with barbs and pennants.
+#'
+#' @param length an indication of the size of arrow heads, for "arrow"
+#' style, or of the barbs, for "barb" style. If this is NULL (which is
+#' the default), then 0.05 will be used for the "arrow" style, and 0.2
+#' for the "barb" style.
+#'
+#' @param code an indication of the style of arrow heads or barbs. For
+#' the arrow style, this is a number that is passed to [arrows()],
+#' with 2 as the default, meaning to draw the arrow as a conventional
+#' vector.  For the wind-barb style, this is the string `"barb"`.
+#'
+#' @param lwd a numeric value indicating the width of the line
+#' segments that make up the speed indicators.
+#'
+#' @param col color of the speed indicators.
+#'
+#' @template debugTemplate
+#'
+#' @examples
 #' library(oce)
 #' data(coastlineWorld)
-#' par(mar=rep(2, 4))
-#' mapPlot(coastlineWorld, longitudelim=c(-120,-55), latitudelim=c(35, 50),
-#'         projection="+proj=laea +lat0=40 +lat1=60 +lon_0=-110")
-#' lon <- seq(-120, -60, 15)
-#' lat <- 45 + seq(-15, 15, 5)
-#' lonm <- matrix(expand.grid(lon, lat)[, 1], nrow=length(lon))
-#' latm <- matrix(expand.grid(lon, lat)[, 2], nrow=length(lon))
-#' # vectors pointed 45 degrees clockwise from north
-#' u <- matrix(1/sqrt(2), nrow=length(lon), ncol=length(lat))
-#' v <- matrix(1/sqrt(2), nrow=length(lon), ncol=length(lat))
-#' mapDirectionField(lon, lat, u, v, scale=3)
-#' mapDirectionField(lonm, latm, 0, 1, scale=3, col="red")
-#' # Color code by longitude, using thick lines
-#' col <- colormap(lonm)$zcol
-#' mapDirectionField(lonm, latm, 1, 0, scale=3, col=col, lwd=2)
-#' }
-#'
-#' @author Dan Kelley
+#' par(mar = rep(2, 4))
+#' mapPlot(coastlineWorld,
+#'     border = "black",
+#'     col = "grey95",
+#'     projection = "+proj=lcc +lat_1=40 +lat_2=60 +lon_0=-60",
+#'     longitudelim = c(-70, -50), latitudelim = c(45, 50)
+#' )
+#' # Invent wind data for three locations in eastern Canada
+#' dataText <- "
+#' lat,lon,u,v,location
+#' 44.6476,-63.5728,15,0,Halifax
+#' 49.5495,-62.9555,20,20,Anticosti Island
+#' 47.5556,-52.7453,0,55,St. John's"
+#' data <- read.csv(text = dataText)
+#' # Dots at observation locations, for reference
+#' mapPoints(data$lon, data$lat)
+#' # Red: arrows that extend downwind from the location
+#' mapDirectionField(data$lon, data$lat,
+#'     u = data$u, v = data$v, scale = 0.05,
+#'     length = .08, code = 2, col = 2, lwd = 2
+#' )
+#' # Blue: barbs that extend upwind from the location
+#' mapDirectionField(data$lon, data$lat,
+#'     u = data$u, v = data$v, scale = 2, code = "barb", lwd = 2, col = 4
+#' )
 #'
 #' @seealso A map must first have been created with [mapPlot()].
 #'
 #' @family functions related to maps
+#'
+#' @author Dan Kelley
 mapDirectionField <- function(
     longitude, latitude, u, v,
-    scale = 1, length = 0.05, code = 2, col = par("fg"), ...) {
+    scale = 1, length = NULL, code = 2,
+    lwd = par("lwd"), col = par("fg"),
+    debug = getOption("oceDebug")) {
     if ("none" == .Projection()$type) {
         stop("must create a map first, with mapPlot()\n")
     }
-    # handle case where lon and lat are coords on edges of grid
-    if (is.matrix(u)) {
-        if (is.vector(longitude) && is.vector(latitude)) {
-            nlon <- length(longitude)
-            nlat <- length(latitude)
-            longitude <- matrix(rep(longitude, nlat), nrow = nlon)
-            latitude <- matrix(rep(latitude, nlon), byrow = TRUE, nrow = nlon)
-        }
+    # Check (and flatten location and velocity parameters)
+    if (!is.vector(longitude)) {
+        stop("longitude must be a vector")
     }
-    xy <- lonlat2map(as.vector(longitude), as.vector(latitude))
-    # Calculate spatially-dependent scale (fails for off-page points)
-    # Calculate lon-lat at ends of arrows
-    scalex <- scale / cos(pi * latitude / 180)
-    latEnd <- latitude + v * scale
-    lonEnd <- longitude + u * scalex
-    # See notes above, for the (local-only) angleShift() function.
-    longitude <- angleShift(longitude)
-    latitude <- angleShift(latitude)
-    lonEnd <- angleShift(lonEnd)
-    latEnd <- angleShift(latEnd)
-    xy <- lonlat2map(as.vector(longitude), as.vector(latitude))
-    xyEnd <- lonlat2map(as.vector(lonEnd), as.vector(latEnd))
-    arrows(xy$x, xy$y, xyEnd$x, xyEnd$y, length = length, code = code, col = col, ...)
+    if (!is.vector(latitude)) {
+        stop("latitude must be a vector")
+    }
+    oceDebug(debug, "mapDirectionField() ... \n", sep = "", unindent = 1)
+    if (is.matrix(u) || is.matrix(v)) {
+        if (!is.matrix(u) || !is.matrix(v)) {
+            stop("if either of u or v is a matrix, then both must be")
+        }
+        if (!identical(dim(u), dim(v))) {
+            stop("u and v must have identical dimensions")
+        }
+        oceDebug(debug, "u and v are matrices with dim=c(", paste(dim(u), collapse = ","), ")\n")
+        nlon <- length(longitude)
+        nlat <- length(latitude)
+        if (nlon != nrow(u)) {
+            stop("length of longitude must match number of rows in u")
+        }
+        if (nlat != ncol(u)) {
+            stop("length of latitude must match number of columns in u")
+        }
+        longitude <- matrix(rep(longitude, nlat), nrow = nlon)
+        latitude <- matrix(rep(latitude, nlon), byrow = TRUE, nrow = nlon)
+        longitude <- as.vector(longitude)
+        latitude <- as.vector(latitude)
+        u <- as.vector(u)
+        v <- as.vector(v)
+    }
+    if (grepl("^barb", code)) { # later, may permit e.g. barb/5 etc
+        # Handle "barb" case
+        oceDebug(debug, "handing control to mapDirectionFieldBarbs()\n")
+        if (is.null(length)) {
+            length <- 0.2
+        }
+        mapDirectionFieldBarbs(longitude, latitude, u, v,
+            scale = scale, length = length,
+            lwd = lwd, col = col, step = 10, debug = debug
+        )
+    } else {
+        # Handle "arrow" case
+        if (is.null(length)) {
+            length <- 0.05
+        }
+        xy <- lonlat2map(as.vector(longitude), as.vector(latitude))
+        # Calculate lon-lat at ends of barb shafts
+        scalex <- scale / cos(pi * latitude / 180)
+        latEnd <- latitude + v * scale
+        lonEnd <- longitude + u * scalex
+        longitude <- angleShift(longitude)
+        latitude <- angleShift(latitude)
+        lonEnd <- angleShift(lonEnd)
+        latEnd <- angleShift(latEnd)
+        xy <- lonlat2map(as.vector(longitude), as.vector(latitude))
+        xyEnd <- lonlat2map(as.vector(lonEnd), as.vector(latEnd))
+        arrows(xy$x, xy$y, xyEnd$x, xyEnd$y, length = length, code = code, col = col)
+    }
 }
-
-
 
 #' Convert From Longitude and Latitude to X and Y
 #'
 #' Find (x, y) values corresponding to (longitude, latitude) values, using the
-#' present projection.
+#' present projection. This is mainly a wrapper around [lonlat2map()].
 #'
+#' @param longitude numeric vector of the longitudes of points, or an
+#' object from which both latitude and longitude can be inferred (e.g.
+#' a coastline file, or the return value from [mapLocator()]), in
+#' which case the following two arguments are ignored.
 #'
-#' @param longitude numeric vector of the longitudes of points, or an object from which
-#' both latitude and longitude can be inferred (e.g. a coastline file, or the
-#' return value from [mapLocator()]), in which case the following
-#' two arguments are ignored.
-#'
-#' @param latitude numeric vector of latitudes of points, needed only if they cannot
-#' be inferred from the first argument.
-#'
-#' @details
-#' This is mainly a wrapper around [lonlat2map()].
+#' @param latitude numeric vector of latitudes of points, needed only
+#' if they cannot be inferred from the first argument.
 #'
 #' @return
 #' A list containing `x` and `y`.
-#'
 #'
 #' @examples
 #' \donttest{
@@ -1111,11 +1447,11 @@ mapDirectionField <- function(
 #' plot(xy, type = "l", asp = 1)
 #' }
 #'
-#' @author Dan Kelley
-#'
 #' @seealso A map must first have been created with [mapPlot()].
 #'
 #' @family functions related to maps
+#'
+#' @author Dan Kelley
 mapLongitudeLatitudeXY <- function(longitude, latitude) {
     if ("none" == .Projection()$type) {
         stop("must create a map first, with mapPlot()\n")
@@ -1134,39 +1470,37 @@ mapLongitudeLatitudeXY <- function(longitude, latitude) {
     list(x = proj$x, y = proj$y) # if other properties prove helpful, may add them
 }
 
-
-
 #' Draw a Map
 #'
 #' Plot coordinates as a map, using one of the subset of projections
-#' provided by the \CRANpkg{sf} package.  The projection information specified
-#' with the `mapPlot()` call is stored in a global variable that can be retrieved
-#' by related functions, making it easy to add points, lines, text, images
-#' or contours to an existing map.
-#' The \dQuote{Details} section, below, provides a list of
-#' available projections. The "Using map projections" vignette
-#' offers examples of several map plots, in addition to the single
-#' example provided in the \dQuote{Examples} section, below.
+#' provided by the \CRANpkg{sf} package.  The projection information
+#' specified with the `mapPlot()` call is stored in a global variable
+#' that can be retrieved by related functions, making it easy to add
+#' points, lines, text, images or contours to an existing map. The
+#' \dQuote{Details} section, below, provides a list of available
+#' projections. The "Using map projections" vignette offers examples
+#' of several map plots, in addition to the single example provided in
+#' the \dQuote{Examples} section.
 #'
-#' The calculations for map projections are done with
-#' the \CRANpkg{sf} package.  Importantly, though, not all
-#' the \CRANpkg{sf} projections are
-#' available in `oce`, for reasons relating to limitations
-#' of \CRANpkg{sf}, for example relating to inverse-projection
-#' calculations. The `oce` choices are tabulated
-#' below, e.g. `projection="+proj=aea"` selects the Albers equal area
-#' projection.  (See also the warning, below, about a problem
-#' with \CRANpkg{sf} version 0.9-8.)
+#' The calculations for map projections are done with the \CRANpkg{sf}
+#' package.  Importantly, though, not all the \CRANpkg{sf} projections
+#' are available in `oce`, for reasons relating to limitations of
+#' \CRANpkg{sf}, for example relating to inverse-projection
+#' calculations. The `oce` choices are tabulated below, e.g.
+#' `projection="+proj=aea"` selects the Albers equal area projection.
+#' (See also the warning, below, about a problem with \CRANpkg{sf}
+#' version 0.9-8.)
 #'
-#' Further details of the vast array of map projections provided by PROJ
-#' are given in reference 4.  This system has been in rapid development
-#' since about 2018, and reference 5 provides a helpful overview of the changes
-#' and the reasons why they were necessary.  Practical examples of map projections in
-#' \CRANpkg{oce} are provided in reference 6, along with some notes on problems.
-#' A fascinating treatment of the history of map projections is provided
-#' in reference 7.  To get an idea of how projections are being created
-#' nowadays, see reference 8, about the `eqearth` projection that was added
-#' to \CRANpkg{oce} in August 2020.
+#' Further details of the vast array of map projections are given in
+#' reference 4.  This system has been in rapid development since about
+#' 2018, and reference 5 provides a helpful overview of the changes
+#' and the reasons why they were necessary. Practical examples of map
+#' projections in \CRANpkg{oce} are provided in reference 6, along
+#' with some notes on problems. A fascinating treatment of the history
+#' of map projections is provided in reference 7.  To get an idea of
+#' how projections are being created nowadays, see reference 8, about
+#' the `eqearth` projection that was added to \CRANpkg{oce} in August
+#' 2020.
 #'
 ## @section A warning about 'sf' version 0.9-8:
 ## This version of \CRANpkg{sf}, released in March of 2021, has errors
@@ -1179,12 +1513,13 @@ mapLongitudeLatitudeXY <- function(longitude, latitude) {
 #'
 #' @section Available Projections:
 #'
-#' The following table lists projections available in \CRANpkg{oce}, and was generated
-#' by reformatting a subset of the output of the unix
-#' command `proj -lP`. Most of the arguments have default values, and many
-#' projections also have optional arguments.  Although e.g. `proj -l=aea`
-#' provides a little more information about particular projections,
-#' users ought to consult reference 4 for fuller details and illustrations.
+#' The following table lists projections available in \CRANpkg{oce},
+#' and was generated by reformatting a subset of the output of the
+#' unix command `proj -lP`. Most of the arguments have default values,
+#' and many projections also have optional arguments.  Although e.g.
+#' `proj -l=aea` provides a little more information about particular
+#' projections, users ought to consult reference 4 for fuller details
+#' and illustrations.
 #'
 #' | **Projection**                            | **Code**   | **Arguments**                      |
 #' | ----------------------------------------- | ---------- | -----------------------------------|
@@ -1385,11 +1720,11 @@ mapLongitudeLatitudeXY <- function(longitude, latitude) {
 #' @param latitude numeric vector of latitudes of points to be plotted (ignored
 #' if the first argument contains both latitude and longitude).
 #'
-#' @param longitudelim,latitudelim optional numeric vectors of length two, indicating the
-#' limits of the plot. A warning is issued if these are not specified together.
-#' See \dQuote{Examples} for a polar-region example, noting that
-#' the whole-globe span of `longitudelim` is used to centre the plot
-#' at the north pole.
+#' @param longitudelim,latitudelim optional numeric vectors of length
+#' two, indicating the limits of the plot. A warning is issued if
+#' these are not specified together. See \dQuote{Examples} for a
+#' polar-region example, noting that the whole-globe span of
+#' `longitudelim` is used to centre the plot at the north pole.
 ## This value is used in the selection of
 ## longitude lines that are shown (and possibly
 ## labelled on the axes). In some cases, e.g. for polar views,
@@ -1439,22 +1774,25 @@ mapLongitudeLatitudeXY <- function(longitude, latitude) {
 #' or black coastlines, for `type="p"`, `type="l"`, or
 #' `type="o"`.
 #'
-#' @param clip logical value indicating whether to trim any coastline elements that lie wholly
-#' outside the plot region. This can prevent e.g. a problem of filling the whole plot area of
-#' an Arctic stereopolar view, because the projected trace for Antarctica lies outside all
-#' other regions so the whole of the world ends up being "land".  Setting `clip=FALSE`
-#' disables this action, which may be of benefit in rare instances in the line connecting
-#' two points on a coastline may cross the plot domain, even if those points are outside
-#' that domain.
+#' @param clip logical value indicating whether to trim any coastline
+#' elements that lie wholly outside the plot region. This can prevent
+#' e.g. a problem of filling the whole plot area of an Arctic
+#' stereopolar view, because the projected trace for Antarctica lies
+#' outside all other regions so the whole of the world ends up being
+#' "land".  Setting `clip=FALSE` disables this action, which may be of
+#' benefit in rare instances in the line connecting two points on a
+#' coastline may cross the plot domain, even if those points are
+#' outside that domain.
 #'
-#' @param type indication of type; may be `"polygon"`, for a filled polygon,
-#' `"p"` for points, `"l"` for line segments, or `"o"` for points
-#' overlain with line segments.
+#' @param type indication of type; may be `"polygon"`, for a filled
+#' polygon, `"p"` for points, `"l"` for line segments, or `"o"` for
+#' points overlain with line segments.
 #'
-#' @param axes a logical value indicating whether to draw longitude and latitude
-#' values in the lower and left margin, respectively.  This may not work well
-#' for some projections or scales.  See also `axisStyle`, `lonlabels`
-#' and `latlabels`, which offer more granular control of labelling.
+#' @param axes a logical value indicating whether to draw longitude
+#' and latitude values in the lower and left margin, respectively.
+#' This may not work well for some projections or scales.  See also
+#' `axisStyle`, `lonlabels` and `latlabels`, which offer more granular
+#' control of labelling.
 #'
 #' @param axisStyle an integer specifying the style of labels for the numbers
 #' on axes.  The choices are:
@@ -1678,8 +2016,7 @@ mapPlot <- function(
     cex, cex.axis = 1, mgp = c(0, 0.5, 0), drawBox = TRUE, showHemi = TRUE,
     polarCircle = 0, lonlabels = TRUE, latlabels = TRUE,
     projection = "+proj=moll", tissot = FALSE, trim = TRUE,
-    debug = getOption("oceDebug"),
-    ...) {
+    debug = getOption("oceDebug"), ...) {
     debug <- max(0, min(debug, 3))
     oceDebug(debug, "mapPlot(longitude, latitude,",
         argShow(longitudelim),
@@ -1690,8 +2027,8 @@ mapPlot <- function(
         } else if (!missing(projection)) paste("projection=", projection, "\",", sep = ""),
         argShow(grid),
         argShow(geographical),
-        ", ...) {\n",
-        sep = "", unindent = 1, style = "bold"
+        ", ...) START\n",
+        sep = "", unindent = 1
     )
     dots <- list(...)
     if (1 == length(grid)) {
@@ -1887,7 +2224,16 @@ mapPlot <- function(
                 }
                 if (clip) {
                     oceDebug(debug, "about to draw clipped polygon\n")
-                    cl <- .Call("map_clip_xy", x, y, par("usr"))
+                    # FIXME <issue 2201> keep this test for a while
+                    cl <- .Call("map_clip_xy_old", x, y, par("usr"))
+                    clNew <- mapClipXy(x, y, par("usr"))
+                    if (!identical(cl, clNew)) {
+                        message("IMPORTANT: mapPlot/mapClipXy problem -- please report at github.com/dankelley/oce/issues")
+                        warning("IMPORTANT: mapPlot/mapClipXy problem -- please report at github.com/dankelley/oce/issues")
+                    }
+                    # FIXME: what about col? shouldn't it be altered if some
+                    # polygons are entirely missing?  Maybe the function needs
+                    # to return 'col' also.
                     polygon(cl$x, cl$y, border = border, col = col)
                 } else {
                     oceDebug(debug, "about to draw unclipped polygon\n")
@@ -2255,21 +2601,22 @@ mapPlot <- function(
         }
         options(warn = options$warn)
     }
-    oceDebug(debug, "} # mapPlot()\n", sep = "", unindent = 1, style = "bold")
+    oceDebug(debug, "END mapPlot()\n", sep = "", unindent = 1)
 }
 
 
 #' Add a Longitude and Latitude Grid to an Existing Map
 #'
-#' Plot longitude and latitude grid on an existing map.
-#' This is an advanced function, requiring
-#' coordination with [mapPlot()] and (possibly) also with [mapAxis()],
-#' and so it is best avoided by novices, who may be satisfied
-#' with the defaults used by [mapPlot()].
+#' Plot longitude and latitude grid on an existing map. This is an
+#' advanced function, requiring coordination with [mapPlot()] and
+#' (possibly) also with [mapAxis()], and so it is best avoided by
+#' novices, who may be satisfied with the defaults used by
+#' [mapPlot()].
 #'
-#' This is somewhat analogous to [grid()], except that the
-#' first two arguments of the latter supply the number of lines in the grid,
-#' whereas the present function has increments for the first two arguments.
+#' This is somewhat analogous to [grid()], except that the first two
+#' arguments of the latter supply the number of lines in the grid,
+#' whereas the present function has increments for the first two
+#' arguments.
 #'
 #' @param dlongitude increment in longitude, ignored if `longitude`
 #' is supplied, but otherwise determines the longitude sequence.
@@ -2343,8 +2690,8 @@ mapGrid <- function(
         argShow(dlongitude), argShow(dlatitude),
         argShow(longitude), argShow(latitude),
         argShow(longitudelim), argShow(latitudelim),
-        "...) {\n",
-        unindent = 1, sep = "", style = "bold"
+        "...) START\n",
+        sep = "", unindent = 1
     )
     if ("none" == .Projection()$type) {
         stop("must create a map first, with mapPlot()\n")
@@ -2548,11 +2895,9 @@ mapGrid <- function(
             }
         }
     }
-    oceDebug(debug, "} # mapGrid()\n", unindent = 1, sep = "", style = "bold")
+    oceDebug(debug, "END mapGrid()\n", unindent = 1, sep = "")
     invisible(as.data.frame(rval))
 }
-
-
 
 #' Add a Scalebar to a Map
 #'
@@ -2591,11 +2936,11 @@ mapGrid <- function(
 #' mapScalebar()
 #' }
 #'
-#' @author Dan Kelley
-#'
 #' @seealso A map must first have been created with [mapPlot()].
 #'
 #' @family functions related to maps
+#'
+#' @author Dan Kelley
 mapScalebar <- function(
     x, y = NULL, length,
     lwd = 1.5 * par("lwd"), cex = par("cex"),
@@ -2680,7 +3025,7 @@ mapScalebar <- function(
 #' @param labels vector of labels of text to be plotted.
 #'
 #' @param ... optional arguments passed to [text()], e.g. `adj`,
-#'     `pos`, etc.
+#' `pos`, etc.
 #'
 #' @examples
 #' \donttest{
@@ -2699,11 +3044,11 @@ mapScalebar <- function(
 #' mapText(lon, lat, "Halifax", col = "red", pos = 1, offset = 1)
 #' }
 #'
-#' @author Dan Kelley
-#'
 #' @seealso A map must first have been created with [mapPlot()].
 #'
 #' @family functions related to maps
+#'
+#' @author Dan Kelley
 mapText <- function(longitude, latitude, labels, ...) {
     if ("none" == .Projection()$type) {
         stop("must create a map first, with mapPlot()\n")
@@ -2761,11 +3106,11 @@ mapText <- function(longitude, latitude, labels, ...) {
 #' mapTissot(c(15, 15), col = "red")
 #' }
 #'
-#' @author Dan Kelley
-#'
 #' @seealso A map must first have been created with [mapPlot()].
 #'
 #' @family functions related to maps
+#'
+#' @author Dan Kelley
 mapTissot <- function(grid = rep(15, 2), scale = 0.2, crosshairs = FALSE, ...) {
     if ("none" == .Projection()$type) {
         stop("must create a map first, with mapPlot()\n")
@@ -2900,13 +3245,13 @@ mapLines <- function(longitude, latitude, greatCircle = FALSE, ...) {
 #' mapPoints(section)
 #' }
 #'
-#' @author Dan Kelley
-#'
 #' @seealso A map must first have been created with [mapPlot()].
 #'
 #' @family functions related to maps
+#'
+#' @author Dan Kelley
 mapPoints <- function(longitude, latitude, debug = getOption("oceDebug"), ...) {
-    oceDebug(debug, "mapPoints() {\n", unindent = 1, sep = "")
+    oceDebug(debug, "mapPoints() START\n", unindent = 1, sep = "")
     if ("none" == .Projection()$type) {
         stop("must create a map first, with mapPlot()\n")
     }
@@ -2932,7 +3277,7 @@ mapPoints <- function(longitude, latitude, debug = getOption("oceDebug"), ...) {
         xy <- lonlat2map(longitude, latitude, debug = debug - 1)
         points(xy$x, xy$y, ...)
     }
-    oceDebug(debug, "} # mapPoints()\n", unindent = 1, sep = "")
+    oceDebug(debug, "END mapPoints()\n", unindent = 1, sep = "")
 }
 
 #' Add Arrows to a Map
@@ -2975,11 +3320,11 @@ mapPoints <- function(longitude, latitude, debug = getOption("oceDebug"), ...) {
 #' mapArrows(lon, lat, lon, lat + 15, length = 0.05, col = "blue")
 #' }
 #'
-#' @author Dan Kelley
-#'
 #' @seealso A map must first have been created with [mapPlot()].
 #'
 #' @family functions related to maps
+#'
+#' @author Dan Kelley
 mapArrows <- function(
     longitude0, latitude0,
     longitude1 = longitude0, latitude1 = latitude0,
@@ -3027,14 +3372,14 @@ mapArrows <- function(
 #' and `hemispheres`, or a vector of strings or (broken) a vector of
 #' expressions.
 #'
-#' @author Dan Kelley
-#'
 #' @examples
 #' library(oce)
 #' formatPosition(10 + 1:10 / 60 + 2.8 / 3600)
 #' formatPosition(10 + 1:10 / 60 + 2.8 / 3600, type = "string")
 #'
 #' @family functions related to maps
+#'
+#' @author Dan Kelley
 formatPosition <- function(latlon, isLat = TRUE, type = c("list", "string", "expression"), showHemi = TRUE) {
     type <- match.arg(type)
     na <- is.na(latlon)
@@ -3135,11 +3480,11 @@ formatPosition <- function(latlon, isLat = TRUE, type = c("list", "string", "exp
 #'     [mapPoints()] or [mapLines()], if appropriate) if
 #'     `type` is not `'n'`.
 #'
-#' @author Dan Kelley
-#'
 #' @seealso A map must first have been created with [mapPlot()].
 #'
 #' @family functions related to maps
+#'
+#' @author Dan Kelley
 mapLocator <- function(n = 512, type = "n", ...) {
     if ("none" == .Projection()$type) {
         stop("must create a map first, with mapPlot()\n")
@@ -3195,11 +3540,11 @@ mapLocator <- function(n = 512, type = "n", ...) {
 #'
 #' @seealso [lonlat2map()] does the inverse operation.
 #'
-#' @author Dan Kelley
-#'
 #' @seealso A map must first have been created with [mapPlot()].
 #'
 #' @family functions related to maps
+#'
+#' @author Dan Kelley
 map2lonlat <- function(x, y, init = NULL, debug = getOption("oceDebug")) {
     if (missing(x)) {
         stop("must supply x")
@@ -3238,18 +3583,6 @@ map2lonlat <- function(x, y, init = NULL, debug = getOption("oceDebug")) {
 #' @param density,angle,border,col,lty,...,fillOddEven handled as
 #' [polygon()] handles the same arguments.
 #'
-# @param angle as for [polygon()].
-#
-# @param border as for [polygon()].
-#
-# @param col as for [polygon()].
-#
-# @param lty as for [polygon()].
-#
-# @param ... as for [polygon()].
-#
-# @param fillOddEven as for [polygon()].
-#'
 #' @examples
 #' \donttest{
 #' library(oce)
@@ -3270,11 +3603,11 @@ map2lonlat <- function(x, y, init = NULL, debug = getOption("oceDebug")) {
 #' mapPolygon(coastlineWorld[["longitude"]], coastlineWorld[["latitude"]], col = "lightgray")
 #' }
 #'
-#' @author Dan Kelley
-#'
 #' @seealso A map must first have been created with [mapPlot()].
 #'
 #' @family functions related to maps
+#'
+#' @author Dan Kelley
 mapPolygon <- function(
     longitude, latitude, density = NULL, angle = 45,
     border = NULL, col = NA, lty = par("lty"), ..., fillOddEven = FALSE) {
@@ -3306,46 +3639,53 @@ mapPolygon <- function(
     }
 }
 
-
 #' Add an Image to a Map
 #'
 #' Plot an image on an existing map that was created with [mapPlot()].
 #'
-#' Image data are on a regular grid in lon-lat space, but not in the projected
-#' x-y space.  This means that [image()] cannot be used.  Instead,
-#' there are two approaches, depending on the value of `filledContour`.
+#' Image data are on a regular grid in lon-lat space, but not in the
+#' projected x-y space.  This means that [image()] cannot be used.
+#' Instead, there are two approaches, depending on the value of
+#' `filledContour`.
 #'
-#' If `filledContour` is `FALSE`, the image "pixels" are drawn with [polygon()].
-#' This can be prohibitively slow for fine grids.  However, if `filledContour`
-#' is `TRUE` or a numerical value, then the "pixels" are remapped into a regular
-#' grid and then displayed with [.filled.contour()].  The remapping starts by
-#' converting the regular lon-lat grid to an irregular x-y grid using
-#' [lonlat2map()].  This irregular grid is then interpolated onto a regular x-y
-#' grid  with either [binMean2D()] or [interp::interp()], as determined by the
-#' value of the `gridder` parameter. If `filledContour` is `TRUE`, the
-#' dimensions of the regular x-y grid is the same as that of the original
-#' lon-lat grid; otherwise, the number of rows and columns are multiplied by the
-#' numerical value of `filledContour`, e.g. the value 2 means to make the grid
-#' twice as fine.
+#' If `filledContour` is `FALSE`, the image "pixels" are drawn with
+#' [polygon()]. This can be prohibitively slow for fine grids.
 #'
-#' Filling contours can produce aesthetically-pleasing results, but the method
-#' involves interpolation, so the data are not represented exactly and
-#' analysts are advised to compare the results from the two methods (and
-#' perhaps various grid refinement values) to guard against misinterpretation.
-#'
-#' If a [png()] device is to be used, it is advised to supply
-#' arguments `type="cairo"` and `antialias="none"` (see reference 1).
+#' However, if `filledContour` is `TRUE`, then the "pixels" are
+#' remapped into a regular grid and then displayed with
+#' [.filled.contour()].  The remapping starts by converting the
+#' regular lon-lat grid to an irregular x-y grid using [lonlat2map()].
+#' This irregular grid is then interpolated onto a regular x-y grid in
+#' accordance with the `gridder` parameter. If `gridder` values of
+#' `"binMean2D"` and `"interp"` do not produce satisfactory results,
+#' advanced users might wish to supply a function to do the gridding
+#' according to their own criteria. The function must have as its
+#' first 5 arguments (1) an x vector, (2) a y vector, (3) a z matrix
+#' that corresponds to x and y in the usual way, (4) a vector holding
+#' the desired x grid, and (5) a vector holding the desired y grid.
+#' The return value must be a list containing items named `xmids`,
+#' `ymids` and `result`. To understand the meaning of the parameters
+#' and return values, consult the documentation for [binMean2D()].
+#' Here is an example of a scheme that will fill data gaps of 1 or 2
+#' cells:
+#' ```
+#' g <- function(...) binMean2D(..., fill = TRUE, fillgap = 2)
+#' mapImage(..., gridder = g, ...)
+#' ```
 #'
 #' @section Historical Notes:
 #'
-#' Until oce 1.7.4, the `gridder` argument could be set to `"akima"`, which used
-#' the `akima` package.  However, that package is not released with a FOSS license,
-#' so CRAN requested a change to \CRANpkg{interp}. Note that `drawImage()`
-#' intercepts the errors that sometimes get reported by [interp::interp()].
+#' Until oce 1.7.4, the `gridder` argument could be set to `"akima"`,
+#' which used the `akima` package.  However, that package is not
+#' released with a FOSS license, so CRAN requested a change to
+#' \CRANpkg{interp}. Note that `drawImage()` intercepts the errors
+#' that sometimes get reported by [interp::interp()].
 #'
-#' @param longitude numeric vector of longitudes corresponding to `z` matrix.
+#' @param longitude numeric vector of longitudes corresponding to `z`
+#' matrix.
 #'
-#' @param latitude numeric vector of latitudes corresponding to `z` matrix.
+#' @param latitude numeric vector of latitudes corresponding to `z`
+#' matrix.
 #'
 #' @param z numeric matrix to be represented as an image.
 #'
@@ -3355,23 +3695,23 @@ mapPolygon <- function(
 #' `z` values should be painted with `missingColor` and `FALSE`
 #' indicating that these values should be painted with the nearest
 #' in-range color.  If `zlim` is given then its min and max set the
-#' range.  If `zlim` is not given but `breaks` is given, then
-#' the min and max of `breaks` sets the range used for z.  If neither
-#' `zlim` nor `breaks` is given, clipping is not done, i.e. the
-#' action is as if `zclip` were `FALSE`.
+#' range.  If `zlim` is not given but `breaks` is given, then the min
+#' and max of `breaks` sets the range used for z.  If neither `zlim`
+#' nor `breaks` is given, clipping is not done, i.e. the action is as
+#' if `zclip` were `FALSE`.
 #'
-#' @param breaks The z values for breaks in the color scheme.  If this is of
-#' length 1, the value indicates the desired number of breaks, which is
-#' supplied to [pretty()], in determining clean break points.
+#' @param breaks The z values for breaks in the color scheme.  If this
+#' is of length 1, the value indicates the desired number of breaks,
+#' which is supplied to [pretty()], in determining clean break points.
 #'
-#' @param col Either a vector of colors corresponding to the breaks, of length
-#' 1 plus the number of breaks, or a function specifying colors,
-#' e.g. [oce.colorsViridis()] for the Viridis scheme.
+#' @param col Either a vector of colors corresponding to the breaks,
+#' of length 1 plus the number of breaks, or a function specifying
+#' colors, e.g. [oce.colorsViridis()] for the Viridis scheme.
 #'
-#' @param colormap optional colormap, as created by [colormap()].
-#' If a `colormap` is provided, then its properties takes precedence
-#' over `breaks`, `col`, `missingColor`, and `zclip`
-#' specified to `mapImage`.
+#' @param colormap optional colormap, as created by [colormap()]. If a
+#' `colormap` is provided, then its properties takes precedence over
+#' `breaks`, `col`, `missingColor`, and `zclip` specified to
+#' `mapImage`.
 #'
 #' @param border Color used for borders of patches (passed to
 #' [polygon()]); the default `NA` means no border.
@@ -3384,40 +3724,69 @@ mapPolygon <- function(
 #' `NA` to skip the drawing of such regions (which will retain
 #' whatever material has already been drawn at the regions).
 #'
-#' @param filledContour either a logical value indicating whether to use
-#' filled contours to plot the image, or a numerical value indicating the
-#' resampling rate to be used in interpolating from lon-lat coordinates to
-#' x-y coordinates.  See \dQuote{Details} for how this interacts with
-#' `gridder`.
+#' @param filledContour an indication of whether to use filled
+#' contours.  This may be FALSE (the default), TRUE, or a positive
+#' numerical value. If FALSE, then polygons are used. Otherwise, the
+#' longitude-latitude values are transformed to x-y values, which will
+#' not be on a grid and thus will require gridding so that
+#' [.filled.contour()] can plot the filled contours.  The method used
+#' for gridding is set by the `gridder` parameter (see next item). If
+#' `filledContour` is TRUE, then the grid is constructed with the aim
+#' of having approximately 3 of the projected x-y points in each cell.
+#' That can leave some cells unoccupied, yielding blanks in the drawn
+#' image.  There are two ways around that.  First, the `gridder` can
+#' be set up to fill gaps.  Second, a numerical value can be used for
+#' `filledContour`. For example, using `filledContour` equal to 1.5
+#' will increase grid width and height by a factor of 1.5, which may
+#' be enough to fill all the gaps, depending on the projection and the
+#' area shown.
 #'
-#' @param gridder character value specifying the gridding function to be used
-#' if `filledContour` is `TRUE`. This can be either `"binMean2D"` to select
-#' [binMean2D()] or `"interp"` to select [interp::interp()].  The former
-#' produces cruder results, but the latter can be slow for large datasets.
-#' Note that `"akima"` is taken as a synonym for `"interp"`
-#' (see \dQuote{Historical Notes}).
+#' @param gridder specification of how gridding is to be done, used
+#' only if `filledContour` is TRUE. The value of `gridder` may
+#' `"binMean2D"`, which is the default, `"interp"`, or a function.  In
+#' the first two cases, the gridding is done with either [binMean2D()]
+#' or [interp::interp()], respectively. For more on the last case, see
+#' \dQuote{Details}.
 #'
-#' @param debug A flag that turns on debugging.  Set to 1 to get a
-#' moderate amount of debugging information, or to 2 to get more.
-#'
-#' @references
-#' 1. `https://codedocean.wordpress.com/2014/02/03/anti-aliasing-and-image-plots/`
+#' @template debugTemplate
 #'
 #' @section Sample of Usage:
+#'
 #' \preformatted{
 #' library(oce)
 #' data(coastlineWorld)
 #' data(topoWorld)
 #'
 #' # Northern polar region, with color-coded bathymetry
-#' par(mfrow=c(1,1), mar=c(2,2,1,1))
-#' cm <- colormap(zlim=c(-5000, 0), col=oceColorsGebco)
-#' drawPalette(colormap=cm)
-#' mapPlot(coastlineWorld, projection="+proj=stere +lat_0=90",
-#'         longitudelim=c(-180,180), latitudelim=c(70,110))
-#' mapImage(topoWorld, colormap=cm)
-#' mapGrid(15, 15, polarCircle=1, col=gray(0.2))
-#' mapPolygon(coastlineWorld[["longitude"]], coastlineWorld[["latitude"]], col="tan")
+#' par(mfrow = c(1, 1), mar = c(2, 2, 1, 1))
+#' cm <- colormap(zlim = c(-5000, 0), col = oceColorsGebco)
+#' drawPalette(colormap = cm)
+#' mapPlot(coastlineWorld,
+#'     projection = "+proj=stere +lat_0=90",
+#'     longitudelim = c(-180, 180), latitudelim = c(70, 110)
+#' )
+#' # Uncomment one of the next four blocks.  See
+#' # https://dankelley.github.io/dek_blog/2024/03/07/mapimage.html
+#' # for illustrations.
+#'
+#' # Method 1: the default, using polygons for lon-lat patches
+#' mapImage(topoWorld, colormap = cm)
+#'
+#' # Method 2: filled contours, with ugly missing-data traces
+#' # mapImage(topoWorld, colormap = cm, filledContour = TRUE)
+#'
+#' # Method 3: filled contours, with a double-sized grid cells
+#' # mapImage(topoWorld, colormap = cm, filledContour = 2)
+#'
+#' # Method 4: filled contours, with a gap-filling gridder)
+#' # g <- function(...) binMean2D(..., fill = TRUE, fillgap = 2)
+#' # mapImage(topoWorld, colormap = cm, filledContour = TRUE, gridder = g)
+#'
+#' mapGrid(15, 15, polarCircle = 1, col = gray(0.2))
+#' mapPolygon(coastlineWorld[["longitude"]],
+#'     coastlineWorld[["latitude"]],
+#'     col = "tan"
+#' )
 #' }
 #'
 #' @seealso A map must first have been created with [mapPlot()].
@@ -3425,25 +3794,25 @@ mapPolygon <- function(
 #' @family functions related to maps
 #'
 #' @author Dan Kelley
-mapImage <- function(
-    longitude, latitude, z, zlim, zclip = FALSE,
-    breaks, col, colormap, border = NA,
-    lwd = par("lwd"), lty = par("lty"), missingColor = NA,
-    filledContour = FALSE, gridder = "binMean2D",
-    debug = getOption("oceDebug")) {
+mapImage <- function(longitude, latitude, z, zlim, zclip = FALSE,
+                     breaks, col, colormap, border = NA, lwd =
+                         par("lwd"), lty = par("lty"), missingColor = NA,
+                     filledContour = FALSE, gridder = "binMean2D",
+                     debug = getOption("oceDebug")) {
     if ("none" == .Projection()$type) {
         stop("must create a map first, with mapPlot()\n")
     }
     breaksGiven <- !missing(breaks)
     zlimGiven <- !missing(zlim)
     colGiven <- !missing(col)
-    oceDebug(debug, "mapImage(..., ",
-        " missingColor=", missingColor, ", ",
-        " filledContour=", filledContour, ", ",
-        " gridder=", gridder, ", ",
-        ", ...) {\n",
-        sep = "", unindent = 1
-    )
+    oceDebug(debug, "mapImage(..., ", " missingColor=", missingColor, ", ", "
+        filledContour=", filledContour, ", ", " gridder=", if
+    (is.function(gridder)) {
+        "(function)"
+    } else {
+        gridder
+    }, ", ...)
+        START\n", sep = "", unindent = 1)
 
     if ("data" %in% slotNames(longitude)) {
         if (3 == sum(c("longitude", "latitude", "z") %in% names(longitude@data))) {
@@ -3473,7 +3842,7 @@ mapImage <- function(
         zclip <- colormap$zclip
         colGiven <- TRUE
     }
-    if (!breaksGiven) {
+    if (!breaksGiven) { # no breaks given
         small <- .Machine$double.eps
         zrange <- range(z, na.rm = TRUE)
         if (missing(zlim)) {
@@ -3502,7 +3871,7 @@ mapImage <- function(
             breaks[1] <- min(zrange[1], breaks[1])
             breaks[length(breaks)] <- max(breaks[length(breaks)], zrange[2])
         }
-    } else {
+    } else { # 'breaks' was given
         breaksOrig <- breaks
         if (1 == length(breaks)) {
             oceDebug(debug, "only 1 break given, so taking that as number of breaks\n")
@@ -3561,41 +3930,58 @@ mapImage <- function(
     # Each polygon has 5 points, four to trace the boundary and a fifth that is
     # (NA,NA), to signal the end of the polygon.  The z values (and hence the
     # colors) map one per polygon.
-    poly <- .Call("map_assemble_polygons", longitude, latitude, z,
+    #
+    # FIXME <issue 2201> keep this test for a while
+    poly <- .Call("map_assemble_polygons_old", longitude, latitude, z,
         NAOK = TRUE, PACKAGE = "oce"
     )
-
+    polyNew <- mapAssemblePolygons(longitude, latitude, z)
+    if (!identical(poly, polyNew)) {
+        message("IMPORTANT: mapImage/mapAssemblePolygons problem -- please report at github.com/dankelley/oce/issues")
+        warning("IMPORTANT: mapImage/mapAssemblePolygons problem -- please report at github.com/dankelley/oce/issues")
+    }
     xy <- lonlat2map(poly$longitude, poly$latitude)
     xy$x[!is.finite(xy$x)] <- NA
     xy$y[!is.finite(xy$y)] <- NA
-    # issue #638 - kludge to get data into same longitue scheme as axes
+    # <issue 638> kludge to get data into same longitude scheme as axes
     usr12 <- par("usr")[1:2]
     xrange <- range(xy$x, na.rm = TRUE)
     if (xrange[1] > usr12[2]) {
         xy$x <- xy$x - 360
     }
+    Z <- as.vector(z)
     # map_check_polygons tries to fix up longitude cut-point problem, which
     # otherwise leads to lines crossing the graph horizontally because the x
     # value can sometimes alternate from one end of the domain to the other.
-    Z <- as.vector(z)
-    r <- .Call("map_check_polygons", xy$x, xy$y, poly$z,
+    #
+    # FIXME <issue 2201> keep this test for a while
+    r <- .Call("map_check_polygons_old", xy$x, xy$y, poly$z,
         diff(par("usr"))[1:2] / 5, par("usr"),
         NAOK = TRUE, PACKAGE = "oce"
     )
+    rNew <- mapCheckPolygons(
+        xy$x, xy$y, poly$z,
+        diff(par("usr")[1:2]) / 5, par("usr")
+    )
+    if (!identical(r, rNew)) {
+        message("IMPORTANT: mapImage/mapCheckPolygons problem -- please report at github.com/dankelley/oce/issues")
+        warning("IMPORTANT: mapImage/mapCheckPolygons problem -- please report at github.com/dankelley/oce/issues")
+    }
     breaksMin <- min(breaks, na.rm = TRUE)
     breaksMax <- max(breaks, na.rm = TRUE)
-    if (filledContour) {
+    if (is.logical(filledContour) && filledContour) {
+        filledContour <- 1.0
+    }
+    if (filledContour) { # filled contours
         oceDebug(debug, "using filled contours\n")
         zz <- Z # as.vector(z)
         g <- expand.grid(longitude, latitude)
         longitudeGrid <- g[, 1]
         latitudeGrid <- g[, 2]
-        # FIXME: I'm not sure this will work well generally; I'm setting NN to
-        # FIXME: get about 5 points per grid cell.
         # N is number of points in view
         usr <- par("usr")
         N <- sum(usr[1] <= xy$x & xy$x <= usr[2] & usr[3] <= xy$y & xy$y <= usr[4], na.rm = TRUE)
-        NN <- sqrt(N / 10)
+        NN <- sqrt(N / (10 * filledContour))
         xg <- seq(usr[1], usr[2], length.out = NN)
         yg <- seq(usr[3], usr[4], length.out = NN)
         xy <- lonlat2map(longitudeGrid, latitudeGrid)
@@ -3617,22 +4003,44 @@ mapImage <- function(
         zz <- zz[inFrame]
         oceDebug(debug, "after trimming, length(xx): ", length(xx), "\n")
         # chop to points within plot area
-        if (gridder %in% c("interp", "akima")) {
+        if (is.character(gridder) && gridder %in% c("interp", "akima")) {
             oceDebug(debug, "using interp::interp()\n")
+            if (identical(gridder, "akima")) {
+                warning("'akima' is no longer available; using 'interp' instead.")
+            }
             if (requireNamespace("interp", quietly = TRUE)) {
                 i <- try(interp::interp(x = xx, y = yy, z = zz, xo = xg, yo = yg))
                 if (inherits(i, "try-error")) {
-                    stop("gridder=\"", gridder, "\" failed. Try gridder=\"binMean2D\" instead")
+                    stop(
+                        "gridder=\"", gridder,
+                        "\" failed. Try gridder=\"binMean2D\" instead"
+                    )
                 }
             } else {
-                stop("must install.packages(\"interp\") for gridder=\"", gridder, "\"")
+                stop(
+                    "must install.packages(\"interp\") to use gridder=\"",
+                    gridder, "\""
+                )
             }
-        } else if (gridder == "binMean2D") {
+        } else if (identical(gridder, "binMean2D")) {
             oceDebug(debug, "using binMean2D()\n")
-            binned <- binMean2D(xx, yy, zz, xg, yg, fill = TRUE)
+            # binned <- binMean2D(xx, yy, zz, xg, yg, fill = TRUE, debug = debug - 1)
+            binned <- binMean2D(xx, yy, zz, xg, yg, debug = debug - 1)
+            if (FALSE) {
+                imagep(binned$xmids, binned$ymids[200:243], binned$result[, 200:243], col = oceColorsJet, asp = 1, xlim = c(-500000, 500000))
+                contour(binned$xmids, binned$ymids[200:243], binned$result[, 200:243], add = TRUE)
+                abline(h = binned$ymids[200:243], col = rgb(0, 1, 0, 0.2))
+                abline(v = binned$xmids, col = rgb(0, 1, 0, 0.2))
+            }
+            # message("FIXME: saving xx,yy,zz,xg,yg,binned in file ~/binned.rda")
+            # save(xx,yy,zz,xg,yg,binned, file="~/binned.rda") # FIXME
             i <- list(x = binned$xmids, y = binned$ymids, z = binned$result)
+        } else if (is.function(gridder)) {
+            oceDebug(debug, "gridder is a user-supplied function\n")
+            G <- gridder(xx, yy, zz, xg, yg)
+            i <- list(x = G$xmids, y = G$ymids, z = G$result)
         } else {
-            stop("gridder=\"", gridder, "\" not allowed. Try \"binMean2D\" or \"interp\"")
+            stop("inappropriate 'gridder' value; use \"binMean2D\", \"interp\" or a function")
         }
         if (any(is.finite(i$z))) {
             # issue726: add a tiny bit to breaks, to mimic filledContour=FALSE
@@ -3641,7 +4049,7 @@ mapImage <- function(
         } else {
             warning("no valid z")
         }
-    } else {
+    } else { # not using filled contours
         oceDebug(debug, "using polygons, as opposed to filled contours\n")
         colFirst <- col[1]
         colLast <- tail(col, 1)
@@ -3723,7 +4131,7 @@ mapImage <- function(
             lwd = lwd, lty = lty, fillOddEven = FALSE
         )
     }
-    oceDebug(debug, "} # mapImage()\n", unindent = 1)
+    oceDebug(debug, "END mapImage()\n", unindent = 1)
     invisible(NULL)
 }
 
@@ -3731,25 +4139,23 @@ mapImage <- function(
 
 #' Convert Longitude and Latitude to UTM
 #'
-#' @param longitude numeric vector of decimal longitude.  May also be a list containing items
-#' named `longitude` and `latitude`, in which case the indicated
-#' values are used, and next argument is ignored.
+#' @param longitude numeric vector of decimal longitude.  May also be
+#' a list containing items named `longitude` and `latitude`, in which
+#' case the indicated values are used, and next argument is ignored.
 #'
-#' @param latitude numeric vector of decimal latitude (ignored if `longitude` is a list
-#' containing both coordinates)
+#' @param latitude numeric vector of decimal latitude (ignored if
+#' `longitude` is a list containing both coordinates)
 #'
 #' @param zone optional indication of UTM zone.  Normally this is inferred from
 #' the longitude, but specifying it can be helpful in dealing with Landsat
 #' images, which may cross zones and which therefore are described by a single
 #' zone.
 #'
-#' @param km logical value indicating whether `easting` and
-#' `northing` are in kilometers or meters.
+#' @param km logical value indicating whether `easting` and `northing`
+#' are in kilometers or meters.
 #'
-#' @return A list containing `easting`, `northing`, `zone` and
-#' `hemisphere`.
-#'
-#' @author Dan Kelley
+#' @return `lonlat2utm` returns a list containing `easting`,
+#' `northing`, `zone` and `hemisphere`.
 #'
 #' @seealso [utm2lonlat()] does the inverse operation.  For general
 #' projections and their inverses, use [lonlat2map()] and
@@ -3765,6 +4171,8 @@ mapImage <- function(
 #' lonlat2utm(-64.496567, 45.334626)
 #'
 #' @family functions related to maps
+#'
+#' @author Dan Kelley
 lonlat2utm <- function(longitude, latitude, zone, km = FALSE) {
     names <- names(longitude)
     if (!is.null(names)) {
@@ -3841,9 +4249,7 @@ lonlat2utm <- function(longitude, latitude, zone, km = FALSE) {
 #' @param km logical value indicating whether `easting` and
 #' `northing` are in kilometers or meters.
 #'
-#' @return A list containing `longitude` and `latitude`.
-#'
-#' @author Dan Kelley
+#' @return `utm2lonlat` returns a list containing `longitude` and `latitude`.
 #'
 #' @seealso [lonlat2utm()] does the inverse operation.  For general
 #' projections and their inverses, use [lonlat2map()] and
@@ -3859,6 +4265,8 @@ lonlat2utm <- function(longitude, latitude, zone, km = FALSE) {
 #' utm2lonlat(852863, 5029997, 19)
 #'
 #' @family functions related to maps
+#'
+#' @author Dan Kelley
 utm2lonlat <- function(easting, northing, zone = 1, hemisphere = "N", km = FALSE) {
     names <- names(easting)
     if (!is.null(names)) {
@@ -3979,8 +4387,6 @@ knownProj4 <- c(
 #'
 #' @return A list containing `x` and `y`.
 #'
-#' @author Dan Kelley
-#'
 #' @seealso `mapLongitudeLatitudeXY` is a safer alternative, if a map has
 #' already been drawn with [mapPlot()], because that function cannot
 #' alter an existing projection. [map2lonlat()] is an inverse to
@@ -3994,9 +4400,10 @@ knownProj4 <- c(
 #' map2lonlat(xy)
 #'
 #' @family functions related to maps
+#'
+#' @author Dan Kelley
 lonlat2map <- function(longitude, latitude, projection = "", debug = getOption("oceDebug")) {
-    # oceDebug(debug, "lonlat2map() {\n", unindent=1, sep="", style="bold")
-    oceDebug(debug, "lonlat2map(longitude, latitude, projection=\"", projection, "\") {\n", sep = "", unindent = 1, style = "bold")
+    oceDebug(debug, "lonlat2map(longitude, latitude, projection=\"", projection, "\") START\n", sep = "", unindent = 1)
     if (missing(longitude)) {
         stop("must supply longitude")
     }
@@ -4032,6 +4439,6 @@ lonlat2map <- function(longitude, latitude, projection = "", debug = getOption("
     }
     XY <- oceProject(xy = cbind(longitude, latitude), proj = projection, inv = FALSE, debug = debug - 1)
     .Projection(list(type = "proj4", projection = projection))
-    oceDebug(debug, "} # lonlat2map\n", sep = "", unindent = 1, style = "bold")
+    oceDebug(debug, "END lonlat2map()\n", sep = "", unindent = 1)
     list(x = XY[, 1], y = XY[, 2])
 }

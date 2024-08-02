@@ -123,31 +123,6 @@ NULL
 #' `trimString()`      \tab [trimws()]                     \tab 1.8-2      \cr
 #' }
 #'
-#' Several \CRANpkg{oce} function arguments are considered "deprecated", which
-#' means they will be marked "defunct" in the next CRAN release. These are normally
-#' listed in the help page for the function in question. A few that may be
-#' of general interest are also listed below.
-#'
-#' * The `adorn` argument was still being checked for (in the dots argument)
-#' until 2020 August 11.
-#'
-#' * The `eos` argument of [swN2()] was removed on 2019
-#' April 11; for details, see the \dQuote{Deprecation Notation} section
-#' of the documentation for [swN2()].
-#'
-# * The `endian` argument of [byteToBinary()] will be removed sometime
-# in the year 2017, and should be set to `"big"` in the meantime.
-#'
-#' * The `parameters` argument of [plot,ctd-method()]
-#' was deprecated on 2016-12-30.  It was once used by
-#' [plot,coastline-method()] but has been ignored by that
-#' function since February 2016.
-#'
-#' * The `orientation` argument of [plot,ctd-method()]
-#' was deprecated on 2016-12-30.  It was once used by
-#' [plot,coastline-method()] but has been ignored by that
-#' function since February 2016.
-#'
 #' Several \dQuote{oce} function arguments are considered "defunct", which
 #' means they will be removed in the next CRAN release. They are as follows.
 #'
@@ -299,7 +274,7 @@ useHeading <- function(b, g, add = 0) {
 #' integers, to indicate a portion of the time or distance range.  If
 #' `which` is `"time"`, then the `start` and `end` values
 #' may also be provided as POSIX times, or character strings indicating times
-#' (in time zone given by the value of `getOption("oceTz")`).
+#' (in time zone given by the value of [getOption]`("oceTz")`).
 #' Note that [subset()] may be more useful than this function.
 #'
 #' @param x an [oce-class] object.
@@ -356,8 +331,8 @@ window.oce <- function(
     oceDebug(debug, "window.oce(...,start=",
         paste(format(start), collapse = ","), ",end=",
         paste(format(end), collapse = ","),
-        ",indexReturn=", indexReturn, ",...) {\n",
-        unindent = 1
+        ",indexReturn=", indexReturn, ",...) START\n",
+        sep = "", unindent = 1
     )
     if (extend) {
         stop("cannot handle extend=TRUE yet")
@@ -461,7 +436,7 @@ window.oce <- function(
     } else if (inherits(x, "adv")) {
         res@metadata$numberOfSamples <- dim(res@data$v)[1]
     }
-    oceDebug(debug, "} # window.oce()\n", unindent = 1)
+    oceDebug(debug, "END window.oce()\n", unindent = 1)
     res
 }
 
@@ -678,7 +653,7 @@ tail.oce <- function(x, n = 6L, ...) {
 #' theta <- runif(50, 0, 360)
 #' plotPolar(r, theta)
 plotPolar <- function(r, theta, debug = getOption("oceDebug"), ...) {
-    oceDebug(debug, "plotPolar(...)\n", unindent = 1)
+    oceDebug(debug, "plotPolar(...) START\n", unindent = 1)
     if (missing(r)) {
         stop("must supply 'r'")
     }
@@ -701,7 +676,7 @@ plotPolar <- function(r, theta, debug = getOption("oceDebug"), ...) {
     }
     abline(h = 0)
     abline(v = 0)
-    oceDebug(debug, "} # plotPolar()\n", unindent = 1)
+    oceDebug(debug, "END plotPolar()\n", unindent = 1)
 }
 
 
@@ -1204,21 +1179,21 @@ oce.plot.ts <- function(
         argShow(type),
         argShow(flipy),
         argShow(log), "\n",
-        sep = "", unindent = 1, style = "bold"
+        sep = "", unindent = 1
     )
     oceDebug(debug,
         "          ",
         argShow(mar),
         argShow(mgp), "\n",
-        sep = "", style = "bold"
+        sep = ""
     )
     oceDebug(debug,
         "          ",
         argShow(cex),
         argShow(cex.axis),
         argShow(cex.lab),
-        "...) {\n",
-        sep = "", style = "bold"
+        "...) START\n",
+        sep = ""
     )
     if (!is.logical(flipy)) {
         stop("flipy must be TRUE or FALSE")
@@ -1243,7 +1218,7 @@ oce.plot.ts <- function(
         oceDebug(debug, "made col, pch and cex of length ", nx, " to match length(x)\n")
     }
     pc <- paletteCalculations(maidiff = rep(0, 4))
-    oceDebug(debug, as.character(dput(pc)), "\n", style = "red")
+    oceDebug(debug, as.character(dput(pc)), "\n")
     par(mgp = mgp, mar = mar)
     args <- list(...)
     xlimGiven <- !missing(xlim)
@@ -1333,7 +1308,7 @@ oce.plot.ts <- function(
         box()
         mtext("bad data", side = 3, line = -1, cex = cex)
         warning("no valid data for '", ylab, "'", sep = "")
-        oceDebug(debug, "} # oce.plot.ts()\n", unindent = 1, style = "bold")
+        oceDebug(debug, "END oce.plot.ts()\n", unindent = 1)
         return()
     } else {
         if (fill) {
@@ -1422,7 +1397,7 @@ oce.plot.ts <- function(
             }
             abline(v = axTicks(1), col = grid.col, lty = grid.lty, lwd = grid.lwd)
         }
-        oceDebug(debug, "} # oce.plot.ts()\n", unindent = 1, style = "bold")
+        oceDebug(debug, "END oce.plot.ts()\n", unindent = 1)
         invisible(list(xat = xat, yat = yat))
     }
 } # oce.plot.ts()
@@ -1551,13 +1526,13 @@ oceFileTrim <- function(infile, n = 100L, outfile, debug = getOption("oceDebug")
 #' # Example 2: add 0.1 dbar to pressure
 #' ctd3 <- oceEdit(ctd, action = "x@@data$pressure<-x@@data$pressure+0.1")
 oceEdit <- function(x, item, value, action, reason = "", person = "", debug = getOption("oceDebug")) {
-    oceDebug(debug, "oceEdit() {\n", unindent = 1)
+    oceDebug(debug, "oceEdit() START\n", unindent = 1)
     if (!inherits(x, "oce")) {
         stop("method is only for oce objects")
     }
     if (missing(item) && missing(value) && missing(action)) {
         x@processingLog <- processingLogAppend(x@processingLog, paste(deparse(match.call()), sep = "", collapse = ""))
-        oceDebug(debug, "} # oceEdit()\n", unindent = 1)
+        oceDebug(debug, "END oceEdit()\n", unindent = 1)
         return(x)
     }
     slot <- NULL
@@ -1656,7 +1631,7 @@ oceEdit <- function(x, item, value, action, reason = "", person = "", debug = ge
         stop("must supply either an 'item' plus a 'value', or an 'action'")
     }
     x@processingLog <- processingLogAppend(x@processingLog, paste(deparse(match.call()), sep = "", collapse = ""))
-    oceDebug(debug, "} # oceEdit()\n", unindent = 1)
+    oceDebug(debug, "END oceEdit()\n", unindent = 1)
     x
 }
 oce.edit <- oceEdit
@@ -1792,12 +1767,12 @@ standardDepths <- function(n = 0) {
 #' @seealso This is used mainly by [read.oce()].
 oceMagic <- function(file, encoding = "latin1", debug = getOption("oceDebug")) {
     filename <- file
-    oceDebug(debug, paste("oceMagic(file=\"", filename, "\") {\n", sep = ""), unindent = 1, style = "bold", sep = "")
+    oceDebug(debug, paste("oceMagic(file=\"", filename, "\") START\n", sep = ""), sep = "", unindent = 1)
     isdir <- file.info(file)$isdir
     if (is.finite(isdir) && isdir) {
         tst <- file.info(paste(file, "/", file, "_MTL.txt", sep = ""))$isdir
         if (!is.na(tst) && !tst) {
-            oceDebug(debug, "} # oceMagic returning landsat\n", unindent = 1)
+            oceDebug(debug, "END oceMagic() returning landsat\n", unindent = 1)
             return("landsat")
         } else {
             stop("please supply a file name, not a directory name")
@@ -1808,23 +1783,23 @@ oceMagic <- function(file, encoding = "latin1", debug = getOption("oceDebug")) {
         if (grepl(".asc$", filename)) {
             someLines <- readLines(file, n = 1L)
             if (42 == length(strsplit(someLines[1], " ")[[1]])) {
-                oceDebug(debug, "} # oceMagic returning lisst\n", unindent = 1, style = "bold")
+                oceDebug(debug, "END oceMagic() returning lisst\n", unindent = 1)
                 return("lisst")
             }
         }
         if (grepl(".adr$", filename)) {
             oceDebug(debug, "file names ends in .adr, so this is an adv/sontek/adr file.\n")
-            oceDebug(debug, "} # oceMagic returning adv/sontek/adr\n", unindent = 1)
+            oceDebug(debug, "END oceMagic() returning adv/sontek/adr\n", unindent = 1)
             return("adv/sontek/adr")
         }
         if (grepl(".rsk$", filename)) {
             oceDebug(debug, "file names ends with \".rsk\", so this is an RBR/rsk file.\n")
-            oceDebug(debug, "} # oceMagic returning RBR/rsk\n", unindent = 1)
+            oceDebug(debug, "END oceMagic() returning RBR/rsk\n", unindent = 1)
             return("RBR/rsk")
         }
         if (grepl(".s4a.", filename)) {
             oceDebug(debug, "file names contains \".s4a.\", so this is an interocean S4 file.\n")
-            oceDebug(debug, "} # oceMagic returning interocean/s4\n", unindent = 1)
+            oceDebug(debug, "END oceMagic() returning interocean/s4\n", unindent = 1)
             return("interocean/s4")
         }
         if (grepl(".ODF$", filename, ignore.case = TRUE)) {
@@ -1843,12 +1818,12 @@ oceMagic <- function(file, encoding = "latin1", debug = getOption("oceDebug")) {
             subtype <- gsub("^\\s*", "", subtype)
             subtype <- gsub("\\s*$", "", subtype)
             res <- paste(subtype, "odf", sep = "/")
-            oceDebug(debug, paste0("} # oceMagic() returning ", res, "\n"), unindent = 1, style = "bold")
+            oceDebug(debug, paste0("END oceMagic() returning ", res, "\n"), sep = "", unindent = 1)
             return(res)
         }
         if (grepl(".WCT$", filename, ignore.case = TRUE)) {
             # old-style WOCE
-            oceDebug(debug, "} # oceMagic returning ctd/woce/other\n", unindent = 1)
+            oceDebug(debug, "END oceMagic() returning ctd/woce/other\n", unindent = 1)
             return("ctd/woce/other") # e.g. http://cchdo.ucsd.edu/data/onetime/atlantic/a01/a01e/a01ect.zip
         }
         if (grepl(".nc$", filename, ignore.case = TRUE)) {
@@ -1864,21 +1839,27 @@ oceMagic <- function(file, encoding = "latin1", debug = getOption("oceDebug")) {
                 f <- ncdf4::nc_open(filename)
                 if ("DATA_TYPE" %in% names(f$var)) {
                     if (grepl("argo", ncdf4::ncvar_get(f, "DATA_TYPE"), ignore.case = TRUE)) {
-                        oceDebug(debug, "} # oceMagic returning argo (upper-case style)\n", unindent = 1)
+                        oceDebug(debug, "END oceMagic() returning argo (upper-case style)\n", unindent = 1)
+                        ncdf4::nc_close(f)
                         return("argo")
                     } else {
-                        oceDebug(debug, "} # oceMagic returning netcdf (upper-case style)\n", unindent = 1)
+                        oceDebug(debug, "END oceMagic() returning netcdf (upper-case style)\n", unindent = 1)
+                        ncdf4::nc_close(f)
                         return("netcdf")
                     }
                 } else if ("data_type" %in% names(f$var)) {
                     if (grepl("argo", ncdf4::ncvar_get(f, "data_type"), ignore.case = TRUE)) {
-                        oceDebug(debug, "} # oceMagic returning argo (lower-case style)\n", unindent = 1)
+                        oceDebug(debug, "END oceMagic() returning argo (lower-case style)\n", unindent = 1)
+                        ncdf4::nc_close(f)
                         return("argo")
                     } else {
-                        oceDebug(debug, "} # oceMagic returning netcdf (lower-case style)\n", unindent = 1)
+                        oceDebug(debug, "END oceMagic() returning netcdf (lower-case style)\n", unindent = 1)
+                        ncdf4::nc_close(f)
                         return("netcdf")
                     }
                 }
+                ncdf4::nc_close(f) # it's netcdf, but with no data_type
+                return("unknown")
             } else {
                 stop("must install.packages(\"ncdf4\") to read a NetCDF file")
             }
@@ -1886,20 +1867,20 @@ oceMagic <- function(file, encoding = "latin1", debug = getOption("oceDebug")) {
         if (grepl(".xml$", filename, ignore.case = TRUE)) {
             firstLine <- readLines(filename, 1L)
             if (grepl(".weather.gc.ca", firstLine)) {
-                oceDebug(debug, "} # oceMagic returning met/xml2\n", unindent = 1)
+                oceDebug(debug, "END oceMagic() returning met/xml2\n", unindent = 1)
                 return("met/xml2")
             }
         }
         if (grepl(".osm.xml$", filename, ignore.case = TRUE)) {
-            oceDebug(debug, "} # oceMagic returning openstreetmap (xml style)\n", unindent = 1)
+            oceDebug(debug, "END oceMagic() returning openstreetmap (xml style)\n", unindent = 1)
             return("openstreetmap")
         }
         if (grepl(".osm$", filename, ignore.case = TRUE)) {
-            oceDebug(debug, "} # oceMagic returning openstreetmap (non xml style)\n", unindent = 1, style = "bold")
+            oceDebug(debug, "END oceMagic() returning openstreetmap (non xml style)\n", unindent = 1)
             return("openstreetmap")
         }
         if (grepl(".gpx$", filename, ignore.case = TRUE)) {
-            oceDebug(debug, "} # oceMagic returning gpx (e.g. Garmin GPS data)\n", unindent = 1, style = "bold")
+            oceDebug(debug, "END oceMagic() returning gpx (e.g. Garmin GPS data)\n", unindent = 1)
             return("gpx")
         }
         if (grepl(".csv$", filename, ignore.case = TRUE)) {
@@ -1910,32 +1891,32 @@ oceMagic <- function(file, encoding = "latin1", debug = getOption("oceDebug")) {
             if (grepl("^SSDA Sea & Sun Technology", someLines[1])) {
                 return("ctd/ssda")
             } else if (1L == length(grep("^.*\"WMO Identifier\",", someLines))) {
-                oceDebug(debug, "} # oceMagic returning met/csv1\n", unindent = 1, style = "bold")
+                oceDebug(debug, "END oceMagic() returning met/csv1\n", unindent = 1)
                 return("met/csv1") # FIXME: may be other things too ...
             } else if (grepl("^.*Longitude.*Latitude.*Station Name.*Climate ID.*Dew Point", someLines[1])) {
-                oceDebug(debug, "} # oceMagic returning met/csv2 or met/csv3\n", unindent = 1, style = "bold")
+                oceDebug(debug, "END oceMagic() returning met/csv2 or met/csv3\n", unindent = 1)
                 if (grepl("Time \\(LST\\)", someLines[1])) {
-                    oceDebug(debug, "} # oceMagic returning met/csv2\n", unindent = 1, style = "bold")
+                    oceDebug(debug, "END oceMagic() returning met/csv2\n", unindent = 1)
                     return("met/csv3")
                 } else {
-                    oceDebug(debug, "} # oceMagic returning met/csv3\n", unindent = 1, style = "bold")
+                    oceDebug(debug, "END oceMagic() returning met/csv3\n", unindent = 1)
                     return("met/csv2")
                 }
             } else if (length(grep("^Station_Name,", someLines))) {
-                oceDebug(debug, "} # oceMagic returning sealevel\n", unindent = 1, style = "bold")
+                oceDebug(debug, "END oceMagic() returning sealevel\n", unindent = 1)
                 return("sealevel")
             } else if (1L == length(grep("^CTD,", someLines))) {
-                oceDebug(debug, "} # oceMagic returning ctd/woce/exchange\n", unindent = 1, style = "bold")
+                oceDebug(debug, "END oceMagic() returning ctd/woce/exchange\n", unindent = 1)
                 return("ctd/woce/exchange")
             } else if (1L == length(grep("^BOTTLE,", someLines))) {
-                oceDebug(debug, "} # oceMagic returning section\n", unindent = 1, style = "bold")
+                oceDebug(debug, "END oceMagic() returning section\n", unindent = 1)
                 return("section")
             } else {
                 return("unknown")
             }
         }
         if (grepl(".edf$", filename, ignore.case = TRUE)) {
-            oceDebug(debug, "} # oceMagic returning xbt/edf\n", unindent = 1, style = "bold")
+            oceDebug(debug, "END oceMagic() returning xbt/edf\n", unindent = 1)
             return("xbt/edf")
         }
         file <- file(file, "r", encoding = encoding)
@@ -1959,26 +1940,26 @@ oceMagic <- function(file, encoding = "latin1", debug = getOption("oceDebug")) {
     oceDebug(debug, paste("first two bytes in file: 0x", bytes[1], " and 0x", bytes[2], "\n", sep = ""))
     on.exit(close(file))
     if (bytes[1] == 0x00 && bytes[2] == 0x00 && bytes[3] == 0x27 && bytes[4] == 0x0a) {
-        oceDebug(debug, "this is a shapefile; see e.g. http://en.wikipedia.org/wiki/Shapefile\n  }\n")
-        oceDebug(debug, "} # oceMagic returning shapefile\n", unindent = 1, style = "bold")
+        oceDebug(debug, "this is a shapefile; see e.g. http://en.wikipedia.org/wiki/Shapefile\n")
+        oceDebug(debug, "END oceMagic() returning shapefile\n", unindent = 1)
         return("shapefile")
     }
     if (bytes[3] == 0xff && bytes[4] == 0xff) {
-        oceDebug(debug, "} # oceMagic returning echosounder\n", unindent = 1, style = "bold")
+        oceDebug(debug, "END oceMagic() returning echosounder\n", unindent = 1)
         return("echosounder")
     }
     if (bytes[1] == 0x10 && bytes[2] == 0x02) {
         # 'ADPManual v710.pdf' p83
         if (96 == readBin(bytes[3:4], "integer", n = 1, size = 2, endian = "little")) {
-            oceDebug(debug, "this is adp/sontek (4 byte match)\n  }\n")
+            oceDebug(debug, "this is adp/sontek (4 byte match)\n")
         } else {
-            oceDebug(debug, "this is adp/sontek (2 byte match, but bytes 3 and 4 should become integer 96)\n  }\n")
+            oceDebug(debug, "this is adp/sontek (2 byte match, but bytes 3 and 4 should become integer 96)\n")
         }
-        oceDebug(debug, "} # oceMagic returning adp/sontek\n", unindent = 1, style = "bold")
+        oceDebug(debug, "END oceMagic() returning adp/sontek\n", unindent = 1)
         return("adp/sontek")
     }
     if (bytes[1] == 0x7f && bytes[2] == 0x7f) {
-        oceDebug(debug, "} # oceMagic returning adp/rdi\n", unindent = 1, style = "bold")
+        oceDebug(debug, "END oceMagic() returning adp/rdi\n", unindent = 1)
         return("adp/rdi")
     }
     if (bytes[1] == 0xa5 && bytes[2] == 0x05) {
@@ -2007,31 +1988,31 @@ oceMagic <- function(file, encoding = "latin1", debug = getOption("oceDebug")) {
             paste("0x", nextTwoBytes[2], sep = ""), "(e.g. 0x5 0x12 is adv/nortek/vector)\n"
         )
         if (nextTwoBytes[1] == 0xa5 && nextTwoBytes[2] == 0x12) {
-            oceDebug(debug, "} # oceMagic returning adv/nortek/vector\n", unindent = 1, style = "bold")
+            oceDebug(debug, "END oceMagic() returning adv/nortek/vector\n", unindent = 1)
             return("adv/nortek/vector")
         }
         if (nextTwoBytes[1] == 0xa5 && nextTwoBytes[2] == 0x01) {
             oceDebug(debug, "these two bytes imply this is adp/nortek/aqudopp (see system-integrator-manual_jan2011.pdf Table 5.2)\n")
-            oceDebug(debug, "} # oceMagic returning adp/nortek/aquadopp\n", unindent = 1, style = "bold")
+            oceDebug(debug, "END oceMagic() returning adp/nortek/aquadopp\n", unindent = 1)
             return("adp/nortek/aquadopp")
         }
         if (nextTwoBytes[1] == 0xa5 && nextTwoBytes[2] == 0x81) {
             oceDebug(debug, "these two bytes imply this is adp/nortek/aqudopp (see N3015-023-Integrators-Guide-Classic_1220.pdf page 30)\n")
-            oceDebug(debug, "} # oceMagic returning adp/nortek/aquadoppPlusMagnetometer\n", unindent = 1, style = "bold")
+            oceDebug(debug, "END oceMagic() returning adp/nortek/aquadoppPlusMagnetometer\n", unindent = 1)
             return("adp/nortek/aquadoppPlusMagnetometer")
         }
         if (nextTwoBytes[1] == 0xa5 && nextTwoBytes[2] == 0x21) {
-            oceDebug(debug, "} # oceMagic returning adp/nortek/aquadoppProfiler\n", unindent = 1, style = "bold")
+            oceDebug(debug, "END oceMagic() returning adp/nortek/aquadoppProfiler\n", unindent = 1)
             return("adp/nortek/aquadoppProfiler") # p37 SIG
         }
         if (nextTwoBytes[1] == 0xa5 && nextTwoBytes[2] == 0x2a) {
-            oceDebug(debug, "} # oceMagic returning adp/nortek/aquadoppHR\n", unindent = 1, style = "bold")
+            oceDebug(debug, "END oceMagic() returning adp/nortek/aquadoppHR\n", unindent = 1)
             return("adp/nortek/aquadoppHR") # p38 SIG
         }
         stop("some sort of nortek ... two bytes are 0x", nextTwoBytes[1], " and 0x", nextTwoBytes[2], " but cannot figure out what the type is")
     }
     if (bytes[1] == 0xa5 && bytes[4] == 0x10) {
-        oceDebug(debug, "} # oceMagic returning adp/nortek/ad2cp\n", unindent = 1)
+        oceDebug(debug, "END oceMagic() returning adp/nortek/ad2cp\n", unindent = 1)
         return("adp/nortek/ad2cp")
     }
     if (bytes[1] == 0x9b && bytes[2] == 0x00) {
@@ -2043,57 +2024,57 @@ oceMagic <- function(file, encoding = "latin1", debug = getOption("oceDebug")) {
         return("possibly RDI CTD")
     }
     if (1 == length(grep("^CTD", line))) {
-        oceDebug(debug, "} # oceMagic returning ctd/woce/exchange\n", unindent = 1, style = "bold")
+        oceDebug(debug, "END oceMagic() returning ctd/woce/exchange\n", unindent = 1)
         return("ctd/woce/exchange")
     }
     if (1 == length(grep("^EXPOCODE", line))) {
-        oceDebug(debug, "} # oceMagic returning ctd/woce/other\n", unindent = 1, style = "bold")
+        oceDebug(debug, "END oceMagic() returning ctd/woce/other\n", unindent = 1)
         return("ctd/woce/other")
     }
     if (1 == length(grep("^\\s*ODF_HEADER", line))) {
-        oceDebug(debug, "} # oceMagic returning odf\n", unindent = 1, style = "bold")
+        oceDebug(debug, "END oceMagic() returning odf\n", unindent = 1)
         return("odf")
     }
     if (grepl("^\\* Sea-Bird SBE", line) || grepl("^\\* Viking Buoy CTD file", line)) {
-        oceDebug(debug, "} # oceMagic returning ctd/sbe\n", unindent = 1, style = "bold")
+        oceDebug(debug, "END oceMagic() returning ctd/sbe\n", unindent = 1)
         return("ctd/sbe")
     }
 
     if (1 == length(grep("^%ITP", line))) {
-        oceDebug(debug, "} # oceMagic returning ctd/itp\n", unindent = 1, style = "bold")
+        oceDebug(debug, "END oceMagic() returning ctd/itp\n", unindent = 1)
         return("ctd/itp")
     }
     if (1 == length(grep("^# -b", line))) {
-        oceDebug(debug, "} # oceMagic returning coastline\n", unindent = 1, style = "bold")
+        oceDebug(debug, "END oceMagic() returning coastline\n", unindent = 1)
         return("coastline")
     }
     if (1 == length(grep("^# Station_Name,", line))) {
-        oceDebug(debug, "} # oceMagic returning sealevel\n", unindent = 1, style = "bold")
+        oceDebug(debug, "END oceMagic() returning sealevel\n", unindent = 1)
         return("sealevel")
     }
     if (1 == length(grep("^Station_Name,", line))) {
-        oceDebug(debug, "} # oceMagic returning sealevel\n", unindent = 1, style = "bold")
+        oceDebug(debug, "END oceMagic() returning sealevel\n", unindent = 1)
         return("sealevel")
     }
     if (1 == length(grep("^[0-9][0-9][0-9][A-Z] ", line))) {
-        oceDebug(debug, "} # oceMagic returning sealevel\n", unindent = 1, style = "bold")
+        oceDebug(debug, "END oceMagic() returning sealevel\n", unindent = 1)
         return("sealevel")
     }
     if (1 == length(grep("^NCOLS[ ]*[0-9]*[ ]*$", line))) {
-        oceDebug(debug, "} # oceMagic returning topo\n", unindent = 1, style = "bold")
+        oceDebug(debug, "END oceMagic() returning topo\n", unindent = )
         return("topo")
     }
     if (1 == length(grep("^RBR TDR", line))) {
         # FIXME: obsolete; to be removed Fall 2015
-        oceDebug(debug, "} # oceMagic returning RBR/dat\n", unindent = 1, style = "bold")
+        oceDebug(debug, "END oceMagic() returning RBR/dat\n", unindent = 1)
         return("RBR/dat")
     }
     if (1 == length(grep("^Model=", line))) {
-        oceDebug(debug, "} # oceMagic returning RBR/txt\n", unindent = 1, style = "bold")
+        oceDebug(debug, "END oceMagic() returning RBR/txt\n", unindent = 1)
         return("RBR/txt")
     }
     if (1 == length(grep("^BOTTLE", line))) {
-        oceDebug(debug, "} # oceMagic returning section\n", unindent = 1, style = "bold")
+        oceDebug(debug, "END oceMagic() returning section\n", unindent = 1)
         return("section")
     }
     oceDebug(debug, "this is unknown\n")
@@ -2166,7 +2147,7 @@ read.oce <- function(file, ..., encoding = "latin1") {
         stop("empty file \"", file, "\"")
     }
     type <- oceMagic(file, debug = debug - 1)
-    oceDebug(debug, "read.oce(\"", as.character(file), "\") {\n", sep = "", unindent = 1, style = "bold")
+    oceDebug(debug, "read.oce(\"", as.character(file), "\") START\n", sep = "", unindent = 1)
     if (is.character(file) && "http://" != substr(file, 1, 7) && 0 == file.info(file)$size) {
         stop("empty file \"", file, "\"")
     }
@@ -2293,7 +2274,7 @@ read.oce <- function(file, ..., encoding = "latin1") {
     } else {
         stop("unknown file type \"", type, "\"")
     }
-    oceDebug(debug, "} # read.oce()\n", unindent = 1, sep = "", style = "bold")
+    oceDebug(debug, "END read.oce()\n", unindent = 1, sep = "")
     res
 }
 
@@ -2463,7 +2444,7 @@ oce.colorsTwo <- oceColorsTwo
 #'
 #' @family things related to colors
 oceColorsGebco <- function(n = 9, region = c("water", "land", "both"), type = c("fill", "line"), debug = getOption("oceDebug")) {
-    oceDebug(debug, "oceColorsGebco(n=", n, ", region=\"", region, "\", type=\"", type, "\", debug=", debug, ")\n", sep = "", unindent = 1)
+    oceDebug(debug, "oceColorsGebco(n=", n, ", region=\"", region, "\", type=\"", type, "\", debug=", debug, ") START\n", sep = "", unindent = 1)
     region <- match.arg(region)
     type <- match.arg(type)
     land <- c(
@@ -2533,7 +2514,7 @@ oceColorsGebco <- function(n = 9, region = c("water", "land", "both"), type = c(
         cr <- colorRamp(c(water, "#FFFFFF", land), bias = 1, space = "rgb", interpolate = "spline")(seq(0, 1, length.out = n))
         res <- rgb(cr, maxColorValue = 255)
     }
-    oceDebug(debug, "} # oceColorsGebco()", sep = "", unindent = 1)
+    oceDebug(debug, "END oceColorsGebco()", sep = "", unindent = 1)
     res
 }
 oce.colorsGebco <- oceColorsGebco
@@ -2910,11 +2891,11 @@ oce.colorsPalette <- oceColorsPalette
 #' @param drawTimeRange Optional indication of whether/how to draw the time range
 #' in the margin on the side of the the plot opposite the time axis. If this is
 #' not supplied, it defaults to the value returned by
-#' [`getOption`]`("oceDrawTimeRange")`, and if that option is not set,
+#' [getOption]`("oceDrawTimeRange")`, and if that option is not set,
 #' it defaults to `TRUE`. No time range is drawn if `drawTimeRange` is `FALSE`.
 #' If it is `TRUE`, the range will be shown. This range refers to
 #' range of the x axis (not the data). The format of the elements of that range is set by
-#' [`getOption`]`("oceTimeFormat")` (or with the default value
+#' [getOption]`("oceTimeFormat")` (or with the default value
 #' of an empty string, if this option has not been set). The timezone will
 #' be indicated if the time range is under a week.  For preliminary work, it makes
 #' sense to use `drawTimeRange=TRUE`, but for published work it can be better
@@ -2954,7 +2935,7 @@ oce.axis.POSIXct <- function(
     mgp = par("mgp"),
     main = "",
     debug = getOption("oceDebug"), ...) {
-    oceDebug(debug, "oce.axis.POSIXct(..., debug=", debug, ",...) {\n", sep = "", unindent = 1, style = "bold")
+    oceDebug(debug, "oce.axis.POSIXct(..., debug=", debug, ",...) START\n", sep = "", unindent = 1)
     oceDebug(debug, argShow(mar), "\n")
     oceDebug(debug, argShow(mgp), "\n")
     oceDebug(debug, "cex.axis=", cex.axis, ", cex.lab=", cex.lab, ", cex.main=", cex.main, "\n")
@@ -3324,7 +3305,7 @@ oce.axis.POSIXct <- function(
     }
     axis(side, at = z, line = 0, labels = labels, mgp = mgp, cex.axis = cex.axis, cex.lab = cex.lab, cex.main = cex.main, ...)
     par(cex.axis = ocex.axis, cex.lab = ocex.lab, cex.main = ocex.main, mgp = omgp)
-    oceDebug(debug, "} # oce.axis.POSIXct()\n", unindent = 1, style = "bold")
+    oceDebug(debug, "END oce.axis.POSIXct()\n", unindent = 1)
     zzz <- as.numeric(z)
     if (1 < length(zzz)) {
         xaxp <- c(min(zzz, na.rm = TRUE), max(zzz, na.rm = TRUE), -1 + length(zzz))
@@ -3717,7 +3698,7 @@ plotInset <- function(
     } else {
         oceDebug(debug, "plotInset(xleft=", xleft, ", ybottom=", ybottom,
             ", xright=", xright, ", ytop=", ytop,
-            ",  ...) {\n",
+            ",  ...) START\n",
             sep = "", unindent = 1
         )
     }
@@ -3758,7 +3739,7 @@ plotInset <- function(
     # Reset some things that could have been set in the inset, and
     # then adjust new appropriately.
     par(usr = opar$usr, mai = opar$mai, cex = opar$cex, lwd = opar$lwd, lty = opar$lty, bg = opar$bg)
-    oceDebug(debug, "} # plotInset()\n", unindent = 1)
+    oceDebug(debug, "END plotInset()\n", unindent = 1)
     invisible(NULL)
 }
 
@@ -3939,11 +3920,15 @@ decodeTime <- function(time, timeFormats, tz = "UTC") {
 #' @examples
 #' library(oce)
 #' plot(c(-1.5, 1.5), c(-1.5, 1.5), xlab = "", ylab = "", type = "n")
-#' drawDirectionField(x = rep(0, 2), y = rep(0, 2),
-#'     u = c(1, 1), v = c(1, -1), scalex = 0.5, add = TRUE)
+#' drawDirectionField(
+#'     x = rep(0, 2), y = rep(0, 2),
+#'     u = c(1, 1), v = c(1, -1), scalex = 0.5, add = TRUE
+#' )
 #' plot(c(-1.5, 1.5), c(-1.5, 1.5), xlab = "", ylab = "", type = "n")
-#' drawDirectionField(x = rep(0, 2), y = rep(0, 2),
-#'     u = c(1, 1), v = c(1, -1), scalex = 0.5, add = TRUE, type = 2)
+#' drawDirectionField(
+#'     x = rep(0, 2), y = rep(0, 2),
+#'     u = c(1, 1), v = c(1, -1), scalex = 0.5, add = TRUE, type = 2
+#' )
 #'
 #' # 2D example
 #' x <- seq(-2, 2, 0.1)
@@ -3963,7 +3948,7 @@ drawDirectionField <- function(
     xlab = "", ylab = "",
     debug = getOption("oceDebug"),
     ...) {
-    oceDebug(debug, "drawDirectionField(...) {\n", unindent = 1)
+    oceDebug(debug, "drawDirectionField(...) START\n", unindent = 1)
     if (missing(x) || missing(y) || missing(u) || missing(v)) {
         stop("must supply x, y, u, and v")
     }
@@ -4049,7 +4034,7 @@ drawDirectionField <- function(
     } else {
         stop("unknown value of type ", type)
     }
-    oceDebug(debug, "} # drawDirectionField\n", unindent = 1)
+    oceDebug(debug, "END drawDirectionField()\n", unindent = 1)
 }
 
 
@@ -4502,7 +4487,7 @@ oce.smooth <- oceSmooth
 #' oceDebug(debug = 1, "Example", 6, "Blue", style = "blue")
 #' mycyan <- function(...) paste("\033[36m", paste(..., sep = " "), "\033[0m", sep = "")
 #' oceDebug(debug = 1, "Example", 7, "User-set cyan", style = mycyan)
-oceDebug <- function(debug = 0, ..., style = "plain", unindent = 0, sep = "") {
+oceDebug <- function(debug = 0, ..., unindent = 0, sep = "", style = "plain") {
     catSpecial <- function(...) if (interactive()) cat(...)
     debug <- if (debug > 4) 4 else max(0, floor(debug + 0.5))
     if (debug > 0) {

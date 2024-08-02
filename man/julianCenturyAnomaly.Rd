@@ -14,9 +14,9 @@ Julian century since noon on January 1, 1900.
 }
 \description{
 Convert a Julian-Day number to a time in julian centuries since noon on
-January 1, 1900.
-The method follows reference 1 equation 15.1.  The example reproduces the
-example provided by reference 1 example 15.a, with fractional error 3e-8.
+January 1, 1900. The method follows Equation 15.1 in Reference 1.  The
+example reproduces the Example 15.a of the same source, with fractional
+error 3e-8.
 }
 \examples{
 
@@ -26,7 +26,7 @@ cat(format(t), "is Julian Century anomaly", format(jca, digits = 8), "\n")
 
 }
 \references{
-\itemize{
+\enumerate{
 \item Meeus, Jean. Astronomical Formulas for Calculators. Second Edition.
 Richmond, Virginia, USA: Willmann-Bell, 1982.
 }

@@ -7,24 +7,24 @@
 lonlat2utm(longitude, latitude, zone, km = FALSE)
 }
 \arguments{
-\item{longitude}{numeric vector of decimal longitude.  May also be a list containing items
-named \code{longitude} and \code{latitude}, in which case the indicated
-values are used, and next argument is ignored.}
+\item{longitude}{numeric vector of decimal longitude.  May also be
+a list containing items named \code{longitude} and \code{latitude}, in which
+case the indicated values are used, and next argument is ignored.}
 
-\item{latitude}{numeric vector of decimal latitude (ignored if \code{longitude} is a list
-containing both coordinates)}
+\item{latitude}{numeric vector of decimal latitude (ignored if
+\code{longitude} is a list containing both coordinates)}
 
 \item{zone}{optional indication of UTM zone.  Normally this is inferred from
 the longitude, but specifying it can be helpful in dealing with Landsat
 images, which may cross zones and which therefore are described by a single
 zone.}
 
-\item{km}{logical value indicating whether \code{easting} and
-\code{northing} are in kilometers or meters.}
+\item{km}{logical value indicating whether \code{easting} and \code{northing}
+are in kilometers or meters.}
 }
 \value{
-A list containing \code{easting}, \code{northing}, \code{zone} and
-\code{hemisphere}.
+\code{lonlat2utm} returns a list containing \code{easting},
+\code{northing}, \code{zone} and \code{hemisphere}.
 }
 \description{
 Convert Longitude and Latitude to UTM
@@ -65,6 +65,7 @@ Other functions related to maps:
 \code{\link{mapText}()},
 \code{\link{mapTissot}()},
 \code{\link{oceCRS}()},
+\code{\link{oceProject}()},
 \code{\link{shiftLongitude}()},
 \code{\link{usrLonLat}()},
 \code{\link{utm2lonlat}()}

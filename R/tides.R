@@ -504,7 +504,7 @@ setMethod(
 #' for this after a prediction is made using [predict.tidem()].
 #'
 #' All the constituent names used by [tidem()] are permitted here,
-#' *except* for `"Z0"` (see \sQuote{Description} regarding reference
+#' *except* for `"Z0"` (see \dQuote{Description} regarding reference
 #' height).
 #' To get a list of constituent names, please consult Foreman (1978),
 #' or type the following in an R console:
@@ -623,7 +623,7 @@ setMethod(
 #'
 #' @family things related to tides
 as.tidem <- function(tRef, latitude, name, amplitude, phase, frequency, speed, debug = getOption("oceDebug")) {
-    oceDebug(debug, "as.tidem() {\n", sep = "", unindent = 1)
+    oceDebug(debug, "as.tidem() START\n", sep = "", unindent = 1)
     if (missing(tRef)) {
         stop("tRef must be given")
     }
@@ -719,7 +719,7 @@ as.tidem <- function(tRef, latitude, name, amplitude, phase, frequency, speed, d
     oceDebug(debug, "after vuf correction, head(name): ", paste(head(name), collapse = " "), "\n")
     oceDebug(debug, "after vuf correction, head(phase): ", paste(head(phase), collapse = " "), "\n")
     oceDebug(debug, "after vuf correction, head(amplitude): ", paste(head(amplitude), collapse = " "), "\n")
-    oceDebug(debug, "} # as.tidem()\n", sep = "", unindent = 1)
+    oceDebug(debug, "END as.tidem()\n", sep = "", unindent = 1)
     phase <- phase %% 360
     res <- new("tidem")
     res@data <- list(
@@ -733,7 +733,7 @@ as.tidem <- function(tRef, latitude, name, amplitude, phase, frequency, speed, d
     )
     res@metadata$version <- 3
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep = "", collapse = ""))
-    oceDebug(debug, "} # as.tidem()\n", sep = "", unindent = 1)
+    oceDebug(debug, "END as.tidem()\n", sep = "", unindent = 1)
     res
 }
 
@@ -996,7 +996,7 @@ tidemConstituentNameFix <- function(names, debug = 1) {
 #' The fit is done in terms of sine and cosine components at the indicated
 #' tidal frequencies (after possibly pruning to satisfy the Rayleigh criterion,
 #' as explained in phase 2 of the procedure outlined in
-#' '\sQuote{Details}), with the amplitude and phase being
+#' \dQuote{Details}), with the amplitude and phase being
 #' calculated from the resultant coefficients on the sine and cosine terms.
 #' The scheme was devised for hourly data; for other sampling schemes,
 #' see \dQuote{Application to non-hourly data}.
@@ -1299,7 +1299,7 @@ tidem <- function(
     )
     oceDebug(debug, "      latitude=", if (is.null(latitude)) "NULL" else latitude, ",\n", sep = "", unindent = 1)
     oceDebug(debug, "      rc=", rc, ",\n", sep = "", unindent = 1)
-    oceDebug(debug, "      debug=", debug, ") {\n", sep = "", unindent = 1)
+    oceDebug(debug, "      debug=", debug, ") START\n", sep = "", unindent = 1)
     cl <- match.call()
     if (missing(t)) {
         stop("must supply 't', either a vector of times or a sealevel object")
@@ -1843,7 +1843,7 @@ tidem <- function(
     res@metadata$rc <- rc
     res@metadata$version <- 2
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep = "", collapse = ""))
-    oceDebug(debug, "} # tidem()\n", sep = "", unindent = 1)
+    oceDebug(debug, "END tidem()\n", sep = "", unindent = 1)
     res
 }
 
@@ -1909,7 +1909,7 @@ tidem <- function(
 predict.tidem <- function(object, newdata, ...) {
     dots <- list(...)
     debug <- if ("debug" %in% names(dots)) dots$debug else 0
-    oceDebug(debug, "predict.tidem() {\n", sep = "", unindent = 1)
+    oceDebug(debug, "predict.tidem() START\n", sep = "", unindent = 1)
     if (!missing(newdata) && !inherits(newdata, "POSIXt")) {
         stop("newdata must be of class POSIXt")
     }
@@ -1964,7 +1964,7 @@ predict.tidem <- function(object, newdata, ...) {
         }
         res <- as.numeric(predict(object@data$model, ...))
     }
-    oceDebug(debug, "} # predict.tidem()\n", sep = "", unindent = 1)
+    oceDebug(debug, "END predict.tidem()\n", sep = "", unindent = 1)
     res
 }
 
@@ -2086,7 +2086,7 @@ webtide <- function(
     plot = TRUE, tformat, debug = getOption("oceDebug"), ...) {
     debug <- max(0, min(floor(debug), 2))
     oceDebug(debug, "webtide(action=\"", action, "\", ...)\n",
-        sep = "", unindent = 1, style = "bold"
+        sep = "", unindent = 1 
     )
     rpd <- atan2(1, 1) / 45 # radians per degree
     action <- match.arg(action)
@@ -2162,13 +2162,13 @@ webtide <- function(
                     )
                 }
             }
-            oceDebug(debug, "} # webtide()\n", sep = "", unindent = 1, style = "bold")
+            oceDebug(debug, "END webtide()\n", sep = "", unindent = 1)
             return(invisible(list(node = node, latitude = latitude, longitude = longitude)))
         } else {
             node <- triangles$triangle
             longitude <- triangles$longitude
             latitude <- triangles$latitude
-            oceDebug(debug, "} # webtide()\n", sep = "", unindent = 1, style = "bold")
+            oceDebug(debug, "END webtide()\n", sep = "", unindent = 1)
             return(list(node = node, latitude = latitude, longitude = longitude))
         }
     } else if (action == "predict") {
@@ -2260,13 +2260,13 @@ webtide <- function(
                 drawTimeRange = FALSE, tformat = tformat
             )
             abline(h = 0, lty = "dotted", col = "gray")
-            oceDebug(debug, "} # webtide()\n", sep = "", unindent = 1, style = "bold")
+            oceDebug(debug, "END webtide()\n", sep = "", unindent = 1)
             return(invisible(list(
                 time = time, elevation = elevation, u = u, v = v,
                 node = node, basedir = basedir, region = region
             )))
         } else {
-            oceDebug(debug, "} # webtide()\n", sep = "", unindent = 1, style = "bold")
+            oceDebug(debug, "END webtide()\n", sep = "", unindent = 1)
             return(list(
                 time = time, elevation = elevation, u = u, v = v,
                 node = node, basedir = basedir, region = region

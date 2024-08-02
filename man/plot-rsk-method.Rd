@@ -146,10 +146,10 @@ Other things related to rsk data:
 \code{\link{as.rsk}()},
 \code{\link{ctdFindProfilesRBR}()},
 \code{\link{read.rsk}()},
+\code{\link{rsk}},
 \code{\link{rsk-class}},
 \code{\link{rskPatm}()},
 \code{\link{rskToc}()},
-\code{\link{rsk}},
 \code{\link{subset,rsk-method}},
 \code{\link{summary,rsk-method}}
 }

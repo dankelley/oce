@@ -44,11 +44,11 @@ argument is ignored).  If \code{longitude} is missing, both it and
 \item{latitude}{numeric vector of latitudes of points to be plotted (ignored
 if the first argument contains both latitude and longitude).}
 
-\item{longitudelim, latitudelim}{optional numeric vectors of length two, indicating the
-limits of the plot. A warning is issued if these are not specified together.
-See \dQuote{Examples} for a polar-region example, noting that
-the whole-globe span of \code{longitudelim} is used to centre the plot
-at the north pole.}
+\item{longitudelim, latitudelim}{optional numeric vectors of length
+two, indicating the limits of the plot. A warning is issued if
+these are not specified together. See \dQuote{Examples} for a
+polar-region example, noting that the whole-globe span of
+\code{longitudelim} is used to centre the plot at the north pole.}
 
 \item{grid}{either a number (or pair of numbers) indicating the spacing of
 longitude and latitude lines, in degrees, or a logical value (or pair of
@@ -86,22 +86,25 @@ will be set: no coastline filling for the \code{type="polygon"} case,
 or black coastlines, for \code{type="p"}, \code{type="l"}, or
 \code{type="o"}.}
 
-\item{clip}{logical value indicating whether to trim any coastline elements that lie wholly
-outside the plot region. This can prevent e.g. a problem of filling the whole plot area of
-an Arctic stereopolar view, because the projected trace for Antarctica lies outside all
-other regions so the whole of the world ends up being "land".  Setting \code{clip=FALSE}
-disables this action, which may be of benefit in rare instances in the line connecting
-two points on a coastline may cross the plot domain, even if those points are outside
-that domain.}
+\item{clip}{logical value indicating whether to trim any coastline
+elements that lie wholly outside the plot region. This can prevent
+e.g. a problem of filling the whole plot area of an Arctic
+stereopolar view, because the projected trace for Antarctica lies
+outside all other regions so the whole of the world ends up being
+"land".  Setting \code{clip=FALSE} disables this action, which may be of
+benefit in rare instances in the line connecting two points on a
+coastline may cross the plot domain, even if those points are
+outside that domain.}
 
-\item{type}{indication of type; may be \code{"polygon"}, for a filled polygon,
-\code{"p"} for points, \code{"l"} for line segments, or \code{"o"} for points
-overlain with line segments.}
+\item{type}{indication of type; may be \code{"polygon"}, for a filled
+polygon, \code{"p"} for points, \code{"l"} for line segments, or \code{"o"} for
+points overlain with line segments.}
 
-\item{axes}{a logical value indicating whether to draw longitude and latitude
-values in the lower and left margin, respectively.  This may not work well
-for some projections or scales.  See also \code{axisStyle}, \code{lonlabels}
-and \code{latlabels}, which offer more granular control of labelling.}
+\item{axes}{a logical value indicating whether to draw longitude
+and latitude values in the lower and left margin, respectively.
+This may not work well for some projections or scales.  See also
+\code{axisStyle}, \code{lonlabels} and \code{latlabels}, which offer more granular
+control of labelling.}
 
 \item{axisStyle}{an integer specifying the style of labels for the numbers
 on axes.  The choices are:
@@ -171,45 +174,46 @@ reproduce a scale exactly between two plots.}
 }
 \description{
 Plot coordinates as a map, using one of the subset of projections
-provided by the \CRANpkg{sf} package.  The projection information specified
-with the \code{mapPlot()} call is stored in a global variable that can be retrieved
-by related functions, making it easy to add points, lines, text, images
-or contours to an existing map.
-The \dQuote{Details} section, below, provides a list of
-available projections. The "Using map projections" vignette
-offers examples of several map plots, in addition to the single
-example provided in the \dQuote{Examples} section, below.
+provided by the \CRANpkg{sf} package.  The projection information
+specified with the \code{mapPlot()} call is stored in a global variable
+that can be retrieved by related functions, making it easy to add
+points, lines, text, images or contours to an existing map. The
+\dQuote{Details} section, below, provides a list of available
+projections. The "Using map projections" vignette offers examples
+of several map plots, in addition to the single example provided in
+the \dQuote{Examples} section.
 }
 \details{
-The calculations for map projections are done with
-the \CRANpkg{sf} package.  Importantly, though, not all
-the \CRANpkg{sf} projections are
-available in \code{oce}, for reasons relating to limitations
-of \CRANpkg{sf}, for example relating to inverse-projection
-calculations. The \code{oce} choices are tabulated
-below, e.g. \code{projection="+proj=aea"} selects the Albers equal area
-projection.  (See also the warning, below, about a problem
-with \CRANpkg{sf} version 0.9-8.)
+The calculations for map projections are done with the \CRANpkg{sf}
+package.  Importantly, though, not all the \CRANpkg{sf} projections
+are available in \code{oce}, for reasons relating to limitations of
+\CRANpkg{sf}, for example relating to inverse-projection
+calculations. The \code{oce} choices are tabulated below, e.g.
+\code{projection="+proj=aea"} selects the Albers equal area projection.
+(See also the warning, below, about a problem with \CRANpkg{sf}
+version 0.9-8.)
 
-Further details of the vast array of map projections provided by PROJ
-are given in reference 4.  This system has been in rapid development
-since about 2018, and reference 5 provides a helpful overview of the changes
-and the reasons why they were necessary.  Practical examples of map projections in
-\CRANpkg{oce} are provided in reference 6, along with some notes on problems.
-A fascinating treatment of the history of map projections is provided
-in reference 7.  To get an idea of how projections are being created
-nowadays, see reference 8, about the \code{eqearth} projection that was added
-to \CRANpkg{oce} in August 2020.
+Further details of the vast array of map projections are given in
+reference 4.  This system has been in rapid development since about
+2018, and reference 5 provides a helpful overview of the changes
+and the reasons why they were necessary. Practical examples of map
+projections in \CRANpkg{oce} are provided in reference 6, along
+with some notes on problems. A fascinating treatment of the history
+of map projections is provided in reference 7.  To get an idea of
+how projections are being created nowadays, see reference 8, about
+the \code{eqearth} projection that was added to \CRANpkg{oce} in August
+2020.
 }
 \section{Available Projections}{
 
 
-The following table lists projections available in \CRANpkg{oce}, and was generated
-by reformatting a subset of the output of the unix
-command \code{proj -lP}. Most of the arguments have default values, and many
-projections also have optional arguments.  Although e.g. \code{proj -l=aea}
-provides a little more information about particular projections,
-users ought to consult reference 4 for fuller details and illustrations.\tabular{lll}{
+The following table lists projections available in \CRANpkg{oce},
+and was generated by reformatting a subset of the output of the
+unix command \code{proj -lP}. Most of the arguments have default values,
+and many projections also have optional arguments.  Although e.g.
+\code{proj -l=aea} provides a little more information about particular
+projections, users ought to consult reference 4 for fuller details
+and illustrations.\tabular{lll}{
    \strong{Projection} \tab \strong{Code} \tab \strong{Arguments} \cr
    Albers equal area \tab \code{aea} \tab \code{lat_1}, \code{lat_2} \cr
    Azimuthal equidistant \tab \code{aeqd} \tab \code{lat_0}, \code{guam} \cr
@@ -542,6 +546,7 @@ Other functions related to maps:
 \code{\link{mapText}()},
 \code{\link{mapTissot}()},
 \code{\link{oceCRS}()},
+\code{\link{oceProject}()},
 \code{\link{shiftLongitude}()},
 \code{\link{usrLonLat}()},
 \code{\link{utm2lonlat}()}

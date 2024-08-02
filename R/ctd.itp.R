@@ -39,7 +39,7 @@ read.ctd.itp <- function(
             stop("empty file \"", file, "\"")
         }
     }
-    oceDebug(debug, "read.ctd.itp() {\n", unindent = 1)
+    oceDebug(debug, "read.ctd.itp() START\n", unindent = 1)
     if (is.character(file)) {
         filename <- fullFilename(file)
         file <- file(file, "r", encoding = encoding)
@@ -155,6 +155,6 @@ read.ctd.itp <- function(
     } else {
         stop("can only handle 'profile' data type, not (presumably) SAMI type")
     }
-    oceDebug(debug, "} # read.ctd.itp()\n", unindent = 1)
+    oceDebug(debug, "END read.ctd.itp()\n", unindent = 1)
     res
 }

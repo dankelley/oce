@@ -20,8 +20,7 @@ in \code{\link[=mapPlot]{mapPlot()}}.
 }
 \description{
 Create a coordinate reference string (CRS), suitable for use as a
-\code{projection} argument to \code{\link[=mapPlot]{mapPlot()}} or
-\code{\link[=plot,coastline-method]{plot,coastline-method()}}.
+\code{projection} argument to \code{\link[=mapPlot]{mapPlot()}} or \code{\link[=plot,coastline-method]{plot,coastline-method()}}.
 }
 \section{Caution}{
  This is a preliminary version of this function,
@@ -46,6 +45,7 @@ plot(pacific, proj = oceCRS("Pacific"), span = 15000, col = NULL)
 plot(pacific, proj = oceCRS("North Pacific"), span = 12000, col = NULL)
 plot(pacific, proj = oceCRS("South Pacific"), span = 12000, col = NULL)
 }
+
 }
 \seealso{
 Other functions related to maps: 
@@ -69,6 +69,7 @@ Other functions related to maps:
 \code{\link{mapScalebar}()},
 \code{\link{mapText}()},
 \code{\link{mapTissot}()},
+\code{\link{oceProject}()},
 \code{\link{shiftLongitude}()},
 \code{\link{usrLonLat}()},
 \code{\link{utm2lonlat}()}

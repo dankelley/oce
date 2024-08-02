@@ -184,16 +184,16 @@ binApply2D <- function(x, y, f, xbreaks, ybreaks, FUN, include.lowest = FALSE, .
     }
     res <- matrix(NA_real_, nrow = nxbreaks - 1, ncol = nybreaks - 1)
     ycut <- cut(y, ybreaks, labels = FALSE, include.lowest = include.lowest)
-    F <- split(f, ycut)
-    X <- split(x, ycut)
+    Fs <- split(f, ycut)
+    Xs <- split(x, ycut)
     # cat("next is F before loop\n");print(F)
     # cat("next is X before loop\n");print(X)
-    for (iF in seq_along(F)) {
-        xcut <- cut(X[[iF]], xbreaks, labels = FALSE, include.lowest = include.lowest)
-        FF <- split(F[[iF]], xcut)
+    for (iF in seq_along(Fs)) {
+        xcut <- cut(Xs[[iF]], xbreaks, labels = FALSE, include.lowest = include.lowest)
+        FF <- split(Fs[[iF]], xcut)
         # browser()
         ii <- as.integer(names(FF))
-        jj <- as.integer(names(F)[[iF]])
+        jj <- as.integer(names(Fs)[[iF]])
         resiijj <- unlist(lapply(FF, FUN, ...))
         # message(vectorShow(dim(res)))
         # message("ii=", paste(ii, collapse=" "), ", jj=", paste(jj, collapse=" "),
@@ -472,9 +472,9 @@ binCount2D <- function(x, y, xbreaks, ybreaks, flatten = FALSE, include.lowest =
 
 #' Bin-average f=f(x,y)
 #'
-#' Average the values of a vector `f(x,y)` in bins defined on
-#' vectors `x` and `y`. A common example might be averaging
-#' spatial data into location bins.
+#' Average the values of a vector `f(x,y)` in bins defined on vectors
+#' `x` and `y`. A common example might be averaging spatial data into
+#' location bins.
 #'
 #' @param x vector of numerical values.
 #'
@@ -482,26 +482,23 @@ binCount2D <- function(x, y, xbreaks, ybreaks, flatten = FALSE, include.lowest =
 #'
 #' @param f Matrix of numerical values, a matrix f=f(x,y).
 #'
-#' @param xbreaks Vector of values of `x` at the boundaries between bins, calculated using
-#' [`pretty`]`(x)` if not supplied.
+#' @param xbreaks Vector of values of `x` at the boundaries between
+#' bins, calculated using [`pretty`]`(x)` if not supplied.
 #'
-#' @param ybreaks Vector of values of `y` at the boundaries between bins, calculated using
-#' [`pretty`]`(y)` if not supplied.
+#' @param ybreaks Vector of values of `y` at the boundaries between
+#' bins, calculated using [`pretty`]`(y)` if not supplied.
 #'
-#' @param flatten A logical value indicating whether
-#' the return value also contains equilength
-#' vectors `x`, `y`, `z` and `n`, a flattened
-#' representation of `xmids`, `ymids`, `result` and
-#' `number`.
+#' @param flatten a logical value indicating whether the return value
+#' also contains equilength vectors `x`, `y`, `z` and `n`, a flattened
+#' representation of `xmids`, `ymids`, `result` and `number`.
 #'
-#' @param fill Logical value indicating whether to fill `NA`-value gaps in
-#' the matrix. Gaps will be filled as the average of linear interpolations
-#' across rows and columns. See `fillgap`, which works together with this.
-#'
-#' @param fillgap Integer controlling the size of gap that can be filled
-#' across. If this is negative (as in the default), gaps will be filled
-#' regardless of their size. If it is positive, then gaps exceeding this
-#' number of indices will not be filled.
+#' @param fill,fillgap values controlling whether to attempt to fill
+#' gaps (that is, regions of NA values) in the matrix. If `fill`
+#' is false, gaps, or regions with NA values, are not altered.
+#' If `fill` is TRUE, then gaps that are of size less than
+#' or equal to `fillgap` are interpolated across,
+#' by calling [fillGapMatrix()] with the supplied value of
+#' `fillgap`.
 #'
 #' @param include.lowest logical value indicating whether to include
 #' `y` values for which the corresponding `x` is equal to `xmin`.
@@ -511,14 +508,17 @@ binCount2D <- function(x, y, xbreaks, ybreaks, flatten = FALSE, include.lowest =
 #' doing the computation of the average. This is passed to [mean()], which
 #' does the work of the present function.
 #'
-#' @return By default, i.e. with `flatten` being FALSE, [binMean2D()] returns a
-#' list with the following elements: `xmids`, a vector holding the x-bin midpoints;
-#' `ymids`, a vector holding the y-bin midpoints; `number`, a matrix holding the
-#' number the points in each bin; and `result`, a matrix holding the mean
-#' value in each bin. If `flatten` is TRUE, the `number` and `result`
-#' matrices are renamed as `n` and `f` and transformed to vectors, while
-#' the bin midpoints are renamed as `x` and `y` and extended to match the length
-#' of `n` and `f`.
+#' @template debugTemplate
+#'
+#' @return By default, i.e. with `flatten` being FALSE, [binMean2D()]
+#' returns a list with the following elements: `xmids`, a vector
+#' holding the x-bin midpoints; `ymids`, a vector holding the y-bin
+#' midpoints; `number`, a matrix holding the number the points in each
+#' bin; and `result`, a matrix holding the mean value in each bin. If
+#' `flatten` is TRUE, the `number` and `result` matrices are renamed
+#' as `n` and `f` and transformed to vectors, while the bin midpoints
+#' are renamed as `x` and `y` and extended to match the length of `n`
+#' and `f`.
 #'
 #' @examples
 #' library(oce)
@@ -538,7 +538,10 @@ binCount2D <- function(x, y, xbreaks, ybreaks, flatten = FALSE, include.lowest =
 #' @author Dan Kelley
 #'
 #' @family bin-related functions
-binMean2D <- function(x, y, f, xbreaks, ybreaks, flatten = FALSE, fill = FALSE, fillgap = -1, include.lowest = FALSE, na.rm = FALSE) {
+binMean2D <- function(x, y, f, xbreaks, ybreaks, flatten = FALSE,
+                      fill = FALSE, fillgap = -1, include.lowest = FALSE, na.rm = FALSE,
+                      debug = getOption("oceDebug")) {
+    oceDebug(debug, "binMean2D() START\n", sep = "", unindent = 1)
     if (missing(x)) {
         stop("must supply 'x'")
     }
@@ -574,24 +577,37 @@ binMean2D <- function(x, y, f, xbreaks, ybreaks, flatten = FALSE, fill = FALSE, 
     }
     resCount <- binCount2D(x = x, y = y, xbreaks = xbreaks, ybreaks = ybreaks, include.lowest = include.lowest)
     resMean <- binApply2D(x = x, y = y, f = f, xbreaks = xbreaks, ybreaks = ybreaks, FUN = mean, include.lowest = include.lowest, na.rm = TRUE)
-    # 2023-06-25 M <- .C("bin_mean_2d", length(x), as.double(x), as.double(y), as.double(f),
-    # 2023-06-25     length(xbreaks), as.double(xbreaks),
-    # 2023-06-25     length(ybreaks), as.double(ybreaks),
-    # 2023-06-25     as.integer(fill), as.integer(fillgap),
-    # 2023-06-25     number=integer((nxbreaks-1) * (nybreaks-1)),
-    # 2023-06-25     mean=double((nxbreaks-1) * (nybreaks-1)),
-    # 2023-06-25     NAOK=TRUE, PACKAGE="oce")
+    # fill gaps (new after issue2199-wip-dropped)
+    if (fill) {
+        resMean$result <- fillGapMatrix(resMean$result, fillgap = fillgap)
+    }
+    #issue2199-wip-dropped oceDebug(debug, "calling C code bin_mean_2d\n")
+    #issue2199-wip-dropped M <- .C("bin_mean_2d", length(x), as.double(x), as.double(y), as.double(f),
+    #issue2199-wip-dropped     length(xbreaks), as.double(xbreaks),
+    #issue2199-wip-dropped     length(ybreaks), as.double(ybreaks),
+    #issue2199-wip-dropped     as.integer(fill), as.integer(fillgap),
+    #issue2199-wip-dropped     number = integer((nxbreaks - 1L) * (nybreaks - 1L)),
+    #issue2199-wip-dropped     mean = double((nxbreaks - 1L) * (nybreaks - 1L)),
+    #issue2199-wip-dropped     debug = as.integer(debug),
+    #issue2199-wip-dropped     NAOK = TRUE, PACKAGE = "oce"
+    #issue2199-wip-dropped )
+    oceDebug(debug, "setting up return value\n")
     res <- list(
         xbreaks = xbreaks,
         ybreaks = ybreaks,
         xmids = xbreaks[-1] - 0.5 * diff(xbreaks),
         ymids = ybreaks[-1] - 0.5 * diff(ybreaks),
+        #issue2199-wip-dropped number = matrix(M$number, nrow = nxbreaks - 1L),
         number = resCount$number,
         result = resMean$result
+        #issue2199-wip-dropped if (fGiven) {
+        #issue2199-wip-dropped     matrix(M$mean, nrow = nxbreaks - 1)
+        #issue2199-wip-dropped } else {
+        #issue2199-wip-dropped     matrix(NA, ncol = nybreaks - 1, nrow = nxbreaks - 1)
+        #issue2199-wip-dropped }
     )
-    # number=matrix(M$number, nrow=nxbreaks-1),
-    # result=if (fGiven) matrix(M$mean, nrow=nxbreaks-1) else matrix(NA, ncol=nybreaks-1, nrow=nxbreaks-1))
     if (flatten) {
+        oceDebug(debug, "flattening\n")
         res2 <- list()
         res2$x <- rep(res$xmids, times = nybreaks - 1)
         res2$y <- rep(res$ymids, each = nxbreaks - 1)
@@ -599,6 +615,7 @@ binMean2D <- function(x, y, f, xbreaks, ybreaks, flatten = FALSE, fill = FALSE, 
         res2$n <- as.vector(res$number)
         res <- res2
     }
+    oceDebug(debug, "END binMean2D()\n", sep = "", unindent = 1)
     res
 } # binMean2D
 

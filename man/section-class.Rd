@@ -126,11 +126,11 @@ Other things related to section data:
 \code{\link{initializeFlagScheme,section-method}},
 \code{\link{plot,section-method}},
 \code{\link{read.section}()},
+\code{\link{section}},
 \code{\link{sectionAddStation}()},
 \code{\link{sectionGrid}()},
 \code{\link{sectionSmooth}()},
 \code{\link{sectionSort}()},
-\code{\link{section}},
 \code{\link{subset,section-method}},
 \code{\link{summary,section-method}}
 }

@@ -20,16 +20,24 @@ mapContour(
 )
 }
 \arguments{
-\item{longitude}{numeric vector of longitudes of points to be plotted, or an object of
-class \code{topo} (see \linkS4class{topo}), in which case
-\code{longitude}, \code{latitude} and \code{z} are inferred from that object.}
+\item{longitude}{numeric vector of longitudes of points to be
+plotted, or an object of class \code{topo} (see \linkS4class{topo}), in which
+case \code{longitude}, \code{latitude} and \code{z} are inferred from that object.
+Importantly, the \code{longitude} system must match that of the
+\code{\link[=mapPlot]{mapPlot()}} call that made the underlying plot. If not, the
+contours can have spurious lines that run across the plot. See
+\sQuote{Dealing with longitude conventions} for a method
+of handling conflicting longitude conventions between \code{\link[=mapPlot]{mapPlot()}}
+and \code{\link[=mapContour]{mapContour()}}.}
 
 \item{latitude}{numeric vector of latitudes of points to be plotted.}
 
-\item{z}{matrix to be contoured. The number of rows and columns in \code{z}
-must equal the lengths of \code{longitude} and \code{latitude}, respectively.}
+\item{z}{matrix to be contoured. The number of rows and columns in
+\code{z} must equal the lengths of \code{longitude} and \code{latitude},
+respectively.}
 
-\item{nlevels}{number of contour levels, if and only if \code{levels} is not supplied.}
+\item{nlevels}{number of contour levels, if and only if \code{levels} is
+not supplied.}
 
 \item{levels}{vector of contour levels.}
 
@@ -37,25 +45,25 @@ must equal the lengths of \code{longitude} and \code{latitude}, respectively.}
 \code{\link[=contour]{contour()}}, this is an absolute size, not a multiple of
 \code{\link{par}}\code{("cex")}.}
 
-\item{drawlabels}{logical value or vector indicating whether to draw contour
-labels.  If the length of \code{drawlabels} is less than the number of
-levels specified, then \code{\link[=rep]{rep()}} is used to increase the length,
-providing a value for each contour line. For those levels that are thus
-indicated, labels are added, at a spot where the contour line is
-closest to horizontal on the page. First, though, the region underneath
-the label is filled with the colour given by \code{\link{par}}\code{("bg")}.
-See \dQuote{Limitations} for notes on the status of contour
-labelling, and its limitations.}
+\item{drawlabels}{logical value or vector indicating whether to
+draw contour labels.  If the length of \code{drawlabels} is less than
+the number of levels specified, then \code{\link[=rep]{rep()}} is used to increase
+the length, providing a value for each contour line. For those
+levels that are thus indicated, labels are added, at a spot where
+the contour line is closest to horizontal on the page. First,
+though, the region underneath the label is filled with the colour
+given by \code{\link{par}}\code{("bg")}. See \dQuote{Limitations} for notes on the
+status of contour labelling, and its limitations.}
 
 \item{underlay}{character value relating to handling labels. If
 this equals \code{"erase"} (which is the default), then the contour line
-is drawn  first, then the area under the label is erased (filled with
-white 'ink'), and then the label is drawn. This can be useful
-in drawing coarsely-spaced labelled contours on top of finely-spaced
-unlabelled contours. On the other hand, if \code{underlay} equals
-\code{"interrupt"}, then the contour line is interrupted in the
-region of the label, which is closer to the scheme used by the
-base \code{\link[=contour]{contour()}} function.}
+is drawn  first, then the area under the label is erased (filled
+with white 'ink'), and then the label is drawn. This can be useful
+in drawing coarsely-spaced labelled contours on top of
+finely-spaced unlabelled contours. On the other hand, if \code{underlay}
+equals \code{"interrupt"}, then the contour line is interrupted in the
+region of the label, which is closer to the scheme used by the base
+\code{\link[=contour]{contour()}} function.}
 
 \item{col}{colour of the contour line, as for \code{\link{par}}\code{("col")},
 except here \code{col} gets lengthened by calling \code{\link[=rep]{rep()}},
@@ -76,13 +84,7 @@ be printed. If one function calls another, it usually reduces the value of
 by specifying higher \code{debug} values.}
 }
 \description{
-Plot contours on an existing map.
-}
-\details{
-Adds contour lines to an existing map, using \code{\link[=mapLines]{mapLines()}}.
-
-The ability to label the contours was added in February, 2019, and
-how this works may change through the summer months of that year.
+Draw contour lines to an existing map, using \code{\link[=mapLines]{mapLines()}}.
 Note that label placement in \code{mapContour} is handled differently
 than in \code{\link[=contour]{contour()}}.
 }
@@ -92,11 +94,27 @@ than in \code{\link[=contour]{contour()}}.
 library(oce)
 data(coastlineWorld)
 if (requireNamespace("ocedata", quietly=TRUE)) {
-    data(levitus, package="ocedata")
-    par(mar=rep(1, 4))
-    mapPlot(coastlineWorld, projection="+proj=robin", col="lightgray")
-    mapContour(levitus[["longitude"]], levitus[["latitude"]], levitus[["SST"]])
+    data(levitus, package = "ocedata")
+    par(mar = rep(1, 4))
+    mapPlot(coastlineWorld, projection = "+proj=robin", col = "lightgray")
+    mapContour(levitus$longitude, levitus$latitude, levitus$SST)
 }
+}
+}
+
+\section{Dealing with longitude conventions}{
+
+
+Suppose a map has been plotted using longitudes that are bound between -180
+and 180. To overlay contours defined with longitude bound between 0 and 360
+(as for the built-in \code{coastlineWorld} dataset), try Clark Richards' method
+(\url{https://github.com/dankelley/oce/issues/2217}, as below.
+
+\preformatted{
+# Start with z=z(lon,lat), with lon bound by 0 and 360
+z2 <- rbind(z[lon > 180, ], z[lon <= 180, ])
+lon2 <- lon + 180
+mapContour(lon2, lat, z2)
 }
 }
 
@@ -124,6 +142,7 @@ Other functions related to maps:
 \code{\link{mapText}()},
 \code{\link{mapTissot}()},
 \code{\link{oceCRS}()},
+\code{\link{oceProject}()},
 \code{\link{shiftLongitude}()},
 \code{\link{usrLonLat}()},
 \code{\link{utm2lonlat}()}

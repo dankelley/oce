@@ -19,7 +19,7 @@ vignette: >
 
 
 ```{r, echo=FALSE}
-knitr::opts_chunk$set(collapse=TRUE, comment="#>")
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 ```
 
 **Abstract.** This vignette explains how to create new object classes, using
@@ -52,7 +52,7 @@ The data were combined into a data frame named `db` and packaged in an RDA
 file, an overview of which is provided as follows.
 ```{r}
 library(oce)
-load(system.file("extdata", "drifter.rda", package="oce"))
+load(system.file("extdata", "drifter.rda", package = "oce"))
 str(db)
 ```
 
@@ -96,7 +96,7 @@ str(o[["latitude"]])
 We can also use the default `plot()` function to show the interdependence of
 entries in the `data` slot.
 ```{r fig.cap="**Figure 1.** Demonstration of base-level plot().", fig.width=4, fig.height=4, dpi=72, dev.args=list(pointsize=10)}
-plot(o, pch=20, cex=0.5)
+plot(o, pch = 20, cex = 0.5)
 ```
 
 Although this plot provides a useful overview of the data, it is not something
@@ -108,7 +108,7 @@ create a new subclass that has a specialized `plot()` method.
 A reasonable name for our new subclass might be `"drifter"`.  With this
 choice, the class can be defined in a single line of code:
 ```{r}
-drifter <- setClass(Class="drifter", contains="oce")
+drifter <- setClass(Class = "drifter", contains = "oce")
 ```
 
 Once this has been executed, the user can create a new object of this subclass
@@ -122,23 +122,28 @@ is more convenient to supply this information when `new()` is used.  To
 accomplish this, we must set up an initialization function, as follows.
 
 ```{r}
-setMethod(f="initialize",
-  signature="drifter",
-  definition=function(.Object, time, longitude, latitude, ID="unknown") {
-      if (missing(time))
-          stop("In new(drifter) : must provide 'time'", call.=FALSE)
-      if (missing(longitude))
-          stop("In new(drifter) : must provide 'longitude'", call.=FALSE)
-      if (missing(latitude))
-          stop("In new(drifter) : must provide 'latitude'", call.=FALSE)
-      .Object@data$time <- time
-      .Object@data$longitude <- longitude
-      .Object@data$latitude <- latitude
-      .Object@metadata$ID <- ID
-      .Object@processingLog$time <- presentTime()
-      .Object@processingLog$value <- "create 'drifter' object"
-      return(.Object)
-})
+setMethod(
+    f = "initialize",
+    signature = "drifter",
+    definition = function(.Object, time, longitude, latitude, ID = "unknown") {
+        if (missing(time)) {
+            stop("In new(drifter) : must provide 'time'", call. = FALSE)
+        }
+        if (missing(longitude)) {
+            stop("In new(drifter) : must provide 'longitude'", call. = FALSE)
+        }
+        if (missing(latitude)) {
+            stop("In new(drifter) : must provide 'latitude'", call. = FALSE)
+        }
+        .Object@data$time <- time
+        .Object@data$longitude <- longitude
+        .Object@data$latitude <- latitude
+        .Object@metadata$ID <- ID
+        .Object@processingLog$time <- presentTime()
+        .Object@processingLog$value <- "create 'drifter' object"
+        return(.Object)
+    }
+)
 ```
 
 This method takes away the choice of where to put things (in `data` or in
@@ -155,7 +160,7 @@ Error: In new(drifter) : must provide 'time'
 With this setup, we may now create an object that we can use for the rest of
 this vignette:
 ```{r}
-d <- new("drifter", time=db$t, longitude=db$lon, latitude=db$lat, ID=4201703)
+d <- new("drifter", time = db$t, longitude = db$lon, latitude = db$lat, ID = 4201703)
 ```
 and this will be used in the next three subsections, showing how to specialize
 the `plot()` method, the `summary()` method, and the `[[` accessor. Note the
@@ -170,36 +175,41 @@ two give time-series plots of drifter longitude and latitude, and the third
 shows the trajectory.
 
 ```{r}
-setMethod(f="plot",
-    signature=signature("drifter"),
-    definition=function(x, which=1, ...) {
-        lonlab <- expression("Longitude ["*degree*"E]")
-        latlab <- expression("Latitude ["*degree*"N]")
+setMethod(
+    f = "plot",
+    signature = signature("drifter"),
+    definition = function(x, which = 1, ...) {
+        lonlab <- expression("Longitude [" * degree * "E]")
+        latlab <- expression("Latitude [" * degree * "N]")
         if (which == 1) {
             oce.plot.ts(x[["time"]], x[["longitude"]],
-                ylab=lonlab, ...)
+                ylab = lonlab, ...
+            )
         } else if (which == 2) {
             oce.plot.ts(x[["time"]], x[["latitude"]],
-                ylab=latlab, ...)
+                ylab = latlab, ...
+            )
         } else if (which == 3) {
             asp <- 1 / cos(mean(range(x[["latitude"]]) * pi / 180))
             plot(x[["longitude"]], x[["latitude"]],
-                asp=asp, xlab=lonlab, ylab=latlab, ...)
+                asp = asp, xlab = lonlab, ylab = latlab, ...
+            )
         } else {
-            stop("In plot,drifter-method : try which=1, 2 or 3", call.=FALSE)
+            stop("In plot,drifter-method : try which=1, 2 or 3", call. = FALSE)
         }
-    })
+    }
+)
 ```
 
 The three plot types are fairly rudimentary, but the `...` argument can be used
 for customization, as in the following example.
 
 ```{r fig.cap="**Figure 2.** Demonstration of specialized plot()."}
-par(mar=c(3.3, 3.3, 1, 1), mgp=c(2, 0.7, 0))
-layout(matrix(c(1, 3, 2, 3), nrow=2, byrow=TRUE))
-plot(d, which=1, drawTimeRange=FALSE)
-plot(d, which=2, drawTimeRange=FALSE)
-plot(d, which=3)
+par(mar = c(3.3, 3.3, 1, 1), mgp = c(2, 0.7, 0))
+layout(matrix(c(1, 3, 2, 3), nrow = 2, byrow = TRUE))
+plot(d, which = 1, drawTimeRange = FALSE)
+plot(d, which = 2, drawTimeRange = FALSE)
+plot(d, which = 3)
 ```
 
 
@@ -211,13 +221,15 @@ suffice to summarize the rest.
 
 So, with
 ```{r}
-setMethod(f="summary",
-    signature="drifter",
-    definition=function(object, ...) {
+setMethod(
+    f = "summary",
+    signature = "drifter",
+    definition = function(object, ...) {
         cat("CTD Summary\n-----------\n\n")
-        cat("* ID:          ", object[["ID"]], "\n", sep="")
+        cat("* ID:          ", object[["ID"]], "\n", sep = "")
         invisible(callNextMethod())
-    })
+    }
+)
 ```
 
 An example follows.
@@ -234,9 +246,10 @@ this is of sufficient interest that it might be worth adding to `[[`.  This may
 be done as follows.
 
 ```{r}
-setMethod(f="[[",
-    signature(x="drifter", i="ANY", j="ANY"),
-    definition=function(x, i, j, ...) {
+setMethod(
+    f = "[[",
+    signature(x = "drifter", i = "ANY", j = "ANY"),
+    definition = function(x, i, j, ...) {
         if (i == "velocity") {
             D <- function(x) {
                 dx <- diff(x)
@@ -245,23 +258,24 @@ setMethod(f="[[",
             lat <- x[["latitude"]]
             lon <- x[["longitude"]]
             dt <- D(as.numeric(x[["time"]])) # seconds
-            scalex <- 111.12e3         # m per degree latitude
-            scaley <- scalex * cos(lat*pi/180)
+            scalex <- 111.12e3 # m per degree latitude
+            scaley <- scalex * cos(lat * pi / 180)
             u <- scalex * D(lon) / dt
             v <- scaley * D(lat) / dt
-            list(u=u, v=v)
+            list(u = u, v = v)
         } else {
             callNextMethod()
         }
-    })
+    }
+)
 ```
 
 As a test, we can plot the velocity components.
 ```{r fig.cap="**Figure 3.** Velocities inferred from drifter motion.", fig.width=5, fig.height=3, dpi=72, dev.args=list(pointsize=10)}
 uv <- d[["velocity"]]
-par(mfrow=c(2, 1))
-oce.plot.ts(d[["time"]], uv$u, ylab="Eastward velo. [m/s]", grid=TRUE)
-oce.plot.ts(d[["time"]], uv$v, ylab="Northward vel. [m/s]", grid=TRUE)
+par(mfrow = c(2, 1))
+oce.plot.ts(d[["time"]], uv$u, ylab = "Eastward velo. [m/s]", grid = TRUE)
+oce.plot.ts(d[["time"]], uv$v, ylab = "Northward vel. [m/s]", grid = TRUE)
 ```
 
 The `acf()` function, which computes lagged autocorrelation, can shed some
@@ -270,13 +284,13 @@ follows.
 
 ```{r fig.cap="**Figure 4.** Autocorrelation analysis of drifter velocities, showing also the M2 period.", fig.width=5, fig.height=3, dpi=72, dev.args=list(pointsize=10)}
 data(tidedata)
-M2period <- 1 / with(tidedata$const, freq[[which(name=="M2")]])
+M2period <- 1 / with(tidedata$const, freq[[which(name == "M2")]])
 uv <- d[["velocity"]]
-par(mfrow=c(2, 1), mar=c(3, 3, 1, 1), mgp=c(2, 0.7, 0))
-acf(uv$u, main="", ylab="u ACF")
-abline(v=M2period, col=2)
-acf(uv$v, main="", ylab="v ACF")
-abline(v=M2period, col=2)
+par(mfrow = c(2, 1), mar = c(3, 3, 1, 1), mgp = c(2, 0.7, 0))
+acf(uv$u, main = "", ylab = "u ACF")
+abline(v = M2period, col = 2)
+acf(uv$v, main = "", ylab = "v ACF")
+abline(v = M2period, col = 2)
 ```
 
 

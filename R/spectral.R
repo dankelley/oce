@@ -164,13 +164,7 @@ pwelch <- function(
     gave.nfft <- !missing(nfft)
     gave.noverlap <- !missing(noverlap)
     gave.spec <- !missing(spec)
-    oceDebug(debug, "pwelch(x, ",
-        argShow(window),
-        argShow(nfft),
-        argShow(noverlap),
-        argShow(fs), "...) {\n",
-        sep = "", style = "bold", unindent = 1
-    )
+    oceDebug(debug, "pwelch(x, ", argShow(window), argShow(nfft), argShow(noverlap), argShow(fs), "...) START\n", sep = "", unindent = 1)
     if (is.ts(x)) {
         if (missing(fs)) {
             fs <- frequency(x)
@@ -298,10 +292,10 @@ pwelch <- function(
     class(res) <- "spec"
     if (plot) {
         plot(res, ...)
-        oceDebug(debug, "} # pwelch()\n", style = "bold", unindent = 1, sep = "")
+        oceDebug(debug, "END pwelch()\n", unindent = 1, sep = "")
         return(invisible(res))
     } else {
-        oceDebug(debug, "} # pwelch()\n", style = "bold", unindent = 1, sep = "")
+        oceDebug(debug, "END pwelch()\n", unindent = 1, sep = "")
         return(res)
     }
 }

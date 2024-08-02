@@ -10,6 +10,7 @@ ctdDecimate(
   method = "boxcar",
   rule = 1,
   e = 1.5,
+  na.rm = FALSE,
   debug = getOption("oceDebug")
 )
 }
@@ -60,6 +61,16 @@ bin is of the same pressure range as the first inside bin.  For other values of
 \code{e}, the neighbourhood is expanded linearly in each direction.  If the
 \code{"lm"} method produces warnings about "prediction from a rank-deficient
 fit", a larger value of \code{"e"} should be used.}
+
+\item{na.rm}{logical value indicating whether to remove NA values
+before decimating.  This value is ignored unless \code{method} is
+\code{boxcar} in which case it is passed to \code{\link[=binMean1D]{binMean1D()}} which does the
+averaging. This parameter was added in February 2024, and the
+behaviour of \code{\link[=ctdDecimate]{ctdDecimate()}} prior that date was equivalent
+to \code{na.rm=FALSE}, so that is the default value, even though
+it is expected that many uses will find using TRUE is more
+convenient. See \verb{https://github.com/dankelley/oce/issues/2192}
+for more discussion.}
 
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
@@ -138,15 +149,15 @@ Other things related to ctd data:
 \code{\link{[[<-,ctd-method}},
 \code{\link{as.ctd}()},
 \code{\link{cnvName2oceName}()},
+\code{\link{ctd}},
 \code{\link{ctd-class}},
 \code{\link{ctd.cnv.gz}},
-\code{\link{ctdFindProfilesRBR}()},
 \code{\link{ctdFindProfiles}()},
+\code{\link{ctdFindProfilesRBR}()},
 \code{\link{ctdRaw}},
 \code{\link{ctdRepair}()},
 \code{\link{ctdTrim}()},
 \code{\link{ctd_aml.csv.gz}},
-\code{\link{ctd}},
 \code{\link{d200321-001.ctd.gz}},
 \code{\link{d201211_0011.cnv.gz}},
 \code{\link{handleFlags,ctd-method}},
@@ -158,6 +169,7 @@ Other things related to ctd data:
 \code{\link{plotProfile}()},
 \code{\link{plotScan}()},
 \code{\link{plotTS}()},
+\code{\link{read.ctd}()},
 \code{\link{read.ctd.aml}()},
 \code{\link{read.ctd.itp}()},
 \code{\link{read.ctd.odf}()},
@@ -165,9 +177,8 @@ Other things related to ctd data:
 \code{\link{read.ctd.saiv}()},
 \code{\link{read.ctd.sbe}()},
 \code{\link{read.ctd.ssda}()},
-\code{\link{read.ctd.woce.other}()},
 \code{\link{read.ctd.woce}()},
-\code{\link{read.ctd}()},
+\code{\link{read.ctd.woce.other}()},
 \code{\link{setFlags,ctd-method}},
 \code{\link{subset,ctd-method}},
 \code{\link{summary,ctd-method}},

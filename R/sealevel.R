@@ -447,9 +447,20 @@ as.sealevel <- function(
 #'
 #' @param mar value to be used with [`par`]`("mar")`.
 #'
-#' @param marginsAsImage boolean, `TRUE` to put a wide margin to the right
-#' of time-series plots, matching the space used up by a palette in an
-#' [imagep()] plot.
+#' @param marginsAsImage logical value indicating whether to put a
+#' wide margin to the right of time-series plots, matching the space
+#' used up by a palette in an [imagep()] plot.
+#'
+#' @param grid logical value, indicating whether to draw a grid with
+#' [grid()].
+#'
+#' @param xlim,ylim optional limits for axes. If not supplied,
+#' reasonable choices will be made
+#'
+#' @param xaxs,yaxs axis-limit parameters, as for standard graphics.
+#' The default is to make the time axis extend to the edges of
+#' the box, but to make the y axis have some space above and below
+#' the range of the data.
 #'
 #' @param debug a flag that turns on debugging, if it exceeds 0.
 #'
@@ -498,25 +509,34 @@ setMethod(
                           mgp = getOption("oceMgp"),
                           mar = c(mgp[1] + 0.5, mgp[1] + 1.5, mgp[2] + 1, mgp[2] + 3 / 4),
                           marginsAsImage = FALSE,
+                          grid = TRUE,
+                          xlim, ylim, xaxs = "i", yaxs = "r",
                           debug = getOption("oceDebug"),
                           ...) {
-        oceDebug(debug, "plot.sealevel(..., mar=c(", paste(mar, collapse = ", "), "), ...) {\n", sep = "", unindent = 1)
+        oceDebug(debug, "plot.sealevel(..., mar=c(", paste(mar, collapse = ", "), "), ...) START\n", sep = "", unindent = 1)
+        xlimGiven <- !missing(xlim)
+        ylimGiven <- !missing(ylim)
         titlePlot <- function(x) {
             title <- ""
             if (!is.null(x@metadata$stationNumber) || !is.null(x@metadata$stationName) || !is.null(x@metadata$region)) {
-                title <- paste(title, gettext("Station ", domain = "R-oce"),
+                # "Station"
+                # title <- paste(title, gettext("Station ", domain = "R-oce"),
+                title <- paste(
                     if (!is.na(x@metadata$stationNumber)) x@metadata$stationNumber else "",
-                    " ",
                     if (!is.null(x@metadata$stationName)) x@metadata$stationName else "",
-                    " ",
-                    if (!is.null(x@metadata$region)) x@metadata$region else "",
-                    sep = ""
+                    if (!is.null(x@metadata$region)) x@metadata$region else ""
                 )
+                oceDebug(debug, paste0("stage 1. title=\"", title, "\"\n"))
             }
             if (!is.na(x@metadata$latitude) && !is.na(x@metadata$longitude)) {
                 title <- paste(title, latlonFormat(x@metadata$latitude, x@metadata$longitude), sep = "")
             }
+            oceDebug(debug, paste0("stage 2. title=\"", title, "\"\n"))
+            title <- trimws(title)
+            oceDebug(debug, paste0("stage 3. title=\"", title, "\"\n"))
             if (nchar(title) > 0) {
+                title <- paste0(gettext("Station ", domain = "R-oce"), title)
+                oceDebug(debug, paste0("stage 4. title=\"", title, "\"\n"))
                 mtext(side = 3, title, adj = 1, cex = 2 / 3)
             }
         }
@@ -563,18 +583,24 @@ setMethod(
         for (w in seq_along(which2)) {
             oceDebug(debug, "plotting for code which2[", w, "] = ", which2[w], "\n", sep = "")
             if (which2[w] == 1) {
+                xlim <- if (xlimGiven) xlim else (range(x@data$time, na.rm = TRUE))
+                ylim <- if (ylimGiven) ylim else (range(x@data$elevation, na.rm = TRUE))
                 plot(x@data$time, x@data$elevation,
                     xlab = "",
                     ylab = resizableLabel("elevation"),
-                    type = "l", xaxs = "i",
-                    lwd = 0.5, axes = FALSE, ...
+                    type = "l",
+                    lwd = 0.5, axes = FALSE,
+                    xlim = xlim, ylim = ylim, xaxs = xaxs, yaxs = yaxs,
+                    ...
                 )
                 tics <- oce.axis.POSIXct(1, x@data$time, drawTimeRange = drawTimeRange, cex.axis = 1, debug = debug - 1)
                 box()
                 titlePlot(x)
                 yax <- axis(2)
-                abline(h = yax, col = "darkgray", lty = "dotted")
-                abline(v = tics, col = "darkgray", lty = "dotted")
+                if (grid) {
+                    abline(h = yax, col = "darkgray", lty = "dotted")
+                    abline(v = tics, col = "darkgray", lty = "dotted")
+                }
             } else if (which2[w] == 2) {
                 # sample month
                 from <- trunc(x@data$time[1], "day")
@@ -585,20 +611,25 @@ setMethod(
                     xx@data[[i]] <- x@data[[i]][look]
                 }
                 if (any(is.finite(xx@data$elevation))) {
+                    xlim <- if (xlimGiven) xlim else (range(x@data$time, na.rm = TRUE))
+                    ylim <- if (ylimGiven) ylim else (range(x@data$elevation, na.rm = TRUE))
                     atWeek <- seq(from = from, to = to, by = "week")
                     atDay <- seq(from = from, to = to, by = "day")
                     plot(xx@data$time, xx@data$elevation,
                         xlab = "",
                         ylab = resizableLabel("elevation"),
                         type = "l", xaxs = "i",
+                        xlim = xlim, ylim = ylim, xaxs = xaxs, yaxs = yaxs,
                         axes = FALSE
                     )
                     oce.axis.POSIXct(1, xx@data$time, drawTimeRange = drawTimeRange, cex.axis = 1, debug = debug - 1)
                     yax <- axis(2)
-                    abline(h = yax, col = "lightgray", lty = "dotted")
                     box()
-                    abline(v = atWeek, col = "darkgray", lty = "dotted")
-                    abline(v = atDay, col = "lightgray", lty = "dotted")
+                    if (grid) {
+                        abline(h = yax, col = "lightgray", lty = "dotted")
+                        abline(v = atWeek, col = "darkgray", lty = "dotted")
+                        abline(v = atDay, col = "lightgray", lty = "dotted")
+                    }
                 } else {
                     plot(0:1, 0:1, type = "n", xlab = "", ylab = "", axes = FALSE)
                     box()
@@ -609,16 +640,26 @@ setMethod(
                     Elevation <- ts(x@data$elevation, start = 1, deltat = x@metadata$deltat)
                     s <- spectrum(Elevation - mean(Elevation), plot = FALSE, log = "y", demean = TRUE, detrend = TRUE)
                     par(mar = c(mgp[1] + 1.25, mgp[1] + 1.5, mgp[2] + 0.25, mgp[2] + 3 / 4))
-                    xlim <- c(0, 0.1) # FIXME: should be able to set this
-                    ylim <- range(subset(s$spec, xlim[1] <= s$freq & s$freq <= xlim[2]))
+                    xlim <- if (xlimGiven) xlim else c(0, 0.1)
+                    ylim <- if (ylimGiven) {
+                        ylim
+                    } else {
+                        range(subset(
+                            s$spec,
+                            xlim[1] <= s$freq & s$freq <= xlim[2]
+                        ), na.rm = TRUE)
+                    }
                     plot(s$freq, s$spec,
-                        xlim = xlim, ylim = ylim,
                         xlab = resizableLabel("frequency cph"),
                         ylab = resizableLabel("spectral density m2/cph"),
                         # [m^2/cph]",
-                        type = "l", log = "y"
+                        xlim = xlim, ylim = ylim, xaxs = xaxs, yaxs = yaxs,
+                        type = "l", log = "y",
+                        ...
                     )
-                    grid()
+                    if (grid) {
+                        grid(col = "darkgray", lty = "dotted")
+                    }
                     drawConstituents()
                 } else {
                     plot(0:1, 0:1, type = "n", xlab = "", ylab = "", axes = FALSE)
@@ -633,12 +674,17 @@ setMethod(
                     nCumSpec <- length(s$spec)
                     cumSpec <- sqrt(cumsum(s$spec) / nCumSpec)
                     par(mar = c(mgp[1] + 1.25, mgp[1] + 2.5, mgp[2] + 0.25, mgp[2] + 0.25))
+                    xlim <- if (xlimGiven) xlim else c(0, 0.1)
+                    ylim <- if (ylimGiven) ylim else range(cumSpec, na.rm = TRUE)
                     plot(s$freq, cumSpec,
+                        type = "l",
                         xlab = resizableLabel("frequency cph"),
                         ylab = expression(paste(integral(Gamma, 0, f), " df [m]")),
-                        type = "l", xlim = c(0, 0.1)
+                        xlim = xlim, ylim = ylim, xaxs = xaxs, yaxs = yaxs
                     )
-                    grid()
+                    if (grid) {
+                        grid(col = "darkgray", lty = "dotted")
+                    }
                     drawConstituents()
                 } else {
                     warning("cannot draw sealevel spectum, because the series contains missing values")
@@ -654,7 +700,7 @@ setMethod(
                 par(mar = omar)
             }
         }
-        oceDebug(debug, "} # plot.sealevel()\n", unindent = 1)
+        oceDebug(debug, "END plot.sealevel()\n", unindent = 1)
         invisible(NULL)
     }
 )
@@ -722,7 +768,7 @@ read.sealevel <- function(
             stop("empty file \"", file, "\"")
         }
     }
-    oceDebug(debug, "read.sealevel(file=\"", file, "\", ...) {\n", sep = "", unindent = 1)
+    oceDebug(debug, "read.sealevel(file=\"", file, "\", ...) START\n", sep = "", unindent = 1)
     filename <- "?"
     if (is.character(file)) {
         filename <- fullFilename(file)
@@ -963,5 +1009,6 @@ read.sealevel <- function(
         res@processingLog,
         paste("read.sealevel(file=\"", filename, "\", tz=\"", tz, "\")", sep = "", collapse = "")
     )
+    oceDebug(debug, "END read.sealevel()\n", unindent = 1)
     res
 }

@@ -35,7 +35,7 @@
 #' }
 #' @author Dan Kelley
 adpAd2cpFileTrim <- function(infile, n = 100L, outfile, debug = getOption("oceDebug")) {
-    oceDebug(debug, "adpAd2cpFileTrim(infile=\"", infile, "\", n=", n, ", debug=", debug, ") { #\n", unindent = 1)
+    oceDebug(debug, "adpAd2cpFileTrim(infile=\"", infile, "\", n=", n, ", debug=", debug, ") START\n", unindent = 1)
     debug <- ifelse(debug < 1, 0L, ifelse(debug < 2, 1, 2))
     if (missing(infile)) {
         stop("must provide 'infile'")
@@ -58,7 +58,7 @@ adpAd2cpFileTrim <- function(infile, n = 100L, outfile, debug = getOption("oceDe
     last <- r$start[n + 1L] - 1L
     buf <- readBin(infile, "raw", n = last)
     writeBin(buf, outfile, useBytes = TRUE)
-    oceDebug(debug, "} # adpAd2cpFileTrim\n", unindent = 1)
+    oceDebug(debug, "END adpAd2cpFileTrim\n", unindent = 1)
     outfile
 }
 
@@ -595,8 +595,8 @@ read.adp.ad2cp <- function(
         "  plan=", if (planGiven) plan else "(missing)",
         ", debug=", debug,
         # ", ignoreChecksums=", ignoreChecksums,
-        ", ...)\n",
-        sep = "", unindent = 1, style = "bold"
+        ", ...) START\n",
+        sep = "", unindent = 1
     )
     #- if (typeGiven) {
     #-     typeAllowed <- c("Signature100", "Signature250", "Signature500", "Signature1000")
@@ -952,7 +952,7 @@ read.adp.ad2cp <- function(
         oceDebug(
             debug, "Checking commonData$configuration (a ",
             paste(dim(commonData$configuration), collapse = "x"),
-            " matrix) consistency within columns {\n"
+            " matrix) consistency within columns\n"
         )
         badID <- 0L
         for (id in as.raw(unique(d$id))) {
@@ -995,7 +995,7 @@ read.adp.ad2cp <- function(
         } else {
             oceDebug(debug, "no ID types had inconsistencies\n")
         }
-        oceDebug(debug, "} finished checking commonData$configuration consistency\n")
+        oceDebug(debug, "finished checking commonData$configuration consistency\n")
     })
     # Extract columns as simply-named flags, for convenience. The variable
     # names to which the assignments are made apply to average/burst data.
@@ -1439,7 +1439,7 @@ read.adp.ad2cp <- function(
             powerLevel = powerLevel[look]
         )
         oceDebug(debug, "configuration0=", paste(ifelse(configuration0, "T", "F"), collapse = ", "), "\n")
-        oceDebug(debug, "vector-read 'burstAltimeterRaw' records (0x1a) {\n")
+        oceDebug(debug, "vector-read 'burstAltimeterRaw' records (0x1a) START\n")
         # See CR's snapshot at
         # https://github.com/dankelley/oce/issues/1959#issuecomment-1141409542
         # which is p89 of Nortek AS. "Signature Integration
@@ -1485,7 +1485,7 @@ read.adp.ad2cp <- function(
         if (configuration0[15]) {
             rval <- getItemFromBuf(rval, "stdDev", i = i, type = type, debug = debug)
         }
-        oceDebug(debug, "} # vector-read for type=", type, "\n")
+        oceDebug(debug, "END vector-read for type=", type, "\n", sep = "", unindent = 1)
         rval
     } # readBurstAltimeterRaw
 
@@ -1493,7 +1493,7 @@ read.adp.ad2cp <- function(
     readEchosounderRaw <- function(id, debug = getOption("oceDebug")) # uses global 'd'
     {
         type <- gsub(".*=", "", ad2cpCodeToName(id))
-        oceDebug(debug, "readEchosounderRaw(id=0x", id, ") # i.e. type=", type, "\n")
+        oceDebug(debug, "readEchosounderRaw(id=0x", id, ") i.e. type=", type, " START\n")
         look <- which(d$id == id)
         oceDebug(debug, vectorShow(look))
         lookIndex <- d$index[look]
@@ -1577,7 +1577,7 @@ read.adp.ad2cp <- function(
     readProfile <- function(id, debug = getOption("oceDebug")) # uses global 'd' and 'configuration'
     {
         type <- gsub(".*=", "", ad2cpCodeToName(id))
-        oceDebug(debug, "readProfile(id=0x", id, ") # i.e. type=", type, "\n")
+        oceDebug(debug, "readProfile(id=0x", id, ") # i.e. type=", type, " START\n")
         # str(d)
         #    List of 4
         #    $ buf   : raw [1:305988694] a5 0a a0 10 ...
@@ -1675,7 +1675,7 @@ read.adp.ad2cp <- function(
         if (configuration0[15]) {
             rval <- getItemFromBuf(rval, "stdDev", i = i, type = type, debug = debug)
         }
-        oceDebug(debug, "} # vector-read for type=", type, "\n")
+        oceDebug(debug, "END vector-read for type=", type, "\n")
         rval
     } # readProfile
 
@@ -1946,7 +1946,7 @@ read.adp.ad2cp <- function(
     {
         # Nortek (2022 page 87) "Section 6.4 EchosounderDataV3"
         type <- gsub(".*=", "", ad2cpCodeToName(id))
-        oceDebug(debug, "readEchosounder(id=0x", id, ") # i.e. type=", type, "\n")
+        oceDebug(debug, "readEchosounder(id=0x", id, ") # i.e. type=", type, " START\n")
         # str(d)
         #    List of 4
         #    $ buf   : raw [1:305988694] a5 0a a0 10 ...
@@ -2007,7 +2007,7 @@ read.adp.ad2cp <- function(
         if (configuration0[12]) { # read echosounder, if included
             rval <- getItemFromBuf(rval, "echosounder", i = i, type = type, debug = debug)
         }
-        oceDebug(debug, "} # vector-read for type=", type, "\n")
+        oceDebug(debug, "END vector-read for type=", type, "\n")
         rval
     } # readEchosounder
 
@@ -2400,6 +2400,6 @@ read.adp.ad2cp <- function(
         )
     )
     res@processingLog <- processingLogItem(processingLog)
-    oceDebug(debug, "} # read.adp.ad2cp()\n", unindent = 1, style = "bold")
+    oceDebug(debug, "END read.adp.ad2cp()\n", unindent = 1)
     res
 }

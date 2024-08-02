@@ -337,7 +337,7 @@ setMethod(
     signature(x = "landsat", i = "ANY", j = "ANY"),
     definition = function(x, i, j, ...) {
         debug <- getOption("oceDebug")
-        oceDebug(debug, "landsat [[ {\n", unindent = 1)
+        oceDebug(debug, "landsat [[ START\n", unindent = 1)
         if (missing(i)) {
             stop("Must name a landsat item to retrieve, e.g. '[[\"panchromatic\"]]'", call. = FALSE)
         }
@@ -361,18 +361,18 @@ setMethod(
             # FIXME: ignoring decimation (may be best, anyway)
             b1 <- x@data[[1]]
             dim <- if (is.list(b1)) dim(b1$lsb) else dim(b1)
-            oceDebug(debug, "} # landsat [[\n", unindent = 1)
+            oceDebug(debug, "END landsat [[\n", unindent = 1)
             return(x@metadata$lllon + seq(0, 1, length.out = dim[1]) * (x@metadata$urlon - x@metadata$lllon))
         }
         if (!(is.na(pmatch(i, "latitude")))) {
             # FIXME: ignoring decimation (may be best, anyway)
             b1 <- x@data[[1]]
             dim <- if (is.list(b1)) dim(b1$lsb) else dim(b1)
-            oceDebug(debug, "} # landsat [[\n", unindent = 1)
+            oceDebug(debug, "END landsat [[\n", unindent = 1)
             return(x@metadata$lllat + seq(0, 1, length.out = dim[2]) * (x@metadata$urlat - x@metadata$lllat))
         }
         if (is.character(i) && !is.na(pmatch(i, names(x@metadata)))) {
-            oceDebug(debug, "} # landsat [[\n", unindent = 1)
+            oceDebug(debug, "END landsat [[\n", unindent = 1)
             return(x@metadata[[i]])
         }
         d <- NULL # check for this later to see found data
@@ -436,7 +436,7 @@ setMethod(
                 d <- d - 273.15
                 d[na] <- NA
                 dim(d) <- dim
-                oceDebug(debug, "} # landsat [[\n", unindent = 1)
+                oceDebug(debug, "END landsat [[\n", unindent = 1)
                 return(d)
             } else if (spacecraft == "LANDSAT_7") {
                 # band 6, tirs1
@@ -467,7 +467,7 @@ setMethod(
                 d <- d - 273.15
                 d[na] <- NA
                 dim(d) <- dim
-                oceDebug(debug, "} # landsat [[\n", unindent = 1)
+                oceDebug(debug, "END landsat [[\n", unindent = 1)
                 return(d)
             } else if (spacecraft == "LANDSAT_5") {
                 # band 6, tirs1
@@ -481,7 +481,7 @@ setMethod(
             } else {
                 stop("unknown satellite: ", x@metadata$spacecraft)
             }
-            oceDebug(debug, "} # landsat [[\n", unindent = 1)
+            oceDebug(debug, "END landsat [[\n", unindent = 1)
             return(d)
         }
         # message("i:", i, " before")
@@ -521,10 +521,10 @@ setMethod(
                         256L * as.integer(msb[ilook, jlook]) + as.integer(lsb)
                     }
                     dim(res) <- dim(lsb)
-                    oceDebug(getOption("oceDebug"), "} # \"[[\"\n", unindent = 1)
+                    oceDebug(getOption("oceDebug"), "END \"[[\"\n", unindent = 1)
                     return(res)
                 } else {
-                    oceDebug(getOption("oceDebug"), "} # \"[[\"\n", unindent = 1)
+                    oceDebug(getOption("oceDebug"), "END \"[[\"\n", unindent = 1)
                     return(d[ilook, jlook])
                 }
             }
@@ -542,11 +542,11 @@ setMethod(
                     lsb <- lsb[ilook, jlook]
                     res <- 256L * as.integer(msb) + as.integer(lsb)
                     dim(res) <- dim(lsb)
-                    oceDebug(debug, "} # landsat [[\n", unindent = 1)
+                    oceDebug(debug, "END landsat [[\n", unindent = 1)
                     return(res)
                 } else {
                     d <- d[ilook, jlook]
-                    oceDebug(debug, "} # landsat [[\n", unindent = 1)
+                    oceDebug(debug, "END landsat [[\n", unindent = 1)
                     return(d)
                 }
             }
@@ -555,10 +555,10 @@ setMethod(
         if (isList) {
             res <- 256L * as.integer(msb) + as.integer(lsb)
             dim(res) <- dim(lsb)
-            oceDebug(debug, "} # landsat [[\n", unindent = 1)
+            oceDebug(debug, "END landsat [[\n", unindent = 1)
             return(res)
         } else {
-            oceDebug(debug, "} # landsat [[\n", unindent = 1)
+            oceDebug(debug, "END landsat [[\n", unindent = 1)
             return(d)
         }
     }
@@ -725,7 +725,7 @@ setMethod(
         oceDebug(debug, "plot,landsat-method(..., which=c(", paste(which, collapse = ","),
             "), decimate=", decimate,
             ", zlim=", if (missing(zlim)) "(missing)" else zlim,
-            ", ...) {\n",
+            ", ...) START\n",
             sep = "", unindent = 1
         )
         if (!length(x@data)) {
@@ -924,7 +924,7 @@ setMethod(
         } else {
             stop("unknown value of 'which'")
         }
-        oceDebug(debug, "} # plot,landsat-method()\n", unindent = 1)
+        oceDebug(debug, "END plot,landsat-method()\n", unindent = 1)
     }
 )
 
@@ -1028,7 +1028,7 @@ read.landsatmeta <- function(file, encoding = "latin1", debug = getOption("oceDe
         gridCellSizeReflective = gridCellSizeReflective,
         gridCellSizeThermal = gridCellSizeThermal
     )
-    oceDebug(debug, "} # read.landsatmeta()\n", sep = "", unindent = 1)
+    oceDebug(debug, "END read.landsatmeta()\n", sep = "", unindent = 1)
     rval
     # dimPanchromatic=dimPanchromatic,
     # dimReflective=dimReflective,
@@ -1163,7 +1163,7 @@ read.landsat <- function(
         } else {
             paste("band=\"", band, "\"", sep = "")
         },
-        ", debug=", debug, ") {\n",
+        ", debug=", debug, ") START\n",
         sep = "", unindent = 1
     )
     if (band[1] == "terralook") {
@@ -1254,7 +1254,7 @@ read.landsat <- function(
         res@processingLog,
         paste(deparse(match.call()), sep = "", collapse = "")
     )
-    oceDebug(debug, "} # read.landsat()\n", unindent = 1)
+    oceDebug(debug, "END read.landsat()\n", unindent = 1)
     res
 }
 

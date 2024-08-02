@@ -60,7 +60,7 @@ Windows \code{x} on either time or distance, depending on the value of
 integers, to indicate a portion of the time or distance range.  If
 \code{which} is \code{"time"}, then the \code{start} and \code{end} values
 may also be provided as POSIX times, or character strings indicating times
-(in time zone given by the value of \code{getOption("oceTz")}).
+(in time zone given by the value of \link{getOption}\code{("oceTz")}).
 Note that \code{\link[=subset]{subset()}} may be more useful than this function.
 }
 \examples{

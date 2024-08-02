@@ -29,7 +29,7 @@ For example, a user preferring that the old UNESCO equation of state be used in
 operations like plotting CTD data, might insert the following line in the
 `~/.Rprofile` file:
 ```{r eval=FALSE}
-options(oceEOS="gsw")
+options(oceEOS = "gsw")
 ```
 *but* it should be noted that setting values in `~/.Rprofile` will render the
 user's code non-reproducible (unless that file is provided along with the
@@ -37,8 +37,8 @@ analysis code).
 
 The preferred method is not to use `~/.Rprofile`, but instead to specify the
 desired properties as arguments to relevant functions.  For example, calling
-`plotTS(...,eos="unesco")` instead of letting `eos` take on the default value of
-`"gsw"`.  (It is the ability to specify a choice by such a parameter that is
+`plotTS(..., eos="unesco")` instead of letting `eos` take on the default value
+of `"gsw"`.  (It is the ability to specify a choice by such a parameter that is
 indicated in the right-most column of the following table.)
 
 | Name                     | Value                  | Selected by a function parameter |

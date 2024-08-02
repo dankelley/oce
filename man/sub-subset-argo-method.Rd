@@ -80,15 +80,15 @@ Other functions that replace parts of oce objects:
 
 Other things related to argo data: 
 \code{\link{[[,argo-method}},
+\code{\link{argo}},
 \code{\link{argo-class}},
 \code{\link{argoGrid}()},
 \code{\link{argoNames2oceNames}()},
-\code{\link{argo}},
 \code{\link{as.argo}()},
 \code{\link{handleFlags,argo-method}},
 \code{\link{plot,argo-method}},
-\code{\link{read.argo.copernicus}()},
 \code{\link{read.argo}()},
+\code{\link{read.argo.copernicus}()},
 \code{\link{subset,argo-method}},
 \code{\link{summary,argo-method}}
 }

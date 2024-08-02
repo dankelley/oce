@@ -379,7 +379,7 @@ read.xbt <- function(
         }
     }
     oceDebug(debug, "read.xbt(file=\"", file, "\", type=\"",
-        type, "\", longitude=", longitude, ", latitude=", latitude, "...) {\n",
+        type, "\", longitude=", longitude, ", latitude=", latitude, "...) START\n",
         sep = "", unindent = 1
     )
     if (is.character(file) && "http://" != substr(file, 1, 7) && 0 == file.info(file)$size) {
@@ -402,7 +402,7 @@ read.xbt <- function(
     } else {
         stop("unknown type of current meter")
     }
-    oceDebug(debug, "} # read.xbt()\n", sep = "", unindent = 1)
+    oceDebug(debug, "END read.xbt()\n", sep = "", unindent = 1)
     res
 }
 
@@ -470,7 +470,7 @@ read.xbt.edf <- function(
     if (is.character(file) && "http://" != substr(file, 1, 7) && 0 == file.info(file)$size) {
         stop("empty file (read.xbt.edf)")
     }
-    oceDebug(debug, "read.xbt(file=\"", file, "\", longitude=", longitude, ", latitude=", latitude, "...) {\n",
+    oceDebug(debug, "read.xbt(file=\"", file, "\", longitude=", longitude, ", latitude=", latitude, "...) START\n",
         sep = "", unindent = 1
     )
     filename <- ""
@@ -524,7 +524,7 @@ read.xbt.edf <- function(
     res@metadata$units$temperature <- list(unit = expression(degree * C), scale = "ITS-90")
     res@metadata$units$soundSpeed <- list(unit = expression(m / s), scale = "")
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep = "", collapse = ""))
-    oceDebug(debug, "} # read.xbt.edf()\n", unindent = 1)
+    oceDebug(debug, "END read.xbt.edf()\n", unindent = 1)
     res
 }
 
@@ -578,7 +578,7 @@ read.xbt.noaa1 <- function(
             stop("empty file \"", file, "\"")
         }
     }
-    oceDebug(debug, "read.xbt(file=\"", file, "\", type=\"", "...) {\n", sep = "", unindent = 1)
+    oceDebug(debug, "read.xbt(file=\"", file, "\", type=\"", "...) START\n", sep = "", unindent = 1)
     filename <- "?"
     if (is.character(file)) {
         filename <- fullFilename(file)
@@ -621,7 +621,7 @@ read.xbt.noaa1 <- function(
         }
     }
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep = "", collapse = ""))
-    oceDebug(debug, "} # read.xbt.noaa1()\n", sep = "", unindent = 1)
+    oceDebug(debug, "END read.xbt.noaa1()\n", sep = "", unindent = 1)
     res
 }
 
@@ -669,7 +669,7 @@ setMethod(
     signature = signature("xbt"),
     definition = function(x, which = 1, type = "l", mgp = getOption("oceMgp"), mar,
                           debug = getOption("oceDebug"), ...) {
-        oceDebug(debug, "plot.xbt() {\n", unindent = 1)
+        oceDebug(debug, "plot.xbt() START\n", unindent = 1)
         if (missing(mar)) {
             mar <- c(1, mgp[1] + 1.5, mgp[1] + 1.5, mgp[1])
         }
@@ -706,7 +706,7 @@ setMethod(
                 stop("which values are limited to 1 and 2")
             }
         }
-        oceDebug(debug, "} # plot.xbt()\n", unindent = 1)
+        oceDebug(debug, "END plot.xbt()\n", unindent = 1)
         invisible(NULL)
     }
 )

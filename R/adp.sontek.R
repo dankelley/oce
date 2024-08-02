@@ -593,7 +593,7 @@ read.adp.sontek.serial <- function(
         ", by=", by,
         ", latitude=", latitude, ", longitude=", longitude,
         ", monitor=", monitor,
-        ", processingLog=(not shown), debug=", debug, ") {\n",
+        ", processingLog=(not shown), debug=", debug, ") START\n",
         sep = ""
     ), unindent = 1)
     nfile <- length(file)

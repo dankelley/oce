@@ -603,7 +603,7 @@ metNames2oceNames <- function(names, scheme) {
 #' cannot find a line starting with `"Date/Time"` (or a similar string).
 #'
 #' @param tz timezone assumed for time data.  This defaults to
-#' `getOption("oceTz")`, which is very likely to be wrong.  In
+#' [getOption]`("oceTz")`, which is very likely to be wrong.  In
 #' a scientific context, where UTC is typically used for oceanographic
 #' measurement, it makes sense to set `tz="UTC"`.  Note that these
 #' data files do not contain timezone information, instead giving
@@ -673,7 +673,7 @@ read.met <- function(
             stop("empty file \"", file, "\"")
         }
     }
-    oceDebug(debug, "read.met(file=\"", file, "\", ...) {\n", sep = "", unindent = 1, style = "bold")
+    oceDebug(debug, "read.met(file=\"", file, "\", ...) START\n", sep = "", unindent = 1)
     if (!is.character(file)) {
         stop("'file' must be a string")
     }
@@ -702,6 +702,9 @@ read.met <- function(
             oceDebug(debug, "file contents suggest type=\"", type, "\"\n", sep = "")
         }
     }
+    if (is.null(type)) {
+        stop("cannot infer file type")
+    }
     if (type == "csv" || type == "csv1") {
         res <- read.met.csv1(file, skip = skip, encoding = encoding, tz = tz, debug = debug - 1)
     } else if (type == "csv2" || type == "csv3") {
@@ -711,7 +714,7 @@ read.met <- function(
     } else {
         stop("cannot handle file type '", type, "'")
     }
-    oceDebug(debug, "} # read.met()\n", unindent = 1, style = "bold")
+    oceDebug(debug, "END read.met()\n", unindent = 1)
     res
 }
 
@@ -725,8 +728,8 @@ read.met.csv1 <- function(
         stop("must supply 'file'")
     }
     oceDebug(debug, "read.met.csv1(\"", file, "\", skip=", if (is.null(skip)) "NULL" else skip,
-        ", encoding=\"", encoding, "\", tz=\"", tz, "\") {\n",
-        sep = "", unindent = 1, style = "bold"
+        ", encoding=\"", encoding, "\", tz=\"", tz, "\") START\n",
+        sep = "", unindent = 1
     )
     # I thank Ivan Krylov for telling me that the 'encoding' arg belongs in the
     # file() call, not the readLines() call.
@@ -966,7 +969,7 @@ read.met.csv1 <- function(
             sep = "", collapse = ""
         )
     )
-    oceDebug(debug, "} # read.met.csv1()\n", unindent = 1, style = "bold")
+    oceDebug(debug, "END read.met.csv1()\n", unindent = 1)
     res
 }
 
@@ -980,9 +983,7 @@ read.met.csv2 <- function(
     if (missing(file)) {
         stop("must supply 'file'")
     }
-    oceDebug(debug, "read.met.csv2(\"", file, "\", skip=", skip, ", encoding=\"", encoding, "\") { # for either type 2 or 3 \n",
-        sep = "", unindent = 1, style = "bold"
-    )
+    oceDebug(debug, "read.met.csv2(\"", file, "\", skip=", skip, ", encoding=\"", encoding, "\") with type 2 or 3 START\n", sep = "", unindent = 1)
     # I thank Ivan Krylov for telling me that the 'encoding' arg belongs in the
     # file() call, not the readLines() call.
     if (is.character(file)) {
@@ -1085,13 +1086,13 @@ read.met.csv2 <- function(
         dataNames[dataNames == "Weather"] <- "weather"
     }
     names(data) <- dataNames
-    res@data <- data
+    res@data <- as.list(data)
     # climateIdentifier
     if ("Climate ID" %in% dataNames) {
         res@metadata$climateIdentifier <- data[["Climate ID"]][1]
         res@data[["Climate ID"]] <- NULL
     }
-    nsamples <- dim(data)[1]
+    nsamples <- nrow(data[[1]])
     oceDebug(debug, vectorShow(nsamples))
     # Time
     if ("Time" %in% dataNames) {
@@ -1188,14 +1189,14 @@ read.met.csv2 <- function(
             sep = "", collapse = ""
         )
     )
-    oceDebug(debug, "} # read.met.csv2()\n", unindent = 1, style = "bold")
+    oceDebug(debug, "END read.met.csv2()\n", unindent = 1)
     res
 }
 
 read.met.xml2 <- function(
     file, skip = NULL, tz = getOption("oceTz"),
     debug = getOption("oceDebug")) {
-    oceDebug(debug, "read.met.xml2(file=\"", file, "\", ...) {\n", sep = "", unindent = 1, style = "bold")
+    oceDebug(debug, "read.met.xml2(file=\"", file, "\", ...) START\n", sep = "", unindent = 1)
     if (!requireNamespace("XML", quietly = TRUE)) {
         stop("must install.packages(\"XML\") to read rsk data")
     }
@@ -1314,7 +1315,7 @@ read.met.xml2 <- function(
             sep = ""
         )
     )
-    oceDebug(debug, "} # read.met.xml2()\n", unindent = 1, style = "bold")
+    oceDebug(debug, "END read.met.xml2()\n", unindent = 1)
     res
 }
 
@@ -1385,7 +1386,7 @@ setMethod(
     f = "plot",
     signature = signature("met"),
     definition = function(x, which = 1:4, mgp, mar, tformat, debug = getOption("oceDebug")) {
-        oceDebug(debug, "plot.met() {\n", unindent = 1)
+        oceDebug(debug, "plot.met() START\n", unindent = 1)
         if (missing(mgp)) {
             mgp <- getOption("oceMgp")
         }
@@ -1419,6 +1420,6 @@ setMethod(
                 oce.plot.ts(x@data$time, x@data$direction, ylab = resizableLabel("Direction [deg]", "y"), tformat = tformat)
             }
         }
-        oceDebug(debug, "} # plot.met()\n", unindent = 1)
+        oceDebug(debug, "END plot.met()\n", unindent = 1)
     }
 )

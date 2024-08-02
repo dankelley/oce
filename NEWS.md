@@ -1,57 +1,92 @@
-# oce 1.8.2
+# oce 1.8.3
+
+* Add `swSpiciness0()`, `swSpiciness1()`, and `swSpiciness2()` (issue #2188). 
+* Change `binMean2D()` to use previous (6-month-old) method (issue #2199).
+* Change `[[` for many seawater properties to handle `argo` data (issues #2207 and #2208).
+* Change `concatenate()` to handle `data` slots that are data frames (issue #2213).
+* Change `ctdDecimate()` to add the `na.rm` argument (issue #2192).
+* Change `mapDirectionField()` to allow wind barbs (issue #2191).
+* Change `mapContour()` to discuss longitude conventions (issue #2218).
+* Change `mapImage()` to handle a user-provided gridding function (issue #2199).
+* Change `mapImage()` to add the `gridCoarseness` parameter (issue #2199).
+* Change `oceMagic()` to close netcdf files after checking them (issue #2209).
+* Change `plot.amsr()` to add the `zlab` parameter (issue #2220).
+* Change `plot.argo()` to handle `which="sigma0 profile"` (issue #2184).
+* Change `plot.sealevel()` to add the `grid` parameter (issue #2204).
+* Change `plot.sealevel()` to improve labelling (issue #2203).
+* Change `plot.section()` to handle bottom traces better (issue #2194).
+* Change `plot.section()` to show data as points properly (issue #2195).
+* Change `plotProfile()` to handle `xaxs` and `yaxs` when `xtype="spiciness0"` (issue #2215).
+* Change `plotTaylor()` to handle a few more parameters.
+* Change `read.adp.rdi()` to handle large (> 2.147 GB) files (issue #2196).
+* Change `read.amsr()` to read start/end times plus other metadata (issue #2219).
+* Change `read.argo()` to handle non-UTF characters in metadata (issue #2206).
+* Change `read.ctd.sbe()` to name `specc` as `specificConductance` (issue #2211).
+* Change `read.met()` to return `data` slots that are lists (issue #2213).
+* Change `resizableLabel()` to document partial-match behaviour (issue #2197).
+* Change `resizableLabel()` to handle `item=`"N"` (issue #2197).
+* Change `summary()` to skip time in the threenum table (issue #2198).
+* Change `sunAngle()` to handle vector arguments better (issue #2178).
+* Change `sunAngle()` to detect non-logical values of `useRefraction` (issue #2225).
+* Change some byte-level work from C to C++ to improve maintainability (issue #2201).
+
+# oce 1.8.2 (on CRAN)
 
 * Add `package?oce` documentation (had been missing with a Roxygen2 change).
-* Add `read.ctd.saiv()` to read data from SAIV instruments (issue 2141).
-* Remove many dontrun examples from the docs (issue 2152).
-* Remove `trimString()`, after it had been deprecated for a long time (issue 2123).
-* Remove use of the deprecated `sp` package (issue 2154).
-* Change `amsr` dataset and functions to handle new format (issues 2124 to 2133, 2147).
-* Change `as.ctd()` to handle multi-profile Argo better (issue 2173).
-* Change `as.tidem()` to handle NOAA constituent names and frequencies (issues 2143, 2144 and 2146).
-* Change C/C++ `sprintf()` calls so all formats match arguments (issue 2172).
+* Add `read.ctd.saiv()` to read data from SAIV instruments (issue #2141).
+* Remove many dontrun examples from the docs (issue #2152).
+* Remove `trimString()`, after it had been deprecated for a long time (issue #2123).
+* Remove use of the deprecated `sp` package (issue #2154).
+* Change `amsr` dataset and functions to handle new format (issues #2124 to #2133 plus
+  issue #2147).
+* Change `as.ctd()` to handle multi-profile Argo better (issue #2173).
+* Change `as.tidem()` to handle NOAA constituent names and frequencies (issues #2143,
+  #2144 and #2146).
+* Change C/C++ `sprintf()` calls so all formats match arguments (issue #2172).
 * Change `computableWaterProperties` to handle a vector of variable names.
-* Change `plot.adp()` to obey `xlab` if x axis represents time (issue 2162).
-* Change `plot.cm()` to obey `xlim`, `ylim`, `xaxs` and `yaxs` (issue 2121).
+* Change `plot.adp()` to obey `xlab` if x axis represents time (issue #2162).
+* Change `plot.cm()` to obey `xlim`, `ylim`, `xaxs` and `yaxs` (issue #2121).
 * Change `plotTS()` and `plotProfile()` to accept `type="b"`.
-* Change `plot.windrose()` for `type="fivenum"` (issue 2164).
+* Change `plot.windrose()` for `type="fivenum"` (issue #2164).
 
 # oce 1.8.1 (on CRAN)
 
 * Change `as.ctd()` to handle `startTime`, `PRES`, `PSAL` and `TEMP` better.
-* Change `binCount1D()` + 6 related functions by adding `include.lowest` parameter (issue 2113).
-* Change C++ files to avoid an error relating to include statements (issue 2119).
-* Change `imagep()` to ensure `z` (if provided) is a matrix (issue 2091).
-* Change `plot.section()` to skip the kriging example (issue 2080).
-* Change `plot.section()` to show palette triangles if necessary (issue 2083).
-* Change `plot.section()` to show data and bottom correctly (issue 2092).
-* Change `plotTS()` to obey the `rho1000` parameter again (issue 2085).
+* Change `binCount1D()` + 6 related functions by adding `include.lowest` parameter (issue
+#2113).
+* Change C++ files to avoid an error relating to include statements (issue #2119).
+* Change `imagep()` to ensure `z` (if provided) is a matrix (issue #2091).
+* Change `plot.section()` to skip the kriging example (issue #2080).
+* Change `plot.section()` to show palette triangles if necessary (issue #2083).
+* Change `plot.section()` to show data and bottom correctly (issue #2092).
+* Change `plotTS()` to obey the `rho1000` parameter again (issue #2085).
 * Change `read.argo()` to translate more variable names.
 * Change `read.netcdf()` to read more items.
-* Change `read.rsk()` to obey the `tz` parameter (issue 2108).
-* Change `summary.adp()` to handle the new format for AD2CP data (issue 2087).
+* Change `read.rsk()` to obey the `tz` parameter (issue #2108).
+* Change `summary.adp()` to handle the new format for AD2CP data (issue #2087).
 
 # oce 1.8.0 (on CRAN)
 
-* Add `advSontekAdrFileTrim()` (issue 1994).
-* Add `ctdFindProfilesRBR()` (issue 2027).
-* Change `applyMagneticDeclination()` to also handle `adp` and `adv` (issue 2038).
-* Change `download.topo()` to handle new NOAA database (issue 2015).
+* Add `advSontekAdrFileTrim()` (issue #1994).
+* Add `ctdFindProfilesRBR()` (issue #2027).
+* Change `applyMagneticDeclination()` to also handle `adp` and `adv` (issue #2038).
+* Change `download.topo()` to handle new NOAA database (issue #2015).
 * Change `inst/extdata` by compressing some files.
-* Change `mapPlot()` to remove an infrequent low-level error (issue 2036).
-* Change `mapPlot()` to require `projection` to be a string (issue 2076).
-* Change `numberAsPOSIXct(t, type="gps")` to handle week rollover (issue 2077).
-* Change `plot.echosounder()` to use `oceColorsViridis()` by default (issue 2060).
-* Change `plotProfile()` to create xlab on vector input (issue 2047).
-* Change `plotTS()` to compute isopycnals more accurately (issue 2046).
+* Change `mapPlot()` to remove an infrequent low-level error (issue #2036).
+* Change `mapPlot()` to require `projection` to be a string (issue #2076).
+* Change `numberAsPOSIXct(t, type="gps")` to handle week rollover (issue #2077).
+* Change `plot.echosounder()` to use `oceColorsViridis()` by default (issue #2060).
+* Change `plotProfile()` to create xlab on vector input (issue #2047).
+* Change `plotTS()` to compute isopycnals more accurately (issue #2046).
 * Change `plotTS()` to handle lobo objects directly.
-* Change `plot.tidem()` to obey `...` parameter (issue 2035).
-* Change `read.adp.ad2cp()`, and structure of AD2CP objects (issue 2005).
-* Change `read.rsk()` to read geographic information (issue 2024).
+* Change `plot.tidem()` to obey `...` parameter (issue #2035).
+* Change `read.adp.ad2cp()`, and structure of AD2CP objects (issue #2005).
+* Change `read.rsk()` to read geographic information (issue #2024).
 * Change `sectionSmooth()` to handle `method="kriging"` again
-* Change `tidem()` (and summary method) to handle 6-hourly data (issue 2034).
-* Remove package dependence on `rgeos` and `raster` packages (issue 2028).
-* Remove `plotAD2CP()`, now superseded by generic `plot()` method (issue 2005).
-* Remove plotting tests but retain in developer suite (issue 2073).
+* Change `tidem()` (and summary method) to handle 6-hourly data (issue #2034).
+* Remove package dependence on `rgeos` and `raster` packages (issue #2028).
+* Remove `plotAD2CP()`, now superseded by generic `plot()` method (issue #2005).
+* Remove plotting tests but retain in developer suite (issue #2073).
 
 # oce 1.7.10 (on CRAN)
 

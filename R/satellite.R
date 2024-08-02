@@ -67,10 +67,7 @@ setMethod(
     f = "plot",
     signature = signature("satellite"),
     definition = function(x, y, asp, debug = getOption("oceDebug"), ...) {
-        oceDebug(debug, "plot.satellite(..., y=c(",
-            if (missing(y)) "(missing)" else y, ", ...) {\n",
-            sep = "", unindent = 1
-        )
+        oceDebug(debug, "plot.satellite(..., y=c(", if (missing(y)) "(missing)" else y, ", ...) START\n", sep = "", unindent = 1)
         if (missing(y)) {
             stop("must indicate what to plot")
         }
@@ -84,6 +81,6 @@ setMethod(
         } else {
             imagep(lon, lat, x[[y]], asp = asp, zlab = y, ...)
         }
-        oceDebug(debug, "} # plot.satellite()\n", unindent = 1)
+        oceDebug(debug, "END plot.satellite()\n", unindent = 1)
     }
 )

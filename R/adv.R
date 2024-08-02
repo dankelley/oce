@@ -659,7 +659,7 @@ setMethod(
                           cex.lab = par("cex.lab"), cex.main = par("cex.main"), xlim, ylim,
                           brushCorrelation, colBrush = "red", main = "", debug = getOption("oceDebug"), ...) {
         debug <- min(4, max(0, round(debug)))
-        oceDebug(debug, "plot.adv(x, which=c(", paste(which, collapse = ","), "), type=\"", type, "\", ...) {\n", sep = "", unindent = 1)
+        oceDebug(debug, "plot.adv(x, which=c(", paste(which, collapse = ","), "), type=\"", type, "\", ...) START\n", sep = "", unindent = 1)
         have.brushCorrelation <- !missing(brushCorrelation)
         oceDebug(debug, "brushCorrelation", if (have.brushCorrelation) brushCorrelation else "not given", "\n")
         oceDebug(debug, argShow(cex))
@@ -1231,7 +1231,7 @@ setMethod(
                 par(mar = omar)
             }
         }
-        oceDebug(debug, "} # plot.adv()\n", unindent = 1)
+        oceDebug(debug, "END plot.adv()\n", unindent = 1)
         invisible(NULL)
     }
 )
@@ -1256,7 +1256,7 @@ setMethod(
 #'
 #' @family things related to adv data
 toEnuAdv <- function(x, declination = 0, debug = getOption("oceDebug")) {
-    oceDebug(debug, "toEnuAdv(x, declination=", declination, ", debug=", debug, ") {\n", unindent = 1)
+    oceDebug(debug, "toEnuAdv(x, declination=", declination, ", debug=", debug, ") START\n", sep = "", unindent = 1)
     coord <- x@metadata$oceCoordinate
     if (coord == "beam") {
         x <- xyzToEnuAdv(beamToXyzAdv(x, debug = debug - 1), declination = declination, debug = debug - 1)
@@ -1265,7 +1265,7 @@ toEnuAdv <- function(x, declination = 0, debug = getOption("oceDebug")) {
     } else if (coord != "enu") {
         warning("toEnuAdv cannot convert from coordinate system ", coord, " to ENU, so returning argument as-is")
     }
-    oceDebug(debug, "} # toEnuAdv()\n", unindent = 1)
+    oceDebug(debug, "END toEnuAdv()\n", unindent = 1)
     x
 }
 
@@ -1303,7 +1303,7 @@ toEnuAdv <- function(x, declination = 0, debug = getOption("oceDebug")) {
 #'
 #' @family things related to adp data
 beamToXyzAdv <- function(x, debug = getOption("oceDebug")) {
-    oceDebug(debug, "beamToXyzAdv() {\n", unindent = 1)
+    oceDebug(debug, "beamToXyzAdv() START\n", unindent = 1)
     if (!inherits(x, "adv")) {
         stop("method is only for objects of class '", "adv", "'")
     }
@@ -1333,7 +1333,7 @@ beamToXyzAdv <- function(x, debug = getOption("oceDebug")) {
     x@data$v[, 3] <- w
     x@metadata$oceCoordinate <- "xyz"
     x@processingLog <- processingLogAppend(x@processingLog, paste(deparse(match.call()), sep = "", collapse = ""))
-    oceDebug(debug, "} # beamToXyzAdv()\n", unindent = 1)
+    oceDebug(debug, "END beamToXyzAdv()\n", unindent = 1)
     x
 }
 
@@ -1464,7 +1464,7 @@ xyzToEnuAdv <- function(
         ",cabled=", cabled,
         ",horizontalCase=", if (missing(horizontalCase)) "(not provided)" else horizontalCase,
         ",sensorOrientation=", if (missing(sensorOrientation)) "(not provided)" else sensorOrientation,
-        ",debug) {\n",
+        ",debug) START\n",
         unindent = 1
     )
     if (!inherits(x, "adv")) {
@@ -1629,7 +1629,7 @@ xyzToEnuAdv <- function(
             sep = ""
         )
     )
-    oceDebug(debug, "} # xyzToEnuAdv()\n", unindent = 1)
+    oceDebug(debug, "END xyzToEnuAdv()\n", unindent = 1)
     x
 }
 
@@ -1673,8 +1673,8 @@ enuToOtherAdv <- function(x, heading = 0, pitch = 0, roll = 0, debug = getOption
         stop("input must be in \"enu\" coordinates, but it is in ", x@metadata$oceCoordinate, " coordinates")
     }
     oceDebug(debug, "enuToOtherAdv(x, heading=", heading, ", pitch=",
-        pitch, ", roll=", roll, ", debug=", debug, ")",
-        unindent = 1
+        pitch, ", roll=", roll, ", debug=", debug, " START)",
+        sep = "", unindent = 1
     )
     np <- dim(x@data$v)[1] # number of profiles
     if (length(heading) < np) {
@@ -1692,7 +1692,7 @@ enuToOtherAdv <- function(x, heading = 0, pitch = 0, roll = 0, debug = getOption
     x@data$v[, 3] <- other$up
     x@metadata$oceCoordinate <- "other"
     x@processingLog <- processingLogAppend(x@processingLog, paste(deparse(match.call()), sep = "", collapse = ""))
-    oceDebug(debug, "} # enuToOtherAdv()\n", unindent = 1)
+    oceDebug(debug, "END enuToOtherAdv()\n", unindent = 1)
     x
 }
 
@@ -1725,7 +1725,7 @@ setMethod(
     f = "applyMagneticDeclination",
     signature(object = "adv", declination = "ANY", debug = "ANY"),
     definition = function(object, declination = 0.0, debug = getOption("oceDebug")) {
-        oceDebug(debug, "applyMagneticDeclination,adp-method(object, declination=", declination, ") {\n", sep = "", unindent = 1)
+        oceDebug(debug, "applyMagneticDeclination,adp-method(object, declination=", declination, ") START\n", sep = "", unindent = 1)
         if (length(declination) != 1L) {
             stop("length of 'declination' must equal 1")
         }
@@ -1757,7 +1757,7 @@ setMethod(
             res@processingLog,
             paste0("applyMagneticDeclinationAdv(object, declination=", declination[1], ")")
         )
-        oceDebug(debug, "} # applyMagneticDeclinationAdv\n", unindent = 1)
+        oceDebug(debug, "END applyMagneticDeclinationAdv\n", unindent = 1)
         res
     }
 )

@@ -70,9 +70,9 @@ Other things related to xbt data:
 \code{\link{read.xbt.noaa1}()},
 \code{\link{subset,xbt-method}},
 \code{\link{summary,xbt-method}},
+\code{\link{xbt}},
 \code{\link{xbt-class}},
-\code{\link{xbt.edf}},
-\code{\link{xbt}}
+\code{\link{xbt.edf}}
 }
 \author{
 Dan Kelley

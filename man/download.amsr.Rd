@@ -70,7 +70,7 @@ downloaded again. The default \code{destdir} is the present directory,
 but it probably makes more sense to use something like \code{"~/data/amsr"}
 to make it easy for scripts in other directories to use the cached data.
 The file is downloaded with \code{\link[=download.file]{download.file()}}.  Please read the
-\sQuote{History} section for important details on how \code{\link[=download.amsr]{download.amsr()}}
+\dQuote{History} section for important details on how \code{\link[=download.amsr]{download.amsr()}}
 and also \code{\link[=read.amsr]{read.amsr()}} have had be altered over the years, to deal
 with changes in the directory structure and file format on the
 server from which files are downloaded.
@@ -148,8 +148,8 @@ Other functions that plot oce data:
 Other things related to amsr data: 
 \code{\link{[[,amsr-method}},
 \code{\link{[[<-,amsr-method}},
-\code{\link{amsr-class}},
 \code{\link{amsr}},
+\code{\link{amsr-class}},
 \code{\link{composite,amsr-method}},
 \code{\link{plot,amsr-method}},
 \code{\link{read.amsr}()},

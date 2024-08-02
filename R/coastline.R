@@ -195,7 +195,7 @@ setMethod(
         # conversion of && to & and <= to <) for the pattern matching
         # to work simply.
         s0 <- deparse(substitute(expr = subset, env = environment()), width.cutoff = 500)
-        oceDebug(debug, "subset,coastline-method(..., ", s0, ") {\n", unindent = 1, sep = "", style = "bold")
+        oceDebug(debug, "subset,coastline-method(..., ", s0, ") START\n", unindent = 1, sep = "")
         if (length(grep(">", s0))) {
             stop("the \"subset\" may not contain the character \">\"")
         }
@@ -284,7 +284,7 @@ setMethod(
             res@processingLog,
             paste("subset(x, ", s0, ")", sep = "")
         )
-        oceDebug(debug, "} # subset,coastline-method\n", unindent = 1, sep = "", style = "bold")
+        oceDebug(debug, "END subset,coastline-method\n", unindent = 1, sep = "")
         res
     }
 )
@@ -575,8 +575,8 @@ setMethod(
             ", projection=\"", if (is.null(projection)) "NULL" else projection, "\"",
             ", cex.axis=", cex.axis,
             ", inset=", inset,
-            ", ...) {\n",
-            sep = "", unindent = 1, style = "bold"
+            ", ...) START\n",
+            sep = "", unindent = 1
         )
         if (missing(clongitude) && !missing(projection) && length(grep("+lon_0", projection))) {
             clongitude <- as.numeric(gsub(".*\\+lon_0=([^ ]*).*", "\\1", projection))
@@ -663,7 +663,7 @@ setMethod(
                 projection = projection,
                 debug = debug - 1, ...
             )
-            oceDebug(debug, "} # plot.coastline()\n", unindent = 1, style = "bold")
+            oceDebug(debug, "END plot.coastline()\n", unindent = 1)
             return(invisible())
         } else {
             geographical <- round(geographical)
@@ -895,7 +895,7 @@ setMethod(
                 }
             }
             oceDebug(debug, vectorShow(par("usr")))
-            oceDebug(debug, "} # plot.coastline()\n", unindent = 1, style = "bold")
+            oceDebug(debug, "END plot.coastline()\n", unindent = 1)
             invisible()
         }
     }
@@ -1025,7 +1025,7 @@ read.coastline <- function(
         }
     }
     type <- match.arg(type)
-    oceDebug(debug, "read.coastline(file=\"", file, "\", type=\"", type, "\", ...) {\n", sep = "", unindent = 1, style = "bold")
+    oceDebug(debug, "read.coastline(file=\"", file, "\", type=\"", type, "\", ...) START\n", sep = "", unindent = 1)
     file <- fullFilename(file)
     if (is.character(file)) {
         if (1 == length(grep(".zip$", file))) {
@@ -1092,7 +1092,7 @@ read.coastline <- function(
         processingLog <- paste(deparse(match.call()), sep = "", collapse = "")
     }
     res@processingLog <- processingLogAppend(res@processingLog, processingLog)
-    oceDebug(debug, "} # read.coastline()\n", unindent = 1, style = "bold")
+    oceDebug(debug, "END read.coastline()\n", unindent = 1)
     res
 }
 
@@ -1156,7 +1156,7 @@ read.coastline.shapefile <- function(
             stop("empty file \"", file, "\"")
         }
     }
-    oceDebug(debug, "read.shapefile(file=\"", file, "\", ...) {\n", sep = "", unindent = 1, style = "bold")
+    oceDebug(debug, "read.shapefile(file=\"", file, "\", ...) START\n", sep = "", unindent = 1)
     shapeTypeList <- c(
         "nullshape", # 0
         "point", # 1
@@ -1363,7 +1363,7 @@ read.coastline.shapefile <- function(
         processingLog <- paste(deparse(match.call()), sep = "", collapse = "")
     }
     res@processingLog <- processingLogAppend(res@processingLog, processingLog)
-    oceDebug(debug, "} # read.coastline.shapefile()\n", unindent = 1, style = "bold")
+    oceDebug(debug, "END read.coastline.shapefile()\n", unindent = 1)
     res
 }
 
@@ -1392,7 +1392,7 @@ read.coastline.openstreetmap <- function(
             stop("empty file \"", file, "\"")
         }
     }
-    oceDebug(debug, "read.coastline.openstreetmap(file=\"", file, "\", ...) {\n", sep = "", unindent = 1, style = "bold")
+    oceDebug(debug, "read.coastline.openstreetmap(file=\"", file, "\", ...) START\n", sep = "", unindent = 1)
     # FIXME: ignoring lonlim and latlim
     if (is.character(file)) {
         filename <- fullFilename(file)
@@ -1446,7 +1446,7 @@ read.coastline.openstreetmap <- function(
         processingLog <- paste(deparse(match.call()), sep = "", collapse = "")
     }
     res@processingLog <- processingLogAppend(res@processingLog, processingLog)
-    oceDebug(debug, "} # read.coastline.openstreetmap()\n", unindent = 1, style = "bold")
+    oceDebug(debug, "END read.coastline.openstreetmap()\n", unindent = 1)
     res
 }
 
@@ -1487,8 +1487,8 @@ coastlineBest <- function(lonRange, latRange, span, debug = getOption("oceDebug"
         } else {
             paste(latRange, collapse = ",")
         },
-        "span=", if (missing(span)) "(missing)" else span, ") {\n",
-        sep = "", unindent = 1, style = "bold"
+        "span=", if (missing(span)) "(missing)" else span, ") START\n",
+        sep = "", unindent = 1
     )
     if (missing(span)) {
         oceDebug(
@@ -1528,7 +1528,7 @@ coastlineBest <- function(lonRange, latRange, span, debug = getOption("oceDebug"
     } else {
         res <- "coastlineWorld"
     }
-    oceDebug(debug, "} # coastlineBest()\n", unindent = 1, style = "bold")
+    oceDebug(debug, "END coastlineBest()\n", unindent = 1)
     res
 }
 

@@ -63,11 +63,6 @@ matrix dimensions are similarly reduced compared with the dimensions of
 \code{u} and \code{v}.
 }
 }
-\section{Development status.}{
- This function is under active development as
-of December 2014 and is unlikely to be stabilized until February 2015.
-}
-
 \examples{
 library(oce)
 # 1. Shear flow with uniform curl.

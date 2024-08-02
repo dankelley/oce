@@ -4,12 +4,16 @@
 \alias{concatenate}
 \title{Concatenate oce Objects (Generic)}
 \usage{
-concatenate(object, ...)
+concatenate(object, ..., debug = getOption("oceDebug"))
 }
 \arguments{
 \item{object}{an \linkS4class{oce} object.}
 
 \item{...}{optional additional \linkS4class{oce} objects.}
+
+\item{debug}{integer indicating a debugging level. If this is 0,
+the work is done silently.  If it is a larger integer, some information
+may be printed during the processing.}
 }
 \value{
 An object of class corresponding to that of \code{object}.

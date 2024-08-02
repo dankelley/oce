@@ -73,7 +73,7 @@ Absolute Salinity is returned, as computed with
 potential density anomaly (referenced to zero
 pressure) is computed, with \code{\link[=swSigmaTheta]{swSigmaTheta()}}, where the
 equation of state is taken to be
-\code{\link{getOption}}\verb{("oceEOS",default="gsw")}.
+\link{getOption}\verb{("oceEOS", default="gsw")}.
 \item If \code{i} is \code{"sigma0"}, \code{"sigma1"}, \code{"sigma2"}, \code{"sigma3"} or \code{"sigma4"},
 then the associated function in the \CRANpkg{gsw} package.
 For example, \code{"sigma0"} uses \code{\link[gsw:gsw_sigma0]{gsw::gsw_sigma0()}}, which returns
@@ -83,7 +83,7 @@ according to the gsw equation of state.
 potential temperature (referenced to zero
 pressure) is computed, with \code{\link[=swTheta]{swTheta()}}, where the
 equation of state is taken to be
-\code{\link{getOption}}\verb{("oceEOS",default="gsw")}.
+\link{getOption}\verb{("oceEOS", default="gsw")}.
 \item If \code{i} is \code{"depth"}, then
 a matrix of depths is returned.
 \item If \code{i} is \code{"id"} or \code{"ID"}, then the \code{id} element within
@@ -178,15 +178,15 @@ Other functions that extract parts of oce objects:
 
 Other things related to argo data: 
 \code{\link{[[<-,argo-method}},
+\code{\link{argo}},
 \code{\link{argo-class}},
 \code{\link{argoGrid}()},
 \code{\link{argoNames2oceNames}()},
-\code{\link{argo}},
 \code{\link{as.argo}()},
 \code{\link{handleFlags,argo-method}},
 \code{\link{plot,argo-method}},
-\code{\link{read.argo.copernicus}()},
 \code{\link{read.argo}()},
+\code{\link{read.argo.copernicus}()},
 \code{\link{subset,argo-method}},
 \code{\link{summary,argo-method}}
 }

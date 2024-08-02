@@ -83,8 +83,8 @@ Ellipsoid with Application of Nested Equations." Survey Review 23, no. 176
 
 Other functions relating to geodesy: 
 \code{\link{geodGc}()},
-\code{\link{geodXyInverse}()},
-\code{\link{geodXy}()}
+\code{\link{geodXy}()},
+\code{\link{geodXyInverse}()}
 }
 \author{
 Dan Kelley based this on R code sent to him by Darren Gillis, who in

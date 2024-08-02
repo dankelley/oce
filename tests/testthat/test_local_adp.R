@@ -6,12 +6,15 @@ f <- "~/Dropbox/data/archive/sleiwex/2008/moorings/m07/adp/sontek_h53/raw/adp_so
 if (file.exists(f)) {
     test_that("Sontek adp", {
         n <- 5000
-        adp <- read.oce(f, from=n+1, to=n+3)
+        adp <- read.oce(f, from = n + 1, to = n + 3)
         # numeric time comparison is easier for these whacky times
-        expect_equal(as.numeric(adp[["time"]])-1214438000,
-            c(0.5599999428, 10.6500000954, 20.6400001049))
+        expect_equal(
+            as.numeric(adp[["time"]]) - 1214438000,
+            c(0.5599999428, 10.6500000954, 20.6400001049)
+        )
 
-        v <- c(0.51, 0.51, 0.51, 0.756, 0.756, 0.756, 0.17, 0.17, 0.17,
+        v <- c(
+            0.51, 0.51, 0.51, 0.756, 0.756, 0.756, 0.17, 0.17, 0.17,
             0.1, 0.1, 0.1, 1.7, 1.7, 1.7, 0.227, 0.227, 0.227, 0.05,
             0.05, 0.05, 1.5, 1.5, 1.5, 0.123, 0.123, 0.123, 0.123,
             0.123, 0.123, 0.123, 0.123, 0.123, 0, 0, 0, 1.114, 1.435,
@@ -46,24 +49,29 @@ if (file.exists(f)) {
             -0.075, -0.007, -0.102, -0.142, -0.086, -0.123, -0.184,
             -0.107, -0.14, -0.17, -0.12, -0.163, -0.164, -0.149,
             -0.141, -0.191, -0.129, -0.128, -0.202, -0.146, -0.134,
-            -0.191, -0.123, -0.135, -0.217, -0.124, -0.132)
+            -0.191, -0.123, -0.135, -0.217, -0.124, -0.132
+        )
         dim(v) <- c(3, 32, 3)
         expect_equal(adp[["v"]], v)
-        expect_equal(adp[["distance"]], c(0.05, 0.09, 0.13, 0.17, 0.21,
-                0.25, 0.29, 0.33, 0.37, 0.41,
-                0.45, 0.49, 0.53, 0.57, 0.61,
-                0.65, 0.69, 0.73, 0.77, 0.81,
-                0.85, 0.89, 0.93, 0.97, 1.01,
-                1.05, 1.09, 1.13, 1.17, 1.21,
-                1.25, 1.29))
-})}
+        expect_equal(adp[["distance"]], c(
+            0.05, 0.09, 0.13, 0.17, 0.21,
+            0.25, 0.29, 0.33, 0.37, 0.41,
+            0.45, 0.49, 0.53, 0.57, 0.61,
+            0.65, 0.69, 0.73, 0.77, 0.81,
+            0.85, 0.89, 0.93, 0.97, 1.01,
+            1.05, 1.09, 1.13, 1.17, 1.21,
+            1.25, 1.29
+        ))
+    })
+}
 
-if (1 == length(list.files(path=".", pattern="local_data"))) {
+if (1 == length(list.files(path = ".", pattern = "local_data"))) {
     test_that("Teledyn/RDI read (integer from,to) and check", {
         beam <- read.oce("local_data/adp_rdi",
-            from=1, to=10, latitude=47.88126, longitude=-69.73433)
+            from = 1, to = 10, latitude = 47.88126, longitude = -69.73433
+        )
         xyz <- beamToXyzAdp(beam)
-        enu <- xyzToEnuAdp(xyz, declination=-18.1)
+        enu <- xyzToEnuAdp(xyz, declination = -18.1)
         expect_equal(c(10, 84, 4), dim(beam[["v"]]))
         expect_equal(c(10, 84, 4), dim(xyz[["v"]]))
         expect_equal(c(10, 84, 4), dim(enu[["v"]]))
@@ -74,32 +82,38 @@ if (1 == length(list.files(path=".", pattern="local_data"))) {
         expect_equal(xyz[["longitude"]], -69.73433)
         expect_equal(enu[["longitude"]], -69.73433)
         # FIXME: add more tests on the data
-})}
+    })
+}
 
-if (1 == length(list.files(path=".", pattern="local_data"))) {
+if (1 == length(list.files(path = ".", pattern = "local_data"))) {
     test_that("Teledyn/RDI read (POSIXct from,to)", {
         beam <- read.oce("local_data/adp_rdi",
-            from=as.POSIXct("2008-06-25 10:01:00", tz="UTC"),
-            to=as.POSIXct("2008-06-25 10:03:00", tz="UTC"))
+            from = as.POSIXct("2008-06-25 10:01:00", tz = "UTC"),
+            to = as.POSIXct("2008-06-25 10:03:00", tz = "UTC")
+        )
         expect_true(is.na(beam[["latitude"]]))
         expect_true(is.na(beam[["longitude"]]))
         expect_equal(dim(beam[["v"]]), c(13, 84, 4))
-})}
+    })
+}
 
-if (1 == length(list.files(path=".", pattern="local_data"))) {
+if (1 == length(list.files(path = ".", pattern = "local_data"))) {
     test_that("Teledyn/RDI binmap", {
         beam <- read.oce("local_data/adp_rdi",
-            from=1, to=10, latitude=47.88126, longitude=-69.73433)
+            from = 1, to = 10, latitude = 47.88126, longitude = -69.73433
+        )
         expect_silent(beam2 <- binmapAdp(beam))
         # FIXME: add tests on the data
-})}
+    })
+}
 
-if (1 == length(list.files(path=".", pattern="local_data"))) {
+if (1 == length(list.files(path = ".", pattern = "local_data"))) {
     test_that("Nortek aquadopp read and check", {
         beam <- read.oce("local_data/adp_nortek_aquadopp",
-            from=1, to=10, latitude=47.87943, longitude=-69.72533)
+            from = 1, to = 10, latitude = 47.87943, longitude = -69.72533
+        )
         xyz <- beamToXyzAdp(beam)
-        enu <- xyzToEnuAdp(xyz, declination=-18.1)
+        enu <- xyzToEnuAdp(xyz, declination = -18.1)
         expect_equal(c(10, 25, 3), dim(beam[["v"]]))
         expect_equal(c(10, 25, 3), dim(xyz[["v"]]))
         expect_equal(c(10, 25, 3), dim(enu[["v"]]))
@@ -110,23 +124,27 @@ if (1 == length(list.files(path=".", pattern="local_data"))) {
         expect_equal(xyz[["longitude"]], -69.72533)
         expect_equal(enu[["longitude"]], -69.72533)
         # FIXME: add more tests on the data
-})}
+    })
+}
 
-if (1 == length(list.files(path=".", pattern="local_data"))) {
+if (1 == length(list.files(path = ".", pattern = "local_data"))) {
     test_that("Sontek (PCADP)", {
         beam <- read.oce("local_data/adp_sontek",
-            from=1, to=10, latitude=48.87961, longitude=-69.72706)
+            from = 1, to = 10, latitude = 48.87961, longitude = -69.72706
+        )
         expect_equal(48.87961, beam[["latitude"]])
         expect_equal(-69.72706, beam[["longitude"]])
         expect_equal(dim(beam[["v"]]), c(10, 32, 3))
         beam2 <- read.oce("local_data/adp_sontek",
-            from=as.POSIXct("2008-06-25 10:00:40", tz="UTC"),
-            to=as.POSIXct("2008-06-25 10:01:30", tz="UTC"),
-            latitude=48.87961, longitude=-69.72706)
+            from = as.POSIXct("2008-06-25 10:00:40", tz = "UTC"),
+            to = as.POSIXct("2008-06-25 10:01:30", tz = "UTC"),
+            latitude = 48.87961, longitude = -69.72706
+        )
         expect_equal(dim(beam2[["v"]]), c(6, 32, 3))
-})}
+    })
+}
 
-if (1 == length(list.files(path=".", pattern="local_data"))) {
+if (1 == length(list.files(path = ".", pattern = "local_data"))) {
     test_that("Teledyne/RDI Sentinel V subset by pressure", {
         expect_warning(
             expect_warning(
@@ -136,17 +154,29 @@ if (1 == length(list.files(path=".", pattern="local_data"))) {
                             expect_warning(
                                 expect_warning(
                                     expect_warning(
-                                        expect_output(
-                                            d <- read.oce("local_data/adp_sentinel_v.pd0"),
-                                            "Got to end of data"),
-                                        "skipping the first ensemble"),
-                                    "A list of unhandled segment codes"),
-                                "A list of unhandled segment codes"),
-                            "A list of unhandled segment codes"),
-                        "A list of unhandled segment codes"),
-                    "A list of unhandled segment codes"),
-                "A list of unhandled segment codes"),
-            "so trimming time")
+                                        expect_warning(
+                                            expect_output(
+                                                d <- read.oce("local_data/adp_sentinel_v.pd0"),
+                                                "EOF at cindex"
+                                            ),
+                                            "skipping the first ensemble"
+                                        ),
+                                        "Encountered some unhandled segment codes"
+                                    ),
+                                    "code 0x01 0x0f"
+                                ),
+                                "code 0x00 0x70"
+                            ),
+                            "code 0x01 0x70"
+                        ),
+                        "code 0x02 0x70"
+                    ),
+                    "code 0x00 0x32"
+                ),
+                "code 0x04 0x70"
+            ),
+            "so trimming time"
+        )
         keep <- d[["pressure"]] < median(d[["pressure"]])
         dsp <- subset(d, pressure < median(d[["pressure"]]))
         expect_equal(sum(keep), dim(dsp[["v"]])[1])
@@ -154,11 +184,14 @@ if (1 == length(list.files(path=".", pattern="local_data"))) {
         for (slant in c("v", "a")) { # "g" is NULL
             expect_equal(sum(keep), dim(dsp[[slant]])[1])
         }
-})}
+    })
+}
 
-if (1 == length(list.files(path=".", pattern="local_data"))) {
+if (1 == length(list.files(path = ".", pattern = "local_data"))) {
     test_that("Teledyne/RDI Sentinel V subset by distance", {
+        # same check as in previous block
         expect_warning(
+            expect_warning(
                 expect_warning(
                     expect_warning(
                         expect_warning(
@@ -168,15 +201,26 @@ if (1 == length(list.files(path=".", pattern="local_data"))) {
                                         expect_warning(
                                             expect_output(
                                                 d <- read.oce("local_data/adp_sentinel_v.pd0"),
-                                                "Got to end of data"),
-                                            "skipping the first ensemble"),
-                                        "A list of unhandled segment codes"),
-                                    "A list of unhandled segment codes"),
-                            "A list of unhandled segment codes"),
-                        "A list of unhandled segment codes"),
-                    "A list of unhandled segment codes"),
-                "A list of unhandled segment codes"),
-            "so trimming time")
+                                                "EOF at cindex"
+                                            ),
+                                            "skipping the first ensemble"
+                                        ),
+                                        "Encountered some unhandled segment codes"
+                                    ),
+                                    "code 0x01 0x0f"
+                                ),
+                                "code 0x00 0x70"
+                            ),
+                            "code 0x01 0x70"
+                        ),
+                        "code 0x02 0x70"
+                    ),
+                    "code 0x00 0x32"
+                ),
+                "code 0x04 0x70"
+            ),
+            "so trimming time"
+        )
         keepSlant <- sum(d[["distance"]] < median(d[["distance"]]))
         keepVertical <- sum(d[["vdistance"]] < median(d[["distance"]]))
         dsd <- subset(d, distance < median(d[["distance"]]))
@@ -188,4 +232,5 @@ if (1 == length(list.files(path=".", pattern="local_data"))) {
         for (slant in c("v", "a")) { # "g" is NULL
             expect_equal(keepSlant, dim(dsd[[slant]])[2])
         }
-})}
+    })
+}

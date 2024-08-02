@@ -5,12 +5,19 @@
 #' This calculates solar angle, based on a NASA-provided Fortran
 #' program, which (according to comments in the code) is in turn
 #' based on "The Astronomical Almanac".
+#' Note that `time` may be a single value or a vector
+#' of values; in the latter case, `longitude`, `latitude` and `useRefraction`
+#' are all made to be of the same length as `time`, by calling [rep()]. This
+#' addresses the case of finding a time-series of angles at a given spatial
+#' location. For other cases of arguments that are not single values,
+#' either call `sunAngle()` repeatedly or, if that is too slow,
+#' use `expand.grid()` to set up values of uniform length that
+#' are then supplied to `sunAngle()`.
 #'
-#' @param t time, a POSIXt object (converted to timezone `"UTC"`,
-#' if it is not already in that timezone), a character or numeric value that
-#' corresponds to such a time.  This may be a single value or a vector
-#' of values.  In the latter case, `longitude`, `latitude` and `useRefraction`
-#' are all made to be of the same length as `time`, by calling [rep()].
+#' @param t time, either a POSIXt object (converted to timezone `"UTC"`,
+#' if it is not already in that timezone), or a value (character or numeric)
+#' that can be converted to a time with [as.POSIXct()], assuming the
+#' timezone to be `"UTC"`.
 #'
 #' @param longitude observer longitude in degrees east.
 #'
@@ -97,23 +104,22 @@ sunAngle <- function(t, longitude = 0.0, latitude = 0.0, useRefraction = FALSE) 
             }
         }
     }
-    t <- as.POSIXct(t) # so we can get length ... FIXME: silly, I know
+    if (!is.logical(useRefraction)) {
+        stop("useRefraction must be a logical value")
+    }
+    t <- as.POSIXct(t) # so length() will return what we want
     nt <- length(t)
     nlongitude <- length(longitude)
     nlatitude <- length(latitude)
     nuseRefraction <- length(useRefraction)
-    if (nlongitude != nlatitude) {
-        stop("lengths of longitude and latitude must match")
-    }
-    if (nlongitude != nuseRefraction) {
-        stop("lengths of longitude and useRefraction must match")
-    }
-    if (nlongitude == 1) {
+    if (nlongitude != nt) {
         longitude <- rep(longitude, length.out = nt)
+    }
+    if (nlatitude != nt) {
         latitude <- rep(latitude, length.out = nt)
+    }
+    if (nuseRefraction != nt) {
         useRefraction <- rep(useRefraction, length.out = nt)
-    } else {
-        stop("lengths of longitude, latitude and useRefraction must be 1 or the length of time")
     }
     # Ensure that the timezone is UTC. Note that Sys.Date() gives a NULL tzone.
     tzone <- attr(as.POSIXct(t[1]), "tzone")

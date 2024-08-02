@@ -45,8 +45,8 @@ mapLines(l$longitude, l$latitude, col = "red", lwd = 2)
 \seealso{
 Other functions relating to geodesy: 
 \code{\link{geodDist}()},
-\code{\link{geodXyInverse}()},
-\code{\link{geodXy}()}
+\code{\link{geodXy}()},
+\code{\link{geodXyInverse}()}
 }
 \author{
 Dan Kelley, based on code from Clark Richards, in turn based on

@@ -7,11 +7,10 @@
 sunAngle(t, longitude = 0, latitude = 0, useRefraction = FALSE)
 }
 \arguments{
-\item{t}{time, a POSIXt object (converted to timezone \code{"UTC"},
-if it is not already in that timezone), a character or numeric value that
-corresponds to such a time.  This may be a single value or a vector
-of values.  In the latter case, \code{longitude}, \code{latitude} and \code{useRefraction}
-are all made to be of the same length as \code{time}, by calling \code{\link[=rep]{rep()}}.}
+\item{t}{time, either a POSIXt object (converted to timezone \code{"UTC"},
+if it is not already in that timezone), or a value (character or numeric)
+that can be converted to a time with \code{\link[=as.POSIXct]{as.POSIXct()}}, assuming the
+timezone to be \code{"UTC"}.}
 
 \item{longitude}{observer longitude in degrees east.}
 
@@ -37,6 +36,14 @@ A list containing the following:
 This calculates solar angle, based on a NASA-provided Fortran
 program, which (according to comments in the code) is in turn
 based on "The Astronomical Almanac".
+Note that \code{time} may be a single value or a vector
+of values; in the latter case, \code{longitude}, \code{latitude} and \code{useRefraction}
+are all made to be of the same length as \code{time}, by calling \code{\link[=rep]{rep()}}. This
+addresses the case of finding a time-series of angles at a given spatial
+location. For other cases of arguments that are not single values,
+either call \code{sunAngle()} repeatedly or, if that is too slow,
+use \code{expand.grid()} to set up values of uniform length that
+are then supplied to \code{sunAngle()}.
 }
 \examples{
 

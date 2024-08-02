@@ -8,7 +8,8 @@ swAbsoluteSalinity(
   salinity,
   pressure = NULL,
   longitude = NULL,
-  latitude = NULL
+  latitude = NULL,
+  debug = getOption("oceDebug")
 )
 }
 \arguments{
@@ -21,6 +22,14 @@ which case \code{salinity}, etc. are inferred from the object).}
 \item{longitude}{longitude of observation.}
 
 \item{latitude}{latitude of observation.}
+
+\item{debug}{an integer specifying whether debugging information is
+to be printed during the processing. This is a general parameter that
+is used by many \code{oce} functions. Generally, setting \code{debug=0}
+turns off the printing, while higher values suggest that more information
+be printed. If one function calls another, it usually reduces the value of
+\code{debug} first, so that a user can often obtain deeper debugging
+by specifying higher \code{debug} values.}
 }
 \value{
 Absolute Salinity in \eqn{g/kg}{g/kg}.
@@ -52,8 +61,8 @@ Other functions that calculate seawater properties:
 \code{\link{T90fromT68}()},
 \code{\link{computableWaterProperties}()},
 \code{\link{locationForGsw}()},
-\code{\link{swAlphaOverBeta}()},
 \code{\link{swAlpha}()},
+\code{\link{swAlphaOverBeta}()},
 \code{\link{swBeta}()},
 \code{\link{swCSTp}()},
 \code{\link{swConservativeTemperature}()},
@@ -67,18 +76,21 @@ Other functions that calculate seawater properties:
 \code{\link{swSCTp}()},
 \code{\link{swSR}()},
 \code{\link{swSTrho}()},
+\code{\link{swSigma}()},
 \code{\link{swSigma0}()},
 \code{\link{swSigma1}()},
 \code{\link{swSigma2}()},
 \code{\link{swSigma3}()},
 \code{\link{swSigma4}()},
-\code{\link{swSigmaTheta}()},
 \code{\link{swSigmaT}()},
-\code{\link{swSigma}()},
+\code{\link{swSigmaTheta}()},
 \code{\link{swSoundAbsorption}()},
 \code{\link{swSoundSpeed}()},
 \code{\link{swSpecificHeat}()},
 \code{\link{swSpice}()},
+\code{\link{swSpiciness0}()},
+\code{\link{swSpiciness1}()},
+\code{\link{swSpiciness2}()},
 \code{\link{swSstar}()},
 \code{\link{swTFreeze}()},
 \code{\link{swTSrho}()},

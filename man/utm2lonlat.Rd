@@ -24,7 +24,7 @@ else for South.}
 \code{northing} are in kilometers or meters.}
 }
 \value{
-A list containing \code{longitude} and \code{latitude}.
+\code{utm2lonlat} returns a list containing \code{longitude} and \code{latitude}.
 }
 \description{
 Convert UTM to Longitude and Latitude
@@ -66,6 +66,7 @@ Other functions related to maps:
 \code{\link{mapText}()},
 \code{\link{mapTissot}()},
 \code{\link{oceCRS}()},
+\code{\link{oceProject}()},
 \code{\link{shiftLongitude}()},
 \code{\link{usrLonLat}()}
 }

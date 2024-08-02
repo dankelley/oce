@@ -138,10 +138,10 @@ Other things related to tides:
 \code{\link{summary,tidem-method}},
 \code{\link{tidalCurrent}},
 \code{\link{tidedata}},
+\code{\link{tidem}},
 \code{\link{tidem-class}},
 \code{\link{tidemAstron}()},
 \code{\link{tidemVuf}()},
-\code{\link{tidem}},
 \code{\link{webtide}()}
 }
 \concept{functions that extract parts of oce objects}

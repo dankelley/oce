@@ -23,7 +23,9 @@ etc.
 display, e.g. by \code{\link{plot,section-method}}.
 The unit is enclosed in square brackets, although setting
 \code{options(oceUnitBracket="(")} will cause parentheses to be
-used, instead.
+used, instead. This function is intended mainly for use
+within the package, and users should not rely on its behaviour being
+unchangeable.
 }
 \details{
 If \code{name} is in a standard list, then alterations are made as appropriate,

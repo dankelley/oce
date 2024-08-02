@@ -135,8 +135,17 @@ setMethod(
     definition = function(object, ...) {
         cat("Amsr Summary\n------------\n\n")
         showMetadataItem(object, "filename", "Data file:       ")
+        showMetadataItem(object, "platform", "Platform:        ")
+        showMetadataItem(object, "instrument", "Instrument:      ")
         cat(sprintf("* Longitude range: %.4fE to %.4fE\n", object@metadata$longitude[1], tail(object@metadata$longitude, 1)))
         cat(sprintf("* Latitude range:  %.4fN to %.4fN\n", object@metadata$latitude[1], tail(object@metadata$latitude, 1)))
+        if (!is.null(object@metadata$timeStart)) {
+            cat(sprintf(
+                "* Time interval:   %s to %s\n",
+                format(object@metadata$timeStart, "%Y-%m-%d %H:%M:%S UTC"),
+                format(object@metadata$timeEnd, "%Y-%m-%d %H:%M:%S UTC")
+            ))
+        }
         cat(sprintf("* Format type:     %d\n", amsrType(object)))
         # Version 1 data are in raw format, so use [[ to get scientific units
         type <- amsrType(object)
@@ -226,7 +235,7 @@ setMethod(
     signature(x = "amsr", i = "ANY", j = "ANY"),
     definition = function(x, i, j, ...) { # [[,amsr-method
         debug <- getOption("oceDebug")
-        oceDebug(debug, "amsr [[ {\n", unindent = 1)
+        oceDebug(debug, "amsr [[ START\n", unindent = 1)
         if (missing(i)) {
             stop("Must name a amsr item to retrieve, e.g. '[[\"SST\"]]'", call. = FALSE)
         }
@@ -249,7 +258,7 @@ setMethod(
                 ))
             }
             if (is.character(i) && !is.na(pmatch(i, names(x@metadata)))) {
-                oceDebug(debug, "} # amsr [[\n", unindent = 1)
+                oceDebug(debug, "END amsr [[\n", unindent = 1)
                 return(x@metadata[[i]])
             }
             namesAllowed <- c(names(x@data), dataDerived)
@@ -447,7 +456,7 @@ setMethod(
     definition = function(x, subset, ...) { # subset,amsr-method
         dots <- list(...)
         debug <- if ("debug" %in% names(dots)) dots$debug else 0
-        oceDebug(debug, "subset,amsr-method() {\n", style = "bold", sep = "", unindent = 1)
+        oceDebug(debug, "subset,amsr-method() START\n", sep = "", unindent = 1)
         res <- x
         subsetString <- paste(deparse(substitute(expr = subset, env = environment())), collapse = " ")
         type <- amsrType(x)
@@ -502,7 +511,7 @@ setMethod(
             stop("may only subset by longitude or latitude")
         }
         res@processingLog <- processingLogAppend(res@processingLog, paste("subset(x, subset=", subsetString, ")", sep = ""))
-        oceDebug(debug, "} # subset,amsr-method()\n", style = "bold", sep = "", unindent = 1)
+        oceDebug(debug, "END subset,amsr-method()\n", sep = "", unindent = 1)
         res
     }
 )
@@ -517,42 +526,48 @@ setMethod(
 #'
 #' @param x an [amsr-class] object.
 #'
-#' @param y character value indicating the name of the band to plot; if not provided,
-#' `SST` is used; see the documentation for the [amsr-class] class for a list of bands.
+#' @param y character value indicating the name of the band to plot;
+#' if not provided, `SST` (or a variant thereof) is used; see the
+#' documentation for the [amsr-class] class for a list of bands.
 #'
 #' @param asp optional numerical value giving the aspect ratio for plot.  The
 #' default value, `NULL`, means to use an aspect ratio of 1 for world views,
 #' and a value computed from `ylim`, if the latter is specified in the
 #' `...` argument.
 #'
-#' @param breaks optional numeric vector of the z values for breaks in the color scheme.
-#' If `colormap` is provided, it takes precedence over `breaks` and `col`.
+#' @param breaks optional numeric vector of the z values for breaks in
+#' the color scheme. If `colormap` is provided, it takes precedence
+#' over `breaks` and `col`.
 #'
-#' @param col optional argument, either a vector of colors corresponding to the breaks, of length
-#' 1 less than the number of breaks, or a function specifying colors.
-#' If neither `col` or `colormap` is provided, then `col` defaults to
-#' [oceColorsTemperature()].
-#' If `colormap` is provided, it takes precedence over `breaks` and `col`.
+#' @param col optional argument, either a vector of colors
+#' corresponding to the breaks, of length 1 less than the number of
+#' breaks, or a function specifying colors. If neither `col` or
+#' `colormap` is provided, then `col` defaults to
+#' [oceColorsTemperature()]. If `colormap` is provided, it takes
+#' precedence over `breaks` and `col`.
 #'
 #' @param colormap a specification of the colormap to use, as created
-#' with [colormap()].  If `colormap` is NULL, which is the default, then
-#' a colormap is created to cover the range of data values, using
-#' [oceColorsTemperature] color scheme.
-#' If `colormap` is provided, it takes precedence over `breaks` and `col`.
-#' See \dQuote{Examples} for an example of using the "turbo" color scheme.
+#' with [colormap()].  If `colormap` is NULL, which is the default,
+#' then a colormap is created to cover the range of data values, using
+#' [oceColorsTemperature] color scheme. If `colormap` is provided, it
+#' takes precedence over `breaks` and `col`. See \dQuote{Examples} for
+#' an example of using the "turbo" color scheme.
 #'
 #' @param zlim optional numeric vector of length 2, giving the limits
 #' of the plotted quantity.  A reasonable default is computed, if this
 #' is not given.
 #'
+#' @param zlab optional character value that is shown in the top-right
+#' margin of the plot. If not given, this defaults to the name of the
+#' plotted variable.
+#'
 #' @param missingColor optional list specifying colors to use for
-#' non-data categories.  If not provided, a default is used.  For
-#' type 1, that default is
-#' `list(land="papayaWhip", none="lightGray", bad="gray", rain="plum",
-#' ice="mediumVioletRed")`.  For type 2, it is
-#' `list(coast="gray", land="papayaWhip", noObs="lightGray",
-#' seaIce="mediumVioletRed")`.  Any colors may be used in place of these,
-#' but the names must match, and all names must be present.
+#' non-data categories.  If not provided, a default is used.  For type
+#' 1, that default is `list(land="papayaWhip", none="lightGray",
+#' bad="gray", rain="plum", ice="mediumVioletRed")`.  For type 2, it
+#' is `list(coast="gray", land="papayaWhip", noObs="lightGray",
+#' seaIce="mediumVioletRed")`.  Any colors may be used in place of
+#' these, but the names must match, and all names must be present.
 #'
 #' @template debugTemplate
 #'
@@ -582,17 +597,14 @@ setMethod(
     f = "plot",
     signature = signature("amsr"),
     # FIXME: how to let it default on band??
-    definition = function(x, y, asp = NULL, # plot,amsr-method
-                          breaks, col, colormap, zlim,
+    definition = function(x, y, asp = NULL,
+                          breaks, col, colormap, zlim, zlab,
                           # FIXME: how do the old-format categories map to new ones?  (They don't
                           # seem to.)  For now, the next argument is just for new-format.
                           missingColor,
                           debug = getOption("oceDebug"), ...) {
         dots <- list(...)
-        oceDebug(debug, "plot.amsr(..., y=c(",
-            if (missing(y)) "(missing)" else y, ", ...) {\n",
-            sep = "", style = "bold", unindent = 1
-        )
+        oceDebug(debug, "plot.amsr(..., y=c(", if (missing(y)) "(missing)" else y, ", ...) START\n", sep = "", unindent = 1)
         zlimGiven <- !missing(zlim)
         type <- amsrType(x)
         oceDebug(debug, "amsr type: ", type, "\n")
@@ -665,13 +677,12 @@ setMethod(
         } else {
             oceDebug(debug, "using specified colormap, ignoring breaks and col, whether they were supplied or not\n")
         }
-        i <- if ("zlab" %in% names(dots)) {
-            oceDebug(debug, "calling imagep() with asp=", asp, ", and zlab=\"", dots$zlab, "\"\n", sep = "")
-            imagep(lon, lat, z, colormap = colormap, asp = asp, debug = debug - 1, ...)
-        } else {
-            oceDebug(debug, "calling imagep() with asp=", asp, ", and no zlab argument\n", sep = "")
-            imagep(lon, lat, z, colormap = colormap, zlab = y, asp = asp, debug = debug - 1, ...)
-        }
+        oceDebug(debug, "calling imagep() with asp=", asp, "\n", sep = "")
+        # the return value from imagep() has things we want below
+        i <- imagep(lon, lat, z,
+            colormap = colormap, asp = asp,
+            zlab = if (missing(zlab)) y else zlab, debug = debug - 1, ...
+        )
         # Handle missing-data codes by redrawing the (possibly decimated) image. Perhaps
         # imagep() should be able to do this, but imagep() is a long function
         # with a lot of interlocking arguments so I'll start by doing this
@@ -743,7 +754,7 @@ setMethod(
             stop("type ", type, " not understood; only types 1 and 2 are handled")
         }
         box()
-        oceDebug(debug, "} # plot.amsr()\n", sep = "", style = "bold", unindent = 1)
+        oceDebug(debug, "END plot.amsr()\n", sep = "", unindent = 1)
     }
 ) # plot,amsr-method
 
@@ -755,7 +766,7 @@ setMethod(
 #' but it probably makes more sense to use something like `"~/data/amsr"`
 #' to make it easy for scripts in other directories to use the cached data.
 #' The file is downloaded with [download.file()].  Please read the
-#' \sQuote{History} section for important details on how [download.amsr()]
+#' \dQuote{History} section for important details on how [download.amsr()]
 #' and also [read.amsr()] have had be altered over the years, to deal
 #' with changes in the directory structure and file format on the
 #' server from which files are downloaded.
@@ -842,7 +853,7 @@ download.amsr <- function(
     year = NULL, month, day, destdir = ".",
     server = "https://data.remss.com/amsr2/ocean/L3/v08.2", type = "3day",
     debug = 0) {
-    oceDebug(debug, "download.amsr(type=\"", type, "\", ...) {\n", sep = "", unindent = 1)
+    oceDebug(debug, "download.amsr(type=\"", type, "\", ...) START\n", sep = "", unindent = 1)
     if (!type %in% c("3day", "daily", "weekly", "monthly")) {
         stop("type=\"", type, "\" not permitted; try \"3day\", \"daily\", \"weekly\" or \"monthly\"")
     }
@@ -950,14 +961,14 @@ download.amsr <- function(
     destfile <- paste(destdir, file, sep = "/")
     if (file.exists(destfile)) {
         oceDebug(debug, "using existing file \"", destfile, "\"\n", sep = "")
-        oceDebug(debug, "} # download.amsr\n", sep = "", style = "bold", unindent = 1)
+        oceDebug(debug, "END download.amsr()\n", sep = "", unindent = 1)
         return(destfile)
     }
     ok <- try(download.file(url, destfile))
     if (inherits(ok, "try-error")) {
         stop("could not download \"", url, "\" to local file \"", destfile, "\"")
     }
-    oceDebug(debug, "} # download.amsr\n", sep = "", unindent = 1)
+    oceDebug(debug, "END download.amsr()\n", sep = "", unindent = 1)
     destfile
 }
 #<2023-07-29> download.amsr <- function(year, month, day, destdir=".", server="http://data.remss.com/amsr2/bmaps_v08")
@@ -1045,7 +1056,7 @@ read.amsr <- function(file, encoding = NA, debug = getOption("oceDebug")) {
     if (0L == file.info(file)$size) {
         stop("empty file \"", file, "\"")
     }
-    oceDebug(debug, "read.amsr(file=\"", file, "\",", ", debug=", debug, ") {\n", sep = "", unindent = 1)
+    oceDebug(debug, "read.amsr(file=\"", file, "\",", ", debug=", debug, ") START\n", sep = "", unindent = 1)
     isgz <- grepl(".gz$", file)
     isncdf <- grepl(".nc$", file)
     if (!any(c(isgz, isncdf))) { # also rechecked later
@@ -1150,6 +1161,22 @@ read.amsr <- function(file, encoding = NA, debug = getOption("oceDebug")) {
         # [13] "vaporDay"    "vaporNight"
         oceDebug(debug, "new-style file, with name ending in \".nc\"\n")
         nc <- ncdf4::nc_open(file)
+        # Get some metadata from global attributes
+        a <- ncdf4::ncatt_get(nc, varid = 0, attname = "time_coverage_start")
+        res@metadata$timeStart <- if (a$hasatt) as.POSIXct(a$value, format = "%Y-%m-%dT%H:%M:%SZ", tz = "UTC") else NULL
+        a <- ncdf4::ncatt_get(nc, varid = 0, attname = "time_coverage_end")
+        res@metadata$timeEnd <- if (a$hasatt) as.POSIXct(a$value, format = "%Y-%m-%dT%H:%M:%SZ", tz = "UTC") else NULL
+        a <- ncdf4::ncatt_get(nc, varid = 0, attname = "version")
+        res@metadata$version <- if (a$hasatt) a$value else NULL
+        a <- ncdf4::ncatt_get(nc, varid = 0, attname = "sensor")
+        res@metadata$sensor <- if (a$hasatt) a$value else NULL
+        a <- ncdf4::ncatt_get(nc, varid = 0, attname = "platform")
+        res@metadata$platform <- if (a$hasatt) a$value else NULL
+        a <- ncdf4::ncatt_get(nc, varid = 0, attname = "instrument")
+        res@metadata$instrument <- if (a$hasatt) a$value else NULL
+        a <- ncdf4::ncatt_get(nc, varid = 0, attname = "references")
+        res@metadata$references <- if (a$hasatt) a$value else NULL
+        # Get data
         SST <- ncdf4::ncvar_get(nc, "SST")
         dim <- dim(SST)
         # print(sort(names(nc$var)))
@@ -1202,7 +1229,7 @@ read.amsr <- function(file, encoding = NA, debug = getOption("oceDebug")) {
         res@processingLog,
         paste0("read.amsr(file=\"", filename, "\")")
     )
-    oceDebug(debug, "} # read.amsr()\n", sep = "", unindent = 1)
+    oceDebug(debug, "END read.amsr()\n", sep = "", unindent = 1)
     res
 }
 

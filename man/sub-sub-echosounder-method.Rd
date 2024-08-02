@@ -139,8 +139,8 @@ Other functions that extract parts of oce objects:
 Other things related to echosounder data: 
 \code{\link{[[<-,echosounder-method}},
 \code{\link{as.echosounder}()},
-\code{\link{echosounder-class}},
 \code{\link{echosounder}},
+\code{\link{echosounder-class}},
 \code{\link{findBottom}()},
 \code{\link{plot,echosounder-method}},
 \code{\link{read.echosounder}()},

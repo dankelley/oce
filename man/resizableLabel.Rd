@@ -13,31 +13,26 @@ resizableLabel(
 )
 }
 \arguments{
-\item{item}{code for the label. The following common values are recognized:
-\code{"absolute salinity"}, \code{"along-spine distance km"}, \code{"along-track distance km"},
-\code{"C"}, \code{"conductivity mS/cm"}, \code{"conductivity S/m"}, \code{"conservative temperature"},
-\code{"CT"}, \code{"depth"}, \code{"direction"}, \code{"distance"}, \code{"distance km"}, \code{"eastward"},
-\code{"elevation"}, \code{"fluorescence"}, \code{"frequency cph"}, \code{"heading"}, \code{"latitude"},
-\code{"longitude"}, \code{"N2"}, \code{"nitrate"}, \code{"nitrite"}, \code{"northward"}, \code{"oxygen"},
-\code{"oxygen mL/L"}, \code{"oxygen saturation"}, \code{"oxygen umol/kg"}, \code{"oxygen umol/L"},
-\code{"p"}, \code{"phosphate"}, \code{"pitch"}, \code{"roll"}, \code{"S"}, \code{"SA"},
-\code{"sigma0"}, \code{"sigma1"}, \code{"sigma2"}, \code{"sigma3"}, \code{"sigma4"},
-\code{"sigmaTheta"},
-\code{"silicate"}, \code{"sound speed"}, \code{"spectral density m2/cph"}, \code{"speed"},
-\code{"spice"}, \code{"T"}, \code{"theta"}, \code{"tritium"}, \code{"u"}, \code{"v"}, \code{"w"}, or \code{"z"}.
-Other values may also be recognized, and if an unrecognized item is
-given, then it is returned, unaltered.}
+\item{item}{code for the label. If this matches or partially matches
+to a known value (see \dQuote{Details}), then that value and
+associated unit are returned.  If not, \code{item} is returned, unaltered.
+See \dQuote{Details} for a list of known values, and a note
+on partial matching.}
 
 \item{axis}{a string indicating which axis to use; must be \code{x} or
 \code{y}.}
 
 \item{sep}{optional character string inserted between the unit and the
-parentheses or brackets that enclose it. If not provided, then
-\code{\link{getOption}}\code{("oceUnitSep")} is checked. If that exists, then it is
-used as the separator; if not, no separator is used.}
+parentheses or brackets that enclose it. If not provided,
+\link{getOption}\verb{("oceUnitSep", " ")} is called to get a value for \code{sep}.
+By default, the units are enclosed in square brackets; to change
+that to parentheses, use \link{options}\code{(oceUnitBracket="(")}, but
+note that this setting will last for the whole session.}
 
-\item{unit}{optional unit to use, if the default is not satisfactory. This
-might be the case if for example temperature was not measured in Celcius.}
+\item{unit}{optional unit to use. If not supplied, a sensible unit is used,
+depending on \code{item}. And, even if supplied, \code{unit} is ignored for many \code{item}
+values for which it make no sense, e.g. \code{"oxygen ml/l"}, \code{"Conductivity Ratio"} and \code{"Absolute Salinity"}. Only the oce developers should consider
+supplying a value for \code{unit}.}
 
 \item{debug}{optional debugging flag. Setting to 0 turns off debugging,
 while setting to 1 causes some debugging information to be printed.}
@@ -46,14 +41,53 @@ while setting to 1 causes some debugging information to be printed.}
 A character string or expression, in either a long or a shorter
 format, for use in the indicated axis at the present plot size.  Whether the
 unit is enclosed in parentheses or square brackets is determined by the
-value of \code{getOption("oceUnitBracket")}, which may be \code{"["} or
-\code{"("}.  Whether spaces are used between the unit and these deliminators
-is set by \code{psep} or \code{\link{getOption}}\code{("oceUnitSep")}.
+value of \link{getOption}\code{("oceUnitBracket")}, which may be \code{"["}, which is
+the default, or \code{"("}.  Whether spaces are used between the unit and
+these delimiters is controlled by \code{sep} or \link{getOption}\code{("oceUnitSep")}.
 }
 \description{
-Provide axis names in adjustable sizes, e.g. using T instead of Temperature,
-and including units as appropriate.
-Used by e.g. \code{\link[=plot,ctd-method]{plot,ctd-method()}}.
+Provide axis names in adjustable sizes, e.g. using T instead of Temperature
+if the latter would be unlikely to fit on an axis. The name will also
+include units as appropriate.  This function is intended mainly for use
+within the package, and users should not rely on its behaviour being
+unchangeable.
+}
+\details{
+Partial matches to the \code{item} value are handled by calling \code{\link[=pmatch]{pmatch()}}. This
+can be convenient, with \code{item="tem"} and \code{item="temperature"} having the same
+effect. However, it can also be confusing for labels that are similar.
+For example, there are 5 variants of oxygen concentration.
+It is best to unabbreviated values, especially in non-interactive work.
+
+The list of known values is:
+\code{"absolute salinity"}, \code{"along-spine distance km"}, \code{"along-track distance km"},
+\code{"C"}, \code{"conductivity mS/cm"}, \code{"conductivity S/m"}, \code{"conservative temperature"},
+\code{"CT"}, \code{"depth"}, \code{"direction"}, \code{"distance"}, \code{"distance km"}, \code{"eastward"},
+\code{"elevation"}, \code{"fluorescence"}, \code{"frequency cph"}, \code{"heading"}, \code{"latitude"},
+\code{"longitude"}, \code{"N"}, \code{"N2"}, \code{"nitrate"}, \code{"nitrite"}, \code{"northward"}, \code{"oxygen"},
+\code{"oxygen mL/L"}, \code{"oxygen saturation"}, \code{"oxygen umol/kg"}, \code{"oxygen umol/L"},
+\code{"p"}, \code{"phosphate"}, \code{"pitch"}, \code{"roll"}, \code{"S"}, \code{"SA"},
+\code{"sigma0"}, \code{"sigma1"}, \code{"sigma2"}, \code{"sigma3"}, \code{"sigma4"},
+\code{"sigmaTheta"},
+\code{"silicate"}, \code{"sound speed"}, \code{"spectral density m2/cph"}, \code{"speed"},
+\code{"spice"}, \code{"spiciness0"}, \code{"spiciness1"}, \code{"spiciness2"},
+\code{"T"}, \code{"theta"}, \code{"tritium"}, \code{"u"}, \code{"v"}, \code{"w"}, and \code{"z"}.
+}
+\examples{
+# 1. A matchable item name
+resizableLabel("temp")
+# 2. Not a matchable item name
+resizableLabel("tempJUNK")
+# 3. A silly example, since ylab=expression(...) is shorter.
+degC <- c(-2, 30)
+degF <- 9 / 5 * degC + 32
+plot(degC, degF,
+    xlab = resizableLabel("temp"),
+    ylab = resizableLabel("temp", unit = expression(degree * "F")),
+    xaxs = "i", type = "l"
+)
+grid()
+
 }
 \seealso{
 Other functions that create labels: 

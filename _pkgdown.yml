@@ -1,28 +1,43 @@
 destination: docs
 
+template:
+  bootstrap: 5
+
+url: https://dankelley.github.io/oce/
+
+figures:
+  dpi: 96
+  dev.args: []
+  fig.ext: png
+  fig.width: 7.2916667
+  fig.height: 7.2916667
+  fig.retina: 2
+  fig.asp: 1
+  bg: NA
+  other.parameters: []
 reference:
-- title: CTD data
-  desc: Functions related to working with CTD data
-- contents:
-  - has_concept("things related to ctd data")
-  - has_concept("functions that read ctd data")
-- title: Acoustic Doppler data
-  desc: Functions related to acoustic Doppler instruments and data
-- contents:
-  - has_concept("things related to adp data")
-  - has_concept("things related to adv data")
-- title: Argo float data and tools
-  desc: Functions for working with Argo data
-- contents:
-  - has_concept("things related to argo data")
-- title: Seawater properties
-  desc: Functions for calculating seawater properties
-- contents:
-  - has_concept("functions that calculate seawater properties")
-- title: Data quality flags
-  desc: Functions for working with data quality flags
-- contents:
-  - has_concept("functions relating to data-quality flags")
-- title: All functions
-- contents:
-  - matches(".*")
+  - title: CTD data
+    desc: Functions related to working with CTD data
+  - contents:
+      - has_concept("things related to ctd data")
+      - has_concept("functions that read ctd data")
+  - title: Acoustic Doppler data
+    desc: Functions related to acoustic Doppler instruments and data
+  - contents:
+      - has_concept("things related to adp data")
+      - has_concept("things related to adv data")
+  - title: Argo float data and tools
+    desc: Functions for working with Argo data
+  - contents:
+      - has_concept("things related to argo data")
+  - title: Seawater properties
+    desc: Functions for calculating seawater properties
+  - contents:
+      - has_concept("functions that calculate seawater properties")
+  - title: Data quality flags
+    desc: Functions for working with data quality flags
+  - contents:
+      - has_concept("functions relating to data-quality flags")
+  - title: All functions
+  - contents:
+      - matches(".*")

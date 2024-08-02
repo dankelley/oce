@@ -57,9 +57,11 @@ North.}
 \item{type}{character string indicating the type of instrument.}
 
 \item{which}{optional character value.  If this is \code{"??"} then the
-\code{\link[=read.adp.rdi]{read.adp.rdi()}} works by locating the indices in \code{file} at which data
-segments begin, and storing them as \code{index} in a list that is returned.
-The other entry of the list is \code{time}, the time of the observation.}
+only other parameters that are examined are \code{file} and \code{debug},
+\code{\link[=read.adp.rdi]{read.adp.rdi()}} works by locating the indices in \code{file} at which
+data segments begin, and storing them as \code{index} in a list that is
+returned. The other entry of the list is \code{time}, the time of the
+observation.}
 
 \item{encoding}{ignored.}
 
@@ -91,55 +93,57 @@ NMEA strings, then navigational data will be stored in an item
 called \code{nmea} in the \code{data} slot).
 }
 \description{
-Read a Teledyne/RDI ADCP file (called 'adp' in oce).
+Read a Teledyne/RDI ADCP file (called 'adp' in oce). This can
+handle a variety of file/instrument types, by recognizing telltale
+byte sequences in the data. The scope is limited to types that are
+documented adequately in Teledyne/RDI manuals. In some instances,
+the manuals provide some information but not enough to enable
+inclusion here, for example in the case for wave data (see
+\url{https://github.com/dankelley/oce/issues/2216}).
 }
 \details{
-As of 2016-09-25, this function has provisional functionality to
-read data from the new "SentinelV" series ADCP -- essentially a
-combination of a 4 beam workhorse with an additional vertical
-centre beam.
+If a heading bias had been set with the \code{EB} command during the
+setup for the deployment, then a heading bias will have been stored
+in the file's header.  This value is stored in the object's
+metadata as \code{metadata$heading.bias}.  \strong{Importantly}, this value
+is subtracted from the headings stored in the file, and the result
+of this subtraction is stored in the objects heading value (in
+\code{data$heading}). It should be noted that \code{read.adp.rdi()} was
+tested for firmware version 16.30.  For other versions, there may
+be problems.  For example, the serial number is not recognized
+properly for version 16.28.
 
-If a heading bias had been set with the \code{EB} command during the setup
-for the deployment, then a heading bias will have been stored in the file's
-header.  This value is stored in the object's metadata as
-\code{metadata$heading.bias}.  \strong{Importantly}, this value is
-subtracted from the headings stored in the file, and the result of this
-subtraction is stored in the objects heading value (in \code{data$heading}).
-It should be noted that \code{read.adp.rdi()} was tested for firmware
-version 16.30.  For other versions, there may be problems.  For example, the
-serial number is not recognized properly for version 16.28.
-
-In Teledyne/RDI ADP data files, velocities are coded to signed 2-byte integers, with a
-scale factor being used to convert to velocity in metres per second.  These
-two facts control the maximum recordable velocity and the velocity
-resolution, values that may be retrieved for an ADP object name \code{d}
-with \code{d[["velocityMaximum"]]} and \code{d[["velocityResolution"]]}.
+In Teledyne/RDI ADP data files, velocities are coded to signed
+2-byte integers, with a scale factor being used to convert to
+velocity in metres per second.  These two facts control the maximum
+recordable velocity and the velocity resolution, values that may be
+retrieved for an ADP object name \code{d} with \code{d[["velocityMaximum"]]}
+and \code{d[["velocityResolution"]]}.
 }
 \section{Handling of old file formats}{
 
-\enumerate{
-\item Early PD0 file formats stored the year of sampling with a different
+
+Early PD0 file formats stored the year of sampling with a different
 base year than that used in modern files.  To accommodate this,
-\code{read.adp.rdi} examines the inferred year, and if it is greater than
-2050, then 100 years are subtracted from the time. This offset was
-inferred by tests with sample files, but \emph{not} from RDI documentation,
-so it is somewhat risky.  If the authors can find RDI documentation that
-indicates the condition in which this century offset is required, then
-a change will be made to the code.  Even if not, the method should
-not cause problems for a long time.
-}
+\code{read.adp.rdi} examines the inferred year, and if it is greater
+than 2050, then 100 years are subtracted from the time. This offset
+was inferred by tests with sample files, but \emph{not} from RDI
+documentation, so it is somewhat risky.  If the authors can find
+RDI documentation that indicates the condition in which this
+century offset is required, then a change will be made to the code.
+Even if not, the method should not cause problems for a long time.
 }
 
 \section{Names of items in data slot}{
 
 
-The names of items in the \code{data} slot are below. Not all items are present
-for ll file varieties; use e.g. \code{names(d[["data"]])} to determine the
-names used in an object named \code{d}. In this list, items are either
-a vector (with one sample per time of measurement), a
-\link{matrix} with first index for time and second for bin number,
-or an \link{array} with first index for time, second for bin number,
-and third for beam number. Items are of vector type, unless
+The names of items in the \code{data} slot are below. Not all items are
+present for ll file varieties; use e.g. \code{names(d[["data"]])} to
+determine the names used in an object named \code{d}. In this list,
+items are either a vector (with one sample per time of
+measurement), a \link{matrix} with first index for time and second for
+bin number, or an \link{array} with first index for time, second for bin
+number, and third for beam number. Items are of vector type, unless
 otherwise indicated.
 
 \tabular{rr}{
@@ -204,64 +208,73 @@ otherwise indicated.
 \section{Memory considerations}{
 
 
-For \code{RDI} files only, and only in the case where \code{by} is not specified,
-an attempt is made to avoid running out of memory by skipping some profiles
-in large input files. This only applies if \code{from} and \code{to} are both
-integers; if they are times, none of the rest of this section applies.
+For \code{RDI} files only, and only in the case where \code{by} is not
+specified, an attempt is made to avoid running out of memory by
+skipping some profiles in large input files. This only applies if
+\code{from} and \code{to} are both integers; if they are times, none of the
+rest of this section applies.
 
-A key issue is that RDI files store velocities in 2-byte values, which is
-not a format that R supports. These velocities become 8-byte (numeric) values
-in R. Thus, the R object created by \code{read.adp.rdi} will require more memory
-than that of the data file. A scale factor can be estimated by ignoring
-vector quantities (e.g. time, which has just one value per profile) and concentrating on matrix properties
-such as velocity, backscatter, and correlation. These three elements have equal dimensions.
-Thus, each 4-byte slide in the data file (2 bytes + 1 byte + 1 byte)
-corresponds to 10 bytes in the object (8 bytes + 1 byte + 1 byte).
-Rounding up the resultant 10/4 to 3 for safety, we conclude that any limit on the
-size of the R object corresponds to a 3X smaller limit on file size.
+A key issue is that RDI files store velocities in 2-byte values,
+which is not a format that R supports. These velocities become
+8-byte (numeric) values in R. Thus, the R object created by
+\code{read.adp.rdi} will require more memory than that of the data file.
+A scale factor can be estimated by ignoring vector quantities (e.g.
+time, which has just one value per profile) and concentrating on
+matrix properties such as velocity, backscatter, and correlation.
+These three elements have equal dimensions. Thus, each 4-byte slide
+in the data file (2 bytes + 1 byte + 1 byte) corresponds to 10
+bytes in the object (8 bytes + 1 byte + 1 byte). Rounding up the
+resultant 10/4 to 3 for safety, we conclude that any limit on the
+size of the R object corresponds to a 3X smaller limit on file
+size.
 
-Various things can limit the size of objects in R, but a strong upper limit
-is set by the space the operating system provides to R. The least-performant machines
-in typical use appear to be Microsoft-Windows systems, which limit R objects to
-about 2e6 bytes (see \code{?Memory-limits}).  Since R routinely duplicates objects for certain tasks
-(e.g. for call-by-value in function evaluation), \code{read.adp.rdi} uses a safety
-factor in its calculation of when to auto-decimate a file. This factor is set to 3,
-based partly on the developers' experience with datasets in their possession.
-Multiplied by the previously stated safety factor of 3,
-this suggests that the 2 GB limit on R objects corresponds to approximately a
-222 MB limit on file size. In the present version of \code{read.adp.rdi}, this
-value is lowered to 200 MB for simplicity. Larger files are considered to be "big",
-and are decimated unless the user supplies a value for the \code{by} argument.
+Various things can limit the size of objects in R, but a strong
+upper limit is set by the space the operating system provides to R.
+The least-performant machines in typical use appear to be
+Microsoft-Windows systems, which limit R objects to about 2e6 bytes
+(see \code{?Memory-limits}).  Since R routinely duplicates objects for
+certain tasks (e.g. for call-by-value in function evaluation),
+\code{read.adp.rdi} uses a safety factor in its calculation of when to
+auto-decimate a file. This factor is set to 3, based partly on the
+developers' experience with datasets in their possession.
+Multiplied by the previously stated safety factor of 3, this
+suggests that the 2 GB limit on R objects corresponds to
+approximately a 222 MB limit on file size. In the present version
+of \code{read.adp.rdi}, this value is lowered to 200 MB for simplicity.
+Larger files are considered to be "big", and are decimated unless
+the user supplies a value for the \code{by} argument.
 
 The decimation procedure has two cases.
 \enumerate{
-\item If \code{from=1} and \code{to=0} (or if neither \code{from} or \code{to} is given), then the
-intention is to process the full span of the data.  If the input file is
-under 200 MB, then \code{by} defaults to 1, so that all profiles are read.
-For larger files, \code{by} is set to the \code{\link[=ceiling]{ceiling()}} of the
-ratio of input file size to 200 MB.
-\item If \code{from} exceeds 1, and/or \code{to} is nonzero, then
-the intention is to process only an interior subset of the file. In this
-case, \code{by} is calculated as the \code{\link[=ceiling]{ceiling()}} of
-the ratio of \code{bbp*(1+to-from)} to 200 MB, where \code{bbp} is the number
-of file bytes per profile. Of course, \code{by} is set to 1, if this
-ratio is less than 1.
+\item If \code{from=1} and \code{to=0} (or if neither \code{from} or \code{to} is given),
+then the intention is to process the full span of the data.  If the
+input file is under 200 MB, then \code{by} defaults to 1, so that all
+profiles are read. For larger files, \code{by} is set to the \code{\link[=ceiling]{ceiling()}}
+of the ratio of input file size to 200 MB.
+\item If \code{from} exceeds 1, and/or \code{to} is nonzero, then the intention
+is to process only an interior subset of the file. In this case,
+\code{by} is calculated as the \code{\link[=ceiling]{ceiling()}} of the ratio of
+\code{bbp*(1+to-from)} to 200 MB, where \code{bbp} is the number of file
+bytes per profile. Of course, \code{by} is set to 1, if this ratio is
+less than 1.
 }
 
 If the result of these calculations is that \code{by} exceeds 1, then
-messages are printed to alert the user that the file will be decimated,
-and also \code{monitor} is set to \code{TRUE}, so that a textual progress bar
-is shown (if the session is interactive).
+messages are printed to alert the user that the file will be
+decimated, and also \code{monitor} is set to \code{TRUE}, so that a textual
+progress bar is shown (if the session is interactive).
 }
 
 \section{Development Notes}{
 
+
 An important part of the work of this function is to recognize what
-will be called "data chunks" by two-byte ID sequences. This function is
-developed in a practical way, with emphasis being focussed on
-data files in the possession of the developers. Since Teledyne-RDI tends
-to introduce new ID codes with new instruments, that means that
-\code{read.adp.rdi} may not work on recently-developed instruments.
+will be called "data chunks" by two-byte ID sequences. This
+function is developed in a practical way, with emphasis being
+focussed on data files in the possession of the developers. Since
+Teledyne-RDI tends to introduce new ID codes with new instruments,
+that means that \code{read.adp.rdi} may not work on recently-developed
+instruments.
 
 The following two-byte ID codes are recognized by \code{read.adp.rdi}
 at this time (with bytes listed in natural order, LSB byte before
@@ -340,32 +353,40 @@ and following pages in that manual reveal the following meanings
 \section{Error recovery}{
 
 
-Files can sometimes be corrupted, and \code{read.adp.rdi} has ways to handle two types
-of error that have been noticed in files supplied by users.
+Files can sometimes be corrupted, and \code{read.adp.rdi} has ways to
+handle two types of error that have been noticed in files supplied
+by users.
 \enumerate{
-\item There are two bytes within each ensemble that indicate the number of bytes to check within
-that ensemble, to get the checksum. Sometimes, those two bytes can be erroneous, so that
-the wrong number of bytes are checked, leading to a failed checksum. As a preventative
-measure, \code{read.adp.rdi} checks the stated ensemble length, whenever it detects a
-failed checksum. If that length agrees with the length of the most recent ensemble that
-had a good checksum, then the ensemble is declared as faulty and is ignored. However,
-if the length differs from that of the most recent accepted ensemble, then \code{read.adp.rdi}
-goes back to just after the start of the ensemble, and searches forward for the next two-byte
-pair, namely \verb{0x7f 0x7f}, that designates the start of an ensemble.  Distinct notifications
-are given about these two cases, and they give the byte numbers in the original file, as a way
-to help analysts who want to look at the data stream with other tools.
-\item At the end of an ensemble, the next two characters ought to be \verb{0x7f 0x7f}, and if they
-are not, then the next ensemble is faulty. If this error occurs, \code{read.adp.rdi} attempts
-to recover by searching forward to the next instance of this two-byte pair, discarding any
-information that is present in the mangled ensemble.
+\item There are two bytes within each ensemble that indicate the
+number of bytes to check within that ensemble, to get the checksum.
+Sometimes, those two bytes can be erroneous, so that the wrong
+number of bytes are checked, leading to a failed checksum. As a
+preventative measure, \code{read.adp.rdi} checks the stated ensemble
+length, whenever it detects a failed checksum. If that length
+agrees with the length of the most recent ensemble that had a good
+checksum, then the ensemble is declared as faulty and is ignored.
+However, if the length differs from that of the most recent
+accepted ensemble, then \code{read.adp.rdi} goes back to just after the
+start of the ensemble, and searches forward for the next two-byte
+pair, namely \verb{0x7f 0x7f}, that designates the start of an ensemble.
+Distinct notifications are given about these two cases, and they
+give the byte numbers in the original file, as a way to help
+analysts who want to look at the data stream with other tools.
+\item At the end of an ensemble, the next two characters ought to be
+\verb{0x7f 0x7f}, and if they are not, then the next ensemble is faulty.
+If this error occurs, \code{read.adp.rdi} attempts to recover by
+searching forward to the next instance of this two-byte pair,
+discarding any information that is present in the mangled ensemble.
 }
 
-In each of these cases, warnings are printed about ensembles that seem problematic.
-Advanced users who want to diagnose the problem further might find it helpful to
-examine the original data file using other tools. To this end, \code{read.adp.rdi}
-inserts an element named \code{ensembleInFile} into the \code{metadata} slot.
-This gives the starting byte number of each inferred ensemble within the original data
-file.  For example, if \code{d} is an object read with \code{read.adp.rdi}, then using
+In each of these cases, warnings are printed about ensembles that
+seem problematic. Advanced users who want to diagnose the problem
+further might find it helpful to examine the original data file
+using other tools. To this end, \code{read.adp.rdi} inserts an element
+named \code{ensembleInFile} into the \code{metadata} slot. This gives the
+starting byte number of each inferred ensemble within the original
+data file.  For example, if \code{d} is an object read with
+\code{read.adp.rdi}, then using
 
 \if{html}{\out{<div class="sourceCode">}}\preformatted{plot(d[["time"]][-1], diff(d[["ensembleInFile"]]))
 }\if{html}{\out{</div>}}
@@ -442,6 +463,7 @@ Other things related to adp data:
 \code{\link{[[<-,adp-method}},
 \code{\link{ad2cpCodeToName}()},
 \code{\link{ad2cpHeaderValue}()},
+\code{\link{adp}},
 \code{\link{adp-class}},
 \code{\link{adpAd2cpFileTrim}()},
 \code{\link{adpConvertRawToNumeric}()},
@@ -449,50 +471,49 @@ Other things related to adp data:
 \code{\link{adpFlagPastBoundary}()},
 \code{\link{adpRdiFileTrim}()},
 \code{\link{adp_rdi.000}},
-\code{\link{adp}},
 \code{\link{applyMagneticDeclination,adp-method}},
 \code{\link{as.adp}()},
 \code{\link{beamName}()},
-\code{\link{beamToXyzAdpAD2CP}()},
-\code{\link{beamToXyzAdp}()},
-\code{\link{beamToXyzAdv}()},
 \code{\link{beamToXyz}()},
+\code{\link{beamToXyzAdp}()},
+\code{\link{beamToXyzAdpAD2CP}()},
+\code{\link{beamToXyzAdv}()},
 \code{\link{beamUnspreadAdp}()},
 \code{\link{binmapAdp}()},
-\code{\link{enuToOtherAdp}()},
 \code{\link{enuToOther}()},
+\code{\link{enuToOtherAdp}()},
 \code{\link{handleFlags,adp-method}},
 \code{\link{is.ad2cp}()},
 \code{\link{plot,adp-method}},
+\code{\link{read.adp}()},
 \code{\link{read.adp.ad2cp}()},
 \code{\link{read.adp.nortek}()},
-\code{\link{read.adp.sontek.serial}()},
 \code{\link{read.adp.sontek}()},
-\code{\link{read.adp}()},
+\code{\link{read.adp.sontek.serial}()},
+\code{\link{read.aquadopp}()},
 \code{\link{read.aquadoppHR}()},
 \code{\link{read.aquadoppProfiler}()},
-\code{\link{read.aquadopp}()},
 \code{\link{rotateAboutZ}()},
 \code{\link{setFlags,adp-method}},
 \code{\link{subset,adp-method}},
 \code{\link{subtractBottomVelocity}()},
 \code{\link{summary,adp-method}},
-\code{\link{toEnuAdp}()},
 \code{\link{toEnu}()},
+\code{\link{toEnuAdp}()},
 \code{\link{velocityStatistics}()},
-\code{\link{xyzToEnuAdpAD2CP}()},
+\code{\link{xyzToEnu}()},
 \code{\link{xyzToEnuAdp}()},
-\code{\link{xyzToEnu}()}
+\code{\link{xyzToEnuAdpAD2CP}()}
 
 Other functions that read adp data: 
+\code{\link{read.adp}()},
 \code{\link{read.adp.ad2cp}()},
 \code{\link{read.adp.nortek}()},
-\code{\link{read.adp.sontek.serial}()},
 \code{\link{read.adp.sontek}()},
-\code{\link{read.adp}()},
+\code{\link{read.adp.sontek.serial}()},
+\code{\link{read.aquadopp}()},
 \code{\link{read.aquadoppHR}()},
-\code{\link{read.aquadoppProfiler}()},
-\code{\link{read.aquadopp}()}
+\code{\link{read.aquadoppProfiler}()}
 }
 \author{
 Dan Kelley and Clark Richards

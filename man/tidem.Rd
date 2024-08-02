@@ -106,7 +106,7 @@ an open question.}
 The fit is done in terms of sine and cosine components at the indicated
 tidal frequencies (after possibly pruning to satisfy the Rayleigh criterion,
 as explained in phase 2 of the procedure outlined in
-'\sQuote{Details}), with the amplitude and phase being
+\dQuote{Details}), with the amplitude and phase being
 calculated from the resultant coefficients on the sine and cosine terms.
 The scheme was devised for hourly data; for other sampling schemes,
 see \dQuote{Application to non-hourly data}.

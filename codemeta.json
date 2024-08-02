@@ -7,13 +7,13 @@
   "codeRepository": "https://github.com/dankelley/oce",
   "issueTracker": "https://github.com/dankelley/oce/issues",
   "license": "https://spdx.org/licenses/GPL-2.0",
-  "version": "1.8.2",
+  "version": "1.8.3",
   "programmingLanguage": {
     "@type": "ComputerLanguage",
     "name": "R",
     "url": "https://r-project.org"
   },
-  "runtimePlatform": "R version 4.3.2 (2023-10-31)",
+  "runtimePlatform": "R version 4.4.0 (2024-04-24)",
   "provider": {
     "@id": "https://cran.r-project.org",
     "@type": "Organization",
@@ -264,7 +264,7 @@
       "@type": "SoftwareApplication",
       "identifier": "R",
       "name": "R",
-      "version": ">= 2.15"
+      "version": ">= 4.1.0"
     },
     "2": {
       "@type": "SoftwareApplication",
@@ -302,11 +302,11 @@
     },
     "SystemRequirements": null
   },
-  "fileSize": "18993.657KB",
+  "fileSize": "25096.426KB",
   "relatedLink": ["https://dankelley.github.io/oce/", "https://CRAN.R-project.org/package=oce"],
   "releaseNotes": "https://github.com/dankelley/oce/blob/master/NEWS.md",
   "readme": "https://github.com/dankelley/oce/blob/develop/README.md",
-  "contIntegration": "https://github.com/dankelley/oce/actions/workflows/R-CMD-check.yaml",
+  "contIntegration": ["https://github.com/dankelley/oce/actions/workflows/R-CMD-check.yaml", "https://github.com/dankelley/oce/actions/workflows/rhub.yaml"],
   "developmentStatus": "https://www.repostatus.org/",
   "keywords": ["oceanography", "r"]
 }

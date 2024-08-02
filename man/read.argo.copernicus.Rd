@@ -47,10 +47,10 @@ Situ NetCDF Format Manual (version V1.43). Pdf. Copernicus in situ TAC, 2021.
 Other things related to argo data: 
 \code{\link{[[,argo-method}},
 \code{\link{[[<-,argo-method}},
+\code{\link{argo}},
 \code{\link{argo-class}},
 \code{\link{argoGrid}()},
 \code{\link{argoNames2oceNames}()},
-\code{\link{argo}},
 \code{\link{as.argo}()},
 \code{\link{handleFlags,argo-method}},
 \code{\link{plot,argo-method}},

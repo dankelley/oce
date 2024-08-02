@@ -27,7 +27,7 @@ better for normal calls by a user.)}
 \item{...}{additional arguments, passed to called routines.}
 }
 \value{
-An \linkS4class{argo} object.
+\code{read.argo} returns an \linkS4class{argo} object.
 }
 \description{
 \code{read.argo} is used to read an Argo file, producing an \linkS4class{argo} object.
@@ -212,10 +212,10 @@ objects, and also outlines the other functions dealing with them.
 Other things related to argo data: 
 \code{\link{[[,argo-method}},
 \code{\link{[[<-,argo-method}},
+\code{\link{argo}},
 \code{\link{argo-class}},
 \code{\link{argoGrid}()},
 \code{\link{argoNames2oceNames}()},
-\code{\link{argo}},
 \code{\link{as.argo}()},
 \code{\link{handleFlags,argo-method}},
 \code{\link{plot,argo-method}},

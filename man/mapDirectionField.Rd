@@ -10,65 +10,127 @@ mapDirectionField(
   u,
   v,
   scale = 1,
-  length = 0.05,
+  length = NULL,
   code = 2,
+  lwd = par("lwd"),
   col = par("fg"),
-  ...
+  debug = getOption("oceDebug")
 )
 }
 \arguments{
-\item{longitude, latitude}{numeric vectors of the starting points for arrows.}
+\item{longitude, latitude}{numeric vectors of the starting points
+for arrows, or the locations of grid cells.}
 
-\item{u, v}{numeric vectors of the components of a vector to be shown as a direction
-field.}
+\item{u, v}{numeric vectors or matrices holding the components of a
+vector to be shown as a direction field.}
 
-\item{scale}{latitude degrees per unit of \code{u} or \code{v}.}
+\item{scale}{an indication of the length of the arrows or lines.
+For the "arrow" style, this is arrow length in latitude degrees per
+unit of velocity.  For the "barb" style, this is the length of all
+lines, regardless of the velocity, because in this style velocity
+is indicated with barbs and pennants.}
 
-\item{length}{length of arrow heads, passed to \code{\link[=arrows]{arrows()}}.}
+\item{length}{an indication of the size of arrow heads, for "arrow"
+style, or of the barbs, for "barb" style. If this is NULL (which is
+the default), then 0.05 will be used for the "arrow" style, and 0.2
+for the "barb" style.}
 
-\item{code}{code of arrows, passed to \code{\link[=arrows]{arrows()}}.}
+\item{code}{an indication of the style of arrow heads or barbs. For
+the arrow style, this is a number that is passed to \code{\link[=arrows]{arrows()}},
+with 2 as the default, meaning to draw the arrow as a conventional
+vector.  For the wind-barb style, this is the string \code{"barb"}.}
 
-\item{col}{color of arrows.  This may be a single color, or a matrix
-of colors of the same dimension as \code{u}.}
+\item{lwd}{a numeric value indicating the width of the line
+segments that make up the speed indicators.}
 
-\item{\dots}{optional arguments passed to \code{\link[=arrows]{arrows()}}, e.g.
-\code{angle} and \code{lwd} can be useful in differentiating different
-fields.}
+\item{col}{color of the speed indicators.}
+
+\item{debug}{an integer specifying whether debugging information is
+to be printed during the processing. This is a general parameter that
+is used by many \code{oce} functions. Generally, setting \code{debug=0}
+turns off the printing, while higher values suggest that more information
+be printed. If one function calls another, it usually reduces the value of
+\code{debug} first, so that a user can often obtain deeper debugging
+by specifying higher \code{debug} values.}
 }
 \description{
-Plot a direction field on a existing map.
+Plot a direction field on a existing map, either using arrows,
+which is the oceanographic convention, or using wind barbs, which
+is a meteorological convention.
 }
 \details{
-Adds arrows for a direction field on an existing map.  There are different
-possibilities for how \code{longitude}, \code{latitude} and \code{u} and
-\code{v} match up.  In one common case, all four of these are matrices, e.g.
-output from a numerical model.  In another, \code{longitude} and
-\code{latitude} are the coordinates along the matrices, and are thus stored in
-vectors with lengths that match appropriately.
-}
-\section{Sample of Usage}{
+As noted in the \dQuote{Description}, there are two styles. 1.
+\emph{Arrow Style:} arrows are drawn from the stated locations in the
+direction of the flow defined by the (u,v) vector. This is the
+usual convention in oceanographic work. 2. \emph{Barb Style:} to create
+"wind barbs", according to a convention used in meteorological
+charts. Unlike arrows, which indicate speed by the arrow length,
+barbs indicate speed by angled lines and possibly triangles located
+at the upstream end. Note that the meanings of the function
+parameters vary across the two styles.
 
-\preformatted{
+The "arrow" style is quite common in the oceanographic literature.
+Arrows point in the direction of the velocity defined by \verb{(u,v)},
+and the length of those arrows is proportional to the speed,
+\code{sqrt(u^2+v^2)}.
+
+By contrast, in the "barb" notation, the lines are of equal length
+(compared with distance on the ground), with speed being indicated
+with barbs. Many sources explain the notation, e.g.
+\verb{https://www.weather.gov/hfo/windbarbinfo}. The lines extend from the
+observation longitude and latitude in the direction opposite to the
+velocity. Velocities are indicated by barbs, i.e. short line
+segments that extend at an angle to the main line and with pennants
+(triangles). Speed is given by a combination of pennants and barbs.
+A pennant represents 50 speed units, a long barb 10 units, and a
+short barb 5 units.  Summing these values gives the speed, rounded
+to 5 units.
+
+See \dQuote{Details} for a comparison of the "arrow" and "barb"
+styles for some made-up velocity data.
+
+There are two possibilities for how \code{longitude}, \code{latitude} are
+combined with \code{u} and \code{v}.
+\enumerate{
+\item All four are vectors, and the matching is one-to-one. This is
+useful for showing velocities at particular individual locations,
+as in the \dQuote{Examples}.
+\item \code{longitude} and \code{latitude} are vectors, while \code{u} and \code{v} are
+matrices.  In this case, the lengths of \code{longitude} and \code{latitude}
+must equal the number of rows and columns in \code{u} and \code{v},
+respectively.
+}
+}
+\examples{
 library(oce)
 data(coastlineWorld)
-par(mar=rep(2, 4))
-mapPlot(coastlineWorld, longitudelim=c(-120,-55), latitudelim=c(35, 50),
-        projection="+proj=laea +lat0=40 +lat1=60 +lon_0=-110")
-lon <- seq(-120, -60, 15)
-lat <- 45 + seq(-15, 15, 5)
-lonm <- matrix(expand.grid(lon, lat)[, 1], nrow=length(lon))
-latm <- matrix(expand.grid(lon, lat)[, 2], nrow=length(lon))
-# vectors pointed 45 degrees clockwise from north
-u <- matrix(1/sqrt(2), nrow=length(lon), ncol=length(lat))
-v <- matrix(1/sqrt(2), nrow=length(lon), ncol=length(lat))
-mapDirectionField(lon, lat, u, v, scale=3)
-mapDirectionField(lonm, latm, 0, 1, scale=3, col="red")
-# Color code by longitude, using thick lines
-col <- colormap(lonm)$zcol
-mapDirectionField(lonm, latm, 1, 0, scale=3, col=col, lwd=2)
-}
-}
+par(mar = rep(2, 4))
+mapPlot(coastlineWorld,
+    border = "black",
+    col = "grey95",
+    projection = "+proj=lcc +lat_1=40 +lat_2=60 +lon_0=-60",
+    longitudelim = c(-70, -50), latitudelim = c(45, 50)
+)
+# Invent wind data for three locations in eastern Canada
+dataText <- "
+lat,lon,u,v,location
+44.6476,-63.5728,15,0,Halifax
+49.5495,-62.9555,20,20,Anticosti Island
+47.5556,-52.7453,0,55,St. John's"
+data <- read.csv(text = dataText)
+# Dots at observation locations, for reference
+mapPoints(data$lon, data$lat)
+# Red: arrows that extend downwind from the location
+mapDirectionField(data$lon, data$lat,
+    u = data$u, v = data$v, scale = 0.05,
+    length = .08, code = 2, col = 2, lwd = 2
+)
+# Blue: barbs that extend upwind from the location
+mapDirectionField(data$lon, data$lat,
+    u = data$u, v = data$v, scale = 2, code = "barb", lwd = 2, col = 4
+)
 
+}
 \seealso{
 A map must first have been created with \code{\link[=mapPlot]{mapPlot()}}.
 
@@ -93,6 +155,7 @@ Other functions related to maps:
 \code{\link{mapText}()},
 \code{\link{mapTissot}()},
 \code{\link{oceCRS}()},
+\code{\link{oceProject}()},
 \code{\link{shiftLongitude}()},
 \code{\link{usrLonLat}()},
 \code{\link{utm2lonlat}()}

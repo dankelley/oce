@@ -35,6 +35,7 @@
 #'
 #' @author Dan Kelley
 read.argo.copernicus <- function(file, encoding = NA, debug = getOption("oceDebug"), processingLog, ...) {
+    oceDebug(debug, "read.argo.copernicus(file=\"", filename, "\", ...) START\n", sep = "", unindent = 1)
     if (missing(file)) {
         stop("must supply 'file'")
     }
@@ -67,7 +68,6 @@ read.argo.copernicus <- function(file, encoding = NA, debug = getOption("oceDebu
             on.exit(ncdf4::nc_close(file))
         }
     }
-    oceDebug(debug, "read.argo.copernicus(file=\"", filename, "\", ...) {\n", sep = "", unindent = 1, style = "bold")
     varNames <- names(file$var)
     oceDebug(debug, "varNames=c(\"", paste(varNames, collapse = "\", \""), "\")\n")
     res <- new("argo")
@@ -197,6 +197,6 @@ read.argo.copernicus <- function(file, encoding = NA, debug = getOption("oceDebu
     if (!inherits(positionQc, "try-error")) {
         res@metadata$flags$position <- positionQc
     }
-    oceDebug(debug, "} # read.argo.copernicus()\n", sep = "", unindent = 1, style = "bold")
+    oceDebug(debug, "END read.argo.copernicus()\n", sep = "", unindent = 1)
     res
 }

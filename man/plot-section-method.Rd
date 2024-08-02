@@ -187,7 +187,7 @@ ignored otherwise.}
 
 \item{mgp}{A 3-element numerical vector to use for \code{par(mgp)}, and also for
 \code{par(mar)}, computed from this. If not provided, this defaults to
-\code{\link{getOption}}\code{("oceMgp")}.}
+\link{getOption}\code{("oceMgp")}.}
 
 \item{mar}{Value to be used with \code{\link{par}}\code{("mar")}. If not provided,
 a default is set up.}
@@ -378,12 +378,12 @@ Other things related to section data:
 \code{\link{handleFlags,section-method}},
 \code{\link{initializeFlagScheme,section-method}},
 \code{\link{read.section}()},
+\code{\link{section}},
 \code{\link{section-class}},
 \code{\link{sectionAddStation}()},
 \code{\link{sectionGrid}()},
 \code{\link{sectionSmooth}()},
 \code{\link{sectionSort}()},
-\code{\link{section}},
 \code{\link{subset,section-method}},
 \code{\link{summary,section-method}}
 }

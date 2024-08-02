@@ -263,9 +263,9 @@ julianDay <- function(t, year = NA, month = NA, day = NA, hour = NA, min = NA, s
 #' Convert Julian-Day-Number to Julian Century
 #'
 #' Convert a Julian-Day number to a time in julian centuries since noon on
-#' January 1, 1900.
-#' The method follows reference 1 equation 15.1.  The example reproduces the
-#' example provided by reference 1 example 15.a, with fractional error 3e-8.
+#' January 1, 1900. The method follows Equation 15.1 in Reference 1.  The
+#' example reproduces the Example 15.a of the same source, with fractional
+#' error 3e-8.
 #'
 #' @param jd a julian day number, e.g. as given by [julianDay()].
 #'
@@ -274,7 +274,7 @@ julianDay <- function(t, year = NA, month = NA, day = NA, hour = NA, min = NA, s
 #' @author Dan Kelley
 #'
 #' @references
-#' * Meeus, Jean. Astronomical Formulas for Calculators. Second Edition.
+#' 1. Meeus, Jean. Astronomical Formulas for Calculators. Second Edition.
 #' Richmond, Virginia, USA: Willmann-Bell, 1982.
 #'
 #' @examples

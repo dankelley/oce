@@ -37,7 +37,7 @@ read.adv.sontek.serial <- function(
         ", deltat=", deltat,
         ", debug=", debug,
         ", monitor=", monitor,
-        ", processingLog=(not shown)) {\n",
+        ", processingLog=(not shown)) START\n",
         sep = ""
     ), unindent = 1)
     if (is.null(start) || is.numeric(start)) {
@@ -95,12 +95,24 @@ read.adv.sontek.serial <- function(
         oceDebug(debug, "filesize=", fileSize, "\n")
         buf <- readBin(file, what = "raw", n = fileSize, endian = "little")
     }
-    p <- .Call("ldc_sontek_adv_22", buf, 0) # the 0 means to get all pointers to data chunks
+    p <- .Call("ldc_sontek_adv_22_old", buf, 0) # the 0 means to get all pointers to data chunks
+    # FIXME <issue 2201> keep this test for a while
+    pNew <- ldcSontekAdv22(buf, 0)
+    if (!identical(p, as.integer(pNew))) {
+        message("IMPORTANT: read.adv.sontek.serial/ldcSontekAdv22 problem -- please report at github.com/dankelley/oce/issues")
+        warning("IMPORTANT: read.adv.sontek.serial/ldcSontekAdv22 problem -- please report at github.com/dankelley/oce/issues")
+    }
     pp <- sort(c(p, p + 1))
     len <- length(p)
     oceDebug(debug, "dp:", paste(unique(diff(p)), collapse = ","), "\n")
     serialNumber <- readBin(buf[pp + 2], "integer", size = 2, n = len, signed = FALSE, endian = "little")
-    serialNumber <- .Call("unwrap_sequence_numbers", serialNumber, 2)
+    serialNumber <- .Call("unwrap_sequence_numbers_old", serialNumber, 2)
+    serialNumberNew <- unwrapSequenceNumbers(serialNumber, 2)
+    # FIXME <issue 2201> keep this test for a while
+    if (!identical(serialNumber, as.integer(serialNumberNew))) {
+        message("IMPORTANT: read.adv.sontek.serial/unwrapSequenceNumbers problem -- please report at github.com/dankelley/oce/issues")
+        warning("IMPORTANT: read.adv.sontek.serial/unwrapSequenceNumbers problem -- please report at github.com/dankelley/oce/issues")
+    }
     velocityScale <- 1e-4
     time <- start[1] + (serialNumber - serialNumber[1]) * deltat
     deltat <- mean(diff(as.numeric(time))) # FIXME: should rename this to avoid confusion
@@ -235,7 +247,7 @@ read.adv.sontek.adr <- function(
     }
     # The binary format is documented in Appendix 2.2.3 of the Sontek ADV
     # operation Manual - Firmware Version 4.0 (Oct 1997).
-    oceDebug(debug, "read.adv.sontek.adr() {\n", unindent = 1)
+    oceDebug(debug, "read.adv.sontek.adr() START\n", unindent = 1)
     if (is.character(file)) {
         filename <- fullFilename(file)
         file <- file(file, "rb")
@@ -892,7 +904,7 @@ read.adv.sontek.text <- function(
 #' @family things related to adv data
 #' @family functions that trim data files
 advSontekAdrFileTrim <- function(infile, n = 100, outfile, debug = getOption("oceDebug")) {
-    oceDebug(debug, "advSontekAdrFileTrim(\"", infile, "\", n=", n, ", ...) {\n", sep = "", unindent = 1)
+    oceDebug(debug, "advSontekAdrFileTrim(\"", infile, "\", n=", n, ", ...) START\n", sep = "", unindent = 1)
     if (missing(infile)) {
         stop("provide infile")
     }
@@ -920,6 +932,6 @@ advSontekAdrFileTrim <- function(infile, n = 100, outfile, debug = getOption("oc
     bufOut <- buf[seq_len(bytesToRead)]
     oceDebug(debug, vectorShow(bufOut))
     writeBin(bufOut, outfile, useBytes = TRUE)
-    oceDebug(debug, "} # advSontekAdrFileTrim\n", unindent = 1)
+    oceDebug(debug, "END advSontekAdrFileTrim\n", unindent = 1)
     outfile
 }

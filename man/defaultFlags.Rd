@@ -50,24 +50,24 @@ Claudia Schmid, and Roger Goldsmith. Argo User's Manual V3.3. Ifremer, 2019.
 }
 \seealso{
 Other functions relating to data-quality flags: 
+\code{\link{handleFlags}()},
 \code{\link{handleFlags,adp-method}},
 \code{\link{handleFlags,argo-method}},
 \code{\link{handleFlags,ctd-method}},
 \code{\link{handleFlags,oce-method}},
 \code{\link{handleFlags,section-method}},
-\code{\link{handleFlags}()},
+\code{\link{initializeFlagScheme}()},
 \code{\link{initializeFlagScheme,ctd-method}},
 \code{\link{initializeFlagScheme,oce-method}},
 \code{\link{initializeFlagScheme,section-method}},
 \code{\link{initializeFlagSchemeInternal}()},
-\code{\link{initializeFlagScheme}()},
+\code{\link{initializeFlags}()},
 \code{\link{initializeFlags,adp-method}},
 \code{\link{initializeFlags,oce-method}},
 \code{\link{initializeFlagsInternal}()},
-\code{\link{initializeFlags}()},
+\code{\link{setFlags}()},
 \code{\link{setFlags,adp-method}},
 \code{\link{setFlags,ctd-method}},
-\code{\link{setFlags,oce-method}},
-\code{\link{setFlags}()}
+\code{\link{setFlags,oce-method}}
 }
 \concept{functions relating to data-quality flags}

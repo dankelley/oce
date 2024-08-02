@@ -33,8 +33,8 @@ of the component filenames.
 Other things related to amsr data: 
 \code{\link{[[,amsr-method}},
 \code{\link{[[<-,amsr-method}},
-\code{\link{amsr-class}},
 \code{\link{amsr}},
+\code{\link{amsr-class}},
 \code{\link{download.amsr}()},
 \code{\link{plot,amsr-method}},
 \code{\link{read.amsr}()},
@@ -42,8 +42,8 @@ Other things related to amsr data:
 \code{\link{summary,amsr-method}}
 
 Other functions that create composite objects: 
-\code{\link{composite,list-method}},
-\code{\link{composite}()}
+\code{\link{composite}()},
+\code{\link{composite,list-method}}
 }
 \concept{functions that create composite objects}
 \concept{things related to amsr data}

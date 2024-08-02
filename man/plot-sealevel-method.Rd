@@ -12,6 +12,11 @@
   mgp = getOption("oceMgp"),
   mar = c(mgp[1] + 0.5, mgp[1] + 1.5, mgp[2] + 1, mgp[2] + 3/4),
   marginsAsImage = FALSE,
+  grid = TRUE,
+  xlim,
+  ylim,
+  xaxs = "i",
+  yaxs = "r",
   debug = getOption("oceDebug"),
   ...
 )
@@ -36,9 +41,20 @@ default, in order to use more space for the data and less for the axes.}
 
 \item{mar}{value to be used with \code{\link{par}}\code{("mar")}.}
 
-\item{marginsAsImage}{boolean, \code{TRUE} to put a wide margin to the right
-of time-series plots, matching the space used up by a palette in an
-\code{\link[=imagep]{imagep()}} plot.}
+\item{marginsAsImage}{logical value indicating whether to put a
+wide margin to the right of time-series plots, matching the space
+used up by a palette in an \code{\link[=imagep]{imagep()}} plot.}
+
+\item{grid}{logical value, indicating whether to draw a grid with
+\code{\link[=grid]{grid()}}.}
+
+\item{xlim, ylim}{optional limits for axes. If not supplied,
+reasonable choices will be made}
+
+\item{xaxs, yaxs}{axis-limit parameters, as for standard graphics.
+The default is to make the time axis extend to the edges of
+the box, but to make the y axis have some space above and below
+the range of the data.}
 
 \item{debug}{a flag that turns on debugging, if it exceeds 0.}
 
@@ -121,9 +137,9 @@ Other things related to sealevel data:
 \code{\link{[[<-,sealevel-method}},
 \code{\link{as.sealevel}()},
 \code{\link{read.sealevel}()},
+\code{\link{sealevel}},
 \code{\link{sealevel-class}},
 \code{\link{sealevelTuktoyaktuk}},
-\code{\link{sealevel}},
 \code{\link{subset,sealevel-method}},
 \code{\link{summary,sealevel-method}}
 }

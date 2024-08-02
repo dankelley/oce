@@ -95,25 +95,25 @@ setMethod(
                 nt <- length(time)
                 deltat <- mean(diff(as.numeric(time)), na.rm = TRUE)
                 if (is.na(deltat)) {
-                    cat("* Time:                ", format(from), "\n", sep = "")
+                    cat("* Time: ", format(from), "\n", sep = "")
                 } else {
                     if (deltat < 60) {
-                        cat("* Time:          ", format(from), " to ", format(to),
+                        cat("* Time: ", format(from), " to ", format(to),
                             " (", nt, " samples, mean increment ", deltat, " s)\n",
                             sep = ""
                         )
                     } else if (deltat < 3600) {
-                        cat("* Time:          ", format(from), " to ", format(to),
+                        cat("* Time: ", format(from), " to ", format(to),
                             " (", nt, " samples, mean increment ", deltat / 60, " min)\n",
                             sep = ""
                         )
                     } else if (deltat < 24 * 3600) {
-                        cat("* Time:          ", format(from), " to ", format(to),
+                        cat("* Time: ", format(from), " to ", format(to),
                             " (", nt, " samples, mean increment ", deltat / 3600, " hour)\n",
                             sep = ""
                         )
                     } else {
-                        cat("* Time:          ", format(from), " to ", format(to),
+                        cat("* Time: ", format(from), " to ", format(to),
                             " (", nt, " samples, mean increment ", deltat / 3600 / 24, " day)\n",
                             sep = ""
                         )
@@ -121,7 +121,7 @@ setMethod(
                 }
             }
         }
-        ndata <- length(object@data)
+        ndata <- length(object@data) # skip 'time' later, if it exists (issue 2198)
         threes <- NULL
         if (ndata > 0) {
             if (is.ad2cp(object)) {
@@ -231,7 +231,6 @@ setMethod(
                     ))
                 )
                 colnames(threes) <- c("Min.", "Mean", "Max.", "Dim.", "NAs")
-                # threes <- threes[-deleteLater] # we show time outside 3s block
                 cat("* Data Overview\n\n")
                 if ("dataNamesOriginal" %in% metadataNames) {
                     if (is.list(object@metadata$dataNamesOriginal)) {
@@ -273,11 +272,16 @@ setMethod(
                     # colnames(threes) <- c(colnames(threes), "OriginalName")
                 }
                 # message("threes step 6:");print(threes)
-                if ("time" %in% dataNames) {
-                    timeRow <- which("time" == dataNames)
-                    threes[[timeRow, 1L]] <- format(numberAsPOSIXct(threes[timeRow, 1L]))
-                    threes[[timeRow, 2L]] <- format(numberAsPOSIXct(threes[timeRow, 2L]))
-                    threes[[timeRow, 3L]] <- format(numberAsPOSIXct(threes[timeRow, 3L]))
+                # if ("time" %in% dataNames) {
+                #    timeRow <- which("time" == dataNames)
+                #    threes[[timeRow, 1L]] <- format(numberAsPOSIXct(threes[timeRow, 1L]))
+                #    threes[[timeRow, 2L]] <- format(numberAsPOSIXct(threes[timeRow, 2L]))
+                #    threes[[timeRow, 3L]] <- format(numberAsPOSIXct(threes[timeRow, 3L]))
+                # }
+                # Remove time (see https://github.com/dankelley/oce/issues/2198)
+                timeRow <- grep("[ ]*time$", rownames(threes))
+                if (length(timeRow) > 0L) {
+                    threes <- threes[-timeRow, ]
                 }
                 owidth <- options("width")
                 options(width = 150) # make wide to avoid line breaks
@@ -487,6 +491,12 @@ setMethod(
     definition = function(x, i, j, ...) {
         metadataNames <- sort(names(x@metadata))
         dataNames <- sort(names(x@data))
+        # dots <- list(...)
+        # debug <- if ("debug" %in% names(dots)) dots$debug else 0
+        debug <- 0 # for whole file FIXME: how to transmit debug from higher-level [[ code?
+        # oceDebug(debug, "in lowest-level [[ method\n")
+        # message("AllClass.R:497")
+        # browser()
         if (i == "?") {
             return(list(
                 metadata = metadataNames,
@@ -570,7 +580,11 @@ setMethod(
         } else if (i == "density") {
             return(swRho(x))
         } else if (i == "depth") {
-            return(if ("depth" %in% dataNames) x@data$depth else swDepth(x))
+            return(if ("depth" %in% dataNames) {
+                x@data$depth
+            } else {
+                swDepth(x, debug = debug)
+            })
         } else if (i == "nitrate") {
             if ("nitrate" %in% dataNames) {
                 return(x@data$nitrate)
@@ -614,9 +628,11 @@ setMethod(
                 return(NULL)
             }
         } else if (i == "Rrho") {
-            return(swRrho(x, sense = "diffusive"))
+            oceDebug(debug, "lowest-level [[ about to call swRrho with sense='diffusive'\n")
+            return(swRrho(x, sense = "diffusive", debug = debug))
         } else if (i == "RrhoSF") {
-            return(swRrho(x, sense = "finger"))
+            oceDebug(debug, "lowest-level [[ about to call swRrho with sense='finger'\n")
+            return(swRrho(x, sense = "finger", debug = debug))
         } else if (i %in% c("salinity", "SP")) {
             if ("salinity" %in% dataNames) {
                 S <- x@data$salinity
@@ -652,7 +668,11 @@ setMethod(
         } else if (i %in% c("SA", "Absolute Salinity")) {
             return(swAbsoluteSalinity(x))
         } else if (i == "sigmaTheta") {
-            return(if (missing(j)) swSigmaTheta(x) else swSigmaTheta(x, eos = j))
+            return(if (missing(j)) {
+                swSigmaTheta(x)
+            } else {
+                swSigmaTheta(x, eos = j)
+            })
         } else if (i == "sigma0") {
             return(if (missing(j)) swSigma0(x) else swSigma0(x, eos = j))
         } else if (i == "sigma1") {
@@ -686,7 +706,14 @@ setMethod(
         } else if (i == paste("sound", "speed")) {
             return(if (missing(j)) swSoundSpeed(x) else swSoundSpeed(x, eos = j))
         } else if (i == "spice") {
-            return(if (missing(j)) swSpice(x) else swSpice(x, eos = j))
+            # return(if (missing(j)) swSpice(x, eos = "unesco") else swSpice(x, eos = j))
+            if (missing(j)) {
+                j <- getOption("oceEOS", default = "gsw")
+            }
+            if (j != "gsw" && j != "unesco") {
+                stop("[[\"spice\", \"", j, "\"]] not understood; try \"gsw\" or \"unesco\" as second parameter")
+            }
+            return(swSpice(x, eos = j))
         } else if (i == "SR") {
             return(swSR(x))
         } else if (i == "Sstar") {
@@ -703,7 +730,11 @@ setMethod(
         } else if (i %in% c("theta", "potential temperature")) {
             return(swTheta(x))
         } else if (i == "z") {
-            return(if ("z" %in% dataNames) x@data$z else swZ(x))
+            if ("z" %in% names(x@data)) {
+                return(x@data$z)
+            } else {
+                return(swZ(x)) # requires latitude
+            }
         } else {
             # DEBUG oceDebug(debug, "[[ at base level. i=\"", i, "\"\n", sep="", unindent=1, style="bold")
             if (missing(j) || j == "") {
@@ -1101,7 +1132,7 @@ setMethod(
 #' `data` slot, if `object` contains flag values that have
 #' actions that alter the data.
 handleFlagsInternal <- function(object, flags, actions, where, debug = 0) {
-    oceDebug(debug, "handleFlagsInternal() {\n", sep = "", unindent = 1)
+    oceDebug(debug, "handleFlagsInternal() START\n", sep = "", unindent = 1)
     if (debug > 0L) {
         cat("flags=c(", paste(flags, collapse = ","), ")\n", sep = "")
         cat("actions=c(", paste(actions, collapse = ","), ")\n", sep = "")
@@ -1243,7 +1274,7 @@ handleFlagsInternal <- function(object, flags, actions, where, debug = 0) {
             collapse = " ", sep = ""
         )
     )
-    oceDebug(debug, "} # handleFlagsInternal()\n", sep = "", unindent = 1)
+    oceDebug(debug, "END handleFlagsInternal()\n", sep = "", unindent = 1)
     object
 }
 
@@ -1340,7 +1371,7 @@ setMethod("setFlags",
 
 setFlagsInternal <- function(object, name = NULL, i = NULL, value = NULL, debug = getOption("oceDebug")) {
     oceDebug(debug, "setFlagsInternal(object, name=\"", name, "\", value=", value,
-        ", i=", paste(i, collapse = " "), ", debug=", debug, ") {\n",
+        ", i=", paste(i, collapse = " "), ", debug=", debug, ") START\n",
         sep = "", unindent = 1
     )
     res <- object
@@ -1416,7 +1447,7 @@ setFlagsInternal <- function(object, name = NULL, i = NULL, value = NULL, debug 
             collapse = ""
         )
     )
-    oceDebug(debug, "} # setFlagsInternal \n", unindent = 1)
+    oceDebug(debug, "END setFlagsInternal()\n", unindent = 1)
     res
 }
 
@@ -1442,7 +1473,7 @@ setMethod("initializeFlags",
 #' @templateVar details This is a low-level internal function used by user-accessible functions.
 #' @template initializeFlagsTemplate
 initializeFlagsInternal <- function(object, name = NULL, value = NULL, debug = getOption("oceDebug")) {
-    oceDebug(debug, "initializeFlagsInternal(object, name=\"", name, "\", value, debug=", debug, ") {", sep = "", unindent = 1)
+    oceDebug(debug, "initializeFlagsInternal(object, name=\"", name, "\", value, debug=", debug, ") START\n", sep = "", unindent = 1)
     res <- object
     if (is.null(name)) {
         stop("must supply name")
@@ -1487,7 +1518,7 @@ initializeFlagsInternal <- function(object, name = NULL, value = NULL, debug = g
             )
         )
     }
-    oceDebug(debug, "} # initializeFlagsInternal", sep = "", unindent = 1)
+    oceDebug(debug, "END initializeFlagsInternal", sep = "", unindent = 1)
     res
 }
 
@@ -1520,7 +1551,7 @@ setMethod("initializeFlagScheme",
 #' @templateVar details This is a low-level internal function used mainly by experts.
 #' @template initializeFlagSchemeTemplate
 initializeFlagSchemeInternal <- function(object, name = NULL, mapping = NULL, default = NULL, update = NULL, debug = 0) {
-    oceDebug(debug, "initializeFlagSchemeInternal(object, name=\"", name, "\", debug=", debug, ") {", sep = "", unindent = 1)
+    oceDebug(debug, "initializeFlagSchemeInternal(object, name=\"", name, "\", debug=", debug, ") START", sep = "", unindent = 1)
     if (is.null(name)) {
         stop("must supply 'name'")
     }
@@ -1615,7 +1646,7 @@ initializeFlagSchemeInternal <- function(object, name = NULL, mapping = NULL, de
             sep = ""
         )
     )
-    oceDebug(debug, "} # initializeFlagSchemeInternal", sep = "", unindent = 1)
+    oceDebug(debug, "END initializeFlagSchemeInternal", sep = "", unindent = 1)
     res
 }
 
@@ -1625,12 +1656,16 @@ initializeFlagSchemeInternal <- function(object, name = NULL, mapping = NULL, de
 #'
 #' @param ... optional additional [oce-class] objects.
 #'
+#' @param debug integer indicating a debugging level. If this is 0,
+#' the work is done silently.  If it is a larger integer, some information
+#' may be printed during the processing.
+#'
 #' @return An object of class corresponding to that of `object`.
 #'
 #' @family functions that concatenate oce objects
 setGeneric(
     "concatenate",
-    function(object, ...) {
+    function(object, ..., debug = getOption("oceDebug")) {
         standardGeneric("concatenate")
     }
 )
@@ -1639,12 +1674,16 @@ setGeneric(
 #'
 #' @templateVar class oce
 #'
+#' @template debugTemplate
+#'
 #' @template concatenateTemplate
 setMethod("concatenate",
     signature = "oce",
-    definition = function(object, ...) {
+    definition = function(object, ..., debug = getOption("oceDebug")) {
+        oceDebug(debug, "concatenate() ...\n")
         dots <- list(...)
         ndots <- length(dots)
+        oceDebug(debug, "  ndots=", ndots, "\n")
         if (0 == ndots) {
             return(object)
         }
@@ -1654,15 +1693,25 @@ setMethod("concatenate",
                 stop("concatenate() argument ", i + 1, " does not inherit from \"oce\"")
             }
         }
+        oceDebug(debug, "  arguments seem okay\n")
         # Concatenate the data (and flags, if there are such).
         res <- object
+        isDataFrame <- is.data.frame(res@data)
+        if (isDataFrame) {
+            oceDebug(debug, "  temporarily converting data slot from a data frame to a list\n")
+            res@data <- as.list(res@data)
+        }
         n1 <- sort(names(res@data))
         f1 <- if ("flags" %in% names(object@metadata) && length(object@metadata$flags)) {
             sort(names(object@metadata$flags))
         } else {
             NULL
         }
-        for (i in 1:ndots) {
+        oceDebug(debug, "  f1: c(\"", paste(f1, collapse = "\", \""), "\")\n",
+            sep = ""
+        )
+        for (i in seq_len(ndots)) {
+            oceDebug(debug, "  processing i=", i, " of ", ndots, "\n")
             # Data
             ni <- sort(names(dots[[i]]@data))
             if (!identical(n1, ni)) {
@@ -1673,12 +1722,17 @@ setMethod("concatenate",
                 )
             }
             data <- dots[[i]]@data
+            oceDebug(debug, "  about to work on ni=c(", paste(ni, collapse = ","), ")\n")
             for (n in ni) {
+                oceDebug(debug, "  processing n=\"", n, "\"\n")
                 if (is.vector(dots[[1]]@data[[n]]) || n == "time" || is.factor(n)) {
+                    oceDebug(debug, "    vector case\n")
                     res@data[[n]] <- c(res@data[[n]], data[[n]])
                 } else if (is.matrix(data[[n]])) {
+                    oceDebug(debug, "    matrix case\n")
                     res@data[[n]] <- rbind(res@data[[n]], data[[n]])
                 } else if (is.array(data[[n]])) {
+                    oceDebug(debug, "    array case\n")
                     # construct a larger temporary array, fill in by 3rd index, then put in res
                     dim <- dim(res@data[[n]])
                     tmp <- array(object@data[[n]][1, 1, 1], dim = c(dim[1] + dim(data[[n]])[1], dim[2], dim[3]))
@@ -1713,6 +1767,10 @@ setMethod("concatenate",
                     res@metadata$flags[[f]] <- c(res@metadata$flags[[f]], metadata$flags[[f]])
                 }
             }
+        }
+        if (isDataFrame) {
+            oceDebug(debug, "  converting data slot to a data frame\n")
+            res@data <- as.data.frame(res@data)
         }
         # for reasons unknown to me, the tzone gets localized
         attr(res@data$time, "tzone") <- attr(object@data$time, "tzone")

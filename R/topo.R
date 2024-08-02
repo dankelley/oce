@@ -166,6 +166,9 @@ setMethod(
                 dataDerived = NULL
             ))
         }
+        if (i == "z") {
+            return(x@data$z) # the generic [["z"]] computes as -depth and that requires latitude
+        }
         callNextMethod() # [[
     }
 )
@@ -333,8 +336,8 @@ download.topo <- function(
         ", north=", north,
         ", resolution=", resolution,
         ", destdir=\"", destdir, "\"",
-        ", server=\"", server, "\")\n",
-        sep = "", style = "bold", unindent = 1
+        ", server=\"", server, "\") START\n",
+        sep = "", unindent = 1
     )
     # Code derived from marmap:getNOAAbathy() {
     if (resolution < 0.5) {
@@ -375,7 +378,7 @@ download.topo <- function(
     oceDebug(debug, "destination=\"", destination, "\"\n", sep = "")
     if (file.exists(destination)) {
         oceDebug(debug, "using existing file \"", destination, "\"\n", sep = "")
-        oceDebug(debug, "} # download.topo\n", sep = "", style = "bold", unindent = 1)
+        oceDebug(debug, "END download.topo\n", sep = "", unindent = 1)
         return(destination)
     }
     nlon <- as.integer((east - west) * 60.0 / resolution)
@@ -452,7 +455,7 @@ download.topo <- function(
     nc <- ncdf4::nc_create(destination, list(Band1))
     ncdf4::ncvar_put(nc, "Band1", z)
     ncdf4::nc_close(nc)
-    oceDebug(debug, "} # download.topo()\n", sep = "", style = "bold", unindent = 1)
+    oceDebug(debug, "END download.topo()\n", sep = "", unindent = 1)
     destination
 }
 
@@ -604,7 +607,7 @@ setMethod(
         if (!inherits(x, "topo")) {
             stop("method is only for objects of class \"", "topo", "\"")
         }
-        oceDebug(debug, "plot.topo() {\n", unindent = 1)
+        oceDebug(debug, "plot.topo() START\n", unindent = 1)
         # opar <- par(no.readonly = TRUE)
         # on.exit(par(opar))
         par(mgp = mgp, mar = mar)
@@ -862,7 +865,7 @@ setMethod(
             o <- rev(order(legend))
             legend(location, lwd = lwd[o], lty = lty[o], bg = "white", legend = legend[o], col = col[o])
         }
-        oceDebug(debug, "} # plot.topo()\n", unindent = 1)
+        oceDebug(debug, "END plot.topo()\n", unindent = 1)
         invisible(NULL)
     }
 )
@@ -916,7 +919,7 @@ read.topo <- function(file, encoding = "latin1", debug = getOption("oceDebug")) 
             stop("empty file \"", file, "\"")
         }
     }
-    oceDebug(debug, "read.topo(file=\"", file, "\") {\n", sep = "", style = "bold", unindent = 1)
+    oceDebug(debug, "read.topo(file=\"", file, "\") START\n", sep = "", unindent = 1)
     # handle GEBCO netcdf files or an ascii format
     dataNamesOriginal <- list()
     if (is.character(file) && length(grep(".nc$", file))) {
@@ -1011,7 +1014,7 @@ read.topo <- function(file, encoding = "latin1", debug = getOption("oceDebug")) 
         res@processingLog,
         paste(deparse(match.call()), sep = "", collapse = "")
     )
-    oceDebug(debug, "} # read.topo\n", sep = "", style = "bold", unindent = 1)
+    oceDebug(debug, "END read.topo\n", sep = "", unindent = 1)
     res
 }
 

@@ -85,7 +85,11 @@ be off by a scale factor; this should not be a problem if there is a
 \item \code{"sigma0"}, \code{"sigma1"}, \code{"sigma2"}, \code{"sigma3"}
 and \code{"sigma4"} Profile of potential density referenced
 to 0dbar (i.e. the surface), 1000dbar, 2000dbar, 3000dbar, and 4000dbar.
-\item \code{"spice"} Profile of spice.
+\item \code{"spice"}, \code{"spiciness0"} \code{"spiciness1"} or \code{"spiciness2"}
+Profile of named quantity.  For \code{spice}, \code{\link[=swSpice]{swSpice()}} is
+called with the \code{eos} argument set to \code{"unesco"}. Otherwise,
+\code{\link[gsw:gsw_spiciness0]{gsw::gsw_spiciness0()}}', \code{\link[gsw:gsw_spiciness1]{gsw::gsw_spiciness1()}}' or
+\code{\link[gsw:gsw_spiciness2]{gsw::gsw_spiciness2()}}' is called.
 \item \code{"Rrho"} Profile of Rrho, defined in the diffusive sense.
 \item \code{"RrhoSF"} Profile of Rrho, defined in the salt-finger sense.
 }}
@@ -269,16 +273,16 @@ Other things related to ctd data:
 \code{\link{[[<-,ctd-method}},
 \code{\link{as.ctd}()},
 \code{\link{cnvName2oceName}()},
+\code{\link{ctd}},
 \code{\link{ctd-class}},
 \code{\link{ctd.cnv.gz}},
 \code{\link{ctdDecimate}()},
-\code{\link{ctdFindProfilesRBR}()},
 \code{\link{ctdFindProfiles}()},
+\code{\link{ctdFindProfilesRBR}()},
 \code{\link{ctdRaw}},
 \code{\link{ctdRepair}()},
 \code{\link{ctdTrim}()},
 \code{\link{ctd_aml.csv.gz}},
-\code{\link{ctd}},
 \code{\link{d200321-001.ctd.gz}},
 \code{\link{d201211_0011.cnv.gz}},
 \code{\link{handleFlags,ctd-method}},
@@ -289,6 +293,7 @@ Other things related to ctd data:
 \code{\link{plot,ctd-method}},
 \code{\link{plotScan}()},
 \code{\link{plotTS}()},
+\code{\link{read.ctd}()},
 \code{\link{read.ctd.aml}()},
 \code{\link{read.ctd.itp}()},
 \code{\link{read.ctd.odf}()},
@@ -296,9 +301,8 @@ Other things related to ctd data:
 \code{\link{read.ctd.saiv}()},
 \code{\link{read.ctd.sbe}()},
 \code{\link{read.ctd.ssda}()},
-\code{\link{read.ctd.woce.other}()},
 \code{\link{read.ctd.woce}()},
-\code{\link{read.ctd}()},
+\code{\link{read.ctd.woce.other}()},
 \code{\link{setFlags,ctd-method}},
 \code{\link{subset,ctd-method}},
 \code{\link{summary,ctd-method}},

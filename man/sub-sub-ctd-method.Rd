@@ -134,10 +134,19 @@ referenced to a sea pressure of 4000dbar, computed with \link{swSigma4}\code{(x)
 is returned.
 \item If \code{i} is \code{"SP"} then salinity on the Practical Salinity Scale, which is
 \code{salinity} in the \code{data} slot, is returned.
-\item If \code{i} is \code{"spice"} or \code{"spiciness0"} then a variable that is in some sense
-orthogonal to density, calculated with \link{swSpice}\code{(x)}, is returned.
-Note that this is defined differently for \code{eos="unesco"} and
-\code{eos="gsw"}.
+\item If \code{i} is \code{"spice"} then \code{\link[=swSpice]{swSpice()}} is called to compute a quantity that
+is in some sense orthogonal to density on a T-S diagram. This is done by
+calling \code{\link[=swSpice]{swSpice()}} with the \code{eos} argument set to \code{"unesco"}. In an earlier
+version of oce, \code{[[} could be provided with a second argument to yield a
+return value for "spiciness", a variable that is described in the next item.
+On 2024-02-14, this possibility was removed because it could lead to user
+confusion and non-reproducible code. To get spiciness, use
+\verb{[["spiciness0"]]}.
+\item If \code{i} is \code{"spiciness0"}, \code{"spiciness1"} or \code{"spiciness2"}, then the return
+value comes from the Gibbs SeaWater formulation of a variable that is in some
+sense orthogonal to density on a T-S diagram. The numbers refer to the
+reference pressure, in units of 1000 dbar. These results are computed with
+\code{\link[gsw:gsw_spiciness0]{gsw::gsw_spiciness0()}}, etc.
 \item If \code{i} is \code{"SR"} then Reference Salinity, computed with
 \code{\link[gsw:gsw_SR_from_SP]{gsw::gsw_SR_from_SP()}}, is returned.
 \item If \code{i} is \code{"Sstar"} then Preformed Salinity, computed with
@@ -242,16 +251,16 @@ Other things related to ctd data:
 \code{\link{[[<-,ctd-method}},
 \code{\link{as.ctd}()},
 \code{\link{cnvName2oceName}()},
+\code{\link{ctd}},
 \code{\link{ctd-class}},
 \code{\link{ctd.cnv.gz}},
 \code{\link{ctdDecimate}()},
-\code{\link{ctdFindProfilesRBR}()},
 \code{\link{ctdFindProfiles}()},
+\code{\link{ctdFindProfilesRBR}()},
 \code{\link{ctdRaw}},
 \code{\link{ctdRepair}()},
 \code{\link{ctdTrim}()},
 \code{\link{ctd_aml.csv.gz}},
-\code{\link{ctd}},
 \code{\link{d200321-001.ctd.gz}},
 \code{\link{d201211_0011.cnv.gz}},
 \code{\link{handleFlags,ctd-method}},
@@ -263,6 +272,7 @@ Other things related to ctd data:
 \code{\link{plotProfile}()},
 \code{\link{plotScan}()},
 \code{\link{plotTS}()},
+\code{\link{read.ctd}()},
 \code{\link{read.ctd.aml}()},
 \code{\link{read.ctd.itp}()},
 \code{\link{read.ctd.odf}()},
@@ -270,9 +280,8 @@ Other things related to ctd data:
 \code{\link{read.ctd.saiv}()},
 \code{\link{read.ctd.sbe}()},
 \code{\link{read.ctd.ssda}()},
-\code{\link{read.ctd.woce.other}()},
 \code{\link{read.ctd.woce}()},
-\code{\link{read.ctd}()},
+\code{\link{read.ctd.woce.other}()},
 \code{\link{setFlags,ctd-method}},
 \code{\link{subset,ctd-method}},
 \code{\link{summary,ctd-method}},

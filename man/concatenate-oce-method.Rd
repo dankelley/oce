@@ -4,13 +4,16 @@
 \alias{concatenate,oce-method}
 \title{Concatenate oce Objects (oce-Specific)}
 \usage{
-\S4method{concatenate}{oce}(object, ...)
+\S4method{concatenate}{oce}(object, ..., debug = getOption("oceDebug"))
 }
 \arguments{
 \item{object}{An object of \linkS4class{oce}, or a list containing such
 objects (in which case the remaining arguments are ignored).}
 
-\item{...}{Optional additional objects of \linkS4class{oce}.}
+\item{...}{optional additional objects of \linkS4class{oce}.}
+
+\item{debug}{integer indicating debugging level. If this exceeds 1,
+some information may be printed during the processing.}
 }
 \value{
 An object of \linkS4class{oce}.
@@ -55,9 +58,9 @@ MET <- concatenate(met1, met2)
 }
 \seealso{
 Other functions that concatenate oce objects: 
+\code{\link{concatenate}()},
 \code{\link{concatenate,adp-method}},
-\code{\link{concatenate,list-method}},
-\code{\link{concatenate}()}
+\code{\link{concatenate,list-method}}
 }
 \author{
 Dan Kelley

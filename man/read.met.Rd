@@ -40,7 +40,7 @@ this data file, if it is textual.  The default value for most functions is
 English and French.}
 
 \item{tz}{timezone assumed for time data.  This defaults to
-\code{getOption("oceTz")}, which is very likely to be wrong.  In
+\link{getOption}\code{("oceTz")}, which is very likely to be wrong.  In
 a scientific context, where UTC is typically used for oceanographic
 measurement, it makes sense to set \code{tz="UTC"}.  Note that these
 data files do not contain timezone information, instead giving
@@ -110,8 +110,8 @@ Other things related to met data:
 \code{\link{[[<-,met-method}},
 \code{\link{as.met}()},
 \code{\link{download.met}()},
-\code{\link{met-class}},
 \code{\link{met}},
+\code{\link{met-class}},
 \code{\link{plot,met-method}},
 \code{\link{subset,met-method}},
 \code{\link{summary,met-method}}

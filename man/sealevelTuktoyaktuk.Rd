@@ -49,8 +49,8 @@ Other datasets provided with oce:
 \code{\link{argo}},
 \code{\link{cm}},
 \code{\link{coastlineWorld}},
-\code{\link{ctdRaw}},
 \code{\link{ctd}},
+\code{\link{ctdRaw}},
 \code{\link{echosounder}},
 \code{\link{landsat}},
 \code{\link{lisst}},
@@ -70,8 +70,8 @@ Other things related to sealevel data:
 \code{\link{as.sealevel}()},
 \code{\link{plot,sealevel-method}},
 \code{\link{read.sealevel}()},
-\code{\link{sealevel-class}},
 \code{\link{sealevel}},
+\code{\link{sealevel-class}},
 \code{\link{subset,sealevel-method}},
 \code{\link{summary,sealevel-method}}
 }

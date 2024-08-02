@@ -4,32 +4,48 @@
 \alias{swDepth}
 \title{Water Depth}
 \usage{
-swDepth(pressure, latitude = 45, eos = getOption("oceEOS", default = "gsw"))
+swDepth(
+  pressure,
+  latitude = 45,
+  eos = getOption("oceEOS", default = "gsw"),
+  debug = getOption("oceDebug")
+)
 }
 \arguments{
-\item{pressure}{either pressure (dbar), in which case \code{lat} must also
-be given, or a \code{ctd} object, in which case \code{lat} will be inferred
+\item{pressure}{either pressure (dbar), in which case \code{latitude} must also
+be given, or a \code{ctd} object, in which case \code{latitude} will be inferred
 from the object.}
 
-\item{latitude}{Latitude in \eqn{^\circ}{deg}N.}
+\item{latitude}{numeric value for latitude in degrees North.}
 
-\item{eos}{indication of formulation to be used, either \code{"unesco"} or
-\code{"gsw"}.}
+\item{eos}{character value indicating the formulation to be used, either
+\code{"unesco"} or \code{"gsw"}.}
+
+\item{debug}{an integer specifying whether debugging information is
+to be printed during the processing. This is a general parameter that
+is used by many \code{oce} functions. Generally, setting \code{debug=0}
+turns off the printing, while higher values suggest that more information
+be printed. If one function calls another, it usually reduces the value of
+\code{debug} first, so that a user can often obtain deeper debugging
+by specifying higher \code{debug} values.}
 }
 \value{
-Depth below the ocean surface, in metres.
+\link{swDepth} returns depth below the ocean surface, in metres.
 }
 \description{
-Compute depth below the surface (i.e. a positive number within the
-water column) based on pressure and latitude. (Use \code{\link[=swZ]{swZ()}}
-to get the vertical coordinate, which is negative within the water
-column.)
+Retrieve or compute depth below the surface, i.e. a positive number within
+the water column.  If the first parameter is an oce object that has an
+element named \code{"depth"} in its \code{data} slot, then return that value.
+Otherwise, compute depth from a formula that includes pressure and latitude,
+as explained in \sQuote{Details}.
 }
 \details{
-If \code{eos="unesco"} then depth is calculated from pressure using Saunders
+For the calculated case, the method depends on the value of \code{eos} parameter.
+If this is \code{"unesco"}, then depth is calculated from pressure using Saunders
 and Fofonoff's method, with the formula refitted for 1980 UNESCO equation of
-state (reference 1).  If \code{eos="gsw"}, then \code{\link[gsw:gsw_z_from_p]{gsw::gsw_z_from_p()}} from
-the \CRANpkg{gsw} package (references 2 and 3) is used.
+state (reference 1).  On the other hand, if it is \code{eos="gsw"}, then
+\code{\link[gsw:gsw_z_from_p]{gsw::gsw_z_from_p()}} from the \CRANpkg{gsw} package (references 2 and 3) is
+used.
 }
 \examples{
 d <- swDepth(10, 45)
@@ -56,8 +72,8 @@ Other functions that calculate seawater properties:
 \code{\link{computableWaterProperties}()},
 \code{\link{locationForGsw}()},
 \code{\link{swAbsoluteSalinity}()},
-\code{\link{swAlphaOverBeta}()},
 \code{\link{swAlpha}()},
+\code{\link{swAlphaOverBeta}()},
 \code{\link{swBeta}()},
 \code{\link{swCSTp}()},
 \code{\link{swConservativeTemperature}()},
@@ -70,18 +86,21 @@ Other functions that calculate seawater properties:
 \code{\link{swSCTp}()},
 \code{\link{swSR}()},
 \code{\link{swSTrho}()},
+\code{\link{swSigma}()},
 \code{\link{swSigma0}()},
 \code{\link{swSigma1}()},
 \code{\link{swSigma2}()},
 \code{\link{swSigma3}()},
 \code{\link{swSigma4}()},
-\code{\link{swSigmaTheta}()},
 \code{\link{swSigmaT}()},
-\code{\link{swSigma}()},
+\code{\link{swSigmaTheta}()},
 \code{\link{swSoundAbsorption}()},
 \code{\link{swSoundSpeed}()},
 \code{\link{swSpecificHeat}()},
 \code{\link{swSpice}()},
+\code{\link{swSpiciness0}()},
+\code{\link{swSpiciness1}()},
+\code{\link{swSpiciness2}()},
 \code{\link{swSstar}()},
 \code{\link{swTFreeze}()},
 \code{\link{swTSrho}()},

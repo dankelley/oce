@@ -212,27 +212,27 @@ Other functions that plot oce data:
 Other things related to adv data: 
 \code{\link{[[,adv-method}},
 \code{\link{[[<-,adv-method}},
+\code{\link{adv}},
 \code{\link{adv-class}},
 \code{\link{advSontekAdrFileTrim}()},
-\code{\link{adv}},
 \code{\link{applyMagneticDeclination,adv-method}},
 \code{\link{beamName}()},
 \code{\link{beamToXyz}()},
-\code{\link{enuToOtherAdv}()},
 \code{\link{enuToOther}()},
+\code{\link{enuToOtherAdv}()},
+\code{\link{read.adv}()},
 \code{\link{read.adv.nortek}()},
 \code{\link{read.adv.sontek.adr}()},
 \code{\link{read.adv.sontek.serial}()},
 \code{\link{read.adv.sontek.text}()},
-\code{\link{read.adv}()},
 \code{\link{rotateAboutZ}()},
 \code{\link{subset,adv-method}},
 \code{\link{summary,adv-method}},
-\code{\link{toEnuAdv}()},
 \code{\link{toEnu}()},
+\code{\link{toEnuAdv}()},
 \code{\link{velocityStatistics}()},
-\code{\link{xyzToEnuAdv}()},
-\code{\link{xyzToEnu}()}
+\code{\link{xyzToEnu}()},
+\code{\link{xyzToEnuAdv}()}
 }
 \author{
 Dan Kelley

@@ -1,4 +1,4 @@
-# vim: tw=80 shiftwidth=4 softtabstop=4 expandtab:
+# vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
 # byte sequences at start of items
 # FLH 00 00; VLH 00 80; vel 00 01; Cor 00 02;  echo 00 03; percent 00 04; bottom-track 00 06
@@ -41,9 +41,13 @@
 #' if `infile` is `"a.000"` then `outfile` will be `a_trimmed.000`.
 #'
 #' @param debug an integer value indicating the level of debugging. If
-#' this is 1L, then a brief indication is given of the processing steps. If it
-#' is > 1L, then information is given about each data chunk, which can yield
-#' very extensive output.
+#' this is 0, then [read.adp.rdi()] proceeds quietly, except for
+#' issuing warnings and errors if necessary.  If it is 1, then the R
+#' code of [read.adp.rdi()] produces some messages.  If it is 2, then also
+#' the underlying C/C++ code produces a message each time a possible
+#' ensemble is detected.  If it is 3, then the C/C++ code also produces
+#' information on some details of the ensemble.  Levels 2 and 3 are
+#' mainly for use by the developers.
 #'
 #' @return `adpRdiFileTrim()` returns the name of the output file, `outfile`, as
 #' provided or constructed.
@@ -60,7 +64,7 @@
 #' }
 #' @author Dan Kelley
 adpRdiFileTrim <- function(infile, n = 100L, outfile, debug = getOption("oceDebug")) {
-    oceDebug(debug, "adpRdiFileTrim(infile=\"", infile, "\", n=", n, ", debug=", debug, ") { #\n", unindent = 1)
+    oceDebug(debug, "adpRdiFileTrim(infile=\"", infile, "\", n=", n, ", debug=", debug, ") START\n", unindent = 1)
     debug <- ifelse(debug < 1, 0L, ifelse(debug < 2, 1, 2))
     if (missing(infile)) {
         stop("must provide 'infile'")
@@ -82,7 +86,7 @@ adpRdiFileTrim <- function(infile, n = 100L, outfile, debug = getOption("oceDebu
     last <- r$start[n + 1L] - 1L
     buf <- readBin(infile, "raw", n = last)
     writeBin(buf, outfile, useBytes = TRUE)
-    oceDebug(debug, "} # adpRdiFileTrim\n", unindent = 1)
+    oceDebug(debug, "END adpRdiFileTrim()\n", unindent = 1)
     outfile
 }
 
@@ -92,7 +96,7 @@ decodeHeaderRDI <- function(buf, debug = getOption("oceDebug"), tz = getOption("
     byte2 <- as.raw(0x7f)
     #<<>> byte2 <- as.raw(0x79)
     # header length 6+2*numberOfDataTypes bytes (see e.g. Figure 44, page 160 of Surveyor docs)
-    oceDebug(debug, "decodeHeaderRDI(buf, debug=", debug, ") {\n", unindent = 1)
+    oceDebug(debug, "decodeHeaderRDI(buf, debug=", debug, ") START\n", unindent = 1)
     if (buf[1] != byte1 || buf[2] != byte2) {
         stop("first two bytes in file must be 0x", byte1, " 0x", byte2, ", but they are 0x", buf[1], " 0x", buf[2])
     }
@@ -111,8 +115,8 @@ decodeHeaderRDI <- function(buf, debug = getOption("oceDebug"), tz = getOption("
     if (dataOffset[1] != 6 + 2 * numberOfDataTypes) {
         warning("dataOffset and numberOfDataTypes are inconsistent -- this dataset seems damaged")
     }
-    oceDebug(debug, "dataOffset=", paste(dataOffset, sep = " "), "\n")
-    oceDebug(debug, "sort(diff(dataOffset))=", paste(sort(diff(dataOffset)), sep = " "), "\n")
+    oceDebug(debug, "head(dataOffset)=", paste(head(dataOffset), collapse = " "), "\n")
+    oceDebug(debug, "head(sort(diff(dataOffset)))=", paste(head(sort(diff(dataOffset))), collapse = " "), "\n")
     # Set up codes
     codes <- cbind(buf[1 + c(0, dataOffset)], buf[1 + c(0, dataOffset) + 1])
     oceDebug(debug, "set up codes starting at buf[1:10]=", paste("0x", paste(buf[1:10], sep = ", "), collapse = " ", sep = ""), "\n")
@@ -135,7 +139,7 @@ decodeHeaderRDI <- function(buf, debug = getOption("oceDebug"), tz = getOption("
     firmwareVersionMinor <- readBin(FLD[4], "integer", n = 1, size = 1, signed = FALSE)
     firmwareVersion <- paste(firmwareVersionMajor, firmwareVersionMinor, sep = ".")
     firmwareVersionNumeric <- as.numeric(firmwareVersion)
-    oceDebug(debug, "firmwareVersion=", firmwareVersion, "(numerically, it is", firmwareVersionNumeric, ")\n")
+    oceDebug(debug, "firmwareVersion=", firmwareVersion, " (numerically, it is ", firmwareVersionNumeric, ")\n")
     # if (firmwareVersion < 16.28) warning("firmwareVersion ", firmwareVersion, " is less than 16.28, and so read.adp.rdi() may not work properly")
     # If no actual data, return something minimal
     if (!haveActualData) {
@@ -196,7 +200,7 @@ decodeHeaderRDI <- function(buf, debug = getOption("oceDebug"), tz = getOption("
     bits <- substr(systemConfiguration, 16, 17)
     if (isSentinel) {
         oceDebug(debug, "systemConfiguration:", systemConfiguration, "\n")
-        oceDebug(debug, "bits:", bits, "Expect 111 for 25 degrees\n")
+        oceDebug(debug, "bits:", bits, " (Expect 111 for 25 degrees)\n")
         bits <- substr(systemConfiguration, 15, 17)
         if (bits != "111") message("Assuming beam angle of 25deg, but SysCon bits aren't 111")
         beamAngle <- 25
@@ -308,7 +312,7 @@ decodeHeaderRDI <- function(buf, debug = getOption("oceDebug"), tz = getOption("
         readBin(FLD[49], "integer", n = 1, size = 1, signed = FALSE),
         readBin(FLD[50], "integer", n = 1, size = 1, signed = FALSE)
     )
-    oceDebug(debug, paste("cpuBoardSerialNumber = \"", paste(cpuBoardSerialNumber, collapse = ""), "\"\n"))
+    oceDebug(debug, "cpuBoardSerialNumber=\"", paste(cpuBoardSerialNumber, collapse = ""), "\"\n", sep = "")
     systemBandwidth <- readBin(FLD[51:52], "integer", n = 1, size = 2, endian = "little")
     # systemPower <- readBin(FLD[53], "integer", n=1, size=1)
     # FLD[54] spare
@@ -464,56 +468,61 @@ decodeHeaderRDI <- function(buf, debug = getOption("oceDebug"), tz = getOption("
         haveBinaryFixedAttitudeHeader = any(codes[, 1] == 0x00 & codes[, 2] == 0x30),
         haveActualData = haveActualData
     )
-    oceDebug(debug, "} # decodeHeaderRDI()\n", unindent = 1)
+    oceDebug(debug, "END decodeHeaderRDI()\n", unindent = 1)
     res
 } # decodeHeaderRDI
 
 
 #' Read an adp File in Teledyne/RDI Format
 #'
-#' Read a Teledyne/RDI ADCP file (called 'adp' in oce).
+#' Read a Teledyne/RDI ADCP file (called 'adp' in oce). This can
+#' handle a variety of file/instrument types, by recognizing telltale
+#' byte sequences in the data. The scope is limited to types that are
+#' documented adequately in Teledyne/RDI manuals. In some instances,
+#' the manuals provide some information but not enough to enable
+#' inclusion here, for example in the case for wave data (see
+#' \url{https://github.com/dankelley/oce/issues/2216}).
 #'
-#' As of 2016-09-25, this function has provisional functionality to
-#' read data from the new "SentinelV" series ADCP -- essentially a
-#' combination of a 4 beam workhorse with an additional vertical
-#' centre beam.
+#' If a heading bias had been set with the `EB` command during the
+#' setup for the deployment, then a heading bias will have been stored
+#' in the file's header.  This value is stored in the object's
+#' metadata as `metadata$heading.bias`.  **Importantly**, this value
+#' is subtracted from the headings stored in the file, and the result
+#' of this subtraction is stored in the objects heading value (in
+#' `data$heading`). It should be noted that `read.adp.rdi()` was
+#' tested for firmware version 16.30.  For other versions, there may
+#' be problems.  For example, the serial number is not recognized
+#' properly for version 16.28.
 #'
-#' If a heading bias had been set with the `EB` command during the setup
-#' for the deployment, then a heading bias will have been stored in the file's
-#' header.  This value is stored in the object's metadata as
-#' `metadata$heading.bias`.  **Importantly**, this value is
-#' subtracted from the headings stored in the file, and the result of this
-#' subtraction is stored in the objects heading value (in `data$heading`).
-#' It should be noted that `read.adp.rdi()` was tested for firmware
-#' version 16.30.  For other versions, there may be problems.  For example, the
-#' serial number is not recognized properly for version 16.28.
-#'
-#' In Teledyne/RDI ADP data files, velocities are coded to signed 2-byte integers, with a
-#' scale factor being used to convert to velocity in metres per second.  These
-#' two facts control the maximum recordable velocity and the velocity
-#' resolution, values that may be retrieved for an ADP object name `d`
-#' with `d[["velocityMaximum"]]` and `d[["velocityResolution"]]`.
+#' In Teledyne/RDI ADP data files, velocities are coded to signed
+#' 2-byte integers, with a scale factor being used to convert to
+#' velocity in metres per second.  These two facts control the maximum
+#' recordable velocity and the velocity resolution, values that may be
+#' retrieved for an ADP object name `d` with `d[["velocityMaximum"]]`
+#' and `d[["velocityResolution"]]`.
 #'
 #' @section Handling of old file formats:
-#' 1. Early PD0 file formats stored the year of sampling with a different
+#'
+#' Early PD0 file formats stored the year of sampling with a different
 #' base year than that used in modern files.  To accommodate this,
-#' `read.adp.rdi` examines the inferred year, and if it is greater than
-#' 2050, then 100 years are subtracted from the time. This offset was
-#' inferred by tests with sample files, but *not* from RDI documentation,
-#' so it is somewhat risky.  If the authors can find RDI documentation that
-#' indicates the condition in which this century offset is required, then
-#' a change will be made to the code.  Even if not, the method should
-#' not cause problems for a long time.
+#' `read.adp.rdi` examines the inferred year, and if it is greater
+#' than 2050, then 100 years are subtracted from the time. This offset
+#' was inferred by tests with sample files, but *not* from RDI
+#' documentation, so it is somewhat risky.  If the authors can find
+#' RDI documentation that indicates the condition in which this
+#' century offset is required, then a change will be made to the code.
+#' Even if not, the method should not cause problems for a long time.
 #'
 #' @template adpTemplate
 #'
 #' @param type character string indicating the type of instrument.
 #'
 #' @param which optional character value.  If this is `"??"` then the
-# " only other parameters that are examined are `file` and `debug`, and
-#' [read.adp.rdi()] works by locating the indices in `file` at which data
-#' segments begin, and storing them as `index` in a list that is returned.
-#' The other entry of the list is `time`, the time of the observation.
+#' only other parameters that are examined are `file` and `debug`,
+#' [read.adp.rdi()] works by locating the indices in `file` at which
+#' data segments begin, and storing them as `index` in a list that is
+#' returned. The other entry of the list is `time`, the time of the
+#' observation.
 #'
 #' @template encodingIgnoredTemplate
 #'
@@ -524,13 +533,13 @@ decodeHeaderRDI <- function(buf, debug = getOption("oceDebug"), tz = getOption("
 #'
 #' @section Names of items in data slot:
 #'
-#' The names of items in the `data` slot are below. Not all items are present
-#' for ll file varieties; use e.g. `names(d[["data"]])` to determine the
-#' names used in an object named `d`. In this list, items are either
-#' a vector (with one sample per time of measurement), a
-#' [matrix] with first index for time and second for bin number,
-#' or an [array] with first index for time, second for bin number,
-#' and third for beam number. Items are of vector type, unless
+#' The names of items in the `data` slot are below. Not all items are
+#' present for ll file varieties; use e.g. `names(d[["data"]])` to
+#' determine the names used in an object named `d`. In this list,
+#' items are either a vector (with one sample per time of
+#' measurement), a [matrix] with first index for time and second for
+#' bin number, or an [array] with first index for time, second for bin
+#' number, and third for beam number. Items are of vector type, unless
 #' otherwise indicated.
 #'
 #' \tabular{rr}{
@@ -593,53 +602,62 @@ decodeHeaderRDI <- function(buf, debug = getOption("oceDebug"), tz = getOption("
 #'
 #' @section Memory considerations:
 #'
-#' For `RDI` files only, and only in the case where `by` is not specified,
-#' an attempt is made to avoid running out of memory by skipping some profiles
-#' in large input files. This only applies if `from` and `to` are both
-#' integers; if they are times, none of the rest of this section applies.
+#' For `RDI` files only, and only in the case where `by` is not
+#' specified, an attempt is made to avoid running out of memory by
+#' skipping some profiles in large input files. This only applies if
+#' `from` and `to` are both integers; if they are times, none of the
+#' rest of this section applies.
 #'
-#' A key issue is that RDI files store velocities in 2-byte values, which is
-#' not a format that R supports. These velocities become 8-byte (numeric) values
-#' in R. Thus, the R object created by `read.adp.rdi` will require more memory
-#' than that of the data file. A scale factor can be estimated by ignoring
-#' vector quantities (e.g. time, which has just one value per profile) and concentrating on matrix properties
-#' such as velocity, backscatter, and correlation. These three elements have equal dimensions.
-#' Thus, each 4-byte slide in the data file (2 bytes + 1 byte + 1 byte)
-#' corresponds to 10 bytes in the object (8 bytes + 1 byte + 1 byte).
-#' Rounding up the resultant 10/4 to 3 for safety, we conclude that any limit on the
-#' size of the R object corresponds to a 3X smaller limit on file size.
+#' A key issue is that RDI files store velocities in 2-byte values,
+#' which is not a format that R supports. These velocities become
+#' 8-byte (numeric) values in R. Thus, the R object created by
+#' `read.adp.rdi` will require more memory than that of the data file.
+#' A scale factor can be estimated by ignoring vector quantities (e.g.
+#' time, which has just one value per profile) and concentrating on
+#' matrix properties such as velocity, backscatter, and correlation.
+#' These three elements have equal dimensions. Thus, each 4-byte slide
+#' in the data file (2 bytes + 1 byte + 1 byte) corresponds to 10
+#' bytes in the object (8 bytes + 1 byte + 1 byte). Rounding up the
+#' resultant 10/4 to 3 for safety, we conclude that any limit on the
+#' size of the R object corresponds to a 3X smaller limit on file
+#' size.
 #'
-#' Various things can limit the size of objects in R, but a strong upper limit
-#' is set by the space the operating system provides to R. The least-performant machines
-#' in typical use appear to be Microsoft-Windows systems, which limit R objects to
-#' about 2e6 bytes (see `?Memory-limits`).  Since R routinely duplicates objects for certain tasks
-#' (e.g. for call-by-value in function evaluation), `read.adp.rdi` uses a safety
-#' factor in its calculation of when to auto-decimate a file. This factor is set to 3,
-#' based partly on the developers' experience with datasets in their possession.
-#' Multiplied by the previously stated safety factor of 3,
-#' this suggests that the 2 GB limit on R objects corresponds to approximately a
-#' 222 MB limit on file size. In the present version of `read.adp.rdi`, this
-#' value is lowered to 200 MB for simplicity. Larger files are considered to be "big",
-#' and are decimated unless the user supplies a value for the `by` argument.
+#' Various things can limit the size of objects in R, but a strong
+#' upper limit is set by the space the operating system provides to R.
+#' The least-performant machines in typical use appear to be
+#' Microsoft-Windows systems, which limit R objects to about 2e6 bytes
+#' (see `?Memory-limits`).  Since R routinely duplicates objects for
+#' certain tasks (e.g. for call-by-value in function evaluation),
+#' `read.adp.rdi` uses a safety factor in its calculation of when to
+#' auto-decimate a file. This factor is set to 3, based partly on the
+#' developers' experience with datasets in their possession.
+#' Multiplied by the previously stated safety factor of 3, this
+#' suggests that the 2 GB limit on R objects corresponds to
+#' approximately a 222 MB limit on file size. In the present version
+#' of `read.adp.rdi`, this value is lowered to 200 MB for simplicity.
+#' Larger files are considered to be "big", and are decimated unless
+#' the user supplies a value for the `by` argument.
 #'
+
 #' The decimation procedure has two cases.
-#' 1. If `from=1` and `to=0` (or if neither `from` or `to` is given), then the
-#' intention is to process the full span of the data.  If the input file is
-#' under 200 MB, then `by` defaults to 1, so that all profiles are read.
-#' For larger files, `by` is set to the [ceiling()] of the
-#' ratio of input file size to 200 MB.
 #'
-#' 2. If `from` exceeds 1, and/or `to` is nonzero, then
-#' the intention is to process only an interior subset of the file. In this
-#' case, `by` is calculated as the [ceiling()] of
-#' the ratio of `bbp*(1+to-from)` to 200 MB, where `bbp` is the number
-#' of file bytes per profile. Of course, `by` is set to 1, if this
-#' ratio is less than 1.
+#' 1. If `from=1` and `to=0` (or if neither `from` or `to` is given),
+#' then the intention is to process the full span of the data.  If the
+#' input file is under 200 MB, then `by` defaults to 1, so that all
+#' profiles are read. For larger files, `by` is set to the [ceiling()]
+#' of the ratio of input file size to 200 MB.
+#'
+#' 2. If `from` exceeds 1, and/or `to` is nonzero, then the intention
+#' is to process only an interior subset of the file. In this case,
+#' `by` is calculated as the [ceiling()] of the ratio of
+#' `bbp*(1+to-from)` to 200 MB, where `bbp` is the number of file
+#' bytes per profile. Of course, `by` is set to 1, if this ratio is
+#' less than 1.
 #'
 #' If the result of these calculations is that `by` exceeds 1, then
-#' messages are printed to alert the user that the file will be decimated,
-#' and also `monitor` is set to `TRUE`, so that a textual progress bar
-#' is shown (if the session is interactive).
+#' messages are printed to alert the user that the file will be
+#' decimated, and also `monitor` is set to `TRUE`, so that a textual
+#' progress bar is shown (if the session is interactive).
 #'
 #' @author Dan Kelley and Clark Richards
 #'
@@ -648,6 +666,7 @@ decodeHeaderRDI <- function(buf, debug = getOption("oceDebug"), tz = getOption("
 #' summary(adp)
 #'
 #' @references
+#'
 #' 1. Teledyne-RDI, 2007. *WorkHorse commands and output data
 #' format.* P/N 957-6156-00 (November 2007).  (Section 5.3 h details the binary
 #' format, e.g. the file should start with the byte `0x7f` repeated twice,
@@ -666,12 +685,14 @@ decodeHeaderRDI <- function(buf, debug = getOption("oceDebug"), tz = getOption("
 #' P/N 957-6171-00 (June 2001) `WinRiver User Guide International Version.pdf.pdf`
 #'
 #' @section Development Notes:
+#'
 #' An important part of the work of this function is to recognize what
-#' will be called "data chunks" by two-byte ID sequences. This function is
-#' developed in a practical way, with emphasis being focussed on
-#' data files in the possession of the developers. Since Teledyne-RDI tends
-#' to introduce new ID codes with new instruments, that means that
-#' `read.adp.rdi` may not work on recently-developed instruments.
+#' will be called "data chunks" by two-byte ID sequences. This
+#' function is developed in a practical way, with emphasis being
+#' focussed on data files in the possession of the developers. Since
+#' Teledyne-RDI tends to introduce new ID codes with new instruments,
+#' that means that `read.adp.rdi` may not work on recently-developed
+#' instruments.
 #'
 #' The following two-byte ID codes are recognized by `read.adp.rdi`
 #' at this time (with bytes listed in natural order, LSB byte before
@@ -748,32 +769,41 @@ decodeHeaderRDI <- function(buf, debug = getOption("oceDebug"), tz = getOption("
 #'
 #' @section Error recovery:
 #'
-#' Files can sometimes be corrupted, and `read.adp.rdi` has ways to handle two types
-#' of error that have been noticed in files supplied by users.
+#' Files can sometimes be corrupted, and `read.adp.rdi` has ways to
+#' handle two types of error that have been noticed in files supplied
+#' by users.
 #'
-#' 1. There are two bytes within each ensemble that indicate the number of bytes to check within
-#' that ensemble, to get the checksum. Sometimes, those two bytes can be erroneous, so that
-#' the wrong number of bytes are checked, leading to a failed checksum. As a preventative
-#' measure, `read.adp.rdi` checks the stated ensemble length, whenever it detects a
-#' failed checksum. If that length agrees with the length of the most recent ensemble that
-#' had a good checksum, then the ensemble is declared as faulty and is ignored. However,
-#' if the length differs from that of the most recent accepted ensemble, then `read.adp.rdi`
-#' goes back to just after the start of the ensemble, and searches forward for the next two-byte
-#' pair, namely `0x7f 0x7f`, that designates the start of an ensemble.  Distinct notifications
-#' are given about these two cases, and they give the byte numbers in the original file, as a way
-#' to help analysts who want to look at the data stream with other tools.
+#' 1. There are two bytes within each ensemble that indicate the
+#' number of bytes to check within that ensemble, to get the checksum.
+#' Sometimes, those two bytes can be erroneous, so that the wrong
+#' number of bytes are checked, leading to a failed checksum. As a
+#' preventative measure, `read.adp.rdi` checks the stated ensemble
+#' length, whenever it detects a failed checksum. If that length
+#' agrees with the length of the most recent ensemble that had a good
+#' checksum, then the ensemble is declared as faulty and is ignored.
+#' However, if the length differs from that of the most recent
+#' accepted ensemble, then `read.adp.rdi` goes back to just after the
+#' start of the ensemble, and searches forward for the next two-byte
+#' pair, namely `0x7f 0x7f`, that designates the start of an ensemble.
+#' Distinct notifications are given about these two cases, and they
+#' give the byte numbers in the original file, as a way to help
+#' analysts who want to look at the data stream with other tools.
 #'
-#' 2. At the end of an ensemble, the next two characters ought to be `0x7f 0x7f`, and if they
-#' are not, then the next ensemble is faulty. If this error occurs, `read.adp.rdi` attempts
-#' to recover by searching forward to the next instance of this two-byte pair, discarding any
-#' information that is present in the mangled ensemble.
+#' 2. At the end of an ensemble, the next two characters ought to be
+#' `0x7f 0x7f`, and if they are not, then the next ensemble is faulty.
+#' If this error occurs, `read.adp.rdi` attempts to recover by
+#' searching forward to the next instance of this two-byte pair,
+#' discarding any information that is present in the mangled ensemble.
 #'
-#' In each of these cases, warnings are printed about ensembles that seem problematic.
-#' Advanced users who want to diagnose the problem further might find it helpful to
-#' examine the original data file using other tools. To this end, `read.adp.rdi`
-#' inserts an element named `ensembleInFile` into the `metadata` slot.
-#' This gives the starting byte number of each inferred ensemble within the original data
-#' file.  For example, if `d` is an object read with `read.adp.rdi`, then using
+#' In each of these cases, warnings are printed about ensembles that
+#' seem problematic. Advanced users who want to diagnose the problem
+#' further might find it helpful to examine the original data file
+#' using other tools. To this end, `read.adp.rdi` inserts an element
+#' named `ensembleInFile` into the `metadata` slot. This gives the
+#' starting byte number of each inferred ensemble within the original
+#' data file.  For example, if `d` is an object read with
+#' `read.adp.rdi`, then using
+#'
 #' ```
 #' plot(d[["time"]][-1], diff(d[["ensembleInFile"]]))
 #' ```
@@ -792,6 +822,7 @@ read.adp.rdi <- function(
     longitude = NA, latitude = NA, type = c("workhorse"), which, encoding = NA,
     monitor = FALSE, despike = FALSE, processingLog, testing = FALSE,
     debug = getOption("oceDebug"), ...) {
+    oceDebug(debug, "read.adp.rdi() START\n", unindent = 1)
     byte1 <- as.raw(0x7f)
     byte2 <- as.raw(0x7f)
     #<<>> byte2 <- as.raw(0x79)
@@ -806,6 +837,12 @@ read.adp.rdi <- function(
             stop("empty file \"", file, "\"")
         }
     }
+    fileSize <- file.info(file)$size
+    oceDebug(debug, "fileSize=", fileSize, "\n")
+    largeFile <- fileSize >= .Machine$integer.max
+    if (largeFile) {
+        warning("This file is large; please report any errors you find\n")
+    }
     if (!interactive()) {
         monitor <- FALSE
     }
@@ -817,7 +854,7 @@ read.adp.rdi <- function(
         ", from=", if (fromGiven) format(from) else "(missing)",
         ", to=", if (toGiven) format(to) else "(missing)",
         ", by=", if (byGiven) format(by) else "(missing)",
-        "...) {\n",
+        "...) START\n",
         unindent = 1, sep = ""
     )
     if (!fromGiven) {
@@ -848,27 +885,33 @@ read.adp.rdi <- function(
     seek(file, 0, "start")
     seek(file, where = 0, origin = "end")
     fileSize <- seek(file, where = 0)
-    oceDebug(debug, "fileSize=", fileSize, "\n")
     if (fileSize < 1) {
         stop("empty file \"", file, "\"")
     }
-    # FIXME 20170107
-    # We process the header wholly in R, and we don't need more than probably 2000 bytes
-    # but let's read 10000 just in case. It might be worth thinking about this in more
-    # detail, in case a file might have a header that is much longer than any studied
-    # in writing this code.
     startIndex <- 1L # index of byte pair 0x7f 0x7f
-    buf <- readBin(file, what = "raw", n = min(fileSize, 10000), endian = "little")
+    # 2024-02-19: examine 200,000 bytes.  This was 2,000 in the early
+    # days of this code, but that switched to 10,000 bytes on 2017-01-07.
+    # I don't really want to check the whole file (because of time it
+    # might take) but potentially we'll have to do that.
+    NCHECK <- min(fileSize, 200000L)
+    buf <- readBin(file, what = "raw", n = NCHECK, endian = "little")
     if (buf[1] != byte1 || buf[2] != byte2) {
         message(
-            "This file does not start with a 0x", byte1, " 0x", byte2, "byte sequence (first two bytes are 0x",
-            buf[1], " 0x", buf[2], ")"
+            "Expecting file to start with bytes 0x", byte1, " and 0x", byte2, ", but got 0x",
+            buf[1], " and 0x", buf[2], ", so will try skipping ahead."
         )
-        startIndex <- matchBytes(buf, byte1, byte2)[1]
-        if (!length(startIndex)) {
-            stop("cannot find a 0x", byte1, " 0x", byte2, " byte sequence near the start of this file")
+        startIndex <- matchBytes(buf, byte1, byte2)[1] # FIXME: what if file is large?
+        if (0 == length(startIndex) || is.na(startIndex)) {
+            stop(
+                "cannot find a 0x", byte1, " 0x", byte2, " byte sequence in the first ",
+                NCHECK, " bytes of this file"
+            )
         }
-        message("This file does not start with a 0x", byte1, " 0x", byte2, "byte sequence, so skipping to byte ", startIndex)
+        message(
+            "This file does not start with a 0x", byte1, " 0x", byte2,
+            " byte sequence, so skipped to index ", startIndex,
+            ", where this sequence is first found."
+        )
         buf <- buf[seq(startIndex, length(buf))]
     }
     header <- decodeHeaderRDI(buf, debug = debug - 1)
@@ -882,7 +925,6 @@ read.adp.rdi <- function(
         # message("1. isSentinel=", isSentinel)
         isSentinel <- header$instrumentSubtype == "sentinelV"
         oceDebug(debug, "isSentinel=", isSentinel, " near adp.rdi.R line 829\n")
-        oceDebug(debug, "about to call ldc_rdi_in_file\n")
         if (is.numeric(from) && is.numeric(to) && is.numeric(by)) {
             # check for large files
             byteMax <- 200e6 # for reasoning, see the help file
@@ -902,9 +944,29 @@ read.adp.rdi <- function(
                     }
                 }
             }
-            ldc <- do_ldc_rdi_in_file(filename = filename, from = from, to = to, by = by, startIndex = startIndex, mode = 0L, debug = debug - 1)
-            # }
-            oceDebug(debug, "done with do_ldc_rdi_in_file() with numeric from and to, near adp.rdi.R line 683")
+            oceDebug(debug, "calling ldc_rdi_in_file() w/ numeric values of from etc\n")
+            tC <- system.time({
+                ldc <- do_ldc_rdi_in_file(filename = filename, from = from, to = to, by = by, startIndex = startIndex, mode = 0L, debug = debug - 1)
+            })
+            tCpp <- system.time({
+                ldcNew <- do_ldc_rdi_in_file_new(filename = filename, from = from, to = to, by = by, startIndex = startIndex, mode = 0L, debug = debug - 1)
+            })
+            oceDebug(debug, sprintf(
+                "ensemble detection in old (C) code took %fs (user), %fs (system), %fs (total)\n",
+                tC[1], tC[2], tC[3]
+            ))
+            oceDebug(debug, sprintf(
+                "ensemble detection in new (C++) code took %fs (user), %fs (system), %fs (total)\n",
+                tCpp[1], tCpp[2], tCpp[3]
+            ))
+            if (!identical(ldc, ldcNew)) {
+                message("IMPORTANT: read.adp.rdi/ldc (numeric from, to) problem -- please report at github.com/dankelley/oce/issues")
+                warning("IMPORTANT: read.adp.rdi/ldc (numeric from, to) problem -- please report at github.com/dankelley/oce/issues")
+                # browser()
+            }
+            oceDebug(debug, "old (C) and new (C++) methods agree on ensemble-detection results\n")
+            rm(ldcNew)
+            oceDebug(debug, "completed ensemble detection with numeric from, by, to values\n")
         } else {
             if (is.character(from)) {
                 from <- as.POSIXct(from, tz = "UTC")
@@ -915,36 +977,70 @@ read.adp.rdi <- function(
             if (is.character(by)) {
                 by <- ctimeToSeconds(by)
             }
-            ldc <- do_ldc_rdi_in_file(filename = filename, from = from, to = to, by = by, startIndex = startIndex, mode = 1L, debug = debug - 1)
-            oceDebug(debug, "done with do_ldc_rdi_in_file() with non-numeric from and to, near adp.rdi.R line 693")
+            oceDebug(debug, "calling ldc_rdi_in_file() w/ POSIXt values of from etc\n")
+            tC <- system.time({
+                ldc <- do_ldc_rdi_in_file(filename = filename, from = from, to = to, by = by, startIndex = startIndex, mode = 1L, debug = debug - 1)
+            })
+            tCpp <- system.time({
+                ldcNew <- do_ldc_rdi_in_file_new(filename = filename, from = from, to = to, by = by, startIndex = startIndex, mode = 1L, debug = debug - 1)
+            })
+            oceDebug(debug, sprintf(
+                "ensemble detection in old (C) code took %fs (user), %fs (system), %fs (total)\n",
+                tC[1], tC[2], tC[3]
+            ))
+            oceDebug(debug, sprintf(
+                "ensemble detection in new (C++) code took %fs (user), %fs (system), %fs (total)\n",
+                tCpp[1], tCpp[2], tCpp[3]
+            ))
+            if (!identical(ldc, ldcNew)) {
+                message("IMPORTANT: read.adp.rdi/ldc (non-numeric from, to) problem -- please report at github.com/dankelley/oce/issues")
+                warning("IMPORTANT: read.adp.rdi/ldc (non-numeric from, to) problem -- please report at github.com/dankelley/oce/issues")
+            }
+            oceDebug(debug, "old (C) and new (C++) methods agree on ensemble-detection results\n")
+            rm(ldcNew)
+            oceDebug(debug, "completed ensemble detection with non-numeric from, by, to values\n")
         }
         if (!missing(which)) {
             if (which[1] == "??") {
-                oceDebug(debug, "handling ??\n")
+                oceDebug(debug, "handling which=\"??\"\n")
                 return(list(index = ldc$ensembleStart, time = numberAsPOSIXct(ldc$time)))
             } else {
                 stop("read.adp.rdi() cannot handle which=\"?\"")
             }
         }
         ensembleStart <- ldc$ensembleStart
-        buf <- ldc$buf
+        if (largeFile) {
+            ensembleStart <- ldc$ensembleStart64
+        }
+        buf <- ldc$buf # FIXME: this doubles memory pressure for no good reason
         bufSize <- length(buf)
+        time <- as.POSIXct(ldc$time + 0.01 * as.numeric(ldc$sec100), origin = "1970-01-01")
+        oceDebug(debug, "next is str(ldc).  I think we can shrink this after extracting things\n")
+        if (debug > 0) {
+            print(str(ldc))
+        }
         # Now, 'buf' contains *only* the profiles we want, so we may
         # redefine 'from', 'to' and 'by' to specify each and every profile.
         from <- 1
         to <- length(ensembleStart)
         by <- 1
-        oceDebug(debug, "NEW method from=", from, ", by=", by, ", to=", to, "\n")
+        oceDebug(debug, "setting from=", from, ", by=", by, ", to=", to, "\n")
         if (isSentinel) {
+            oceDebug(debug, "skipping first ensemble (trial ad-hoc measure for SentinelV files)\n")
             warning("skipping the first ensemble (a temporary solution that eases reading of SentinelV files)\n")
             ensembleStart <- ensembleStart[-1] # remove the first ensemble to simplify parsing
+            # ensembleStart64 <- ensembleStart64[-1] # remove the first ensemble to simplify parsing
             to <- to - 1
             header$numberOfDataTypes <- readBin(buf[ensembleStart[1] + 5], "integer", n = 1, size = 1)
             header$dataOffset <- readBin(buf[ensembleStart[1] + 6 + 0:(2 * header$numberOfDataTypes)],
                 "integer",
                 n = header$numberOfDataTypes, size = 2, endian = "little", signed = FALSE
             )
-            oceDebug(debug, "header$dataOffset=", paste(header$dataOffset, sep = " "), " (reread because a sentinelV file)\n")
+            oceDebug(
+                debug, "header$dataOffset=",
+                paste(header$dataOffset, collapse = " "),
+                " (reread because a sentinelV file)\n"
+            )
         }
         # Profiles start at the VARIABLE LEADER DATA, since there is no point in
         # re-interpreting the HEADER and the FIXED LEADER DATA over and over,
@@ -952,8 +1048,36 @@ read.adp.rdi <- function(
         # location for these, based on the "Always Output" indication in Fig 46
         # on page 145 of teledyne2014ostm.
         profileStart <- ensembleStart + as.numeric(buf[ensembleStart[1] + 8]) + 256 * as.numeric(buf[ensembleStart[1] + 9])
+        oceDebug(debug, "check whether file is large FIXME: delete\n")
         if (any(profileStart < 1)) {
-            stop("difficulty detecting ensemble (profile) start indices")
+            cat("Next is table(profileStart<1):\n")
+            print(table(profileStart < 1))
+            cat("range(profileStart) = ", paste(range(profileStart), collapse = " to "), "\n")
+            firstBad <- base::which(profileStart < 1)[1]
+            cat("first bad profileStart (value < 1) is at index firstBad=", firstBad, "\n")
+            cat("profileStart[firstBad]=", profileStart[firstBad], "\n", sep = "")
+            cat("ensembleStart[firstBad]=", ensembleStart[firstBad], "\n", sep = "")
+            if (debug > 0) { # FIXME: remove when largeFile is supported
+                # x11()
+                # par(mfrow = c(3, 1))
+                # plot(ensembleStart < 1, type = "s", xlab = "index")
+                # mtext("is ensembleStart<1?", adj = 0)
+                # abline(v = firstBad, col = 2, lty = 2)
+                # mtext(firstBad, at = firstBad, col = 2)
+
+                # plot(ensembleStart64 == ensembleStart, type = "s", xlab = "index")
+                # mtext("does ensembleStart==ensembleStart64?", adj = 0)
+                # abline(v = firstBad, col = 2, lty = 2)
+                # mtext(firstBad, at = firstBad, col = 2)
+
+                # plot(diff(ensembleStart64), type = "s", xlab = "index")
+                # mtext("diff(ensembleStart64)", adj = 0)
+                # abline(v = firstBad, col = 2, lty = 2)
+                # mtext(firstBad, at = firstBad, col = 2)
+            }
+            # ensembleStart <- ensembleStart64
+            # profileStart <- ensembleStart + as.numeric(buf[ensembleStart[1] + 8]) + 256 * as.numeric(buf[ensembleStart[1] + 9])
+            warning("Caution: using provisional support for large RDI file; if problems arise, chop up your file\n")
         }
         # offset for data type 1 (velocity)
         oceDebug(debug, vectorShow(profileStart, "profileStart before trimming"))
@@ -967,8 +1091,8 @@ read.adp.rdi <- function(
             oceDebug(debug, "numberOfCells:", numberOfCells, "\n")
             items <- numberOfBeams * numberOfCells
             codes <- header$codes
-            oceDebug(debug, "codes[,1]=", paste("0x", paste(codes[, 1], sep = ""), sep = ""), "\n")
-            oceDebug(debug, "codes[,2]=", paste("0x", paste(codes[, 2], sep = ""), sep = ""), "\n")
+            oceDebug(debug, "codes[,1]=", paste("0x", paste(codes[, 1], sep = ""), collapse = " "), "\n")
+            oceDebug(debug, "codes[,2]=", paste("0x", paste(codes[, 2], sep = ""), collapse = " "), "\n")
             oceDebug(debug, "NOTE: only the following codes are recognized. See e.g. Table 45 of the\n")
             oceDebug(debug, "Teledyn-RDI document entitled `Ocean Surveyor Technical Manual_Dec20.pdf`,\n")
             oceDebug(debug, "P/N 95A-6012-00 (December 2020)\n")
@@ -1090,10 +1214,10 @@ read.adp.rdi <- function(
                     transformationMatrix <- matrix(c(tmx, tmy, tmz, tme), nrow = 4, byrow = TRUE)
                     if (debug > 0) {
                         cat("Transformation matrix:\n")
-                        oceDebug(debug, vectorShow(tmx, paste("tmx", sep = "")), "\n")
-                        oceDebug(debug, vectorShow(tmy, paste("tmy", sep = "")), "\n")
-                        oceDebug(debug, vectorShow(tmz, paste("tmz", sep = "")), "\n")
-                        oceDebug(debug, vectorShow(tme, paste("tme", sep = "")), "\n")
+                        oceDebug(debug, vectorShow(tmx, paste("tmx", sep = "")))
+                        oceDebug(debug, vectorShow(tmy, paste("tmy", sep = "")))
+                        oceDebug(debug, vectorShow(tmz, paste("tmz", sep = "")))
+                        oceDebug(debug, vectorShow(tme, paste("tme", sep = "")))
                     }
                 }
                 # Read the V beam data leader
@@ -1558,8 +1682,9 @@ read.adp.rdi <- function(
                 print(unhandled)
             }
             if (length(warningUnknownCode) > 0) {
-                msg <- paste(
-                    "A list of unhandled segment codes follows. Several Teledyne RDI manuals\n",
+                warning(
+                    "Encountered some unhandled segment codes, as listed in the following warnings.\n",
+                    "Note that several Teledyne RDI manuals\n",
                     "describe such codes; see e.g. Table 33 of Teledyne RD Instruments, 2014.\n",
                     "Ocean Surveyor/Ocean Observer Technical Manual.\n",
                     "P/N 95A-6012-00 April 2014 (OS_TM_Apr14.pdf)\n"
@@ -1573,8 +1698,7 @@ read.adp.rdi <- function(
                         (as.raw(0x40) <= testBytes[1] && testBytes[1] <= as.raw(0xFC))) {
                         info <- " (a Variable Attitude ID; see Table 47 of Teledyne-RDI 'Ocean Surveyor Technical Manual_Dec20.pdf')"
                     }
-                    msg <- paste(msg, "    Code ", name, " occurred ", warningUnknownCode[[name]], " times", info, "\n", sep = "")
-                    warning(msg)
+                    warning("code ", name, " occurred ", warningUnknownCode[[name]], " times", info, "\n", sep = "")
                 }
             }
             if (1 != length(unique(orientation))) {
@@ -1586,7 +1710,6 @@ read.adp.rdi <- function(
                     "in case conversion to ENU is to be done later."
                 )
             }
-            time <- as.POSIXct(ldc$time + 0.01 * as.numeric(ldc$sec100), origin = "1970-01-01")
             oceDebug(debug, "length(time)=", length(time), "\n")
             if (length(time) > length(profileStart)) {
                 warning("length(time)=", length(time), " exceeds length(profileStart)=", length(profileStart), " so trimming time\n")
@@ -1735,10 +1858,10 @@ read.adp.rdi <- function(
                 tm.d <- tm.a / sqrt(2)
                 res@metadata$transformationMatrix <- matrix(
                     c(
-                        tm.c * tm.a, -tm.c * tm.a,          0,         0,
-                        0,                  0, -tm.c * tm.a, tm.c * tm.a,
-                        tm.b,            tm.b,       tm.b,      tm.b,
-                        tm.d,            tm.d,      -tm.d,     -tm.d
+                        tm.c * tm.a, -tm.c * tm.a, 0, 0,
+                        0, 0, -tm.c * tm.a, tm.c * tm.a,
+                        tm.b, tm.b, tm.b, tm.b,
+                        tm.d, tm.d, -tm.d, -tm.d
                     ),
                     nrow = 4, byrow = TRUE
                 )
@@ -2029,6 +2152,6 @@ read.adp.rdi <- function(
     res@metadata$units$rollStd <- list(unit = expression(degree), scale = "")
     res@metadata$units$attitude <- list(unit = expression(degree), scale = "")
     res@metadata$units$depth <- list(unit = expression(m), scale = "")
-    oceDebug(debug, "} # read.adp.rdi()\n", unindent = 1)
+    oceDebug(debug, "END read.adp.rdi()\n", unindent = 1)
     res
 }

@@ -132,7 +132,7 @@
 #' `sigma-t`     \tab `sigmaT`                   \tab kg/m^3               \tab   \cr
 #' `sigma-theta` \tab `sigmaTheta`               \tab kg/m^3               \tab 5 \cr
 #' `spar`        \tab `spar`                     \tab -                    \tab   \cr
-#' `specc`       \tab `conductivity`             \tab uS/cm                \tab   \cr
+#' `specc`       \tab `specificConductance`      \tab uS/cm                \tab   \cr
 #' `sva`         \tab `specificVolumeAnomaly`    \tab 1e-8 m^3/kg;         \tab   \cr
 #' `svCM~`       \tab `soundSpeed`               \tab m/s; Chen-Millero    \tab   \cr
 #' `t090Cm`      \tab `temperature`              \tab degC; ITS-90         \tab   \cr
@@ -200,7 +200,7 @@
 #'
 #' @template debugTemplate
 #'
-# NOTE: @return is handled in readCtdTemplate
+# NOTE: the template supplies the return info
 #'
 #' @author Dan Kelley
 #'
@@ -217,7 +217,7 @@
 #' @family things related to ctd data
 #' @family functions that interpret variable names and units from headers
 cnvName2oceName <- function(h, columns = NULL, debug = getOption("oceDebug")) {
-    oceDebug(debug, "cnvName2oceName() {\n", unindent = 1)
+    oceDebug(debug, "cnvName2oceName() BEGIN\n", unindent = 1)
     if (length(h) != 1) {
         stop("oceNameFromSBE() expects just 1 line of header")
     }
@@ -488,7 +488,6 @@ cnvName2oceName <- function(h, columns = NULL, debug = getOption("oceDebug")) {
     } else if (1 == length(grep("sigma-t[0-9]{2}", name))) {
         name <- "sigmaT"
         unit <- list(unit = expression(kg / m^3), scale = "")
-        # } else if (1 == length(grep("sigma-.*[0-9]*", name, ignore.case=TRUE))) {
     } else if (1 == length(grep("^sigma", name))) {
         # there are several cases, and we match the sigma-theta case
         # by exclusion, because of limited understanding of how
@@ -503,8 +502,6 @@ cnvName2oceName <- function(h, columns = NULL, debug = getOption("oceDebug")) {
             name <- "sigma3"
         } else if (1 == length(grep("^sigma-4[0-9]{2}$", name))) {
             name <- "sigma4"
-            # 2022-06-28 } else if (1 == length(grep("^sigma-\x09[0-9]{2}$", name))) {
-            # } else if (1 == length(grep("^sigma-\u00e9[0-9]{2}$", name))) {
         } else if (grepl("^sigma-.*[0-9]{2}$", name) && grepl("sigma-theta", nameAfterColon)) {
             name <- "sigmaTheta"
             # 2016-12-22 DK
@@ -531,7 +528,7 @@ cnvName2oceName <- function(h, columns = NULL, debug = getOption("oceDebug")) {
         name <- "spar"
         unit <- list(unit = expression(), scale = "")
     } else if (1 == length(grep("^specc$", name))) {
-        name <- "conductivity"
+        name <- "specificConductance"
         unit <- list(unit = expression(uS / cm), scale = "")
     } else if (1 == length(grep("^sva$", name))) {
         name <- "specificVolumeAnomaly"
@@ -644,7 +641,7 @@ cnvName2oceName <- function(h, columns = NULL, debug = getOption("oceDebug")) {
         "'; the scale is '", unit$scale, "'\n",
         sep = ""
     )
-    oceDebug(debug, "} # cnvName2oceName()\n", unindent = 1)
+    oceDebug(debug, "END cnvName2oceName()\n", unindent = 1)
     list(name = name, nameOriginal = nameOriginal, unit = unit)
 }
 
@@ -841,9 +838,9 @@ read.ctd.sbe <- function(
     }
     # If 'file' is a wildcard, call this function on each indicated file.  Only
     # that filename, 'encoding' and 'debug' are passed along, so if you need
-    # detailed customizaation, call the function on those files directly.
+    # detailed customization, call the function on those files directly.
     if (is.character(file) && grepl("\\*", file, ignore.case = TRUE)) {
-        oceDebug(debug, "read.ctd.sbe(file=\"", file, "\") { # will read a series of files\n", unindent = 1)
+        oceDebug(debug, "read.ctd.sbe(file=\"", file, "\") BEGIN will read a series of files\n", unindent = 1)
         files <- list.files(pattern = file)
         nfiles <- length(files)
         if (monitor) {
@@ -856,13 +853,13 @@ read.ctd.sbe <- function(
                 setTxtProgressBar(pb, i)
             }
         }
-        oceDebug(debug, "} # read.ctd.sbe() {\n")
+        oceDebug(debug, "END read.ctd.sbe()\n")
         if (monitor) {
             close(pb)
         }
         return(res)
     }
-    oceDebug(debug, "read.ctd.sbe(file=\"", file, "\") {\n", unindent = 1)
+    oceDebug(debug, "read.ctd.sbe(file=\"", file, "\") BEGIN\n", unindent = 1)
     # Read Seabird data file.  Note on headers: '*' is machine-generated,
     # '**' is a user header, and '#' is a post-processing header.
     filename <- ""
@@ -1372,6 +1369,6 @@ read.ctd.sbe <- function(
     # in user code, and it became unnecessary when the scale started being
     # stored in the unit. See the "note on scales" in the documentation for
     # the scheme used to prevent problems.
-    oceDebug(debug, "} # read.ctd.sbe()\n")
+    oceDebug(debug, "END read.ctd.sbe()\n")
     res
 }

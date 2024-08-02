@@ -349,14 +349,14 @@ in (references 1B and C) as being an adjunct to Nortek Vector systems is at
 Other things related to adv data: 
 \code{\link{[[,adv-method}},
 \code{\link{[[<-,adv-method}},
+\code{\link{adv}},
 \code{\link{adv-class}},
 \code{\link{advSontekAdrFileTrim}()},
-\code{\link{adv}},
 \code{\link{applyMagneticDeclination,adv-method}},
 \code{\link{beamName}()},
 \code{\link{beamToXyz}()},
-\code{\link{enuToOtherAdv}()},
 \code{\link{enuToOther}()},
+\code{\link{enuToOtherAdv}()},
 \code{\link{plot,adv-method}},
 \code{\link{read.adv.nortek}()},
 \code{\link{read.adv.sontek.adr}()},
@@ -365,11 +365,11 @@ Other things related to adv data:
 \code{\link{rotateAboutZ}()},
 \code{\link{subset,adv-method}},
 \code{\link{summary,adv-method}},
-\code{\link{toEnuAdv}()},
 \code{\link{toEnu}()},
+\code{\link{toEnuAdv}()},
 \code{\link{velocityStatistics}()},
-\code{\link{xyzToEnuAdv}()},
-\code{\link{xyzToEnu}()}
+\code{\link{xyzToEnu}()},
+\code{\link{xyzToEnuAdv}()}
 }
 \author{
 Dan Kelley
