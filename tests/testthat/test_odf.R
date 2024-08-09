@@ -1,14 +1,14 @@
 # vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 library(oce)
 
-file <- system.file("extdata", "CTD_BCD2014666_008_1_DN.ODF.gz", package="oce")
+file <- system.file("extdata", "CTD_BCD2014666_008_1_DN.ODF.gz", package = "oce")
 CRATwarning <- "\"conductivity\" \\(code name \"CRAT_01\"\\)" # portion of the warning
 
 test_that("ODF CTD file", {
     expect_warning(d <- read.odf(file), CRATwarning)
-    expect_equal(d[["temperatureUnit"]]$unit, expression(degree*C))
+    expect_equal(d[["temperatureUnit"]]$unit, expression(degree * C))
     expect_equal(d[["temperatureUnit"]]$scale, "IPTS-68")
-    expect_equal(d[["conductivityUnit"]]$unit, expression(S/m))
+    expect_equal(d[["conductivityUnit"]]$unit, expression(S / m))
     expect_equal(d[["pressureType"]], "sea")
     expect_equal(d[["ship"]], "CCGS SIGMA T (Call Sign: unknown)")
     expect_equal(d[["cruise"]], "Scotian Shelf")
@@ -19,15 +19,15 @@ test_that("ODF CTD file", {
     expect_equal(d[["temperature"]][1:3], c(5.883587939, 5.910981364, 5.917379829))
     expect_equal(d[["salinity"]][1:3], c(30.8514, 30.8593, 30.8596))
     # there are some flagged data in this file
-    expect_equal(which(d[["salinityFlag"]]!=1), 121)
-    expect_equal(c(110, 120, 121, 142), which(d[["sigmaThetaFlag"]]!=1))
+    expect_equal(which(d[["salinityFlag"]] != 1), 121)
+    expect_equal(c(110, 120, 121, 142), which(d[["sigmaThetaFlag"]] != 1))
 })
 
 test_that("ODF CTD file (not as CTD)", {
     expect_warning(d <- read.odf(file), CRATwarning)
     # Test whether the file marked sigmaTheta as bad, when salinity was
     # bad (line 121)
-    badSTp <- which(d[["salinityFlag"]]!=1 | d[["temperatureFlag"]]!=1 | d[["pressureFlag"]]!=1)
+    badSTp <- which(d[["salinityFlag"]] != 1 | d[["temperatureFlag"]] != 1 | d[["pressureFlag"]] != 1)
     expect_equal(3, d@metadata$flags$sigmaTheta[badSTp])
 })
 
@@ -35,11 +35,11 @@ test_that("ODF header", {
     expect_warning(d <- read.odf(file), CRATwarning)
     expect_true(is.list((d[["header"]])))
     expect_equal(length(d[["header"]]), 32)
-    expect_warning(d <- read.odf(file, header="character"), CRATwarning)
+    expect_warning(d <- read.odf(file, header = "character"), CRATwarning)
     expect_true(is.vector(d[["header"]]))
     expect_equal(32, length(grep("^[A-Z].*,$", d[["header"]])))
     expect_true(is.character(d[["header"]]))
-    expect_warning(d <- read.odf(file, header="list"), CRATwarning)
+    expect_warning(d <- read.odf(file, header = "list"), CRATwarning)
     expect_true(is.list(d[["header"]]))
     expect_equal(32, length(d[["header"]]))
     expect_true(is.list(d[["header"]][[1]]))
@@ -51,9 +51,9 @@ test_that("ODF temperature scale, IPTS68 and ITS90", {
     # Get IPTS68 temperature, ITS90, and unit, all needed for tests.
     # Note that all read() calls need to check for a warning that results
     # from an error in this ODF file (and quite a few ODF files, it seems).
-    Tref68 <- read.table(file, skip=675, header=FALSE)$V4
+    Tref68 <- read.table(file, skip = 675, header = FALSE)$V4
     Tref90 <- T90fromT68(Tref68)
-    unit <- list(unit=expression(degree*C), scale="IPTS-68")
+    unit <- list(unit = expression(degree * C), scale = "IPTS-68")
     # read.odf()
     expect_warning(ctd1 <- read.odf(file), CRATwarning)
     expect_equal(ctd1@metadata$units$temperature, unit)

@@ -64,14 +64,15 @@ test_that("various ways of handling declination (real-world RDI data)", {
     # adp2 = set declination=0 when converting from xyz
     # adp3 = specify declination after converting from xyz
     declination <- -18.036
-    file <- system.file("extdata", "adp_rdi.000", package="oce")
-    beam <- read.oce(file, from=1, to=4)
+    file <- system.file("extdata", "adp_rdi.000", package = "oce")
+    beam <- read.oce(file, from = 1, to = 4)
     xyz <- beamToXyzAdp(beam)
-    adp1 <- xyzToEnuAdp(xyz, declination=declination)
+    adp1 <- xyzToEnuAdp(xyz, declination = declination)
     adp2 <- xyzToEnuAdp(xyz)
     expect_warning(
-        adp3 <- applyMagneticDeclination(adp2, declination=declination),
-        "a declination has already been applied")
+        adp3 <- applyMagneticDeclination(adp2, declination = declination),
+        "a declination has already been applied"
+    )
     # beam@metadata should not contain 'declination' or 'north'
     expect_null(beam[["declination"]])
     expect_null(beam[["north"]])
@@ -89,9 +90,9 @@ test_that("various ways of handling declination (real-world RDI data)", {
     # beam and adp2 should have same heading
     expect_equal(beam[["heading"]], adp2[["heading"]])
     # is declination right in adp2?
-    expect_equal(adp1[["heading"]], adp2[["heading"]]+declination)
+    expect_equal(adp1[["heading"]], adp2[["heading"]] + declination)
     # is declination right in adp3?
-    expect_equal(adp3[["heading"]], adp2[["heading"]]+declination)
+    expect_equal(adp3[["heading"]], adp2[["heading"]] + declination)
     # velocities
     # Do adp1 and adp3 match?
     expect_equal(adp1[["v"]], adp3[["v"]])
@@ -103,7 +104,7 @@ test_that("various ways of handling declination (real-world RDI data)", {
     # Is rotated adp2 (called A) same as adp1 (called B)?
     S <- sin(-declination * pi / 180)
     C <- cos(-declination * pi / 180)
-    rot <- matrix(c(C, S, -S, C), nrow=2)
+    rot <- matrix(c(C, S, -S, C), nrow = 2)
     for (bin in seq_len(dim(adp1@data$v)[2])) {
         A <- rot %*% rbind(adp2@data$v[, bin, 1], adp2@data$v[, bin, 2])
         B <- rbind(adp1@data$v[, bin, 1], adp1@data$v[, bin, 2])

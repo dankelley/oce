@@ -82,17 +82,30 @@ read.ctd.ssda <- function(
     names <- gsub("SIGMA", "sigma", names)
     names <- gsub("Temp.", "temperature", names)
     d <- read.table(text = lines, skip = dataStart + 4, col.names = names, header = FALSE, encoding = encoding)
-    # Lon and lat are in an odd system, with e.g. 12.34 meaning 12deg+34minutes.
-    lon <- as.numeric(d$longitude[1])
+    # Store just the first longitude and latitude in the metadata. The
+    # format is that e.g. 1559.9413E means 15.0 degrees + 49.9413 minutes.
+    #
+    # Also, as discussed at https://github.com/dankelley/oce/issues/2227, 
+    # the test (local-only) suite had a problem with R 4.1.1 in the computation
+    # of longitude. This was because of a trailing 'E' in the test file.
+    # I think for previous versions of R, the as.numeric() call used on
+    # that text entry must have ignored the trailing 'E'.
+    lon1 <- d$longitude[1]
+    lonSign <- if (grepl("[eE]", lon1)) 1.0 else if (grepl("wW", lon1)) -1.0 else 1.0
+    lon <- as.numeric(gsub("[eEwW]", "", lon1))
     londeg <- floor(lon / 100)
     lonmin <- lon - londeg * 100
     longitude <- londeg + lonmin / 60.0
-    oceDebug(debug, "lon=", lon, " deg=", londeg, " min=", lonmin, " -> longitude=", longitude, "\n")
-    lat <- as.numeric(gsub("N", "", d$latitude[1]))
+    longitude <- lonSign * longitude
+    oceDebug(debug, "lon1=", lon1, ", lon=", lon, " deg=", londeg, " min=", lonmin, " -> longitude=", longitude, "\n")
+    lat1 <- d$latitude[1]
+    latSign <- if (grepl("[nN]", lat1)) 1.0 else if (grepl("eE", lat1)) -1.0 else 1.0
+    lat <- as.numeric(gsub("[nNsS]", "", lat1))
     latdeg <- floor(lat / 100)
     latmin <- lat - latdeg * 100
     latitude <- latdeg + latmin / 60.0
-    oceDebug(debug, "lat=", lat, " deg=", latdeg, " min=", latmin, " -> latitude=", latitude, "\n")
+    latitude <- latSign * latitude
+    oceDebug(debug, "lat1=", lat1, ", lat=", lat, " deg=", latdeg, " min=", latmin, " -> latitude=", latitude, "\n")
     res <- as.ctd(
         salinity = d$salinity, temperature = d$temperature, pressure = d$pressure,
         longitude = longitude, latitude = latitude

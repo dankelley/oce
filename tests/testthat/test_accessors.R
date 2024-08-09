@@ -4,10 +4,12 @@ library(oce)
 test_that("[[\"?\"]] is handled by all object classes", {
     # The object names was created by saving the output of `git grep setClass R`
     # and reformulating into R code.
-    objectNames <- c("adp", "adv", "amsr", "argo", "bremen", "cm", "coastline",
+    objectNames <- c(
+        "adp", "adv", "amsr", "argo", "bremen", "cm", "coastline",
         "ctd", "echosounder", "satellite", "g1sst", "gps", "ladp", "landsat",
         "lisst", "lobo", "met", "odf", "rsk", "satellite", "sealevel",
-        "section", "tidem", "topo", "windrose", "xbt")
+        "section", "tidem", "topo", "windrose", "xbt"
+    )
     for (objectName in objectNames) {
         o <- new(objectName)
         expect_equal(4, length(o[["?"]]))
@@ -17,10 +19,12 @@ test_that("[[\"?\"]] is handled by all object classes", {
 test_that("get/set/delete data", {
     data("ctd")
     S <- oceGetData(ctd, "salinity")
-    ctd2 <- oceSetData(ctd, name="fake", value=2*S,
-        unit=list(unit=expression(), scale=""),
-        originalName="FAKE")
-    expect_equal(2*S, ctd2[["fake"]])
+    ctd2 <- oceSetData(ctd,
+        name = "fake", value = 2 * S,
+        unit = list(unit = expression(), scale = ""),
+        originalName = "FAKE"
+    )
+    expect_equal(2 * S, ctd2[["fake"]])
     expect_equal(S, ctd@data$salinity)
     expect_equal(S, ctd2@data$salinity)
     ## deletion
@@ -31,9 +35,9 @@ test_that("get/set/delete data", {
 
 test_that("get/set/delete metadata", {
     data("ctd")
-    type <- oceGetMetadata(ctd, name="type")
+    type <- oceGetMetadata(ctd, name = "type")
     expect_equal(type, "SBE")
-    ctd2 <- oceSetMetadata(ctd, name="type", value="fake")
+    ctd2 <- oceSetMetadata(ctd, name = "type", value = "fake")
     expect_equal(oceGetMetadata(ctd2, "type"), "fake")
     expect_equal(ctd2[["metadata"]]$type, "fake")
     ctd3 <- oceDeleteMetadata(ctd2, "type")
@@ -54,31 +58,31 @@ test_that("retrieve units", {
     ## pre 20160430 expect_equal(ctd[["temperatureUnit"]], list(unit=expression(degree*C), scale="ITS-90"))
     ## pre 20160430 expect_equal(ctd[["temperature unit"]], expression(degree*C))
     ## pre 20160430 expect_equal(ctd[["temperature scale"]], "ITS-90")
-    expect_equal(ctd[["temperatureUnit"]], list(unit=expression(degree*C), scale="IPTS-68"))
-    expect_equal(ctd[["temperature unit"]], expression(degree*C))
+    expect_equal(ctd[["temperatureUnit"]], list(unit = expression(degree * C), scale = "IPTS-68"))
+    expect_equal(ctd[["temperature unit"]], expression(degree * C))
     expect_equal(ctd[["temperature scale"]], "IPTS-68")
-    expect_equal(ctd[["pressureUnit"]], list(unit=expression(dbar), scale=""))
+    expect_equal(ctd[["pressureUnit"]], list(unit = expression(dbar), scale = ""))
     expect_equal(ctd[["pressure unit"]], expression(dbar))
     expect_equal(ctd[["pressure scale"]], "")
 })
 
 test_that("alter units", {
     data("ctd")
-    ctd[["metadata"]]$units$salinity <- list(unit=expression(foo), scale="bar")
-    expect_equal(ctd[["salinityUnit"]], list(unit=expression(foo), scale="bar"))
+    ctd[["metadata"]]$units$salinity <- list(unit = expression(foo), scale = "bar")
+    expect_equal(ctd[["salinityUnit"]], list(unit = expression(foo), scale = "bar"))
 })
 
 
 test_that("three methods for specifying units", {
     data(ctd)
     freezing <- swTFreeze(ctd)
-    ctd <- oceSetData(ctd, "freezing", freezing, list(unit=expression(degree*C), scale="ITS-90"))
+    ctd <- oceSetData(ctd, "freezing", freezing, list(unit = expression(degree * C), scale = "ITS-90"))
     feet <- 3.28048 * swDepth(ctd)
     ctd <- oceSetData(ctd, "depthInFeet", feet, expression(feet))
-    expect_identical(ctd[["units"]]$depthInFeet, list(unit=expression(feet), scale=""))
+    expect_identical(ctd[["units"]]$depthInFeet, list(unit = expression(feet), scale = ""))
     fathoms <- feet / 6
     ctd <- oceSetData(ctd, "depthInFathoms", fathoms, "fathoms")
-    expect_identical(ctd[["units"]]$depthInFathoms, list(unit=expression(fathoms), scale=""))
+    expect_identical(ctd[["units"]]$depthInFathoms, list(unit = expression(fathoms), scale = ""))
 })
 
 test_that("can use original names", {
@@ -95,8 +99,10 @@ test_that("can use original names", {
 test_that("alter ctd profiles within a section", {
     data("section")
     section[["station", 1]][["S2"]] <- 2 * section[["station", 1]][["salinity"]]
-    expect_equal(section[["station", 1]][["S2"]],
-        2 * section[["station", 1]][["salinity"]])
+    expect_equal(
+        section[["station", 1]][["S2"]],
+        2 * section[["station", 1]][["salinity"]]
+    )
 })
 
 ## Tests with a funky file, from 1154 (we may need to chop these,
@@ -152,25 +158,34 @@ test_that("derived quantities handled properly (ctd)", {
     ctd[["S"]] <- ctd[["S"]] + 0.01 # alter S
     ## next values are just what I got from these data, i.e. they only
     ## form a consistency check, if the data or if swTheta() ever change.
-    expect_equal(head(swTheta(ctd, eos="unesco")),
-        c(14.2208818496, 14.2262540208, 14.2248015615,
-            14.2218758247, 14.2263218577, 14.2328135332))
+    expect_equal(
+        head(swTheta(ctd, eos = "unesco")),
+        c(
+            14.2208818496, 14.2262540208, 14.2248015615,
+            14.2218758247, 14.2263218577, 14.2328135332
+        )
+    )
     ## Try both EOSs; need loction for GSW
-    expect_equal(swTheta(ctd, eos="unesco"), swTheta(ctd[["salinity"]],
-            ctd[["temperature"]],
-            ctd[["pressure"]], eos="unesco"))
-    expect_equal(swTheta(ctd, eos="gsw"), swTheta(ctd[["salinity"]],
-            ctd[["temperature"]],
-            ctd[["pressure"]],
-            longitude=ctd[["longitude"]],
-            latitude=ctd[["latitude"]], eos="gsw"))
+    expect_equal(swTheta(ctd, eos = "unesco"), swTheta(ctd[["salinity"]],
+        ctd[["temperature"]],
+        ctd[["pressure"]],
+        eos = "unesco"
+    ))
+    expect_equal(swTheta(ctd, eos = "gsw"), swTheta(ctd[["salinity"]],
+        ctd[["temperature"]],
+        ctd[["pressure"]],
+        longitude = ctd[["longitude"]],
+        latitude = ctd[["latitude"]], eos = "gsw"
+    ))
 })
 
 test_that("accessor operations (adp)", {
     data(adp)
     v <- adp[["v"]]
-    expect_equal(v[1:5, 1, 1], c(-0.11955770778, -0.09925398341, 0.10203801933,
-        0.09613003081, 0.24394126236))
+    expect_equal(v[1:5, 1, 1], c(
+        -0.11955770778, -0.09925398341, 0.10203801933,
+        0.09613003081, 0.24394126236
+    ))
     expect_null(adp[["noSuchThing"]])
     adp[["somethingNew"]] <- 1:4
     expect_true("somethingNew" %in% names(adp[["data"]]))
@@ -179,7 +194,7 @@ test_that("accessor operations (adp)", {
 
 test_that("renaming items in the data slot", {
     data(ctd)
-    bad <- oceRenameData(ctd, "salinity", "saltiness", note="a bad idea!")
+    bad <- oceRenameData(ctd, "salinity", "saltiness", note = "a bad idea!")
     expect_error(plot(bad), "data slot lacks \"salinity\"")
 })
 

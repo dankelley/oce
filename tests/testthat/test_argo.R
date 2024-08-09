@@ -22,19 +22,35 @@ test_that("global attributes in metadata", {
 })
 
 test_that("[[,argo-method", {
-    options(oceEOS="gsw")
-    expect_equal(argo[["SA"]][1:2, 1:2],
-        structure(c(35.3509423279029, 35.3529478543978, 35.3600216239489,
-                35.3600133661509), .Dim=c(2L, 2L)))
-    expect_equal(argo[["CT"]][1:2, 1:2],
-        structure(c(9.69604608349391, 9.69651156306521, 9.58902309316286,
-                9.58644078639155), .Dim=c(2L, 2L)))
-    expect_equal(argo[["sigmaTheta"]][1:2, 1:2],
-        structure(c(27.1479134860076, 27.1493888071818, 27.172918709517,
-                27.173344472757), .Dim=c(2L, 2L)))
-    expect_equal(argo[["theta"]][1:2, 1:2],
-        structure(c(9.70945684069746, 9.70995897509861, 9.60251640507005,
-                9.59993195546977), .Dim=c(2L, 2L)))
+    options(oceEOS = "gsw")
+    expect_equal(
+        argo[["SA"]][1:2, 1:2],
+        structure(c(
+            35.3509423279029, 35.3529478543978, 35.3600216239489,
+            35.3600133661509
+        ), .Dim = c(2L, 2L))
+    )
+    expect_equal(
+        argo[["CT"]][1:2, 1:2],
+        structure(c(
+            9.69604608349391, 9.69651156306521, 9.58902309316286,
+            9.58644078639155
+        ), .Dim = c(2L, 2L))
+    )
+    expect_equal(
+        argo[["sigmaTheta"]][1:2, 1:2],
+        structure(c(
+            27.1479134860076, 27.1493888071818, 27.172918709517,
+            27.173344472757
+        ), .Dim = c(2L, 2L))
+    )
+    expect_equal(
+        argo[["theta"]][1:2, 1:2],
+        structure(c(
+            9.70945684069746, 9.70995897509861, 9.60251640507005,
+            9.59993195546977
+        ), .Dim = c(2L, 2L))
+    )
     # longitude/latitude expansion case 1: SA
     # https://github.com/dankelley/oce/issues/1911
     col <- 2
@@ -46,8 +62,8 @@ test_that("[[,argo-method", {
     expect_equal(argo[["SA"]][, col], SA)
     # Verify that if we use wrong longitude (say), the results change. This
     # helps to build confidence that we have decoded location correctly.
-    lon1 <- rep(argo[["longitude"]][1+col], length(SP))
-    lat1 <- rep(argo[["latitude"]][1+col], length(SP))
+    lon1 <- rep(argo[["longitude"]][1 + col], length(SP))
+    lat1 <- rep(argo[["latitude"]][1 + col], length(SP))
     SA1 <- swAbsoluteSalinity(SP, p, lon1, lat1)
     expect_false(identical(argo[["SA"]][, col], SA1))
     # longitude/latitude expansion case 1: Sstar
@@ -82,8 +98,7 @@ test_that("subset(argo, pressure < 500))", {
     }
 })
 
-if (requireNamespace("sf", quietly=TRUE)) {
-
+if (requireNamespace("sf", quietly = TRUE)) {
     test_that("subset(argo, within=(POLYGON))", {
         # Labrador Sea (this test will fail if data(argo) is changed)
         nlevel <- 56
@@ -92,9 +107,11 @@ if (requireNamespace("sf", quietly=TRUE)) {
         expect_equal(nold, nchar(argo[["direction"]]))
         expect_equal(c(nlevel, nold), dim(argo[["pressure"]]))
         expect_equal(nold, length(argo[["latitude"]]))
-        bdy <- list(x=c(-41.05788, -41.92521, -68.96441, -69.55673),
-            y=c(64.02579, 49.16223, 50.50927, 61.38379))
-        argoSubset <- subset(argo, within=bdy)
+        bdy <- list(
+            x = c(-41.05788, -41.92521, -68.96441, -69.55673),
+            y = c(64.02579, 49.16223, 50.50927, 61.38379)
+        )
+        argoSubset <- subset(argo, within = bdy)
         expect_equal(nnew, nchar(argoSubset[["direction"]]))
         expect_equal(c(nlevel, nnew), dim(argoSubset[["pressure"]]))
         expect_equal(nnew, length(argoSubset[["latitude"]]))
@@ -102,10 +119,10 @@ if (requireNamespace("sf", quietly=TRUE)) {
         expect_equal(c(nlevel, nnew), dim(argoSubset[["temperatureFlag"]]))
         N <- names(argo[["metadata"]])
         N <- c("direction", N[grep("QC$", N)])
-        for (item in N)
+        for (item in N) {
             expect_equal(nnew, nchar(argoSubset[[item]]))
-})
-
+        }
+    })
 }
 
 test_that("preferAdjusted() works on data", {
@@ -113,7 +130,7 @@ test_that("preferAdjusted() works on data", {
     expect_equal(a2[["salinity"]], argo@data$salinityAdjusted)
     expect_equal(a2[["temperature"]], argo@data$temperatureAdjusted)
     expect_equal(a2[["pressure"]], argo@data$pressureAdjusted)
-    a3 <- preferAdjusted(argo, which=c("salinity"))
+    a3 <- preferAdjusted(argo, which = c("salinity"))
     expect_equal(a3[["salinity"]], argo@data$salinityAdjusted)
     expect_equal(a3[["temperature"]], argo@data$temperature)
     expect_equal(a3[["pressure"]], argo@data$pressure)
@@ -124,7 +141,7 @@ test_that("preferAdjusted() works on flags", {
     expect_equal(a2[["salinityFlags"]], argo@data$flags$salinityAdjusted)
     expect_equal(a2[["temperatureFlags"]], argo@data$flags$temperatureAdjusted)
     expect_equal(a2[["pressureFlags"]], argo@data$flags$pressureAdjusted)
-    a3 <- preferAdjusted(argo, which=c("salinity"))
+    a3 <- preferAdjusted(argo, which = c("salinity"))
     expect_equal(a2[["salinityFlags"]], argo@data$flags$salinityAdjusted)
     expect_equal(a3[["temperatureFlags"]], argo@data$flags$temperature)
     expect_equal(a3[["pressureFlags"]], argo@data$flags$pressure)
@@ -135,7 +152,7 @@ test_that("preferAdjusted() works on units", {
     expect_equal(a2[["salinityUnits"]], argo@data$units$salinityAdjusted)
     expect_equal(a2[["temperatureUnits"]], argo@data$units$temperatureAdjusted)
     expect_equal(a2[["pressureUnits"]], argo@data$units$pressureAdjusted)
-    a3 <- preferAdjusted(argo, which=c("salinity"))
+    a3 <- preferAdjusted(argo, which = c("salinity"))
     expect_equal(a3[["salinityUnits"]], argo@data$units$salinityAdjusted)
     expect_equal(a3[["temperatureUnits"]], argo@data$units$temperature)
     expect_equal(a3[["pressureUnits"]], argo@data$units$pressure)
@@ -157,10 +174,10 @@ test_that("argo [[ handles SA and CT", {
     SP <- argo[["salinity"]]
     t <- argo[["temperature"]]
     p <- argo[["pressure"]]
-    lon <- rep(argo[["longitude"]], each=dim(SP)[1])
-    lat <- rep(argo[["latitude"]], each=dim(SP)[1])
-    expect_equal(SA, gsw_SA_from_SP(SP=SP, p=p, longitude=lon, latitude=lat))
-    expect_equal(CT, gsw_CT_from_t(SA=SA, t=t, p=p))
+    lon <- rep(argo[["longitude"]], each = dim(SP)[1])
+    lat <- rep(argo[["latitude"]], each = dim(SP)[1])
+    expect_equal(SA, gsw_SA_from_SP(SP = SP, p = p, longitude = lon, latitude = lat))
+    expect_equal(CT, gsw_CT_from_t(SA = SA, t = t, p = p))
 })
 
 test_that("argo name conversion", {
@@ -215,9 +232,9 @@ test_that("argo name conversion", {
     ## RPHASE_DOXY
     ## TPHASE_DOXY
 
-    a <- read.table(text=table, header=FALSE, stringsAsFactors=FALSE)
+    a <- read.table(text = table, header = FALSE, stringsAsFactors = FALSE)
     expect_equal(argoNames2oceNames(a$V1), a$V2)
-    expect_equal(argoNames2oceNames(paste(a$V1, "123", sep="")), paste(a$V2, "123", sep=""))
+    expect_equal(argoNames2oceNames(paste(a$V1, "123", sep = "")), paste(a$V2, "123", sep = ""))
 })
 
 test_that("argo time conversion", {
@@ -231,44 +248,49 @@ test_that("[[ handles both cycleNumber and cycle", {
 
 file <- "local_data/GL_PR_PF_5906438.nc"
 if (file.exists(file)) {
-    test_that("can read a Copernicus BGC file",
-        {
-            expect_silent(d <- read.argo.copernicus(file))
-            expect_equal(d[["id"]], "5906438")
-            expect_equal(d[["temperature"]][1, 1], 20.5530009762151)
-            expect_equal(d[["salinity"]][1, 1], 36.8180017487612)
-            expect_equal(d[["pressure"]][1, 1], 4.30000019073486)
-            expect_equal(dim(d[["pressure"]]), c(501, 68))
-        })
+    test_that("can read a Copernicus BGC file", {
+        expect_silent(d <- read.argo.copernicus(file))
+        expect_equal(d[["id"]], "5906438")
+        expect_equal(d[["temperature"]][1, 1], 20.5530009762151)
+        expect_equal(d[["salinity"]][1, 1], 36.8180017487612)
+        expect_equal(d[["pressure"]][1, 1], 4.30000019073486)
+        expect_equal(dim(d[["pressure"]]), c(501, 68))
+    })
 }
 
 file <- "local_data/argo/D4903224_012.nc"
 if (file.exists(file)) {
-    test_that("can get spiciness from 2-column argo file",
-        {
-            expect_silent(d <- read.argo(file))
-            spiciness0 <- d[["spiciness0"]]
-            expect_equal(c(1011, 2), dim(spiciness0))
-            expect_equal(head(spiciness0),
-                structure(c(6.17969497378797, 6.18055246198217,
-                        6.17894144748325, 6.17736722741175, 6.17343624448158,
-                        6.15970734970877, 6.18065183201523, 6.18109006131989,
-                        6.18108469023132, 6.18059622062317, 6.17726061670029,
-                        6.18102988626372), dim=c(6L, 2L)))
-        })
+    test_that("can get spiciness from 2-column argo file", {
+        expect_silent(d <- read.argo(file))
+        spiciness0 <- d[["spiciness0"]]
+        expect_equal(c(1011, 2), dim(spiciness0))
+        expect_equal(
+            head(spiciness0),
+            structure(c(
+                6.17969497378797, 6.18055246198217,
+                6.17894144748325, 6.17736722741175, 6.17343624448158,
+                6.15970734970877, 6.18065183201523, 6.18109006131989,
+                6.18108469023132, 6.18059622062317, 6.17726061670029,
+                6.18102988626372
+            ), dim = c(6L, 2L))
+        )
+    })
 }
 
 file <- "local_data/argo/D1901584_124.nc"
 if (file.exists(file)) {
-    test_that("can get spiciness from 1-column argo file",
-        {
-            expect_silent(d <- read.argo(file))
-            spiciness0 <- d[["spiciness0"]]
-            expect_equal(c(67, 1), dim(spiciness0))
-            # consistency check
-            expect_equal(head(spiciness0),
-                structure(c(7.05052334875785, 7.04906137175043,
-                        7.04942780641913, 7.04903685921474, 7.04831733400729,
-                        7.02504314496063), dim=c(6L, 1L)))
-        })
+    test_that("can get spiciness from 1-column argo file", {
+        expect_silent(d <- read.argo(file))
+        spiciness0 <- d[["spiciness0"]]
+        expect_equal(c(67, 1), dim(spiciness0))
+        # consistency check
+        expect_equal(
+            head(spiciness0),
+            structure(c(
+                7.05052334875785, 7.04906137175043,
+                7.04942780641913, 7.04903685921474, 7.04831733400729,
+                7.02504314496063
+            ), dim = c(6L, 1L))
+        )
+    })
 }
