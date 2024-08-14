@@ -3,10 +3,10 @@ library(oce)
 
 test_that("as.cm() works with vectors", {
     n <- 10
-    seconds <- seq(0, 100, length.out=n)
+    seconds <- seq(0, 100, length.out = n)
     t <- Sys.time() + seconds
-    u <- sin(2*pi*seconds) + rnorm(n)
-    v <- cos(2*pi*seconds) + rnorm(n)
+    u <- sin(2 * pi * seconds) + rnorm(n)
+    v <- cos(2 * pi * seconds) + rnorm(n)
     p <- 100 + rnorm(n)
     expect_silent(CM <- as.cm(t, u, v, p))
     expect_equal(n, length(CM[["u"]]))

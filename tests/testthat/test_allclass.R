@@ -22,21 +22,33 @@ test_that("oceDeleteData clears flags and units", {
     data(section)
     ctd <- section[["station", 1]]
     withoutSalinity <- oceDeleteData(ctd, "salinity")
-    expect_equal(names(ctd@metadata$flags),
-        c("salinity", "salinityBottle", "oxygen", "silicate", "nitrite", "NO2+NO3", "phosphate"))
-    expect_equal(names(ctd[["flags"]]),
-        c("salinity", "salinityBottle", "oxygen", "silicate", "nitrite", "NO2+NO3", "phosphate"))
+    expect_equal(
+        names(ctd@metadata$flags),
+        c("salinity", "salinityBottle", "oxygen", "silicate", "nitrite", "NO2+NO3", "phosphate")
+    )
+    expect_equal(
+        names(ctd[["flags"]]),
+        c("salinity", "salinityBottle", "oxygen", "silicate", "nitrite", "NO2+NO3", "phosphate")
+    )
 
-    expect_equal(names(ctd[["units"]]),
-        c("pressure", "temperature", "salinity", "salinityFlag",
+    expect_equal(
+        names(ctd[["units"]]),
+        c(
+            "pressure", "temperature", "salinity", "salinityFlag",
             "salinityBottle", "salinityBottleFlag", "oxygen",
             "oxygenFlag", "silicate", "silicateFlag", "nitrite",
             "nitriteFlag", "NO2+NO3", "NO2+NO3Flag", "phosphate",
-            "phosphateFlag"))
-    expect_equal(names(withoutSalinity[["units"]]),
-        c("pressure", "temperature", "salinityFlag",
+            "phosphateFlag"
+        )
+    )
+    expect_equal(
+        names(withoutSalinity[["units"]]),
+        c(
+            "pressure", "temperature", "salinityFlag",
             "salinityBottle", "salinityBottleFlag", "oxygen",
             "oxygenFlag", "silicate", "silicateFlag", "nitrite",
             "nitriteFlag", "NO2+NO3", "NO2+NO3Flag", "phosphate",
-            "phosphateFlag"))
+            "phosphateFlag"
+        )
+    )
 })

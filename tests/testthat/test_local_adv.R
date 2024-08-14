@@ -19,8 +19,7 @@ if (1 == length(list.files(path = ".", pattern = "local_data"))) {
     test_that("nortek vector with POSIXct from,to", {
         expect_silent(beam <- read.oce("local_data/adv_nortek_vector",
             from = as.POSIXct("2008-06-25 10:00:02", tz = "UTC"),
-            to = as.POSIXct("2008-06-25 10:00:08", tz = "UTC"
-            ),
+            to = as.POSIXct("2008-06-25 10:00:08", tz = "UTC"),
             latitude = 47.87943, longitude = -69.72533
         ))
     })

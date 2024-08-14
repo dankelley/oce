@@ -6,29 +6,39 @@ if (file.exists("local_data/ctd/2021-01-13_alongbay_skb11_cast116_5028.cnv")) {
     test_that("file with an odd Date format", {
         expect_warning(
             d <- read.ctd.sbe("local_data/ctd/2021-01-13_alongbay_skb11_cast116_5028.cnv"),
-            "cannot parse date in")
-})}
+            "cannot parse date in"
+        )
+    })
+}
 
 if (file.exists("local_data/ctd/2022_01-31_ab_s02_cast052_4141.cnv")) {
     test_that("file with an odd Date format", {
-        expect_warning(d <- read.ctd.sbe("local_data/ctd/2022_01-31_ab_s02_cast052_4141.cnv"),
-            "cannot parse date in")
-})}
+        expect_warning(
+            d <- read.ctd.sbe("local_data/ctd/2022_01-31_ab_s02_cast052_4141.cnv"),
+            "cannot parse date in"
+        )
+    })
+}
 
 
 if (file.exists("local_data/ctd/AZMP-HLX_2018-02-07_20h03m.cnv")) {
     test_that("Viking buoy", {
         v <- read.ctd.sbe("local_data/ctd/AZMP-HLX_2018-02-07_20h03m.cnv")
-        expect_equal(v[["date"]], as.POSIXct("2018-02-07 20:03:21", tz="UTC"))
-        expect_equal(v[["latitude"]], 44+41.48/60)
-        expect_equal(v[["longitude"]], -(63+38.41/60))
+        expect_equal(v[["date"]], as.POSIXct("2018-02-07 20:03:21", tz = "UTC"))
+        expect_equal(v[["latitude"]], 44 + 41.48 / 60)
+        expect_equal(v[["longitude"]], -(63 + 38.41 / 60))
         expect_equal(v[["station"]], "AZMP-HLX (Halifax)")
         expect_equal(v[["waterDepth"]], 70)
-        expect_equal(v[["institute"]],
-            "Bedford Institute of Oceanography, Dept. of Fisheries and Oceans")
-        expect_equal(v[["address"]],
-            "1 Challenger Dr, Dartmouth, NS B2Y 4A2, Canada")
-})}
+        expect_equal(
+            v[["institute"]],
+            "Bedford Institute of Oceanography, Dept. of Fisheries and Oceans"
+        )
+        expect_equal(
+            v[["address"]],
+            "1 Challenger Dr, Dartmouth, NS B2Y 4A2, Canada"
+        )
+    })
+}
 
 
 if (file.exists("local_data/ctd/itp99grd0000.dat")) {
@@ -36,7 +46,8 @@ if (file.exists("local_data/ctd/itp99grd0000.dat")) {
         itp <- read.ctd.itp("local_data/ctd/itp99grd0000.dat")
         expect_equal(itp[["latitude"]], 77.8840)
         expect_equal(itp[["longitude"]], 360 + (-145.0856))
-})}
+    })
+}
 
 if (file.exists("local_data/ctd/18HU2010014_00003_00001_ct1.csv")) {
     test_that("woce 1", {
@@ -44,7 +55,8 @@ if (file.exists("local_data/ctd/18HU2010014_00003_00001_ct1.csv")) {
         expect_equal(woce[["longitude"]], -52.5945)
         expect_equal(woce[["latitude"]], 47.5483)
         expect_equal(woce[["station"]], 3)
-})}
+    })
+}
 
 if (file.exists("local_data/ctd/example_ct1.csv")) {
     test_that("woce 2", {
@@ -53,11 +65,12 @@ if (file.exists("local_data/ctd/example_ct1.csv")) {
         expect_equal(woce[["longitude"]], -150.4812)
         expect_equal(woce[["station"]], 221)
         expect_equal(woce[["waterDepth"]], 3596)
-        expect_equal(woce[["pressureUnit"]], list(unit=expression(dbar), scale=""))
-        expect_equal(woce[["temperatureUnit"]], list(unit=expression(degree*C), scale="ITS-90"))
-        expect_equal(woce[["salinityUnit"]], list(unit=expression(), scale="PSS-78"))
-        expect_equal(woce[["oxygenUnit"]], list(unit=expression(mu*mol/kg), scale=""))
-})}
+        expect_equal(woce[["pressureUnit"]], list(unit = expression(dbar), scale = ""))
+        expect_equal(woce[["temperatureUnit"]], list(unit = expression(degree * C), scale = "ITS-90"))
+        expect_equal(woce[["salinityUnit"]], list(unit = expression(), scale = "PSS-78"))
+        expect_equal(woce[["oxygenUnit"]], list(unit = expression(mu * mol / kg), scale = ""))
+    })
+}
 
 # I dump files here sometimes, when I download new data that seem to provide
 # useful test cases.
@@ -73,19 +86,24 @@ if (dir.exists("local_data")) {
             "a22_00025_00001_ct1.csv",
             "a03_3_00001_ct1.csv",
             "a22_2003a_00001_00001_ct1.csv",
-            "18HU2010014_00003_00001_ct1.csv")
+            "18HU2010014_00003_00001_ct1.csv"
+        )
         for (file in files) {
             #> cat(file, "\n")
-            if (file == "18HU20130507_00235_00001_ct1.csv")
-                expect_warning(d <- read.oce(paste("local_data/ctd/", file, sep="")),
-                    "missingValue inferred as -999 from S and T minima")
-            else
-                d <- expect_silent(read.oce(paste("local_data/ctd", file, sep="/")))
+            if (file == "18HU20130507_00235_00001_ct1.csv") {
+                expect_warning(
+                    d <- read.oce(paste("local_data/ctd/", file, sep = "")),
+                    "missingValue inferred as -999 from S and T minima"
+                )
+            } else {
+                d <- expect_silent(read.oce(paste("local_data/ctd", file, sep = "/")))
+            }
             #> ## summarizing and plotting can depend on the data, so try both
             #> summary(d)
             #> plot(d)
         }
-})}
+    })
+}
 
 if (file.exists("local_data/ctd/CTD_98911_1P_1_DN.txt")) {
     test_that("a broken ODF file that has theta but no S", {
@@ -103,12 +121,13 @@ if (file.exists("local_data/ctd/CTD_98911_1P_1_DN.txt")) {
         # readers by making guesses for all of them?  (What formula
         # for 'theta' was even used in this case?)
         #
-        #20211121 expect_equal(length(d[["theta"]]), 127)
-        #20211121 expect_equal(head(d[['theta']]), c(0.0346, 0.1563, 0.2153, 0.1970, 0.1916, 0.2141))
+        # 20211121 expect_equal(length(d[["theta"]]), 127)
+        # 20211121 expect_equal(head(d[['theta']]), c(0.0346, 0.1563, 0.2153, 0.1970, 0.1916, 0.2141))
         expect_error(d[["theta"]], "the object's data slot lacks \"salinity\"")
-})}
+    })
+}
 
-if (1 == length(list.files(path=".", pattern="local_data"))) {
+if (1 == length(list.files(path = ".", pattern = "local_data"))) {
     test_that("autoconverts pressure in PSI to dbar", {
         # test creation of pressure [dbar] from pressure [PSI], using
         # the constructed file ctd_with_psi.cnv (in which the
@@ -118,16 +137,22 @@ if (1 == length(list.files(path=".", pattern="local_data"))) {
         expect_warning(
             expect_warning(
                 d1 <- read.oce("local_data/ctd/ctd.cnv"),
-                "this CNV file has temperature in the IPTS-68 scale"),
-            "1950, suggesting")
+                "this CNV file has temperature in the IPTS-68 scale"
+            ),
+            "1950, suggesting"
+        )
         expect_warning(
             expect_warning(
                 expect_warning(
                     d2 <- read.oce("local_data/ctd/ctd_with_psi.cnv"),
-                    "created 'pressure' from 'pressurePSI'"),
-                "this CNV file has temperature in the IPTS-68 scale"),
-            "1950, suggesting")
+                    "created 'pressure' from 'pressurePSI'"
+                ),
+                "this CNV file has temperature in the IPTS-68 scale"
+            ),
+            "1950, suggesting"
+        )
         # use 1e-5 to reflect the number of digits I was using in
         # creating and then cut/pasting the fake data
-        expect_equal(d1[["pressure"]], d2[["pressure"]], tolerance=1e-5)
-})}
+        expect_equal(d1[["pressure"]], d2[["pressure"]], tolerance = 1e-5)
+    })
+}

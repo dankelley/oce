@@ -3,14 +3,14 @@ library(oce)
 
 test_that("plotTS() handles differently EOSs correctly", {
     data(ctd)
-    options(oceEOS="unesco")
+    options(oceEOS = "unesco")
     expect_silent(plotTS(ctd))
-    expect_silent(plotTS(ctd, eos="unesco"))
-    expect_silent(plotTS(ctd, eos="gsw"))
-    options(oceEOS="gsw")
+    expect_silent(plotTS(ctd, eos = "unesco"))
+    expect_silent(plotTS(ctd, eos = "gsw"))
+    options(oceEOS = "gsw")
     expect_silent(plotTS(ctd))
-    expect_silent(plotTS(ctd, eos="unesco"))
-    expect_silent(plotTS(ctd, eos="gsw"))
+    expect_silent(plotTS(ctd, eos = "unesco"))
+    expect_silent(plotTS(ctd, eos = "gsw"))
 })
 
 
@@ -23,21 +23,23 @@ test_that("ctd subsetting and trimming", {
     # both scales.
     #
     # 1. SBE trimming method
-    pressure <- c(rep(4, 1000),
+    pressure <- c(
+        rep(4, 1000),
         seq(4, 0.5, length.out = 50),
-        seq(0.5, 100, length.out=1000),
+        seq(0.5, 100, length.out = 1000),
         rep(100, 100),
-        seq(100, 0, length.out=1000))
+        seq(100, 0, length.out = 1000)
+    )
     salinity <- 35 - pressure / 100
     temperature <- 10 + (100 - pressure) / 50
     d <- as.ctd(salinity, temperature, pressure)
     plotScan(d)
-    dt <- ctdTrim(d, method="sbe")
+    dt <- ctdTrim(d, method = "sbe")
     dt2 <- ctdTrim(d)
     #  2. trim by scan
     scanRange <- range(ctd[["scan"]])
     newScanRange <- c(scanRange[1] + 20, scanRange[2] - 20)
-    ctdTrimmed <- ctdTrim(ctd, "scan", parameters=newScanRange)
+    ctdTrimmed <- ctdTrim(ctd, "scan", parameters = newScanRange)
     # below are the data at the top of this trim spot
     # 150    149.000      6.198      6.148    11.7372    30.8882  0.000e+00
     # 151    150.000      6.437      6.384    11.6331    30.9301  0.000e+00
@@ -55,8 +57,8 @@ test_that("ctd subsetting and trimming", {
     # next is from a test for issue 669
     n <- length(ctd[["salinity"]])
     set.seed(669)
-    lon <- ctd[["longitude"]] + rnorm(n, sd=0.05)
-    lat <- ctd[["latitude"]] + rnorm(n, sd=0.05)
+    lon <- ctd[["longitude"]] + rnorm(n, sd = 0.05)
+    lat <- ctd[["latitude"]] + rnorm(n, sd = 0.05)
     ctdnew <- ctd
     # change from one-location object to multi-location one
     ctdnew@metadata$longitude <- NULL
@@ -64,7 +66,7 @@ test_that("ctd subsetting and trimming", {
     ctdnew@metadata$latitude <- NULL
     ctdnew@data$latitude <- lat
     ctdnewSubset <- subset(ctdnew, 200 <= scan & scan <= 300)
-    ctdnewTrim <- ctdTrim(ctdnew, method="scan", parameters = c(200, 300))
+    ctdnewTrim <- ctdTrim(ctdnew, method = "scan", parameters = c(200, 300))
     expect_equal(ctdnewSubset[["salinity"]], ctdnewTrim[["salinity"]])
     expect_equal(ctdnewSubset[["scan"]], ctdnewTrim[["scan"]])
     expect_equal(length(ctdnewSubset[["scan"]]), length(ctdnewSubset[["longitude"]]))
@@ -96,24 +98,26 @@ test_that("ctd subsetting and trimming", {
 # 32 "pts"
 # 33 "rhots"
 test_that("erroneous numeric 'which' is handled", {
-    expect_error(plot(ctd, which=999), "which=\"999\" cannot be handled")
+    expect_error(plot(ctd, which = 999), "which=\"999\" cannot be handled")
 })
 
 test_that("erroneous textual 'which' is handled", {
-    expect_error(plot(ctd, which="unhandled"), "which=\"unhandled\" cannot be handled")
+    expect_error(plot(ctd, which = "unhandled"), "which=\"unhandled\" cannot be handled")
 })
 
 test_that("numeric 'which' works", {
     for (w in c(5.1, 1:13, 15:17, 20:21, 30:33)) {
-        expect_silent(plot(ctd, which=w))
+        expect_silent(plot(ctd, which = w))
     }
 })
 
 test_that("character 'which' works", {
-    for (w in c("salinity+temperature", "density+N2", "TS", "text", "map",
-            "density+dpdt", "density+time", "index", "salinity", "temperature",
-            "density", "N2", "spice", "Rrho", "RrhoSF",
-            "conductivity", "CT", "SA", "Sts", "Tts", "pts", "rhots")) {
-        expect_silent(plot(ctd, which=w))
+    for (w in c(
+        "salinity+temperature", "density+N2", "TS", "text", "map",
+        "density+dpdt", "density+time", "index", "salinity", "temperature",
+        "density", "N2", "spice", "Rrho", "RrhoSF",
+        "conductivity", "CT", "SA", "Sts", "Tts", "pts", "rhots"
+    )) {
+        expect_silent(plot(ctd, which = w))
     }
 })

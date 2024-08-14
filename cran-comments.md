@@ -4,15 +4,18 @@ As in previous CRAN submissions, we request an exception to the 10-minute rule,
 on account of the package size (300+ functions, covering 60k lines of R, 6k
 lines of C/C++ and 1k line of Fortran).
 
-The NEWS.md file lists 29 changes made in the past 8 months, aimed at improving
-oce by removing bugs and adding functionality.
+The NEWS.md file lists 30 changes made since the last CRAN release, all aimed
+at improving oce by removing bugs and adding functionality.
 
 ## Local Tests
 
-R 4.4.0 on macOS Beta 15.0 Beta (24A5298h) revealed no ERRORs, no WARNINGs, and
-2 NOTEs, one about the author name and the other about the package size.
+R 4.4.1 on macOS Beta 15.0 Beta (24A5298h) revealed no ERRORs, no WARNINGs, and
+2 NOTEs, one about the author name and the other about the package size.  These
+tests included those in the CRAN test suite, along with other tests of datasets
+that are not provided with the package.
 
-The following local tests passed without problems.
+In addition to the test suite, the following local tests passed without
+problems.
 
 ```R
 devtools::spell_check()

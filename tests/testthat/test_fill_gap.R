@@ -32,7 +32,7 @@ test_that("fillGapMatrix on boundaries", {
     m[1, 2:3] <- NA
     mf <- fillGapMatrix(m)
     expect_equal(mf, m)
-    mf <- fillGapMatrix(m, fillgap=2)
+    mf <- fillGapMatrix(m, fillgap = 2)
     expect_equal(mf, m0)
 
     # j=1 side
@@ -44,7 +44,7 @@ test_that("fillGapMatrix on boundaries", {
     m[2:3, 1] <- NA
     mf <- fillGapMatrix(m)
     expect_equal(mf, m)
-    mf <- fillGapMatrix(m, fillgap=2)
+    mf <- fillGapMatrix(m, fillgap = 2)
     expect_equal(mf, m0)
 
     # i=ni side
@@ -52,15 +52,15 @@ test_that("fillGapMatrix on boundaries", {
     m[ni, 2] <- NA
     mf <- fillGapMatrix(m)
     expect_equal(mf, m0)
-    mf <- fillGapMatrix(m, fillgap=2)
+    mf <- fillGapMatrix(m, fillgap = 2)
     expect_equal(mf, m0)
     m <- m0
     m[ni, 2:3] <- NA
     mf <- fillGapMatrix(m)
     expect_equal(mf, m)
-    mf <- fillGapMatrix(m, fillgap=2)
+    mf <- fillGapMatrix(m, fillgap = 2)
     expect_equal(mf, m0)
-    mf <- fillGapMatrix(m, fillgap=2)
+    mf <- fillGapMatrix(m, fillgap = 2)
     expect_equal(mf, m0)
 
     # j=nj side
@@ -68,12 +68,12 @@ test_that("fillGapMatrix on boundaries", {
     m[2, nj] <- NA
     mf <- fillGapMatrix(m)
     expect_equal(mf, m0)
-    mf <- fillGapMatrix(m, fillgap=2)
+    mf <- fillGapMatrix(m, fillgap = 2)
     expect_equal(mf, m0)
     m <- m0
     m[2:3, nj] <- NA
     mf <- fillGapMatrix(m)
     expect_equal(mf, m)
-    mf <- fillGapMatrix(m, fillgap=2)
+    mf <- fillGapMatrix(m, fillgap = 2)
     expect_equal(mf, m0)
 })

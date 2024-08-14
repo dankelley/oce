@@ -22,6 +22,7 @@
 * Change `read.amsr()` to read start/end times plus other metadata (issue #2219).
 * Change `read.argo()` to handle non-UTF characters in metadata (issue #2206).
 * Change `read.ctd.sbe()` to name `specc` as `specificConductance` (issue #2211).
+* Change `read.ctd.ssda()` to handle hemisphere tags in location (issue #2227).
 * Change `read.met()` to return `data` slots that are lists (issue #2213).
 * Change `resizableLabel()` to document partial-match behaviour (issue #2197).
 * Change `resizableLabel()` to handle `item=`"N"` (issue #2197).
