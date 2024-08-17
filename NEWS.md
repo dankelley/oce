@@ -1,6 +1,6 @@
 # oce 1.8.4
 
-* TBA
+* Change `amsr[[` to make it handle `"metadata"` as a parameter (issue #2229).
 
 # oce 1.8.3 (ON CRAN)
 

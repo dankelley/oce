@@ -39,7 +39,7 @@ first use \code{x[["?"]]} to get a listing of the retrievable items. See
 \section{Details of the Specialized Method}{
 
 
-The \verb{[[[} method handles both old-format and new-format \linkS4class{amsr}
+The \code{[[} method handles both old-format and new-format \linkS4class{amsr}
 objects. Old-format objects are read by \code{\link[=read.amsr]{read.amsr()}}
 from from gzipped files holding data in raw format, from which
 \code{[[} computes numeric results with linear

@@ -164,7 +164,7 @@ setMethod(
 #'
 #' @section Details of the Specialized Method:
 #'
-#' The `[[[` method handles both old-format and new-format [amsr-class]
+#' The `[[` method handles both old-format and new-format [amsr-class]
 #' objects. Old-format objects are read by [read.amsr()]
 #' from from gzipped files holding data in raw format, from which
 #' `[[` computes numeric results with linear
@@ -240,8 +240,14 @@ setMethod(
             stop("Must name a amsr item to retrieve, e.g. '[[\"SST\"]]'", call. = FALSE)
         }
         i <- i[1] # drop extras if more than one given
+        #message("i='", i, "'")
         if (!is.character(i)) {
             stop("amsr item must be specified by name", call. = FALSE)
+        }
+        if (identical(i, "data")) {
+            return(x@data)
+        } else if (identical(i, "metadata")) {
+            return(x@metadata)
         }
         # The storage for the new (netcdf) format is much simpler than that
         # for the old format, since the latter required the use of scale factors
