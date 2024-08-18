@@ -240,7 +240,7 @@ setMethod(
             stop("Must name a amsr item to retrieve, e.g. '[[\"SST\"]]'", call. = FALSE)
         }
         i <- i[1] # drop extras if more than one given
-        #message("i='", i, "'")
+        # message("i='", i, "'")
         if (!is.character(i)) {
             stop("amsr item must be specified by name", call. = FALSE)
         }
@@ -465,9 +465,32 @@ setMethod(
         oceDebug(debug, "subset,amsr-method() START\n", sep = "", unindent = 1)
         res <- x
         subsetString <- paste(deparse(substitute(expr = subset, env = environment())), collapse = " ")
+        oceDebug(debug, "subsetString: '", subsetString, "'\n")
+        if (grepl("pass", subsetString)) {
+            oceDebug(debug, "subsetting by pass\n")
+            passIndex <- NULL
+            if (grepl("\"*ascending\"", subsetString)) {
+                passIndex <- 1L
+            } else if (grepl("\"*descending\"", subsetString)) {
+                passIndex <- 2L
+            } else {
+                stop("Can only subset by pass=\"ascending\" or pass=\"descending\"")
+            }
+            oceDebug(debug, "will take slice ", passIndex, " of 3D arrays\n")
+            for (name in names(x@data)) {
+                item <- x@data[[name]]
+                if (is.array(item)) {
+                    if (3L == length(dim(item))) {
+                        oceDebug(debug, "retaining slice ", passIndex, "of the 3D array ", name, "\n")
+                        res@data[[name]] <- item[, , passIndex]
+                    }
+                }
+            }
+            return(res)
+        }
         type <- amsrType(x)
-        if (length(grep("longitude", subsetString))) {
-            if (length(grep("latitude", subsetString))) {
+        if (grepl("longitude", subsetString)) {
+            if (grepl("latitude", subsetString)) {
                 stop("the subset must not contain both longitude and latitude. Call this twice, to combine these")
             }
             keep <- eval(
@@ -536,6 +559,11 @@ setMethod(
 #' if not provided, `SST` (or a variant thereof) is used; see the
 #' documentation for the [amsr-class] class for a list of bands.
 #'
+#' @param pass either NULL (the default), or character value that is either
+#' `"ascending"` or `"descending"`.  The value of `pass` is only examined
+#' for realtime data, which hold both ascending and descending passes in SST
+#' and related arrays.
+#'
 #' @param asp optional numerical value giving the aspect ratio for plot.  The
 #' default value, `NULL`, means to use an aspect ratio of 1 for world views,
 #' and a value computed from `ylim`, if the latter is specified in the
@@ -602,18 +630,38 @@ setMethod(
 setMethod(
     f = "plot",
     signature = signature("amsr"),
-    # FIXME: how to let it default on band??
+    # Note that x is the object, y is the item to plot.
     definition = function(x, y, asp = NULL,
                           breaks, col, colormap, zlim, zlab,
+                          pass = NULL,
                           # FIXME: how do the old-format categories map to new ones?  (They don't
                           # seem to.)  For now, the next argument is just for new-format.
                           missingColor,
                           debug = getOption("oceDebug"), ...) {
         dots <- list(...)
-        oceDebug(debug, "plot.amsr(..., y=c(", if (missing(y)) "(missing)" else y, ", ...) START\n", sep = "", unindent = 1)
+        oceDebug(debug, "plot.amsr(..., y=c(", if (missing(y)) "(missing)" else y,
+            ", ...) START\n",
+            sep = "", unindent = 1
+        )
+        # Check and decode pass
+        if (!is.null(pass) && length(pass) != 1L) {
+            stop(paste("pass, if non-NULL must be of length 1, but it is of length ", length(pass)))
+        }
+        oceDebug(debug, vectorShow(pass))
+        if (is.null(pass)) {
+            passIndex <- NULL
+        } else if (identical(pass, "ascending")) {
+            passIndex <- 1L
+        } else if (identical(pass, "descending")) {
+            passIndex <- 2L
+        } else {
+            stop("FIXME: handle pass=\"both\"")
+        }
+        if (!is.null(pass)) {
+            oceDebug(debug, "pass=\"", pass, "\" yielded passIndex=", passIndex, "\n", sep = "")
+        }
         zlimGiven <- !missing(zlim)
         type <- amsrType(x)
-        oceDebug(debug, "amsr type: ", type, "\n")
         if (missing(y)) {
             y <- "SST"
         }
@@ -635,6 +683,15 @@ setMethod(
             oceDebug(debug, "using supplied asp=", asp, "\n", sep = "")
         }
         z <- x[[y]]
+        zdim <- dim(z)
+        oceDebug(debug, vectorShow(zdim))
+        if (identical(3L, length(zdim))) {
+            if (is.null(passIndex)) {
+                stop("you must specify the 'pass' parameter, since the data array is 3D")
+            }
+            oceDebug(debug, "taking slice ", passIndex, " of the data\n", sep = "")
+            z <- z[, , passIndex]
+        }
         # Compute zrange for world data, or data narrowed to xlim and ylim.
         if (!is.null(xlim)) {
             if (!is.null(ylim)) {
@@ -696,9 +753,15 @@ setMethod(
         type <- amsrType(x)
         if (missing(missingColor)) {
             if (type == 1L) {
-                missingColor <- list(land = "papayaWhip", none = "lightGray", bad = "gray", rain = "plum", ice = "mediumVioletRed")
+                missingColor <- list(
+                    land = "papayaWhip", none = "lightGray",
+                    bad = "gray", rain = "plum", ice = "mediumVioletRed"
+                )
             } else if (type == 2L) {
-                missingColor <- list(coast = "gray", land = "papayaWhip", noObs = "lightGray", seaIce = "mediumVioletRed")
+                missingColor <- list(
+                    coast = "gray", land = "papayaWhip",
+                    noObs = "lightGray", seaIce = "mediumVioletRed"
+                )
             } else {
                 stop("unrecognized amsr type, ", type, " (only 1 and 2 are allowed)")
             }
@@ -751,9 +814,18 @@ setMethod(
             }
         } else if (type == 2L) {
             for (mask in c("coastMask", "landMask", "noObsMask", "seaIceMask")) {
-                oceDebug(debug, "adding color for ", mask, "\n")
-                image(lon, lat, x@data[[mask]][lonDecIndices, latDecIndices],
-                    col = c("transparent", missingColor[[gsub("Mask$", "", mask)]]), add = TRUE
+                oceDebug(debug, "type 2: adding color \"", missingColor[[gsub("Mask$", "", mask)]],
+                    "\" for ", mask, "\n",
+                    sep = ""
+                )
+                maskData <- x@data[[mask]]
+                if (3L == length(dim(maskData))) {
+                    maskData <- maskData[, , passIndex]
+                }
+                image(lon, lat, maskData[lonDecIndices, latDecIndices],
+                    col = c("transparent", missingColor[[gsub("Mask$", "", mask)]]),
+                    add = TRUE
+                    #asp = 1, add = !TRUE
                 )
             }
         } else {
@@ -809,10 +881,13 @@ setMethod(
 #' @param type character value indicating where to get the data.  This may be
 #' `"3day"` (the default), for a composite covering 3 days of observation, which
 #' removes most viewing-path and cloud blanks, `"daily"` for a daily reading,
-#' `"weekly"` for a composite covering a week, or `"monthly"` for a composite
-#' covering a month.  In the `"daily"` case, the data arrays are 3D, with the
-#' third dimension representing ascending and descending traces, but in all the
-#' other cases, the arrays are 2D.
+#' `"weekly"` for a composite covering a week, `"monthly"` for a composite
+#' covering a month, or `"rt"` for what seems to be realtime datasets (which
+#' seem to be restricted to the prior few days only).  Note that the `"rt"`
+#' files store `SST` and related variables in 3D arrays, as opposed to the
+#' 2D arrays used for the other file types.  This is because the ascending
+#' and descending passes are both available; to select a choice for
+#' plotting, use the `pass` parameter of [plot,amsr-method()].
 #'
 #' @template debugTemplate
 #'
@@ -831,12 +906,17 @@ setMethod(
 #' becoming
 #' `http://data.remss.com/amsr2/bmaps_v08/y2017/m01/f34_20170114v8.gz`
 #'
-#' On 26 July 2023, it was noticed that the server-url naming convention
+#' On 2023-07-26, it was noticed that the server-url naming convention
 #' had changed again, requiring not only the alteration of the default
 #' `server` value but also the addition of a new parameter named `type`.
-#' Worse yet -- much worse -- the file format is now changed from a gzipped
-#' format to a NetCDF format, and this will require a complete rewriting
+#' Worse yet the file format had evidently been changed from a gzipped
+#' format to a NetCDF format, which required a complete rewriting
 #' of [read.amsr()].
+#'
+#' On 2024-08-17, it was noticed that the server has a directory called `rt`
+#' which seems to hold realtime data for a few recent days (and a few other
+#' isolated 3-day sequences in the past two years). These files may be
+#' of use in analysis of current events.
 #'
 #' @return `download.amsr` returns a character value holding the full pathname
 #' of the downloaded file.
@@ -860,8 +940,8 @@ download.amsr <- function(
     server = "https://data.remss.com/amsr2/ocean/L3/v08.2", type = "3day",
     debug = 0) {
     oceDebug(debug, "download.amsr(type=\"", type, "\", ...) START\n", sep = "", unindent = 1)
-    if (!type %in% c("3day", "daily", "weekly", "monthly")) {
-        stop("type=\"", type, "\" not permitted; try \"3day\", \"daily\", \"weekly\" or \"monthly\"")
+    if (!type %in% c("3day", "daily", "weekly", "monthly", "rt")) {
+        stop("type=\"", type, "\" not permitted; try \"3day\", \"daily\", \"weekly\", \"monthly\" or \"rt\"")
     }
     # If year, month, day not given, default to 3 days ago.
     today <- as.POSIXlt(Sys.Date())
@@ -881,7 +961,7 @@ download.amsr <- function(
             }
             year <- as.integer(year)
             month <- as.integer(month)
-            if (type %in% c("3day", "daily")) {
+            if (type %in% c("3day", "daily", "rt")) {
                 if (missing(day)) {
                     stop("day must be provided for type of '3day' or 'daily'")
                 }
@@ -902,7 +982,7 @@ download.amsr <- function(
             day <- focus$mday
             oceDebug(debug, "defaulting to year=", year, ", month=", month, " and day=", day, "\n", sep = "")
         } else {
-            oceDebug(debug, "user-supplied year=", year, ", month=", month, " and day=", day, "\n", sep = "")
+            oceDebug(debug, "A. user-supplied year=", year, ", month=", month, " and day=", day, "\n", sep = "")
         }
         url <- sprintf(
             "%s/%s/%d/RSS_AMSR2_ocean_L3_%s_%04d-%02d-%02d_v08.2.nc",
@@ -951,12 +1031,30 @@ download.amsr <- function(
             }
             oceDebug(debug, "defaulting to year=", year, ", month=", month, "\n", sep = "")
         } else {
-            oceDebug(debug, "user-supplied year=", year, ", month=", month, "\n", sep = "")
+            oceDebug(debug, "B. user-supplied year=", year, ", month=", month, "\n", sep = "")
         }
         url <- sprintf(
             "%s/%s/RSS_AMSR2_ocean_L3_%s_%04d-%02d_v08.2.nc",
             server, type, type, year, month
         )
+    } else if (type %in% c("rt")) {
+        # https://data.remss.com/amsr2/ocean/L3/v08.2/daily/rt/RSS_AMSR2_ocean_L3_daily_2024-08-17_v08.2-rt.nc
+        if (usingDefaultTime) {
+            focus <- as.POSIXlt(Sys.Date())
+            year <- 1900L + focus$year
+            month <- 1L + focus$mon
+            day <- focus$mday
+            oceDebug(debug, "defaulting to year=", year, ", month=", month, " and day=", day, "\n", sep = "")
+        } else {
+            oceDebug(debug, "C. user-supplied year=", year, ", month=", month, " and day=", day, "\n", sep = "")
+        }
+        # cat(vectorShow(server))
+        # message("?#https://data.remss.com/amsr2/ocean/L3/v08.2/daily/rt/RSS_AMSR2_ocean_L3_daily_2024-08-17_v08.2-rt.nc")
+        url <- sprintf(
+            "%s/daily/rt/RSS_AMSR2_ocean_L3_daily_%04d-%02d-%02d_v08.2-rt.nc",
+            server, year, month, day
+        )
+        # cat("  ", url, "\n", sep="")
     } else {
         # check again (but should not be able to get here)
         stop("type=\"", type, "\" not permitted; try \"3day\", \"daily\", \"weekly\" or \"monthly\"")
@@ -1316,20 +1414,23 @@ setMethod(
         # have guessed that the coastMask would be identical also, but
         # that's not the case; perhaps clouds are being flagged as
         # coast data.
-        landOK <- !object@data$landMask
-        coastOK <- !object@data$coastMask
-        noObsOK <- !object@data$noObsMask
-        seaIceOK <- !object@data$seaIceMask
+        noObsMaskIsFALSE <- !object@data$noObsMask
+        landMaskIsFALSE <- !object@data$landMask
+        coastMaskIsFALSE <- !object@data$coastMask
+        seaIceMaskIsTRUE <- object@data$seaIceMask
         for (dot in dots) {
-            landOK <- landOK | !dot@data$landMask
-            coastOK <- coastOK | !dot@data$coastMask
-            noObsOK <- noObsOK | !dot@data$noObsMask
-            seaIceOK <- seaIceOK | !dot@data$seaIceMask
+            noObsMaskIsFALSE <- noObsMaskIsFALSE | !dot@data$noObsMask
+            landMaskIsFALSE <- landMaskIsFALSE | !dot@data$landMask
+            coastMaskIsFALSE <- coastMaskIsFALSE | !dot@data$coastMask
+            # seaIceMaskIsFALSE <- !dot@data$noObsMask & (seaIceMaskIsFALSE | !dot@data$seaIceMask)
+            # was ice never observed in *any* image?
+            # seaIceMaskIsFALSE <- seaIceMaskIsFALSE | !(!dot@data$noObsMask & dot@data$seaIceMask)
+            seaIceMaskIsTRUE <- seaIceMaskIsTRUE | dot@data$seaIceMask
         }
-        res@data$landMask <- !landOK
-        res@data$coastMask <- !coastOK
-        res@data$noObsMask <- !noObsOK
-        res@data$seaIceMask <- !seaIceOK
+        res@data$noObsMask <- !noObsMaskIsFALSE
+        res@data$landMask <- !landMaskIsFALSE
+        res@data$coastMask <- !coastMaskIsFALSE
+        res@data$seaIceMask <- seaIceMaskIsTRUE
         # construct filename to indicate what the constituents were
         res@metadata$filename <- filenames
         res

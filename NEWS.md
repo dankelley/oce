@@ -1,6 +1,9 @@
 # oce 1.8.4
 
 * Change `amsr[[` to make it handle `"metadata"` as a parameter (issue #2229).
+* Change `download.amsr()` to make it handle realtime data files (issue #2231).
+* Change `read.amsr()` to make it handle realtime data files (issue #2230).
+* Change `subset,amsr-method` to make it handle `"pass"` as a parameter.
 
 # oce 1.8.3 (ON CRAN)
 
@@ -16,7 +19,7 @@
 * Change `mapImage()` to handle a user-provided gridding function (issue
   #2199).
 * Change `mapImage()` to add the `gridCoarseness` parameter (issue #2199).
-* Change `oceMagic()` to close netcdf files after checking them (issue #2209).
+* Change `oceMagic()` to close NetCDF files after checking them (issue #2209).
 * Change `plot.amsr()` to add the `zlab` parameter (issue #2220).
 * Change `plot.argo()` to handle `which="sigma0 profile"` (issue #2184).
 * Change `plot.sealevel()` to add the `grid` parameter (issue #2204).
@@ -233,7 +236,7 @@
 * Add `oceAxis()`.
 * Add `preferAdjusted()` for `argo-class` data.
 * Add `read.ctd.odv()`.
-* Add `snakeToCamel()` to convert variable names in e.g. Argo netcdf files.
+* Add `snakeToCamel()` to convert variable names in e.g. Argo NetCDF files.
 * Add `timeToArgoJuld()`.
 * Change `drawPalette()` default colour palette to `oce.colorsViridis()`.
 * Change `imagep()` default colour palette to `oce.colorsViridis()`.
@@ -464,7 +467,7 @@
 * `runlm()` added
 * `mapScalebar()` added
 * `subset.topo()` added
-* `read.topo()` now handles GEBCO netcdf files
+* `read.topo()` now handles GEBCO NetCDF files
 * `decimate()` now handles topo objects
 * reverse oce.colorsGebco colours for water
 * `drawIsopycnals()` and `plotTS()`: improve isopycnal labels
