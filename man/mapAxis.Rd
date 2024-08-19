@@ -14,6 +14,7 @@ mapAxis(
   pos = NA,
   outer = FALSE,
   font = NA,
+  las = c(0, 0),
   lty = "solid",
   lwd = 1,
   lwd.ticks = lwd,
@@ -62,6 +63,10 @@ on axes.  The choices are:
 \item{outer}{parameter passed to \code{\link[=axis]{axis()}}.}
 
 \item{font}{axis font, passed to \code{\link[=axis]{axis()}}.}
+
+\item{las}{two-element axis label orientation, passed to \code{\link[=axis]{axis()}}. The first
+value is for the horizontal axis, and the second is for the vertical axis.
+See \code{\link[=par]{par()}} for the meanings of the permitted values, namely 0, 1, 2 and 3.}
 
 \item{lty}{axis line type, passed to \code{\link[=axis]{axis()}}.}
 

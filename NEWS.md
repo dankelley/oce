@@ -1,5 +1,6 @@
 # oce 1.8.4
 
+* Change `mapPlot()` to make it handle `las` as a parameter (issue #1707).
 * Change `amsr[[` to make it handle `"metadata"` as a parameter (issue #2229).
 * Change `download.amsr()` to make it handle realtime data files (issue #2231).
 * Change `read.amsr()` to make it handle realtime data files (issue #2230).

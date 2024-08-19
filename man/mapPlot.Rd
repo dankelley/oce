@@ -22,6 +22,7 @@ mapPlot(
   cex,
   cex.axis = 1,
   mgp = c(0, 0.5, 0),
+  las = c(0, 0),
   drawBox = TRUE,
   showHemi = TRUE,
   polarCircle = 0,
@@ -121,6 +122,10 @@ used if \code{type="p"} or any other value that yields symbols.}
 
 \item{mgp}{three-element numerical vector describing axis-label
 placement, passed to \code{\link[=mapAxis]{mapAxis()}}.}
+
+\item{las}{two-element axis label orientation, passed to \code{\link[=axis]{axis()}}. The first
+value is for the horizontal axis, and the second is for the vertical axis.
+See \code{\link[=par]{par()}} for the meanings of the permitted values, namely 0, 1, 2 and 3.}
 
 \item{drawBox}{logical value indicating whether to draw a box around the plot.
 This is helpful for many projections at sub-global scale.}
@@ -472,8 +477,6 @@ data(coastlineWorld)
 # at the top of the document entitled "A Guide to NSIDC's Polar Stereographic
 # Projection" at https://nsidc.org/data/user-resources/help-center, with the
 # box indicating the region of the NSIDC grid.
-library(oce)
-data(coastlineWorld)
 projection <- sf::st_crs("EPSG:3413")
 cat(projection$proj4string, "\n") # see the projection details
 par(mar = c(2, 2, 1, 1)) # tighten margins

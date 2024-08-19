@@ -514,6 +514,10 @@ badFillFix2 <- function(x, y, xorig, yorig) {
 #'
 #' @param lty axis line type, passed to [axis()].
 #'
+#' @param las two-element axis label orientation, passed to [axis()]. The first
+#' value is for the horizontal axis, and the second is for the vertical axis.
+#' See [par()] for the meanings of the permitted values, namely 0, 1, 2 and 3.
+#'
 #' @param lwd axis line width, passed to [axis()]).
 #'
 #' @param lwd.ticks tick line width, passed to [axis()].
@@ -568,7 +572,7 @@ badFillFix2 <- function(x, y, xorig, yorig) {
 mapAxis <- function(
     side = 1:2, longitude = TRUE, latitude = TRUE,
     axisStyle = 1, tick = TRUE, line = NA, pos = NA, outer = FALSE, font = NA,
-    lty = "solid", lwd = 1, lwd.ticks = lwd, col = NULL, col.ticks = NULL,
+    las = c(0, 0), lty = "solid", lwd = 1, lwd.ticks = lwd, col = NULL, col.ticks = NULL,
     hadj = NA, padj = NA, tcl = -0.3, cex.axis = 1, mgp = c(0, 0.5, 0), debug = getOption("oceDebug")) {
     if ("none" == .Projection()$type) {
         stop("must create a map first, with mapPlot()\n")
@@ -585,6 +589,9 @@ mapAxis <- function(
     }
     if (!(axisStyle %in% 1:5)) {
         stop("invalid axis style ", paste(axisStyle, collapse = ","), "; must be 1, 2, 3, 4 or 5")
+    }
+    if (length(las) != 2L) {
+        stop("las must be a two-element integer vector")
     }
     boxLonLat <- usrLonLat()
     axis <- .axis()
@@ -647,7 +654,7 @@ mapAxis <- function(
             if (!inherits(tfcn, "try-error")) {
                 at <- tfcn(longitude)
                 if (any(is.finite(at))) {
-                    axis(side = 1, at = at, label = formatLonLat(longitude, "longitude", axisStyle = axisStyle))
+                    axis(side = 1, at = at, label = formatLonLat(longitude, "longitude", axisStyle = axisStyle), las = las[1])
                 }
             }
         }
@@ -669,7 +676,7 @@ mapAxis <- function(
             if (!inherits(tfcn, "try-error")) {
                 at <- tfcn(latitude)
                 if (any(is.finite(at))) {
-                    axis(side = 2, at = at, label = formatLonLat(latitude, "latitude", axisStyle = axisStyle), line = line)
+                    axis(side = 2, at = at, label = formatLonLat(latitude, "latitude", axisStyle = axisStyle), las = las[2], line = line)
                 }
             }
         }
@@ -1810,6 +1817,10 @@ mapLongitudeLatitudeXY <- function(longitude, latitude) {
 #' @param mgp three-element numerical vector describing axis-label
 #' placement, passed to [mapAxis()].
 #'
+#' @param las two-element axis label orientation, passed to [axis()]. The first
+#' value is for the horizontal axis, and the second is for the vertical axis.
+#' See [par()] for the meanings of the permitted values, namely 0, 1, 2 and 3.
+#'
 #' @param drawBox logical value indicating whether to draw a box around the plot.
 #' This is helpful for many projections at sub-global scale.
 #'
@@ -1881,8 +1892,6 @@ mapLongitudeLatitudeXY <- function(longitude, latitude) {
 #' # at the top of the document entitled "A Guide to NSIDC's Polar Stereographic
 #' # Projection" at https://nsidc.org/data/user-resources/help-center, with the
 #' # box indicating the region of the NSIDC grid.
-#' library(oce)
-#' data(coastlineWorld)
 #' projection <- sf::st_crs("EPSG:3413")
 #' cat(projection$proj4string, "\n") # see the projection details
 #' par(mar = c(2, 2, 1, 1)) # tighten margins
@@ -2013,7 +2022,7 @@ mapPlot <- function(
     geographical = 0,
     bg, fill, border = NULL, col = NULL,
     clip = TRUE, type = "polygon", axes = TRUE, axisStyle = 1,
-    cex, cex.axis = 1, mgp = c(0, 0.5, 0), drawBox = TRUE, showHemi = TRUE,
+    cex, cex.axis = 1, mgp = c(0, 0.5, 0), las = c(0, 0), drawBox = TRUE, showHemi = TRUE,
     polarCircle = 0, lonlabels = TRUE, latlabels = TRUE,
     projection = "+proj=moll", tissot = FALSE, trim = TRUE,
     debug = getOption("oceDebug"), ...) {
@@ -2037,6 +2046,9 @@ mapPlot <- function(
     geographical <- round(geographical)
     if (geographical < 0 || geographical > 4) {
         stop("argument geographical must be an integer between 0 to 4, inclusive")
+    }
+    if (length(las) != 2L) {
+        stop("las must be a two-element integer vector")
     }
     # Note the deprecation of sp::CRS() values.  I do not plan to permit values
     # from sf::st_crs() because I can't find documentation of the fields of those
@@ -2545,7 +2557,7 @@ mapPlot <- function(
                             if (is.logical(lonlabels) && !lonlabels) {
                                 axis(side = 1, at = axisLabels1$at[!skip], labels = FALSE, mgp = mgp)
                             } else {
-                                axis(side = 1, at = axisLabels1$at[!skip], labels = axisLabels1$value[!skip], mgp = mgp)
+                                axis(side = 1, at = axisLabels1$at[!skip], labels = axisLabels1$value[!skip], las = las[1], mgp = mgp)
                             }
                         }
                     }
@@ -2565,7 +2577,7 @@ mapPlot <- function(
                             if (is.logical(latlabels) && !latlabels) {
                                 axis(side = 2, at = axisLabels2$at[!skip], labels = FALSE, mgp = mgp)
                             } else {
-                                axis(side = 2, at = axisLabels2$at[!skip], labels = axisLabels2$value[!skip], mgp = mgp)
+                                axis(side = 2, at = axisLabels2$at[!skip], labels = axisLabels2$value[!skip], las = las[2], mgp = mgp)
                             }
                         }
                     }
