@@ -146,7 +146,7 @@ setMethod(
                     dataNames <- c(dataNames, "q")
                 }
                 # message(vectorShow(dataNames)) # https://github.com/dankelley/oce/issues/2087
-            } else {
+            } else { # not ad2cd object
                 threes <- matrix(nrow = ndata, ncol = 3)
                 for (i in seq_len(ndata)) {
                     # 2023-06-19 wrap in try() because one of the R-CMD check machines does
@@ -271,6 +271,22 @@ setMethod(
                     # browser()
                     # colnames(threes) <- c(colnames(threes), "OriginalName")
                 }
+                for (row in seq_len(nrow(threes))) {
+                    if (inherits(object@data[[row]], "POSIXt")) {
+                        #message("BEFORE at row=", row)
+                        #print(threes[[row,1]])
+                        #print(threes[[row,2]])
+                        #print(threes[[row,3]])
+                        #print(numberAsPOSIXct(threes[[row,1]]))
+                        threes[[row, 1L]] <- numberAsPOSIXct(threes[[row, 1L]])
+                        threes[[row, 2L]] <- numberAsPOSIXct(threes[[row, 2L]])
+                        threes[[row, 3L]] <- numberAsPOSIXct(threes[[row, 3L]])
+                        #message("AFTER")
+                        #print(threes[[row,1]])
+                        #print(threes[[row,2]])
+                        #print(threes[[row,3]])
+                    }
+                }
                 # message("threes step 6:");print(threes)
                 # if ("time" %in% dataNames) {
                 #    timeRow <- which("time" == dataNames)
@@ -279,14 +295,15 @@ setMethod(
                 #    threes[[timeRow, 3L]] <- format(numberAsPOSIXct(threes[timeRow, 3L]))
                 # }
                 # Remove time (see https://github.com/dankelley/oce/issues/2198)
-                timeRow <- grep("[ ]*time$", rownames(threes))
-                if (length(timeRow) > 0L) {
-                    threes <- threes[-timeRow, ]
-                }
+                # However (change 2024-08-22) permit e.g. elapsed_time for CTD data
+                # <2024-08-22>   timeRow <- grep("^time$", rownames(threes))
+                # <2024-08-22>   if (length(timeRow) > 0L) {
+                # <2024-08-22>       threes <- threes[-timeRow, ]
+                # <2024-08-22>   }
                 owidth <- options("width")
                 options(width = 150) # make wide to avoid line breaks
                 # browser()
-                threes <- as.data.frame(threes)
+                #threes <- as.data.frame(threes)
                 # message("threes step 5:");print(threes)
                 print(threes, digits = 5)
                 options(width = owidth$width)
