@@ -956,7 +956,7 @@ setMethod(
 #' If the `salinity` argument is an object of [argo-class], then that
 #' object is dismantled and reassembled as a [ctd-class] object in ways that
 #' are mostly straightforward, although the handling of time depends
-#' on the information in the original netcdf data file that was used
+#' on the information in the original NetCDF data file that was used
 #' by [read.argo()] to create the [argo-class] object.
 #'
 #' All Argo data files contain an item called `juld` from which the profile

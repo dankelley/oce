@@ -37,7 +37,7 @@ Retrieve or compute depth below the surface, i.e. a positive number within
 the water column.  If the first parameter is an oce object that has an
 element named \code{"depth"} in its \code{data} slot, then return that value.
 Otherwise, compute depth from a formula that includes pressure and latitude,
-as explained in \sQuote{Details}.
+as explained in \dQuote{Details}.
 }
 \details{
 For the calculated case, the method depends on the value of \code{eos} parameter.

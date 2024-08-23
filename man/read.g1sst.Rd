@@ -7,7 +7,7 @@
 read.g1sst(file, encoding = NA)
 }
 \arguments{
-\item{file}{character value containing the name of a netcdf file containing G1SST data.}
+\item{file}{character value containing the name of a NetCDF file containing G1SST data.}
 
 \item{encoding}{ignored.}
 }
@@ -15,7 +15,7 @@ read.g1sst(file, encoding = NA)
 A \linkS4class{g1sst} object.
 }
 \description{
-Read a G1SST file in the netcdf format provided by the ERDDAP server
+Read a G1SST file in the NetCDF format provided by the ERDDAP server
 (see reference 1).
 }
 \details{

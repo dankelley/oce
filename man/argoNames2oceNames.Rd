@@ -124,6 +124,12 @@ was called \code{VRSpH}.
 }
 }
 \seealso{
+Other functions that convert variable names to the oce convention: 
+\code{\link{ODFNames2oceNames}()},
+\code{\link{bodcNames2oceNames}()},
+\code{\link{metNames2oceNames}()},
+\code{\link{woceNames2oceNames}()}
+
 Other things related to argo data: 
 \code{\link{[[,argo-method}},
 \code{\link{[[<-,argo-method}},
@@ -141,4 +147,5 @@ Other things related to argo data:
 \author{
 Dan Kelley, with help from Anna Victor
 }
+\concept{functions that convert variable names to the oce convention}
 \concept{things related to argo data}

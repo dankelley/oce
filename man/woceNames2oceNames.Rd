@@ -73,9 +73,16 @@ Other functions that interpret variable names and units from headers:
 \code{\link{unitFromString}()},
 \code{\link{unitFromStringRsk}()},
 \code{\link{woceUnit2oceUnit}()}
+
+Other functions that convert variable names to the oce convention: 
+\code{\link{ODFNames2oceNames}()},
+\code{\link{argoNames2oceNames}()},
+\code{\link{bodcNames2oceNames}()},
+\code{\link{metNames2oceNames}()}
 }
 \author{
 Dan Kelley
 }
+\concept{functions that convert variable names to the oce convention}
 \concept{functions that interpret variable names and units from headers}
 \concept{things related to ctd data}

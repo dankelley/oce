@@ -4,14 +4,23 @@
 \alias{read.netcdf}
 \title{Read a NetCDF File}
 \usage{
-read.netcdf(file, ..., encoding = NA, debug = getOption("oceDebug"))
+read.netcdf(
+  file,
+  ...,
+  encoding = NA,
+  renamer = NULL,
+  debug = getOption("oceDebug")
+)
 }
 \arguments{
-\item{file}{the name of a file}
+\item{file}{character value specifying the name of a NetCDF file.}
 
 \item{...}{ignored}
 
 \item{encoding}{ignored.}
+
+\item{renamer}{function used to rename variables that are read from the file,
+or NULL (which is the default) to avoid such renaming.  See \dQuote{Details}.}
 
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
@@ -25,22 +34,40 @@ by specifying higher \code{debug} values.}
 An \linkS4class{oce} object.
 }
 \description{
-Read a netcdf file, trying to interpret its contents sensibly.
+Read a NetCDF file, trying to interpret its contents sensibly.
 }
 \details{
 It is important to note that this is a preliminary version of
-this function, and much about it may change without notice.
-Indeed, it may be removed entirely.
+this function, and much about it may change without notice,
+perhaps until the summer of 2025.
 
-Below are some features that may be changed.
-\enumerate{
-\item The names of data items are not changed from those in the netcdf
-file on the assumption that this will offer the least surprise to
-the user.
-\item An attempt is made to find some common metadata from global
-attributes in the netcdf file. These attributes include
+By default, the names of the data variables are not changed
+from those in the data file.  This means that the user
+has to be aware of the meanings of the names. Specifying
+a function for the \code{renamer} parameter provides a way to
+translate the data names, whilst retaining the original
+names. For example, setting \code{renamer=bodcNames2oceNames}
+will tell \code{read.netcdf()} to use \code{\link[=bodcNames2oceNames]{bodcNames2oceNames()}}
+to translate at least some of the names in the NERC/BODC
+vocabulary (Reference 1) to standard oce names. The
+documentation for \code{\link[=bodcNames2oceNames]{bodcNames2oceNames()}} provides more detail
+on this, including a suggestion for adding user extensions.
+
+An attempt is made to find some common metadata from global
+attributes in the NetCDF file. These attributes include
 \code{Longitude}, \code{Latitude}, \code{Ship} and \code{Cruise}.
 Before they are stored in the metadata, they are converted to
 lower case, since that is the oce convention.
 }
+\references{
+\enumerate{
+\item Data variable vocabulary used by NERC/BODC.
+\url{http://vocab.nerc.ac.uk/collection/P01/current/}
+\item CIOOS Atlantic ERDDAP server entry for Bedford Institute measurements in
+the waters of Maritime Canada.
+\url{https://cioosatlantic.ca/erddap/files/bio_maritimes_region_ecosystem_survey_ctd/al}
+}
+}
+\author{
+Dan Kelley
 }

@@ -703,7 +703,7 @@ mapAxis <- function(
 #' Importantly, the `longitude` system must match that of the
 #' [mapPlot()] call that made the underlying plot. If not, the
 #' contours can have spurious lines that run across the plot. See
-#' \sQuote{Dealing with longitude conventions} for a method
+#' \dQuote{Dealing with longitude conventions} for a method
 #' of handling conflicting longitude conventions between [mapPlot()]
 #' and [mapContour()].
 #'

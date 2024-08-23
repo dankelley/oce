@@ -52,7 +52,7 @@ setClass("argo", contains = "oce")
 #' data(coastlineWorld)
 #' plot(argo, which = "trajectory")
 #'
-#' @source The netcdf file used by [read.argo()] to create this [argo-class]
+#' @source The NetCDF file used by [read.argo()] to create this [argo-class]
 #' object was downloaded using FTP to
 #' \code{ftp.ifremer.fr/ifremer/argo/dac/bodc/6900388/6900388_prof.nc}
 #' on 2020 June 24.
@@ -560,6 +560,8 @@ getData <- function(file, name, quiet = FALSE) {
 #' `http://www.argodatamgt.org/content/download/27444/187206/file/argo-parameters-list-core-and-b.xlsx`
 #'
 #' @author Dan Kelley, with help from Anna Victor
+#'
+#' @family functions that convert variable names to the oce convention
 #'
 #' @family things related to argo data
 argoNames2oceNames <- function(names, ignore.case = TRUE) {
@@ -1096,7 +1098,7 @@ argoDecodeFlags <- function(f) # local function
 #'
 #' *1. Variable renaming.*
 #'
-#' The names of several data parameters stored within the netCDF file
+#' The names of several data parameters stored within the NetCDF file
 #' are altered to fit the oce context. For example, `PRES` becomes `pressure`,
 #' matching the name of this variable in other oce data types.
 #' The original names are reported by `summary,argo-method`, and
@@ -1104,10 +1106,10 @@ argoDecodeFlags <- function(f) # local function
 #' the renaming should not be too inconvenient to Argo experts who
 #' are new to oce.
 #'
-#' Argo netcdf files employ a `"SNAKE_CASE"` naming scheme (sometimes
+#' Argo NetCDF files employ a `"SNAKE_CASE"` naming scheme (sometimes
 #' using lower case) that is inconsistent with the `"camelCase"` scheme
 #' used in oce. Since argo objects are just a small part of oce, a decision
-#' was made to rename argo items. For example, `"CYCLE_NUMBER"` in the netcdf file
+#' was made to rename argo items. For example, `"CYCLE_NUMBER"` in the NetCDF file
 #' becomes `"cycleNumber"` in the oce object returned by `read.argo`.
 #' (Note that `[[,argo-method` also accepts `"cycle"` for this item.)
 #' The conversion for objects in the `data` slot often also involves
@@ -1127,12 +1129,12 @@ argoDecodeFlags <- function(f) # local function
 #'
 #' *2. Metadata.*
 #'
-#' Several of the netCDF global attributes are also renamed before
+#' Several of the NetCDF global attributes are also renamed before
 #' placement in the `metadata` slot of the return value.  These include
 #' `conventions`, `featureType`, `history`, `institution`,
 #' `nParameters`, `nProfiles`,  `references`, `source`, `title`,
 #' and `userManualVersion`.
-#' These names are derived from those in the netcdf
+#' These names are derived from those in the NetCDF
 #' file, and mainly follow the pattern explained in the
 #' \dQuote{Variable renaming convention} section.
 #'
@@ -1156,14 +1158,14 @@ argoDecodeFlags <- function(f) # local function
 #' `PRES_ERROR`. The same pattern works for other profile data. The variables
 #' are stored with names created as explained in the
 #' \dQuote{Variable renaming convention} section below. Note that
-#' flags, which are stored variables ending in `"_QC"` in the netcdf
+#' flags, which are stored variables ending in `"_QC"` in the NetCDF
 #' file, are stored in the `flags` item within the `metadata` slot
 #' of the returned object; thus, for example,
 #' `PRES_QC` is stored as `pressure` in `flags`.
 #'
 #' *4. How time is handled.*
 #'
-#' The netcdf files for profile data store time in an item named `juld`,
+#' The NetCDF files for profile data store time in an item named `juld`,
 #' which holds the overall profile time, in what the Argo documentation
 #' calls Julian days, with respect to a reference time that is also stored
 #' in the file.  Based on this information, a [POSIXct] value named `time`
@@ -1770,7 +1772,7 @@ read.argo <- function(file, encoding = NA, debug = getOption("oceDebug"), proces
         }
         oceDebug(debug - 1, "  Remaining ", length(varNames), "are: =", paste(varNames, collapse = " "), "\n")
         n <- paste(item, maybeLC("_QC", lc), sep = "")
-        oceDebug(debug - 2, "  about to try to get '", n, "' from netcdf file\n", sep = "")
+        oceDebug(debug - 2, "  about to try to get '", n, "' from NetCDF file\n", sep = "")
         d <- getData(file, maybeLC(n, lc), quiet = TRUE)
         oceDebug(debug - 2, "  ... got it\n", sep = "")
         varNames <- varNamesOmit(varNames, n)
@@ -2480,7 +2482,7 @@ setMethod("handleFlags",
 #' condition is rare for core variables (salinity, temperature and
 #' pressure) but is annoyingly common for biogeochemical variables; see
 #' e.g. Section 2.2.5 of Reference 1 for a discussion of
-#' the conditions under which Argo netcdf files contain
+#' the conditions under which Argo NetCDF files contain
 #' adjusted values. Setting `fallback=FALSE` means that adjusted
 #' values (if they exist) will always be returned, even if they
 #' are a useless collection of `NA` values.
@@ -2492,7 +2494,7 @@ setMethod("handleFlags",
 #' It should be noted that, regardless of whether `preferAdjusted`
 #' has been used, the analyst can always access either unadjusted
 #' or adjusted data directly, using the original variable names stored
-#' in the source netcdf file.  For example, `argo[["PSAL"]]`
+#' in the source NetCDF file.  For example, `argo[["PSAL"]]`
 #' yields unadjusted salinity values, and
 #' `argo[["PSAL_ADJUSTED"]]` yields adjusted values (if they exist, or
 #' `NULL` if they do not).

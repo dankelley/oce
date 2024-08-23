@@ -228,6 +228,12 @@ Other functions that interpret variable names and units from headers:
 \code{\link{woceNames2oceNames}()},
 \code{\link{woceUnit2oceUnit}()}
 
+Other functions that convert variable names to the oce convention: 
+\code{\link{argoNames2oceNames}()},
+\code{\link{bodcNames2oceNames}()},
+\code{\link{metNames2oceNames}()},
+\code{\link{woceNames2oceNames}()}
+
 Other things related to odf data: 
 \code{\link{CTD_BCD2014666_008_1_DN.ODF.gz}},
 \code{\link{ODF2oce}()},
@@ -244,5 +250,6 @@ Other things related to odf data:
 \author{
 Dan Kelley
 }
+\concept{functions that convert variable names to the oce convention}
 \concept{functions that interpret variable names and units from headers}
 \concept{things related to odf data}

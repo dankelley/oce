@@ -99,7 +99,7 @@ setMethod(
 #' @title Read a g1sst File
 #'
 #' @description
-#' Read a G1SST file in the netcdf format provided by the ERDDAP server
+#' Read a G1SST file in the NetCDF format provided by the ERDDAP server
 #' (see reference 1).
 #'
 #' @details
@@ -111,7 +111,7 @@ setMethod(
 #' consulting reference 2 (clicking and unclicking the radio button to
 #' show just the data) that the field mostly derives from simulation.
 #'
-#' @param file character value containing the name of a netcdf file containing G1SST data.
+#' @param file character value containing the name of a NetCDF file containing G1SST data.
 #'
 #' @template encodingIgnoredTemplate
 #'

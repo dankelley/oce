@@ -215,6 +215,7 @@
 #' and this was the reference version used in coding `oce`.
 #'
 #' @family things related to ctd data
+#'
 #' @family functions that interpret variable names and units from headers
 cnvName2oceName <- function(h, columns = NULL, debug = getOption("oceDebug")) {
     oceDebug(debug, "cnvName2oceName() BEGIN\n", unindent = 1)

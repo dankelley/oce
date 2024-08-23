@@ -1520,7 +1520,7 @@ swThermalConductivity <- function(salinity, temperature = NULL, pressure = NULL)
 #' the water column.  If the first parameter is an oce object that has an
 #' element named `"depth"` in its `data` slot, then return that value.
 #' Otherwise, compute depth from a formula that includes pressure and latitude,
-#' as explained in \sQuote{Details}.
+#' as explained in \dQuote{Details}.
 #'
 #' For the calculated case, the method depends on the value of `eos` parameter.
 #' If this is `"unesco"`, then depth is calculated from pressure using Saunders

@@ -9,10 +9,13 @@ as.unit(u, default = list(unit = expression(), scale = ""))
 \arguments{
 \item{u}{A character string indicating a unit. Case is ignored, so that e.g.
 \code{"dbar"} and \code{"DBAR"} yield equal results.  The following are recognized:
-c(\code{"m-1"}, \code{"dbar"}, \code{"decibar"}, \code{"degree"}, \code{"degree_Celcius"},
+c(\code{"m-1"}, \code{"dbar"}, \code{"decibar"}, \code{"degree"}, \code{"degree_Celsius"},
+\code{"degree celsius"},
 \code{"degree_north"}, \code{"degree_east"}, \code{"ipts-68"},
-\code{"its-90"}, \code{"m/s^1"}, \code{"m/s^2"}, \code{"pss-78"},
-\code{"umol/kg"}, \code{"micromole/kg"})}
+\code{"its-90"},
+\code{"kg/m^3"},
+\code{"m/s^1"}, \code{"m/s^2"}, \code{"ml/L"}, \code{"pss-78"},
+\code{"umol/kg"}, \code{"micromole/kg"}, \code{"S/m"}, \code{"volts"})}
 
 \item{default}{A default to be used for the return value, if \code{u}
 is not a recognized string.}
@@ -23,8 +26,8 @@ and \code{scale}, a string.
 }
 \description{
 This converts strings to unit objects.  Only a few strings are recognized,
-because most oce functions have specialized unit vocabularies and so
-have little need of this function.
+because many oce functions have specialized unit vocabularies and so
+have little need of \code{as.unit()}.
 }
 \examples{
 as.unit("DBAR")

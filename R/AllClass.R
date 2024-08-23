@@ -273,38 +273,13 @@ setMethod(
                 }
                 for (row in seq_len(nrow(threes))) {
                     if (inherits(object@data[[row]], "POSIXt")) {
-                        #message("BEFORE at row=", row)
-                        #print(threes[[row,1]])
-                        #print(threes[[row,2]])
-                        #print(threes[[row,3]])
-                        #print(numberAsPOSIXct(threes[[row,1]]))
                         threes[[row, 1L]] <- numberAsPOSIXct(threes[[row, 1L]])
                         threes[[row, 2L]] <- numberAsPOSIXct(threes[[row, 2L]])
                         threes[[row, 3L]] <- numberAsPOSIXct(threes[[row, 3L]])
-                        #message("AFTER")
-                        #print(threes[[row,1]])
-                        #print(threes[[row,2]])
-                        #print(threes[[row,3]])
                     }
                 }
-                # message("threes step 6:");print(threes)
-                # if ("time" %in% dataNames) {
-                #    timeRow <- which("time" == dataNames)
-                #    threes[[timeRow, 1L]] <- format(numberAsPOSIXct(threes[timeRow, 1L]))
-                #    threes[[timeRow, 2L]] <- format(numberAsPOSIXct(threes[timeRow, 2L]))
-                #    threes[[timeRow, 3L]] <- format(numberAsPOSIXct(threes[timeRow, 3L]))
-                # }
-                # Remove time (see https://github.com/dankelley/oce/issues/2198)
-                # However (change 2024-08-22) permit e.g. elapsed_time for CTD data
-                # <2024-08-22>   timeRow <- grep("^time$", rownames(threes))
-                # <2024-08-22>   if (length(timeRow) > 0L) {
-                # <2024-08-22>       threes <- threes[-timeRow, ]
-                # <2024-08-22>   }
                 owidth <- options("width")
-                options(width = 150) # make wide to avoid line breaks
-                # browser()
-                #threes <- as.data.frame(threes)
-                # message("threes step 5:");print(threes)
+                options(width = 500) # make super-wide to avoid line breaks
                 print(threes, digits = 5)
                 options(width = owidth$width)
                 cat("\n")

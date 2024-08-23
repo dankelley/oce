@@ -502,6 +502,10 @@ download.met <- function(
 #' @return
 #' Vector of strings for the decoded names. If an unknown scheme is provided,
 #' this will just be `names`.
+#'
+#' @family functions that convert variable names to the oce convention
+#'
+#' @author Dan Kelley
 metNames2oceNames <- function(names, scheme) {
     res <- names
     if (!missing(scheme)) {

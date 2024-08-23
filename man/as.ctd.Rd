@@ -148,7 +148,7 @@ certain object types given as the first parameter.
 If the \code{salinity} argument is an object of \linkS4class{argo}, then that
 object is dismantled and reassembled as a \linkS4class{ctd} object in ways that
 are mostly straightforward, although the handling of time depends
-on the information in the original netcdf data file that was used
+on the information in the original NetCDF data file that was used
 by \code{\link[=read.argo]{read.argo()}} to create the \linkS4class{argo} object.
 
 All Argo data files contain an item called \code{juld} from which the profile
