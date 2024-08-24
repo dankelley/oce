@@ -84,6 +84,7 @@
 #' elements, and moving some of them to the `metadata` slot.
 #'
 #' @examples
+#'\dontrun{
 #' # Download the file.  (This may break if the server changes.)
 #' file <- tempfile(fileext = ".nc")
 #' url <- paste0(
@@ -152,6 +153,7 @@
 #' # Finally, remove the downloaded file, according to CRAN
 #' # policy regarding downloads in documentation examples.
 #' file.remove(file)
+#'}
 #'
 #' @references
 #' 1. Data variable vocabulary used by NERC/BODC.

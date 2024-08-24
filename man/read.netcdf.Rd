@@ -91,6 +91,7 @@ of which are renamed in lower-case and stored in the \code{metadata} slot,
 in accordance with oce convention.
 }
 \examples{
+\dontrun{
 # Download the file.  (This may break if the server changes.)
 file <- tempfile(fileext = ".nc")
 url <- paste0(
@@ -159,6 +160,7 @@ if (require("jsonlite")) {
 # Finally, remove the downloaded file, according to CRAN
 # policy regarding downloads in documentation examples.
 file.remove(file)
+}
 
 }
 \references{
