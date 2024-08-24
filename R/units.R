@@ -78,8 +78,7 @@ as.unit <- function(u, default = list(unit = expression(), scale = "")) {
     } else if (grepl("umol/kg", u)) {
         list(unit = expression(mu * mol / kg), scale = "")
     } else if (grepl("uEinsteins/s/m\\^2", uorig)) {
-    #} else if (grepl("uUinsteins/s/m^2", uorig)) {
-        list(unit = expression(mu * Einstein/s/kg), scale = "")
+        list(unit = expression(mu * Einstein/s/m^2), scale = "")
     } else if (grepl("micromole/kg", u)) {
         list(unit = expression(mu * mol / kg), scale = "")
     } else if (grepl("S/m", uorig)) {
