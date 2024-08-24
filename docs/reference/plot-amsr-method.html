@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">oce</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.8-3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.8-4</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -59,6 +59,7 @@
 <span>  <span class="va">colormap</span>,</span>
 <span>  <span class="va">zlim</span>,</span>
 <span>  <span class="va">zlab</span>,</span>
+<span>  pass <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">missingColor</span>,</span>
 <span>  debug <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceDebug"</span><span class="op">)</span>,</span>
 <span>  <span class="va">...</span></span>
@@ -120,6 +121,13 @@ is not given.</p></dd>
 <dd><p>optional character value that is shown in the top-right
 margin of the plot. If not given, this defaults to the name of the
 plotted variable.</p></dd>
+
+
+<dt id="arg-pass">pass<a class="anchor" aria-label="anchor" href="#arg-pass"></a></dt>
+<dd><p>either NULL (the default), or character value that is either
+<code>"ascending"</code> or <code>"descending"</code>.  The value of <code>pass</code> is only examined
+for realtime data, which hold both ascending and descending passes in SST
+and related arrays.</p></dd>
 
 
 <dt id="arg-missingcolor">missingColor<a class="anchor" aria-label="anchor" href="#arg-missingcolor"></a></dt>

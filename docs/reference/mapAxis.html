@@ -15,7 +15,7 @@ with the defaults used by mapPlot()."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">oce</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.8-3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.8-4</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -71,6 +71,7 @@ with the defaults used by <code><a href="mapPlot.html">mapPlot()</a></code>.</p>
 <span>  pos <span class="op">=</span> <span class="cn">NA</span>,</span>
 <span>  outer <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  font <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  las <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span><span class="op">)</span>,</span>
 <span>  lty <span class="op">=</span> <span class="st">"solid"</span>,</span>
 <span>  lwd <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  lwd.ticks <span class="op">=</span> <span class="va">lwd</span>,</span>
@@ -140,6 +141,12 @@ on axes.  The choices are:
 
 <dt id="arg-font">font<a class="anchor" aria-label="anchor" href="#arg-font"></a></dt>
 <dd><p>axis font, passed to <code><a href="https://rdrr.io/r/graphics/axis.html" class="external-link">axis()</a></code>.</p></dd>
+
+
+<dt id="arg-las">las<a class="anchor" aria-label="anchor" href="#arg-las"></a></dt>
+<dd><p>two-element axis label orientation, passed to <code><a href="https://rdrr.io/r/graphics/axis.html" class="external-link">axis()</a></code>. The first
+value is for the horizontal axis, and the second is for the vertical axis.
+See <code><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par()</a></code> for the meanings of the permitted values, namely 0, 1, 2 and 3.</p></dd>
 
 
 <dt id="arg-lty">lty<a class="anchor" aria-label="anchor" href="#arg-lty"></a></dt>

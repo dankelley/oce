@@ -11,7 +11,7 @@ in the Argo documentation (see references 2 and 3)."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">oce</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.8-3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.8-4</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -105,17 +105,17 @@ file and stored in the <code>metadata</code> slot, with the exception of
 in the return value are somewhat complex, although the following notes
 might be helpful to readers seeking to learn more.</p>
 <p><em>1. Variable renaming.</em></p>
-<p>The names of several data parameters stored within the netCDF file
+<p>The names of several data parameters stored within the NetCDF file
 are altered to fit the oce context. For example, <code>PRES</code> becomes <code>pressure</code>,
 matching the name of this variable in other oce data types.
 The original names are reported by <code>summary,argo-method</code>, and
 data may be extracted with <code>[[,argo-method</code> using those names, so
 the renaming should not be too inconvenient to Argo experts who
 are new to oce.</p>
-<p>Argo netcdf files employ a <code>"SNAKE_CASE"</code> naming scheme (sometimes
+<p>Argo NetCDF files employ a <code>"SNAKE_CASE"</code> naming scheme (sometimes
 using lower case) that is inconsistent with the <code>"camelCase"</code> scheme
 used in oce. Since argo objects are just a small part of oce, a decision
-was made to rename argo items. For example, <code>"CYCLE_NUMBER"</code> in the netcdf file
+was made to rename argo items. For example, <code>"CYCLE_NUMBER"</code> in the NetCDF file
 becomes <code>"cycleNumber"</code> in the oce object returned by <code>read.argo</code>.
 (Note that <code>[[,argo-method</code> also accepts <code>"cycle"</code> for this item.)
 The conversion for objects in the <code>data</code> slot often also involves
@@ -133,12 +133,12 @@ in reverse may be easier than simply guessing at what names oce has chosen.
 (Note that prior to 2020 June 24, some metadata items were stored in
 <code>"SNAKE_CASE"</code>.)</p>
 <p><em>2. Metadata.</em></p>
-<p>Several of the netCDF global attributes are also renamed before
+<p>Several of the NetCDF global attributes are also renamed before
 placement in the <code>metadata</code> slot of the return value.  These include
 <code>conventions</code>, <code>featureType</code>, <code>history</code>, <code>institution</code>,
 <code>nParameters</code>, <code>nProfiles</code>,  <code>references</code>, <code>source</code>, <code>title</code>,
 and <code>userManualVersion</code>.
-These names are derived from those in the netcdf
+These names are derived from those in the NetCDF
 file, and mainly follow the pattern explained in the
 “Variable renaming convention” section.</p>
 <p>For profile data (as indicated by the NetCDF global attribute
@@ -159,12 +159,12 @@ then <code>PRES</code> (pressure) data are sought in the file, along with
 <code>PRES_ERROR</code>. The same pattern works for other profile data. The variables
 are stored with names created as explained in the
 “Variable renaming convention” section below. Note that
-flags, which are stored variables ending in <code>"_QC"</code> in the netcdf
+flags, which are stored variables ending in <code>"_QC"</code> in the NetCDF
 file, are stored in the <code>flags</code> item within the <code>metadata</code> slot
 of the returned object; thus, for example,
 <code>PRES_QC</code> is stored as <code>pressure</code> in <code>flags</code>.</p>
 <p><em>4. How time is handled.</em></p>
-<p>The netcdf files for profile data store time in an item named <code>juld</code>,
+<p>The NetCDF files for profile data store time in an item named <code>juld</code>,
 which holds the overall profile time, in what the Argo documentation
 calls Julian days, with respect to a reference time that is also stored
 in the file.  Based on this information, a <a href="https://rdrr.io/r/base/DateTimeClasses.html" class="external-link">POSIXct</a> value named <code>time</code>

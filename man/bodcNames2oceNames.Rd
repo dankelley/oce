@@ -13,8 +13,9 @@ that use the NERC/BODC convention.}
 \item{unduplicate}{logical value indicating whether to rename
 repeated entries, so that e.g. if \verb{"temperature} occurs
 twice, the second instance will be changed to \code{"temperature2"}.
-It makes sense to set \code{unduplicate} to FALSE if you plan are
-extending the function (see Example 2).}
+Set this to FALSE if you plan are calling  \code{bodcNames2oceNames}
+in a renaming function of your own, and call \code{\link[=unduplicateNames]{unduplicateNames()}}
+at the end of your function; see Example 2.}
 }
 \value{
 \code{bodcNames2oceNames} returns a vector of the same length as its
@@ -24,13 +25,14 @@ used, with the first name that maps to temperature being set
 to \code{temperature}, the next to \code{temperature2}, etc.
 }
 \description{
-Translate names in the NERC/BODC vocabulary to oce names. This handles only
-a tiny subset of the huge number of names in the NERC/BODC vocabulary
-(see Reference 1). To see the names that the function handles currently,
-type \code{bodcNames2oceNames} in an R session. To extend \code{bodcNames2oceNames}
-to handle additional names, try the method suggested in Example 2.
+Translate names in the NERC/BODC vocabulary to oce names, primarily so that
+\code{\link[=read.netcdf]{read.netcdf()}} can produce more easily interpreted results. Please note
+that \code{bodcNames2oceNames()} handles only a tiny subset of the huge number of
+names in the NERC/BODC vocabulary (see Reference 1). To see the names that
+the function handles currently, type \code{bodcNames2oceNames} in an R session.
 }
 \examples{
+
 # Example 1: typical usage
 bodcNames2oceNames(c("PSALST01", "TEMPP901", "PRESPR01"))
 

@@ -1,10 +1,13 @@
 # oce 1.8.4
 
+* Add `bodcNames2oceNames()` to rename NERC/BODC variables (issue #2235).
 * Change `mapPlot()` to make it handle `las` as a parameter (issue #1707).
 * Change `amsr[[` to make it handle `"metadata"` as a parameter (issue #2229).
 * Change `download.amsr()` to make it handle realtime data files (issue #2231).
 * Change `read.amsr()` to make it handle realtime data files (issue #2230).
 * Change `subset,amsr-method` to make it handle `"pass"` as a parameter.
+* Change `read.netcdf()` to give a way to rename data (issue #2235).
+* Change `read.netcdf()` docs to show how to handle flags (issue #2236).
 
 # oce 1.8.3 (ON CRAN)
 

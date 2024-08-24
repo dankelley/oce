@@ -25,7 +25,7 @@ discussed in &amp;#8220;Details&amp;#8221;.'></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">oce</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.8-3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.8-4</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -148,7 +148,7 @@ data items that have <code>NA</code> for all the adjusted values.  This
 condition is rare for core variables (salinity, temperature and
 pressure) but is annoyingly common for biogeochemical variables; see
 e.g. Section 2.2.5 of Reference 1 for a discussion of
-the conditions under which Argo netcdf files contain
+the conditions under which Argo NetCDF files contain
 adjusted values. Setting <code>fallback=FALSE</code> means that adjusted
 values (if they exist) will always be returned, even if they
 are a useless collection of <code>NA</code> values.</p>
@@ -158,7 +158,7 @@ the object was created by <code>preferAdjusted</code>.</p>
 <p>It should be noted that, regardless of whether <code>preferAdjusted</code>
 has been used, the analyst can always access either unadjusted
 or adjusted data directly, using the original variable names stored
-in the source netcdf file.  For example, <code>argo[["PSAL"]]</code>
+in the source NetCDF file.  For example, <code>argo[["PSAL"]]</code>
 yields unadjusted salinity values, and
 <code>argo[["PSAL_ADJUSTED"]]</code> yields adjusted values (if they exist, or
 <code>NULL</code> if they do not).

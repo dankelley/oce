@@ -23,7 +23,7 @@ server from which files are downloaded.'></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">oce</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.8-3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.8-4</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -127,10 +127,13 @@ are to be acquired. See “History”.</p></dd>
 <dd><p>character value indicating where to get the data.  This may be
 <code>"3day"</code> (the default), for a composite covering 3 days of observation, which
 removes most viewing-path and cloud blanks, <code>"daily"</code> for a daily reading,
-<code>"weekly"</code> for a composite covering a week, or <code>"monthly"</code> for a composite
-covering a month.  In the <code>"daily"</code> case, the data arrays are 3D, with the
-third dimension representing ascending and descending traces, but in all the
-other cases, the arrays are 2D.</p></dd>
+<code>"weekly"</code> for a composite covering a week, <code>"monthly"</code> for a composite
+covering a month, or <code>"rt"</code> for what seems to be realtime datasets (which
+seem to be restricted to the prior few days only).  Note that the <code>"rt"</code>
+files store <code>SST</code> and related variables in 3D arrays, as opposed to the
+2D arrays used for the other file types.  This is because the ascending
+and descending passes are both available; to select a choice for
+plotting, use the <code>pass</code> parameter of <code><a href="plot-amsr-method.html">plot,amsr-method()</a></code>.</p></dd>
 
 
 <dt id="arg-debug">debug<a class="anchor" aria-label="anchor" href="#arg-debug"></a></dt>
@@ -164,12 +167,16 @@ had changed, e.g.
 <code>http://data.remss.com/amsr2/bmaps_v07.2/y2017/m01/f34_20170114v7.2.gz</code>
 becoming
 <code>http://data.remss.com/amsr2/bmaps_v08/y2017/m01/f34_20170114v8.gz</code></p>
-<p>On 26 July 2023, it was noticed that the server-url naming convention
+<p>On 2023-07-26, it was noticed that the server-url naming convention
 had changed again, requiring not only the alteration of the default
 <code>server</code> value but also the addition of a new parameter named <code>type</code>.
-Worse yet – much worse – the file format is now changed from a gzipped
-format to a NetCDF format, and this will require a complete rewriting
+Worse yet the file format had evidently been changed from a gzipped
+format to a NetCDF format, which required a complete rewriting
 of <code><a href="read.amsr.html">read.amsr()</a></code>.</p>
+<p>On 2024-08-17, it was noticed that the server has a directory called <code>rt</code>
+which seems to hold realtime data for a few recent days (and a few other
+isolated 3-day sequences in the past two years). These files may be
+of use in analysis of current events.</p>
     </div>
     <div class="section level2">
     <h2 id="sample-of-usage">Sample of Usage<a class="anchor" aria-label="anchor" href="#sample-of-usage"></a></h2>

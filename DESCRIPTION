@@ -13,6 +13,7 @@ Suggests:
     DBI,
     foreign,
     interp,
+    jsonlite,
     knitr,
     lubridate,
     ncdf4,

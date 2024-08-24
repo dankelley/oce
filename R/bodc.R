@@ -1,10 +1,10 @@
 #' Determine oce Variable Names from an NERC/BODC Names
 #'
-#' Translate names in the NERC/BODC vocabulary to oce names. This handles only
-#' a tiny subset of the huge number of names in the NERC/BODC vocabulary
-#' (see Reference 1). To see the names that the function handles currently,
-#' type `bodcNames2oceNames` in an R session. To extend `bodcNames2oceNames`
-#' to handle additional names, try the method suggested in Example 2.
+#' Translate names in the NERC/BODC vocabulary to oce names, primarily so that
+#' [read.netcdf()] can produce more easily interpreted results. Please note
+#' that `bodcNames2oceNames()` handles only a tiny subset of the huge number of
+#' names in the NERC/BODC vocabulary (see Reference 1). To see the names that
+#' the function handles currently, type `bodcNames2oceNames` in an R session.
 #'
 #' @param bodcNames character vector that specifies variable names
 #' that use the NERC/BODC convention.
@@ -12,10 +12,12 @@
 #' @param unduplicate logical value indicating whether to rename
 #' repeated entries, so that e.g. if `"temperature` occurs
 #' twice, the second instance will be changed to `"temperature2"`.
-#' It makes sense to set `unduplicate` to FALSE if you plan are
-#' extending the function (see Example 2).
+#' Set this to FALSE if you plan are calling  `bodcNames2oceNames`
+#' in a renaming function of your own, and call [unduplicateNames()]
+#' at the end of your function; see Example 2.
 #'
 #' @return
+#'
 #' `bodcNames2oceNames` returns a vector of the same length as its
 #' first argument, with translations to oce names, as appropriate.
 #' Note that the usual oce convention for handling duplicates is
@@ -23,6 +25,7 @@
 #' to `temperature`, the next to `temperature2`, etc.
 #'
 #' @examples
+#'
 #' # Example 1: typical usage
 #' bodcNames2oceNames(c("PSALST01", "TEMPP901", "PRESPR01"))
 #'
