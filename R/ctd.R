@@ -941,10 +941,10 @@ setMethod(
 #' Coerce Data Into a ctd Object
 #'
 #' Assemble data into a [ctd-class] object.  This function is complicated
-#' (spanning approximately 500 lines of code) because it tries to handle many
+#' (spanning approximately 600 lines of code) because it tries to handle many
 #' special cases, and tries to make sensible defaults for unspecified
 #' parameters.  If odd results are found, users might find it helpful to call
-#' this function with the first argument being a simple vector of Practical
+#' this function with the first parameter being a simple vector of Practical
 #' Salinity values, in which case the processing of the other arguments is
 #' relatively straightforward.
 #'
@@ -971,11 +971,7 @@ setMethod(
 #' then `as.ctd` passes it,
 #' `pressureAtmospheric`,
 #' `longitude`,
-#' `latitude`
-#' `ship`,
-#' `cruise`,
-#' `station` and
-#' `deploymentType`
+#' and `latitude`
 #' to [rsk2ctd()], which builds the ctd object that is
 #' returned by `as.ctd`. The other arguments to `as.ctd`
 #' are ignored in this instance, because `rsk` objects already
@@ -1033,11 +1029,6 @@ setMethod(
 #'
 #' @param time optional vector of times of observation.
 #'
-# @param other **deprecated** optional list of other data columns that are not
-# in the standard list. Note that this argument will be removed soon. Please
-# use `as.ctd()` to construct a [ctd-class] object, and then use [oceSetData()]
-# later, to add other data, as needed.
-#'
 #' @param units an optional list containing units.  If not supplied,
 #' defaults are set for `pressure`, `temperature`, `salinity`,
 #' and `conductivity`. Since these are simply guesses, users
@@ -1056,22 +1047,9 @@ setMethod(
 #'
 #' @param ship optional string containing the ship from which the observations were made.
 #'
-# 1108 @param scientist optional string containing the chief scientist on the cruise.
-# 1108
-# 1108 @param institute optional string containing the institute behind the work.
-# 1108
-# 1108 @param address optional string containing the address of the institute.
-# 1108
 #' @param cruise optional string containing a cruise identifier.
 #'
 #' @param station optional string containing a station identifier.
-#'
-# 1108 @param date optional string indicating
-# 1108 the date at which the profile was started. This is copied verbatim into
-# 1108 the result's `metadata` slot, and is not used in any processing. Since
-# 1108 it serves no purpose, this argument is deprecated as of April 2016,
-# 1108 and will be marked 'defunct' in an upcoming CRAN release;
-# 1108 see [oce-deprecated].
 #'
 #' @param startTime optional indication of the start time for the profile,
 #' which is used in some several plotting functions.  This is best given as a
@@ -1079,19 +1057,16 @@ setMethod(
 #' that can be converted to a time with [as.POSIXct()],
 #' using `UTC` as the timezone.
 #'
-# 1108 @param recovery optional indication of the recovery time, in the format
-# 1108 described for `startTime`.  This is not presently used by `oce`,
-# 1108 and is stored in the result's `metadata` slot just in case the user
-# 1108 requires it.
-#'
 #' @param longitude optional numerical value containing longitude in decimal
 #' degrees, positive in the eastern hemisphere. If this is a single number,
 #' then it is stored in the `metadata` slot of the returned value; if it
-#' is a vector of numbers, then they are stored in the `data` slot.
+#' is a vector of numbers, then they are stored in the `data` slot. If
+#' `longitude' is not provided (i.e. if it is NULL, the default), then
+#' `as.ctd()' tries to find it from the first parameter, if it is a list,
+#' or an [oce-class] object.
 #'
-#' @param latitude optional numerical value containing the latitude in decimal
-#' degrees, positive in the northern hemisphere. See the note on length, for
-#' the `longitude` argument.
+#' @param latitude similar to `longitude`.  Positive in the northern
+#' hemisphere.
 #'
 #' @param deploymentType character string indicating the type of deployment. Use
 #' `"unknown"` if this is not known, `"profile"` for a profile (in
@@ -1107,11 +1082,6 @@ setMethod(
 #' (This altered pressure is also used in calculating `salinity`, if
 #' that is to be computed from `conductivity`, etc., using
 #' [swSCTp()]; see `salinity` above.)
-#
-# 1108 @param waterDepth optional numerical value indicating the water depth in
-# 1108 metres. This is different from the maximum recorded pressure, although
-# 1108 the latter is used by some oce functions as a guess on water depth, the
-# 1108 most important example being [plot,section-method()].
 #'
 #' @param sampleInterval optional numerical value indicating the time between
 #' samples in the profile.
@@ -1124,7 +1094,6 @@ setMethod(
 # 1108 @param src optional string indicating data source.
 #'
 #' @template debugTemplate
-#'
 #'
 #' @return A [ctd-class] object.
 #'
@@ -1152,13 +1121,15 @@ setMethod(
 #'     )
 #' )
 #'
-#' @references Culkin, F., and Norman D. Smith, 1980. Determination of the
+#' @references
+#'
+#' 1. Culkin, F., and Norman D. Smith, 1980. Determination of the
 #' concentration of potassium chloride solution having the same electrical
 #' conductivity, at 15 C and infinite frequency, as standard seawater of salinity
 #' 35.0000 ppt (Chlorinity 19.37394 ppt). *IEEE Journal of Oceanic
 #' Engineering*, volume **5**, pages 22-23.
 #'
-#' @author Dan Kelley
+#' @author Dan Kelley, with help from Clark Richards
 #'
 #' @family things related to ctd data
 as.ctd <- function(
@@ -1171,15 +1142,16 @@ as.ctd <- function(
     oceDebug(debug, "as.ctd(...) START\n", sep = "", unindent = 1)
     unitsGiven <- !is.null(units)
     salinityGiven <- !missing(salinity)
+
     # Already a ctd-class object.
     if (salinityGiven && inherits(salinity, "ctd")) {
-        oceDebug(debug, "first argument is 'ctd-class', so returning as-is\n")
+        oceDebug(debug, "first parameter is 'ctd-class', so returning as-is\n")
         oceDebug(debug, "END as.ctd()\n", sep = "", unindent = 1)
         return(salinity)
     }
     # An rsk-class object.
     if (salinityGiven && inherits(salinity, "rsk")) {
-        oceDebug(debug, "first argument is 'rsk-class', so converting with rsk2ctd()\n")
+        oceDebug(debug, "first parameter is 'rsk-class', so converting with rsk2ctd()\n")
         res <- rsk2ctd(salinity,
             pressureAtmospheric = pressureAtmospheric,
             longitude = longitude,
@@ -1190,9 +1162,9 @@ as.ctd <- function(
             deploymentType = deploymentType,
             debug = debug - 1
         )
-        oceDebug(debug, "END as.ctd()\n", sep = "", unindent = 1)
+        oceDebug(debug, "END as.ctd() with rsk object as first parameter\n", sep = "", unindent = 1)
         return(res)
-    }
+    } # end of rsk case
     # Not an rsk object.
     res <- new("ctd")
     if (!is.null(startTime) && is.character(startTime)) {
@@ -1208,14 +1180,28 @@ as.ctd <- function(
     }
     filename <- ""
     waterDepth <- NA
-    ounits <- NULL # replace with metadata$units if first arg is an oce object
-    # First argument is an oce object
+    ounits <- NULL # replace with metadata$units if first parameter is an oce object
+    # First parameter is an oce object
     if (inherits(salinity, "oce")) {
-        oceDebug(debug, "first argument is an oce object, so ignoring some other arguments\n")
+        oceDebug(debug, "first parameter is an oce object, so ignoring some other arguments\n")
         # dataNamesOriginal <- list()
         o <- salinity
         d <- o@data
         m <- o@metadata
+        if ("longitude" %in% names(d) && is.null(longitude)) {
+            longitude <- d$longitude
+            oceDebug(debug, "inferred longitude from data slot of first parameter\n")
+        } else if ("longitude" %in% names(m) && is.null(longitude)) {
+            longitude <- m$longitude
+            oceDebug(debug, "inferred longitude from metadata slot of first parameter\n")
+        }
+        if ("latitude" %in% names(d) && is.null(latitude)) {
+            latitude <- d$latitude
+            oceDebug(debug, "inferred latitude from data slot of first parameter\n")
+        } else if ("latitude" %in% names(m) && is.null(latitude)) {
+            latitude <- m$latitude
+            oceDebug(debug, "inferred latitude from metadata slot of first parameter\n")
+        }
         res@metadata$dataNamesOriginal <- m$dataNamesOriginal
         res@metadata$flagScheme <- m$flagScheme
         ounits <- o@metadata$units
@@ -1241,34 +1227,44 @@ as.ctd <- function(
                 startTime <- as.POSIXct(m$time, tz = "UTC")
             }
         }
+        # If longitude and latitude are not given as parameters, try to infer
+        # them from the first parameter.  (Note that case is ignored.)
         if (is.null(longitude)) {
             if ("longitude" %in% dnames) {
                 longitude <- d$longitude
                 d$longitude <- NULL
+                oceDebug(debug, "inferred longitude from first parameter's data slot\n")
             } else if ("LONGITUDE" %in% dnames) {
                 longitude <- d$LONGITUDE
                 d$LONGITUDE <- NULL
+                oceDebug(debug, "inferred longitude from first parameter's data slot\n")
             } else if ("longitude" %in% mnames) {
                 longitude <- m$longitude
                 m$longitude <- NULL
+                oceDebug(debug, "inferred longitude from first parameter's metadata slot\n")
             } else if ("LONGITUDE" %in% mnames) {
                 longitude <- m$LONGITUDE
                 m$LONGITUDE <- NULL
+                oceDebug(debug, "inferred longitude from first parameter's metadata slot\n")
             }
         }
         if (is.null(latitude)) {
             if ("latitude" %in% dnames) {
                 latitude <- d$latitude
                 d$latitude <- NULL
+                oceDebug(debug, "inferred latitude from first parameter's data slot\n")
             } else if ("LATITUDE" %in% dnames) {
                 latitude <- d$LATITUDE
                 d$LATITUDE <- NULL
+                oceDebug(debug, "inferred latitude from first parameter's data slot\n")
             } else if ("latitude" %in% mnames) {
                 latitude <- m$latitude
                 m$latitude <- NULL
+                oceDebug(debug, "inferred latitude from first parameter's metadata slot\n")
             } else if ("LATITUDE" %in% mnames) {
                 latitude <- m$LATITUDE
                 m$LATITUDE <- NULL
+                oceDebug(debug, "inferred latitude from first parameter's metadata slot\n")
             }
         }
         if (is.null(serialNumber) && "serialNumber" %in% mnames) {
@@ -1388,7 +1384,7 @@ as.ctd <- function(
         # if ("phosphate" %in% dnames) res@data$phosphate <- d$phosphate
         # if ("silicate" %in% dnames) res@data$silicate <- d$silicate
         if (inherits(o, "argo")) {
-            oceDebug(debug, "input is an argo-class object\n")
+            oceDebug(debug, "first parameter is an argo-class object\n")
             if (is.null(profile)) {
                 profile <- 1
                 if (dim(o[["pressure"]])[2] != 1) {
@@ -1430,6 +1426,7 @@ as.ctd <- function(
                 #<old>    } else {
                 #<old>        res@metadata$time <- d[[field]][profile]
                 #<old>    }
+                #<old>}
                 if (field == "mtime") {
                     if (is.matrix(dataInField)) {
                         ncol <- ncol(d[[field]])
@@ -1481,31 +1478,35 @@ as.ctd <- function(
                     }
                 }
             }
-            # argo
-        } else {
-            # oce object, not argo
+            # end of argo case
+        } else { # oce object, not argo
+            oceDebug(debug, "x is a general oce object (not ctd, and not argo)\n")
             for (field in names(d)) {
                 if (field != "time") {
                     res@data[[field]] <- d[[field]]
                 }
             }
-            if ("longitude" %in% dnames && "latitude" %in% dnames) {
-                longitude <- d$longitude
-                latitude <- d$latitude
-                if (length(longitude) != length(latitude)) {
-                    stop("lengths of longitude and latitude must match")
-                }
-                if (length(longitude) == length(temperature)) {
-                    res@data$longitude <- longitude
-                    res@data$latitude <- latitude
-                } else {
-                    res@metadata$longitude <- longitude[1]
-                    res@metadata$latitude <- latitude[1]
-                }
-            } else if ("longitude" %in% mnames && "latitude" %in% mnames) {
-                res@metadata$longitude <- m$longitude
-                res@metadata$latitude <- m$latitude
-            }
+            #<20240825> # whilst looking at issue 2237, I realized that we
+            #<20240824> # already inferred longitude and latitude above, before looking
+            #<20240824> # at special cases.
+            #<20240825> if ("longitude" %in% dnames && "latitude" %in% dnames) {
+            #<20240825>     oceDebug(debug, "longitude and latitude are in x@data\n")
+            #<20240825>     longitude <- d$longitude
+            #<20240825>     latitude <- d$latitude
+            #<20240825>     if (length(longitude) != length(latitude)) {
+            #<20240825>         stop("lengths of longitude and latitude must match")
+            #<20240825>     }
+            #<20240825>     if (length(longitude) == length(temperature)) {
+            #<20240825>         res@data$longitude <- longitude
+            #<20240825>         res@data$latitude <- latitude
+            #<20240825>     } else {
+            #<20240825>         res@metadata$longitude <- longitude[1]
+            #<20240825>         res@metadata$latitude <- latitude[1]
+            #<20240825>     }
+            #<20240825> } else if ("longitude" %in% mnames && "latitude" %in% mnames) {
+            #<20240825>     res@metadata$longitude <- m$longitude
+            #<20240825>     res@metadata$latitude <- m$latitude
+            #<20240825> }
         }
         res@metadata$deploymentType <- deploymentType
         # res@metadata$dataNamesOriginal <- m$dataNamesOriginal
@@ -1519,12 +1520,13 @@ as.ctd <- function(
                 res@data[[dataNames[iflag]]] <- NULL
             }
         }
+        #message("FIXME DAN L1552: longitude=", longitude)
     } else if (is.list(salinity) || is.data.frame(salinity)) {
         # 2. coerce a data-frame or list
         if (length(salinity) == 0) {
-            stop("first argument cannot be a zero-length list or data frame")
+            stop("first parameter cannot be a zero-length list or data frame")
         }
-        oceDebug(debug, "case 1: first argument is a list or data frame\n")
+        oceDebug(debug, "case 1: first parameter is a list or data frame\n")
         x <- salinity
         if (is.list(x) && inherits(x[[1]], "oce")) {
             oceDebug(debug, "case 1A: list holds oce objects\n")
@@ -1574,18 +1576,18 @@ as.ctd <- function(
                 # 1108 res@metadata$pressureType <- pressureType
                 res@metadata$pressureType <- "sea"
             } else {
-                stop("the first argument must contain salinity, temperature, and pressure")
+                stop("the first parameter must contain salinity, temperature, and pressure")
             }
             if (is.null(longitude)) {
                 if ("longitude" %in% names) {
                     longitude <- x$longitude
-                    oceDebug(debug, "retrieved longitude from first argument\n")
+                    oceDebug(debug, "retrieved longitude from first parameter\n")
                 }
             }
             if (is.null(latitude)) {
                 if ("latitude" %in% names) {
                     latitude <- x$latitude
-                    oceDebug(debug, "retrieved latitude from first argument\n")
+                    oceDebug(debug, "retrieved latitude from first parameter\n")
                 }
             }
             # if ("conductivity" %in% names) res@data$conductivity <- x$conductivity
@@ -1733,8 +1735,9 @@ as.ctd <- function(
         }
         res@data <- data
     }
+    #message("FIXME DAN L1767: longitude=", longitude)
     if (!is.null(ounits)) {
-        oceDebug(debug, "copying units from first argument\n")
+        oceDebug(debug, "copying units from first parameter\n")
         res@metadata$units <- ounits
     } else if (!unitsGiven) {
         oceDebug(debug, "assuming modern units, since none provided\n")
@@ -1772,6 +1775,7 @@ as.ctd <- function(
     if (is.na(res@metadata$waterDepth) && !is.na(waterDepth)) {
         res@metadata$waterDepth <- waterDepth
     }
+    #message("FIXME DAN L1807: longitude=", longitude)
     # Remove lon and lat form metadata, if they are in data. This is so plot()
     # will show multiple stations, as can be the case in converting from
     # multi-station data.
@@ -2412,7 +2416,7 @@ ctdFindProfiles <- function(
 #' Find Profiles Within a ctd Object Read From a RBR File
 #'
 #' This uses information about profiles that is contained within the `metadata`
-#' slot of the first argument, `x`, having been inserted there by [read.rsk()].
+#' slot of the first parameter, `x`, having been inserted there by [read.rsk()].
 #' If `x` was created by reading an `.rsk` file with [read.rsk()],
 #' and if that file contained geographical information (that is, if it had a
 #' data table named `geodata`) then the *first* longitude and latitude from each
@@ -3006,7 +3010,7 @@ ctdTrim <- function(
 #' Save a ctd Object in a CSV File
 #'
 #' Writes a comma-separated file containing the data frame stored in
-#' the `data` slot of the first argument.  The file is suitable
+#' the `data` slot of the first parameter.  The file is suitable
 #' for reading with a spreadsheet, or
 #' with [read.csv()].  This output file will contain
 #' some of the metadata in `x`, if `metadata` is `TRUE`.

@@ -90,11 +90,12 @@ using \code{UTC} as the timezone.}
 \item{longitude}{optional numerical value containing longitude in decimal
 degrees, positive in the eastern hemisphere. If this is a single number,
 then it is stored in the \code{metadata} slot of the returned value; if it
-is a vector of numbers, then they are stored in the \code{data} slot.}
+is a vector of numbers, then they are stored in the \code{data} slot. If
+\verb{longitude' is not provided (i.e. if it is NULL, the default), then }as.ctd()' tries to find it from the first parameter, if it is a list,
+or an \linkS4class{oce} object.}
 
-\item{latitude}{optional numerical value containing the latitude in decimal
-degrees, positive in the northern hemisphere. See the note on length, for
-the \code{longitude} argument.}
+\item{latitude}{similar to \code{longitude}.  Positive in the northern
+hemisphere.}
 
 \item{deploymentType}{character string indicating the type of deployment. Use
 \code{"unknown"} if this is not known, \code{"profile"} for a profile (in
@@ -132,10 +133,10 @@ A \linkS4class{ctd} object.
 }
 \description{
 Assemble data into a \linkS4class{ctd} object.  This function is complicated
-(spanning approximately 500 lines of code) because it tries to handle many
+(spanning approximately 600 lines of code) because it tries to handle many
 special cases, and tries to make sensible defaults for unspecified
 parameters.  If odd results are found, users might find it helpful to call
-this function with the first argument being a simple vector of Practical
+this function with the first parameter being a simple vector of Practical
 Salinity values, in which case the processing of the other arguments is
 relatively straightforward.
 }
@@ -163,11 +164,7 @@ If the \code{salinity} argument is an object of \linkS4class{rsk},
 then \code{as.ctd} passes it,
 \code{pressureAtmospheric},
 \code{longitude},
-\code{latitude}
-\code{ship},
-\code{cruise},
-\code{station} and
-\code{deploymentType}
+and \code{latitude}
 to \code{\link[=rsk2ctd]{rsk2ctd()}}, which builds the ctd object that is
 returned by \code{as.ctd}. The other arguments to \code{as.ctd}
 are ignored in this instance, because \code{rsk} objects already
@@ -222,11 +219,13 @@ ctd <- as.ctd(salinity, temperature, pressure,
 
 }
 \references{
-Culkin, F., and Norman D. Smith, 1980. Determination of the
+\enumerate{
+\item Culkin, F., and Norman D. Smith, 1980. Determination of the
 concentration of potassium chloride solution having the same electrical
 conductivity, at 15 C and infinite frequency, as standard seawater of salinity
 35.0000 ppt (Chlorinity 19.37394 ppt). \emph{IEEE Journal of Oceanic
 Engineering}, volume \strong{5}, pages 22-23.
+}
 }
 \seealso{
 Other things related to ctd data: 
@@ -273,6 +272,6 @@ Other things related to ctd data:
 \code{\link{write.ctd}()}
 }
 \author{
-Dan Kelley
+Dan Kelley, with help from Clark Richards
 }
 \concept{things related to ctd data}

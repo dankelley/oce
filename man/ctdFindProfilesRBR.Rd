@@ -32,7 +32,7 @@ by specifying higher \code{debug} values.}
 }
 \description{
 This uses information about profiles that is contained within the \code{metadata}
-slot of the first argument, \code{x}, having been inserted there by \code{\link[=read.rsk]{read.rsk()}}.
+slot of the first parameter, \code{x}, having been inserted there by \code{\link[=read.rsk]{read.rsk()}}.
 If \code{x} was created by reading an \code{.rsk} file with \code{\link[=read.rsk]{read.rsk()}},
 and if that file contained geographical information (that is, if it had a
 data table named \code{geodata}) then the \emph{first} longitude and latitude from each

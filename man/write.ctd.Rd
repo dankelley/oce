@@ -24,7 +24,7 @@ Program format, described in reference 1 and exemplified in reference 2.}
 }
 \description{
 Writes a comma-separated file containing the data frame stored in
-the \code{data} slot of the first argument.  The file is suitable
+the \code{data} slot of the first parameter.  The file is suitable
 for reading with a spreadsheet, or
 with \code{\link[=read.csv]{read.csv()}}.  This output file will contain
 some of the metadata in \code{x}, if \code{metadata} is \code{TRUE}.
