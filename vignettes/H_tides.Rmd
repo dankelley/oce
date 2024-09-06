@@ -1,0 +1,70 @@
+---
+title: "8. Tidal Analysis"
+author: "Dan Kelley (https://orcid.org/0000-0001-7808-5911) and Clark Richards (https://orcid.org/0000-0002-7833-206X)"
+date: "`r Sys.Date()`"
+output:
+  rmarkdown::html_vignette:
+    toc: true
+    number_sections: true
+    fig_caption: yes
+    fig_width: 3.5
+    fig_height: 3.5
+    dpi: 72
+    dev.args: list(pointsize=11)
+vignette: >
+  %\VignetteIndexEntry{8. Tidal Analysis}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options:
+  markdown:
+    wrap: 72
+---
+
+<!-- HOW TO BUILD AND VIEW THE OCE VIGNETTES. -->
+
+<!-- 1. Edit this file in vignettes/oce.Rmd -->
+
+```{=html}
+<!-- 2. Do not bother trying to build vignettes in RStudio. Instead, ->
+<!--    in a unix shell, type the following: -->
+```
+<!--        R CMD build --compact-vignettes="qpdf" oce -->
+
+<!--        R CMD install oce_1.1-2.tar.gz -->
+
+<!--    where the version number may need adjustment in the second command. -->
+
+<!-- 3. To see the results, type the following in an R console: -->
+
+<!--       browseVignettes("oce") -->
+
+```{r, echo = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+```
+
+**Abstract.** The `oce` package makes it easy to analyse univariate tidal signals, like sea level.  Other software offers solutions for bivariate signals, like the horizontal components of water velocity.  This vignette touches on both cases.
+
+**FIXME** the two citations below, somewhere in this vignette.
+
+# The Univariate Case (Sea Level)
+
+**FIXME** Dan will write some material here.  There is material in the 'A'
+vignette, so that ought to go here.  Possibly there is material in other
+vignettes that should go here, also.  And there is material in OAR that might
+be useful.  By October, Dan will probably write this material.
+
+
+# The Bivariate Case (Current Components)
+
+**FIXME**  Clark will write some material, likely based on his blog posting.
+
+
+# References
+
+* Kelley, Dan E. Oceanographic Analysis with R. 1st ed. 2018. New York, NY:
+   Springer New York : Imprint: Springer, 2018.
+   https://doi.org/10.1007/978-1-4939-8844-0.
+
+* Kelley, Dan E., Clark Richards, and Chantelle Layton. “Oce: An R Package for
+  Oceanographic Analysis.” Journal of Open Source Software 7, no. 71 (March 3,
+  2022): 3594. https://doi.org/10.21105/joss.03594.

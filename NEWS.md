@@ -1,5 +1,6 @@
 # oce 1.8.4
 
+* Add `Tidal Analysis` vignette (issue #2243).
 * Add `bodcNames2oceNames()` to rename NERC/BODC variables (issue #2235).
 * Change `as.unit()` to accept some variants like `S m-1` for `S/m` (issue #2240).
 * Change `mapPlot()` to make it handle `las` as a parameter (issue #1707).
