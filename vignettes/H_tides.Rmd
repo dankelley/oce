@@ -148,19 +148,19 @@ To use this environment in an R script, this isn't necessary.
 ## Using reticulate to run the Utide python package in R
 
 Now that all the python requirements are installed, we can call the package through R using the `reticulate` package. First, we load the libraries and set the conda environment that we want to use for `reticulate`:
-```{r}
+```{r eval=FALSE}
 library(oce)
 library(reticulate)
 use_condaenv("tides")
 ```
 The functions associated with the python libraries can be loaded into the R workspace with the `import()` function, like:
-```{r}
+```{r eval=FALSE}
 utide <- import("utide")
 pandas <- import("pandas")
 np <- import("numpy")
 ```
 and we can load the example "tidalCurrent" dataset included in `oce`:
-```{r}
+```{r eval=FALSE}
 data(tidalCurrent)
 t <- tidalCurrent$time
 u <- np$array(tidalCurrent$u)
@@ -170,22 +170,34 @@ tpy <- pandas$to_datetime(as.numeric(t), unit = "s", utc = TRUE)
 The last line converts the R POSIX format time to a pandas "datetime", needed for Utide.
 
 We can then perform the tidal analysis using the Utide `coef()` function:
-```{r}
+```{r eval=FALSE}
 coef <- utide$solve(tpy, u, v,
     lat = 45, nodal = FALSE, trend = FALSE, method = "ols",
     conf_int = "linear", Rayleigh_min = 0.95
 )
 ```
+```
+## solve: matrix prep ... solution ... done.
+```
 which produces a list `coef` that has fields:
-```{r}
+```{r eval=FALSE}
 names(coef)
 ```
+```
+##  [1] "aux"      "diagn"    "g"        "g_ci"     "Lsmaj"    "Lsmaj_ci"
+##  [7] "Lsmin"    "Lsmin_ci" "name"     "nI"       "nNR"      "nR"      
+## [13] "PE"       "SNR"      "theta"    "theta_ci" "umean"    "vmean"   
+## [19] "weights"
+```
 Making a tidal prediction based on the fit, is as easy as using the utide `reconstruct()` function:
-```{r}
+```{r eval=FALSE}
 tide <- utide$reconstruct(t = tpy, coef = coef)
 ```
+```
+## prep/calcs ... done.
+```
 Let's make some plots to show that it works!
-```{r}
+```{r eval=FALSE}
 par(mfrow = c(2, 1))
 oce.plot.ts(t, u)
 lines(t, tide["u"], col = 2)
@@ -194,7 +206,7 @@ oce.plot.ts(t, v)
 lines(t, tide["v"], col = 2)
 ```
 We can visualize the tidal constituent ellipses, by first creating a function that will draw an ellipse, and then looping through the constituents from the fit and adding them to a hodograph of the currents:
-```{r}
+```{r eval=FALSE}
 ellipse <- function(xc = 0, yc = 0, Lmaj, Lmin, phi, ...) {
     th <- seq(0, 2 * pi, 0.01)
     x <- xc + Lmaj * cos(th) * cos(phi) - Lmin * sin(th) * sin(phi)
