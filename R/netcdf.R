@@ -214,6 +214,16 @@ read.netcdf <- function(file, ..., encoding = NA, renamer = NULL, debug = getOpt
                     unit = expression(degree * C),
                     scale = if (scale$hasatt) scale$value else ""
                 )
+            } else if (units$value == "dimensionless") {
+                res@metadata$units[[oceNames[i]]] <- list(
+                    unit = expression(),
+                    scale = if (scale$hasatt) scale$value else ""
+                )
+            } else if (units$value == "uA") {
+                res@metadata$units[[oceNames[i]]] <- list(
+                    unit = expression(mu*A),
+                    scale = if (scale$hasatt) scale$value else ""
+                )
             } else {
                 # Tell as.unit() to return NULL if unknown, so we can do
                 # more logic here, where we know the scale, etc.
