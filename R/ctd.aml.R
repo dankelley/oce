@@ -242,36 +242,36 @@ read.ctd.aml <- function(file, format, encoding = "UTF-8-BOM", debug = getOption
     res
 }
 
-#' Read AML ctd format 3 (not exported)
-#'
-#' This is an ad-hoc attempt to read files provided by a user
-#' in late September, 2024.  See \dQuote{Details} for some
-#' provisos.
-#'
-#' This function was based on 4 sample files, evidently created
-#' with AML Sailfish 1.4.8.0 software. No documentation was
-#' made available, so the code was written by inspection
-#' of the files and some guessing on the format.  This means
-#' that the code is likely to be brittle against
-#' file variations.
-#'
-#' It is not envisioned that much support will be provided for
-#' this file format, given the lack of documentation.  This is the
-#' third format seen for AML files, and it seems likely that there
-#' are other formats in existence. Another factor mitigating against
-#' oce adding high support for this format is the
-#' fact that the files made available to the author contain
-#' startling errors in the stated units of for density and sound
-#' speed, which raises questions about the development
-#' state of the AML software.
-#'
-#' @param file character value naming a file.
-#'
-#' @param encoding ignored.
-#'
-#' @param debug ignored.
-#'
-#' @author Dan Kelley
+# Read AML ctd format 3 (not exported)
+#
+# This is an ad-hoc attempt to read files provided by a user
+# in late September, 2024.  See \dQuote{Details} for some
+# provisos.
+#
+# This function was based on 4 sample files, evidently created
+# with AML Sailfish 1.4.8.0 software. No documentation was
+# made available, so the code was written by inspection
+# of the files and some guessing on the format.  This means
+# that the code is likely to be brittle against
+# file variations.
+#
+# It is not envisioned that much support will be provided for
+# this file format, given the lack of documentation.  This is the
+# third format seen for AML files, and it seems likely that there
+# are other formats in existence. Another factor mitigating against
+# oce adding high support for this format is the
+# fact that the files made available to the author contain
+# startling errors in the stated units of for density and sound
+# speed, which raises questions about the development
+# state of the AML software.
+#
+# @param file character value naming a file.
+#
+# @param encoding ignored.
+#
+# @param debug ignored.
+#
+# @author Dan Kelley
 read.ctd.aml.type3 <- function(file, encoding, debug = 0) {
     debug <- max(0L, as.integer(debug))
     oceDebug(debug, "read.ctd.aml.type3(...) START [unexported function]\n", sep = "", unindent = 1)
