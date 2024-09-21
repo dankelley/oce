@@ -838,10 +838,8 @@ unitFromString <- function(unit, scale = NULL) {
 #'
 #' @return Vector of strings with repeats distinguished by suffix.
 #'
-#' @seealso Used by [read.ctd.sbe()] with `style=1` to
-#' rename repeated data elements (e.g. for multiple temperature sensors)
-#' in CTD data, and by [read.odf()] with `style=2` on
-#' key-value pairs within ODF metadata.
+#' @seealso This is used in several functions, e.g. [read.ctd.sbe()]
+#' and [read.odf()].
 #'
 #' @examples
 #' unduplicateNames(c("a", "b", "a", "c", "b"))
