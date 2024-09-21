@@ -1827,42 +1827,29 @@ oceMagic <- function(file, encoding = "latin1", debug = getOption("oceDebug")) {
             return("ctd/woce/other") # e.g. http://cchdo.ucsd.edu/data/onetime/atlantic/a01/a01e/a01ect.zip
         }
         if (grepl(".nc$", filename, ignore.case = TRUE)) {
-            # argo or netcdf?
+            # For a NetCDF file, do a check to see if it holds Argo data.
             if (requireNamespace("ncdf4", quietly = TRUE)) {
                 if (substr(filename, 1, 5) == "http:") {
                     stop(
-                        "cannot open netcdf files over the web; try doing as follows\n    download.file(\"",
+                        "can't open netcdf files over the web; try as follows\n    download.file(\"",
                         filename, "\", \"", gsub(".*/", "", filename), "\")"
                     )
                 }
-                # NOTE: need to name ncdf4 package because otherwise R checks give warnings.
                 f <- ncdf4::nc_open(filename)
-                if ("DATA_TYPE" %in% names(f$var)) {
-                    if (grepl("argo", ncdf4::ncvar_get(f, "DATA_TYPE"), ignore.case = TRUE)) {
-                        oceDebug(debug, "END oceMagic() returning argo (upper-case style)\n", unindent = 1)
-                        ncdf4::nc_close(f)
-                        return("argo")
-                    } else {
-                        oceDebug(debug, "END oceMagic() returning netcdf (upper-case style)\n", unindent = 1)
-                        ncdf4::nc_close(f)
-                        return("netcdf")
-                    }
-                } else if ("data_type" %in% names(f$var)) {
-                    if (grepl("argo", ncdf4::ncvar_get(f, "data_type"), ignore.case = TRUE)) {
-                        oceDebug(debug, "END oceMagic() returning argo (lower-case style)\n", unindent = 1)
-                        ncdf4::nc_close(f)
-                        return("argo")
-                    } else {
-                        oceDebug(debug, "END oceMagic() returning netcdf (lower-case style)\n", unindent = 1)
-                        ncdf4::nc_close(f)
-                        return("netcdf")
-                    }
+                if ("DATA_TYPE" %in% names(f$var) &&
+                    grepl("argo", ncdf4::ncvar_get(f, "DATA_TYPE"), ignore.case = TRUE)) {
+                    oceDebug(debug, "END oceMagic() returning argo (upper-case style)\n", unindent = 1)
+                    ncdf4::nc_close(f)
+                    return("argo")
+                } else if ("data_type" %in% names(f$var) &&
+                    grepl("argo", ncdf4::ncvar_get(f, "data_type"), ignore.case = TRUE)) {
+                    oceDebug(debug, "END oceMagic() returning argo (lower-case style)\n", unindent = 1)
+                    ncdf4::nc_close(f)
+                    return("argo")
                 }
-                ncdf4::nc_close(f) # it's netcdf, but with no data_type
-                return("unknown")
-            } else {
-                stop("must install.packages(\"ncdf4\") to read a NetCDF file")
             }
+            oceDebug(debug, "END oceMagic() returning netcdf\n", unindent = 1)
+            return("netcdf")
         }
         if (grepl(".xml$", filename, ignore.case = TRUE)) {
             firstLine <- readLines(filename, 1L)
