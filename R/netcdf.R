@@ -161,7 +161,8 @@
 #'
 #' 2. CIOOS Atlantic ERDDAP server entry for Bedford Institute measurements in
 #' the waters of Maritime Canada.
-#' <https://cioosatlantic.ca/erddap/files/bio_maritimes_region_ecosystem_survey_ctd/al>
+#' <https://cioosatlantic.ca/erddap/files/bio_maritimes_region_ecosystem_survey_ctd/>
+#' (Link tested 2024-09-21.)
 #'
 #' @author Dan Kelley
 # read.netcdf <- function(file, ..., encoding = NA, renamer = NULL, flagPrefix = NULL, debug = getOption("oceDebug")) {

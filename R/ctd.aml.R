@@ -1,65 +1,34 @@
 # vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
+# AML Base.X2 probe imported to my computer using the Sailfish 1.4.8.0 software
+
 #' Read a ctd File in AML Format
 #'
 #' [read.ctd.aml()] reads files that hold data acquired with an AML
-#' Oceanographic BaseX2 CTD instrument. The SeaCast software associated with
-#' this device can output data in several formats, of which only two are
-#' handled, and only one is recommended (see \dQuote{Details}).
+#' Oceanographic Base.X2 CTD instrument. The software associated with
+#' this device can output data in multiple formats, of which [read.ctd.aml()]
+#' can read only three, based on files provided to the author by users. If the
+#' `format` parameter is not supplied, the function attempts to infer it from
+#' the first line in the file; see \dQuote{Details}.
 #'
-#' The handled formats match files available to the author, both of which
-#' diverge slightly from the format described in the AML documentation (see
-#' \dQuote{References}).
+#' If `format` is not supplied, the first line of the file is examined. If that
+#' line contains `[cast header]` (case insensitive), then format 1 is inferred.
+#' If it contains a comma (i.e. if no header is present) then format 2 is
+#' inferred.  (The AML documentation cautions against saving in this format.)
+#' And if it contains `[header]` (case insensitive) then format 3 is inferred.
 #'
-#' Regardless of the format, files must contain columns named `Conductivity
-#' (mS/cm)`, `Temperature (C)` and `Pressure (dBar)`, because [ctd-class]
-#' objects need those quantities.  (Actually, if pressure is not found, but
-#' `Depth (m)` is, then pressure is estimated with [swDepth()], as a
-#' workaround.) Note that other columns will be also read and stored in the
-#' returned value, but they will not have proper units.  Attempts are made to
-#' infer the sampling location from the file, by searching for strings like
-#' `Latitude=` in the header. Headers typically contain two values of the
-#' location, and it is the second pair that is used by this function, with a
-#' `NA` value being recorded if the value in the file is `no-lock`.  The
-#' instrument serial number is also read, although the individual serial numbers
-#' of the sensors are not read.  Position and serial number are stored in the
-#' the `metadata` slot of the returned value.  The entire header is also stored
-#' there, to let users glean more about dataset.
-#'
-#' Two formats are handled, as described below. Format 1 is greatly preferred,
-#' because it is more robust (see below on `format=2`) and also because it can
-#' be read later by the AML SeaCast software.
-#'
-#' 1. If `format` is `1` then the file is assumed to be in a format created by
-#' selecting *Export As ... Seacast (.csv)* in AML's SeaCast software, with
-#' settings to output pressure (or, as second-best, depth), temperature and
-#' conductivity, and perhaps other things.  The delimiter must be comma.  If
-#' date and time are output, their formats must be yyyy-mm-dd and UTC,
-#' respectively.  Decoding the file proceeds as follows.  First, a check is done
-#' to ensure that the first line consists of the string `[cast header]`. Then an
-#' attempt is made to infer location and serial number from the header.  After
-#' this, [read.ctd.aml()] searches down for a line containing the string
-#' `[data]`. The first line thereafter is taken as a comma-separated list of
-#' variable names, and lines following that are taken to hold the variable
-#' values, separated by commas.
-#'
-#' 2. If `format` is `2` then the first line must be a comma-separated list of
-#' column names.  This may be followed by header information, which is handled
-#' similarly as for `format=1`. The data are read from all lines that have the
-#' same number of commas as the first line, an admittedly brittle strategy
-#' developed as a way to handle some files that lacked other information about
-#' the end of the header.
-#'
-#' In both cases, the data columns, renamed to oce convention, are stored in the
-#' `data` slot.  For the mandatory variables, units are also stored, as for
-#' other [ctd-class] objects.
+#' Support for types 1 and 2 were added in about the year 2017, whereas type 3
+#' was added in 2024. Documentation was once available for formats 1 and 2, but
+#' it was not an exact match to sample files provided to the author of
+#' [read.ctd.aml()]. No documentation seemed to be available for format 3, so
+#' the code was written after manual inspection of a sample file. Given these
+#' things, users are advised to be on the lookout for problems.
 #'
 #' @param file a connection or a character string giving the name of
 #' the file to load.
 #'
 #' @param format an integer indicating the format type.  If not supplied, the
-#' first line is examined to determine whether the file matches the `format=1` or
-#' `format=2` style (see \dQuote{Details}).
+#' first line is examined to make a guess as to the format (see \dQuote{Details}).
 #'
 #' @template encodingTemplate
 #'
@@ -73,16 +42,24 @@
 #'
 #' @examples
 #' library(oce)
-#' f <- system.file("extdata", "ctd_aml.csv.gz", package = "oce")
-#' d <- read.ctd.aml(f)
-#' summary(d)
+#' # Show S,T and p for first 5 lines of a format=1 file
+#' f1 <- system.file("extdata", "ctd_aml_type1.csv.gz", package = "oce")
+#' d1 <- read.ctd.aml(f1)
+#' data.frame(S = d1[["salinity"]], T = d1[["temperature"]], p = d1[["pressure"]])
+#'
+#' # Show S,T and p for first 5 lines of a format=3 file
+#' f3 <- system.file("extdata", "ctd_aml_type3.csv.gz", package = "oce")
+#' d3 <- read.ctd.aml(f3)
+#' data.frame(S = d3[["salinity"]], T = d3[["temperature"]], p = d3[["pressure"]])
 #'
 #' @author Dan Kelley
 #'
 #' @references
-#' AML Oceanographic. "SeaCast 4 User Manual (Version 2.06)." AML Oceanographic,
-#' Mahy 2016.
-#' `https://www.subseatechnologies.com/media/files/page/032e50ac/seacast-4-2-user-manual-sti.pdf`.
+#' 1. AML Oceanographic. "SeaCast 4 User Manual (Version 2.06)." AML Oceanographic,
+#' May 2016.  This was once available at the <www.subsseateechnologies.com>
+#' website, but neither it nor a new version could be located by the author's
+#' search of the website in September 2024.
+## https://www.subseatechnologies.com/media/files/page/032e50ac/seacast-4-2-user-manual-sti.pdf
 #'
 #' @family things related to ctd data
 #' @family functions that read ctd data
@@ -138,18 +115,25 @@ read.ctd.aml <- function(file, format, encoding = "UTF-8-BOM", debug = getOption
     lines <- readLines(file, warn = FALSE)
     oceDebug(debug, "read ", length(lines), " lines in this file\n")
     if (missing(format)) {
-        format <- if (grepl("^\\[cast header\\]", lines[1])) {
+        format <- if (grepl("^\\[cast header\\]", lines[1], ignore.case = TRUE)) {
             1L
         } else if (grepl(",", lines[1])) {
             2L
+        } else if (grepl("^\\[header\\]", lines[1], ignore.case = TRUE)) {
+            3L
         } else {
             stop("cannot determine file 'format' by examining first line (shown below)\n", lines[1])
         }
         oceDebug(debug, "inferred format=", format, " from file's first line\n")
     }
     format <- as.integer(format)
-    if (format != 1L && format != 2L) {
-        stop("unrecognized format value, ", format, "; it must be 1 or 2")
+    if (!format %in% 1:3) {
+        stop("unrecognized format value, ", format, "; it must be 1, 2 or 3")
+    }
+    if (format == 3L) {
+        rval <- read.ctd.aml.type3(file = filename, encoding = encoding, debug = debug - 1L)
+        oceDebug(debug, "END read.ctd.aml()\n", unindent = 1)
+        return(rval)
     }
     # FIXME: add other relevant metadata here.  This will require some
     # familiarity with the typical contents of the metadata.  For example,
@@ -256,4 +240,109 @@ read.ctd.aml <- function(file, format, encoding = "UTF-8-BOM", debug = getOption
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep = "", collapse = ""))
     oceDebug(debug, "END read.ctd.aml()\n", unindent = 1)
     res
+}
+
+#' Read AML ctd format 3 (not exported)
+#'
+#' This is an ad-hoc attempt to read files provided by a user
+#' in late September, 2024.  See \dQuote{Details} for some
+#' provisos.
+#'
+#' This function was based on 4 sample files, evidently created
+#' with AML Sailfish 1.4.8.0 software. No documentation was
+#' made available, so the code was written by inspection
+#' of the files and some guessing on the format.  This means
+#' that the code is likely to be brittle against
+#' file variations.
+#'
+#' It is not envisioned that much support will be provided for
+#' this file format, given the lack of documentation.  This is the
+#' third format seen for AML files, and it seems likely that there
+#' are other formats in existence. Another factor mitigating against
+#' oce adding high support for this format is the
+#' fact that the files made available to the author contain
+#' startling errors in the stated units of for density and sound
+#' speed, which raises questions about the development
+#' state of the AML software.
+#'
+#' @param file character value naming a file.
+#'
+#' @param encoding ignored.
+#'
+#' @param debug ignored.
+#'
+#' @author Dan Kelley
+read.ctd.aml.type3 <- function(file, encoding, debug = 0) {
+    debug <- max(0L, as.integer(debug))
+    oceDebug(debug, "read.ctd.aml.type3(...) START [unexported function]\n", sep = "", unindent = 1)
+    if (is.character(file) && 0 == file.info(file)$size) {
+        stop("empty file")
+    }
+    filename <- ""
+    if (is.character(file)) {
+        filename <- file
+        file <- file(file, "r", encoding = encoding)
+        on.exit(close(file))
+    }
+    if (!inherits(file, "connection")) {
+        stop("argument `file' must be a character string or connection")
+    }
+    if (!isOpen(file)) {
+        open(file, "r", encoding = encoding)
+        on.exit(close(file))
+    }
+    getMetadata <- function(name, numeric = TRUE, default = NA) { # name is in title-case
+        w <- grep(paste0("^", name, "="), lines)
+        wlen <- length(w)
+        if (wlen == 0) {
+            default
+        } else {
+            if (numeric) as.numeric(gsub(".*=", "", lines[w])) else gsub(".*=", "", lines[w])
+        }
+    }
+    lines <- readLines(file, warn = FALSE)
+    # Get metadata (FIXME: possibly get other items)
+    longitude <- getMetadata("Longitude")
+    latitude <- getMetadata("Latitude")
+    oceDebug(debug, sprintf("location: %.3fN %.3fE\n", latitude, longitude))
+    # Get data
+    w <- grep("^Columns=", lines)
+    oceDebug(debug, "column names are in line ", w, "\n")
+    col.names <- strsplit(gsub(".*=", "", lines[w]), ",")[[1]]
+    w <- grep("\\[MeasurementData\\]", lines)
+    oceDebug(debug, "data start at line ", w, "\n")
+    #print(lines[w + seq(-1, 1)])
+    data <- read.csv(text = lines, skip = w, header = FALSE,
+        col.names = col.names, encoding = encoding
+    )
+    #message("data:")
+    #print(data)
+    rval <- as.ctd(
+        salinity = data$Salinity, temperature = data$Temperature,
+        pressure = data$Pressure, latitude = latitude, longitude = longitude
+    )
+    rval@metadata$filename <- filename
+    rval@metadata$header <- lines[seq(1L, w - 1L)]
+    for (name in col.names) {
+        if (!name %in% c("Salinity", "Temperature", "Pressure", "Date", "Time")) {
+            rval <- oceSetData(rval, tolower(name), data[[name]],
+                note = paste("Add", tolower(name))
+            )
+        }
+    }
+    if ("Date" %in% col.names && "Time" %in% col.names) {
+        time <- as.POSIXct(paste(data[["Date"]], data[["Time"]]), tz = "UTC")
+        rval <- oceSetData(rval, "time", time, note = "Add time")
+    }
+    w <- grep("^Units=", lines)
+    oceDebug(debug, "units start at line ", w, "\n")
+    units <- strsplit(gsub("^Units=", "", lines[w]), ",")[[1]]
+    # FIXME: detect incorrect units, and report if found
+    for (i in seq_along(col.names)) {
+        if (!col.names[i] %in% c("Salinity", "Temperature", "Pressure", "Date", "Time", "time")) {
+            rval@metadata$units[[tolower(col.names[i])]] <- units[i]
+        }
+    }
+    oceDebug(debug, "END read.ctd.aml.type3() [unexported function]\n", sep = "", unindent = 1)
+    rval
 }

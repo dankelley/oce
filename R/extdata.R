@@ -1,21 +1,39 @@
-#' Sample ctd File in aml Format
+#' Sample ctd File in aml Format 1
 #'
 #' This file may be read with [read.ctd.aml()].  It is based
 #' on a file donated by Ashley Stanek, which was shortened to
-#' just 50 points for inclusion in oce, and which had some
+#' just 5 points for inclusion in oce, and which had some
 #' identifying information (serial number, IP address, and WEP
-#' code) zeroed-out.
+#' code) redacted.
 #'
-#' @name ctd_aml.csv.gz
+#' @name ctd_aml_type1.csv.gz
 #'
 #' @docType data
 #'
 #' @encoding UTF-8
 #'
 #' @examples
-#' ctd <- read.ctd.aml(system.file("extdata", "ctd_aml.csv.gz", package="oce"))
-#' summary(ctd)
-#' plot(ctd)
+#' ctd <- read.ctd.aml(system.file("extdata", "ctd_aml_type1.csv.gz", package="oce"))
+#'
+#' @family raw datasets
+#' @family things related to ctd data
+NULL
+#'
+#' Sample ctd File in aml Format 3
+#'
+#' This file may be read with [read.ctd.aml()].  It is based
+#' on a file created with Sailfish 1.4.8.0 software, as explained
+#' in an oce issue at <https://github.com/dankelley/oce/issues/2247>.
+#' Only the first 5 data points are provided here.
+#'
+#' @name ctd_aml_type3.csv.gz
+#'
+#' @docType data
+#'
+#' @encoding UTF-8
+#'
+#' @examples
+#' ctd <- read.ctd.aml(system.file("extdata", "ctd_aml_type3.csv.gz", package="oce"))
 #'
 #' @family raw datasets
 #' @family things related to ctd data

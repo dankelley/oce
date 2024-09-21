@@ -169,7 +169,8 @@ file.remove(file)
 \url{http://vocab.nerc.ac.uk/collection/P01/current/}
 \item CIOOS Atlantic ERDDAP server entry for Bedford Institute measurements in
 the waters of Maritime Canada.
-\url{https://cioosatlantic.ca/erddap/files/bio_maritimes_region_ecosystem_survey_ctd/al}
+\url{https://cioosatlantic.ca/erddap/files/bio_maritimes_region_ecosystem_survey_ctd/}
+(Link tested 2024-09-21.)
 }
 }
 \author{

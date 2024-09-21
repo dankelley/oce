@@ -128,6 +128,8 @@
 <url><loc>https://dankelley.github.io/oce/reference/ctdTrim.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/ctd_aml.csv.gz.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/ctd_aml.csv.html</loc></url>
+<url><loc>https://dankelley.github.io/oce/reference/ctd_aml_type1.csv.gz.html</loc></url>
+<url><loc>https://dankelley.github.io/oce/reference/ctd_aml_type3.csv.gz.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/ctimeToSeconds.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/curl.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/d200321-001.ctd.gz.html</loc></url>
@@ -369,6 +371,7 @@
 <url><loc>https://dankelley.github.io/oce/reference/read.coastline.openstreetmap.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/read.coastline.shapefile.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/read.ctd.aml.html</loc></url>
+<url><loc>https://dankelley.github.io/oce/reference/read.ctd.aml.type3.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/read.ctd.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/read.ctd.itp.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/read.ctd.odf.html</loc></url>

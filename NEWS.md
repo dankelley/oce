@@ -7,6 +7,7 @@
 * Change `amsr[[` to make it handle `"metadata"` as a parameter (issue #2229).
 * Change `download.amsr()` to make it handle realtime data files (issue #2231).
 * Change `read.amsr()` to make it handle realtime data files (issue #2230).
+* Change `read.ctd.aml()` to accept "type 3" format (issue #2247).
 * Change `subset,amsr-method` to make it handle `"pass"` as a parameter.
 * Change `read.netcdf()` to give a way to rename data (issue #2235).
 * Change `read.netcdf()` docs to show how to handle flags (issue #2236).

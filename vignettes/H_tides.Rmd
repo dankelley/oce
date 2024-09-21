@@ -60,7 +60,7 @@ While the tidal forcing causes sea level to go up and down (according to the pre
 
 $$ U(t) = u(t) + i v(t) $$
 
-where the results of the analysis now describe the _combined_ fit of the two related components. A common summary result from such a fit is to describe a "tidal ellipse", which is a horizontal ellipse that would be traced out by each of the tidal constituents -- the major and minor axes of the ellipse describe the size of the two orthonal components and the phases of the u/v oscillations determine an ellipse "orientation", or angle.
+where the results of the analysis now describe the _combined_ fit of the two related components. A common summary result from such a fit is to describe a "tidal ellipse", which is a horizontal ellipse that would be traced out by each of the tidal constituents -- the major and minor axes of the ellipse describe the size of the two orthogonal components and the phases of the u/v oscillations determine an ellipse "orientation", or angle.
 
 Due to the use of `lm()`, the `oce` package is not able to perform a complex analysis. However, the python package [Utide](https://github.com/wesleybowman/UTide) _can_ do this analysis, and thanks to the `reticulate` package in R it is easy to run both R and python code simultaneously, while passing variables back-and-forth between the two systems.
 
