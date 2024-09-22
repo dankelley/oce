@@ -4,7 +4,7 @@
 * Add `Tidal Analysis` vignette (issue #2243).
 * Change `amsr[[` to handle `"metadata"` parameter (issue #2229).
 * Change `as.unit()` to handle more units (issue #2240).
-* Change `download.amsr()` to make it handle realtime data files (issue #2231).
+* Change `download.amsr()` to handle realtime data files (issue #2231).
 * Change `mapPlot()` to handle `las` as a parameter (issue #1707).
 * Change `read.amsr()` to handle realtime data files (issue #2230).
 * Change `read.ctd.aml()` to handle "type 3" format (issue #2247).
