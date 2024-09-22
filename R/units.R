@@ -57,6 +57,16 @@ as.unit <- function(u, default = list(unit = expression(), scale = "")) {
         list(unit = expression(), scale = "")
     } else if (grepl("^1\\s*/\\s*m$", u) || grepl("^m-1$", u)) {
         list(unit = expression(1 / m), scale = "")
+    } else if (grepl("^amp[s]{0,1}$", u, ignore.case = TRUE)) {
+        list(unit = expression(A), scale = "")
+    } else if (grepl("^amp-hrs$", u, ignore.case = TRUE)) {
+        list(unit = expression(A-hour), scale = "")
+    } else if (grepl("^bar$", u, ignore.case = TRUE)) {
+        list(unit = expression(bar), scale = "")
+    } else if (grepl("^byte$", u, ignore.case = TRUE)) {
+        list(unit = expression(), scale = "")
+    } else if (grepl("^celsius$", u, ignore.case = TRUE)) {
+        list(unit = expression(degree*C), scale = "")
     } else if (grepl("^db$", u)) {
         list(unit = expression(dbar), scale = "")
     } else if (grepl("^dbar[s]{0,1}$", u)) {
@@ -81,11 +91,11 @@ as.unit <- function(u, default = list(unit = expression(), scale = "")) {
         list(unit = expression(degree * C), scale = "IPTS-68")
     } else if (grepl("^its-90$", u) || grepl("^its\\s*90$", u)) {
         list(unit = expression(degree * C), scale = "ITS-90")
-    } else if (grepl("^kg\\s*/\\s*m\\^3$", u) || grepl("^kg\\s+m-3", u)) {
+    } else if (grepl("^kg\\s*/\\s*m\\^3$", u) || grepl("^kg(\\s+)|(.)m-3", u)) {
         list(unit = expression(kg / m^3), scale = "")
     } else if (grepl("^m$", u)) {
         list(unit = expression(m), scale = "")
-    } else if (grepl("^m\\s*/\\s*s$", u) || grepl("^m\\s+s-1$", u)) {
+    } else if (grepl("^m\\s*/\\s*s$", u) || grepl("^m\\s+s-1$", u) || grepl("^m.s-1", u)) {
         list(unit = expression(m / s), scale = "")
     } else if (grepl("^m\\s*/\\s*s\\^2$", u) || grepl("^m\\s+s-2$", u)) {
         list(unit = expression(m / s^2), scale = "")
@@ -95,8 +105,16 @@ as.unit <- function(u, default = list(unit = expression(), scale = "")) {
         list(unit = expression(ml / l), scale = "")
     } else if (grepl("^mg\\s*/\\s*m\\^3$", u) || grepl("^mg\\s+m-3$", u)) {
         list(unit = expression(mg / m^3), scale = "")
+    } else if (grepl("^nodim$", u, ignore.case = TRUE)) {
+        list(unit = expression(), scale = "")
+    } else if (grepl("^percent$", u, ignore.case = TRUE)) {
+        list(unit = expression(), scale = "PSS-78")
     } else if (grepl("^pss-78$", u) || grepl("^pss\\s*78$", u)) {
         list(unit = expression(), scale = "PSS-78")
+    } else if (grepl("^psu$", u, ignore.case = TRUE)) {
+        list(unit = expression(), scale = "PSS-78")
+    } else if (grepl("^seconds since 1990-01-01T00:00:00Z$", u, ignore.case = TRUE)) {
+        list(unit = expression(s), scale = "since 1990-01-01")
     } else if (grepl("^umol\\s*/\\s*kg$", u) || grepl("^umol\\s+kg-1$", u)) {
         list(unit = expression(mu * mol / kg), scale = "")
     } else if (grepl("^micromole\\s*/\\s*kg$", u) || grepl("^micromole\\s+kg-1$", u)) {
@@ -108,10 +126,10 @@ as.unit <- function(u, default = list(unit = expression(), scale = "")) {
     } else if (grepl("^uEinsteins\\s*/\\s*s\\s*/\\s*m\\^2$", uorig) || grepl("^uEinsteins\\s+s-1\\s+m-2$", uorig)) {
         list(unit = expression(mu * Einstein / s / m^2), scale = "")
         # reciprocal velocity
-    } else if (grepl("^s\\s*/\\s*m$", uorig) || grepl("^s\\s+m-1$", uorig)) {
+    } else if (grepl("^s\\s*/\\s*m$", uorig) || grepl("^s\\s+m-1$", uorig) || grepl("^s.m-1$", uorig)) {
         list(unit = expression(s / m), scale = "")
         # conductivity
-    } else if (grepl("^S\\s*/\\s*m$", uorig) || grepl("^S\\s+m-1$", uorig)) {
+    } else if (grepl("^S\\s*/\\s*m$", uorig) || grepl("^S(\\s+)|(.)m-1$", uorig)) {
         list(unit = expression(S / m), scale = "")
     } else if (grepl("^mS\\s*/\\s*cm$", uorig) || grepl("^mS\\s+cm-1$", uorig)) {
         list(unit = expression(mS / cm), scale = "")
