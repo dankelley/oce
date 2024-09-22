@@ -90,10 +90,13 @@ test_that("as.unit", {
     # conductivity
     expect_equal(as.unit("S/m"), list(unit = expression(S / m), scale = ""))
     expect_equal(as.unit("S m-1"), list(unit = expression(S / m), scale = ""))
+    expect_equal(as.unit("S.m-1"), list(unit = expression(S / m), scale = ""))
     expect_equal(as.unit("mS/cm"), list(unit = expression(mS / cm), scale = ""))
     expect_equal(as.unit("mS cm-1"), list(unit = expression(mS / cm), scale = ""))
+    expect_equal(as.unit("mS.cm-1"), list(unit = expression(mS / cm), scale = ""))
     expect_equal(as.unit("uS/cm"), list(unit = expression(mu * S / cm), scale = ""))
     expect_equal(as.unit("uS cm-1"), list(unit = expression(mu * S / cm), scale = ""))
+    expect_equal(as.unit("uS.cm-1"), list(unit = expression(mu * S / cm), scale = ""))
     # time
     expect_equal(as.unit("seconds since"), list(unit = expression(s), scale = ""))
     expect_equal(as.unit("volt"), list(unit = expression(V), scale = ""))

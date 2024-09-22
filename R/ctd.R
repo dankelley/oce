@@ -1482,6 +1482,7 @@ as.ctd <- function(
         } else { # oce object, not argo
             oceDebug(debug, "x is a general oce object (not ctd, and not argo)\n")
             for (field in names(d)) {
+                #print(field)
                 if (field != "time") {
                     res@data[[field]] <- d[[field]]
                 }

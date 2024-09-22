@@ -481,6 +481,7 @@ setMethod(
     f = "[[",
     signature(x = "oce", i = "ANY", j = "ANY"),
     definition = function(x, i, j, ...) {
+        #message("DAN AllClass [[ method: 1 i=", i)
         metadataNames <- sort(names(x@metadata))
         dataNames <- sort(names(x@data))
         # dots <- list(...)
@@ -711,11 +712,16 @@ setMethod(
         } else if (i == "Sstar") {
             return(swSstar(x))
         } else if (i == "temperature") {
-            scale <- x@metadata$units[["temperature"]]$scale
-            if (!is.null(scale) && "IPTS-48" == scale) {
-                T90fromT48(x@data$temperature)
-            } else if (!is.null(scale) && "IPTS-68" == scale) {
-                T90fromT68(x@data$temperature)
+            U <- x@metadata$units
+            if (!is.null(U) && !is.null(U$temperature) && is.list(U$temperature) && !is.null(U$temperature$scale)) {
+                scale <- U$temperature$scale
+                if (identical("IPTS-48", scale)) {
+                    T90fromT48(x@data$temperature)
+                } else if (identical("IPTS-68", scale)) {
+                    T90fromT68(x@data$temperature)
+                } else {
+                    x@data$temperature
+                }
             } else {
                 x@data$temperature
             }

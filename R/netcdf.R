@@ -184,9 +184,12 @@ read.netcdf <- function(file, ..., encoding = NA, renamer = NULL, debug = getOpt
         stop("must install.packages(\"ncdf4\") to read netcdf data")
     }
     oceDebug(debug, "read.netcdf() START\n", unindent = 1)
-    f <- ncdf4::nc_open(file)
+    nc <- ncdf4::nc_open(file)
     res <- new("oce")
-    varNames <- names(f$var)
+    varNames <- names(nc$var)
+    if ("time" %in% names(nc$dim)) {
+        varNames <- c(varNames, "time")
+    }
     # set up dno (data names original)
     dno <- list()
     oceNames <- if (!is.null(renamer)) renamer(varNames) else varNames
@@ -199,8 +202,8 @@ read.netcdf <- function(file, ..., encoding = NA, renamer = NULL, debug = getOpt
         if (grepl("^history_", varNames[i], ignore.case = TRUE)) {
             next
         }
-        units <- ncdf4::ncatt_get(f, varNames[i], "units")
-        scale <- ncdf4::ncatt_get(f, varNames[i], "scale")
+        units <- ncdf4::ncatt_get(nc, varNames[i], "units")
+        scale <- ncdf4::ncatt_get(nc, varNames[i], "scale")
         isUnixTime <- FALSE
         if (units$hasatt) {
             #oceDebug(debug, "  unit=\"", units$value, "\"\n")
@@ -236,21 +239,22 @@ read.netcdf <- function(file, ..., encoding = NA, renamer = NULL, debug = getOpt
                         "\"", oceNames[i], "\" unit \"", units$value,
                         "\" is not recognized; please report an issue"
                     )
-                    res@metadata$units[[oceNames[i]]] <- units$value
+                    res@metadata$units[[oceNames[i]]] <- list(unit=units$value, scale="")
                 } else {
                     res@metadata$units[[oceNames[i]]] <- oceunit
                 }
             }
         }
         #oceDebug(debug, "reading \"", varNames[i], "\"\n", sep = "")
-        item <- ncdf4::ncvar_get(f, varNames[i])
+        item <- ncdf4::ncvar_get(nc, varNames[i])
         if (is.array(item) && 1L == length(dim(item))) { # 1D array converted to vector
             item <- as.vector(item)
         }
+        #message("DAN i=", i, ", oceNames[i]='", oceNames[i], "'")
         if (isUnixTime) {
             res@data[[oceNames[i]]] <- numberAsPOSIXct(item, tz = "UTC")
             oceDebug(debug, "converted ", varNames[i], " (of length ", length(item), ") to POSIX and saved in @data slot\n", sep="")
-        } else if (tolower(oceNames[i]) == "station") {
+        } else if (identical(tolower(oceNames[i]), "station")) {
             res@metadata[["station"]] <- trimws(item[1])
             oceDebug(debug, "saved ", varNames[i], " (of length ", length(item), ") in @metadata slot\n", sep="")
         } else {
@@ -261,38 +265,38 @@ read.netcdf <- function(file, ..., encoding = NA, renamer = NULL, debug = getOpt
 
     # Try to get some global attributes.
     # Inelegantly permit first letter lower-case or upper-case
-    if (ncdf4::ncatt_get(f, 0, "Longitude")$hasatt) {
-        res@metadata$longitude <- ncdf4::ncatt_get(f, 0, "Longitude")$value
+    if (ncdf4::ncatt_get(nc, 0, "Longitude")$hasatt) {
+        res@metadata$longitude <- ncdf4::ncatt_get(nc, 0, "Longitude")$value
     }
-    if (ncdf4::ncatt_get(f, 0, "longitude")$hasatt) {
-        res@metadata$longitude <- ncdf4::ncatt_get(f, 0, "longitude")$value
+    if (ncdf4::ncatt_get(nc, 0, "longitude")$hasatt) {
+        res@metadata$longitude <- ncdf4::ncatt_get(nc, 0, "longitude")$value
     }
-    if (ncdf4::ncatt_get(f, 0, "Latitude")$hasatt) {
-        res@metadata$latitude <- ncdf4::ncatt_get(f, 0, "Latitude")$value
+    if (ncdf4::ncatt_get(nc, 0, "Latitude")$hasatt) {
+        res@metadata$latitude <- ncdf4::ncatt_get(nc, 0, "Latitude")$value
     }
-    if (ncdf4::ncatt_get(f, 0, "latitude")$hasatt) {
-        res@metadata$latitude <- ncdf4::ncatt_get(f, 0, "latitude")$value
+    if (ncdf4::ncatt_get(nc, 0, "latitude")$hasatt) {
+        res@metadata$latitude <- ncdf4::ncatt_get(nc, 0, "latitude")$value
     }
-    if (ncdf4::ncatt_get(f, 0, "Station")$hasatt) {
-        res@metadata$station <- ncdf4::ncatt_get(f, 0, "Station")$value
+    if (ncdf4::ncatt_get(nc, 0, "Station")$hasatt) {
+        res@metadata$station <- ncdf4::ncatt_get(nc, 0, "Station")$value
     }
-    if (ncdf4::ncatt_get(f, 0, "station")$hasatt) {
-        res@metadata$station <- ncdf4::ncatt_get(f, 0, "station")$value
+    if (ncdf4::ncatt_get(nc, 0, "station")$hasatt) {
+        res@metadata$station <- ncdf4::ncatt_get(nc, 0, "station")$value
     }
-    if (ncdf4::ncatt_get(f, 0, "Ship")$hasatt) {
-        res@metadata$ship <- ncdf4::ncatt_get(f, 0, "Ship")$value
+    if (ncdf4::ncatt_get(nc, 0, "Ship")$hasatt) {
+        res@metadata$ship <- ncdf4::ncatt_get(nc, 0, "Ship")$value
     }
-    if (ncdf4::ncatt_get(f, 0, "ship")$hasatt) {
-        res@metadata$ship <- ncdf4::ncatt_get(f, 0, "ship")$value
+    if (ncdf4::ncatt_get(nc, 0, "ship")$hasatt) {
+        res@metadata$ship <- ncdf4::ncatt_get(nc, 0, "ship")$value
     }
-    if (ncdf4::ncatt_get(f, 0, "Cruise")$hasatt) {
-        res@metadata$cruise <- ncdf4::ncatt_get(f, 0, "Cruise")$value
+    if (ncdf4::ncatt_get(nc, 0, "Cruise")$hasatt) {
+        res@metadata$cruise <- ncdf4::ncatt_get(nc, 0, "Cruise")$value
     }
-    if (ncdf4::ncatt_get(f, 0, "cruise")$hasatt) {
-        res@metadata$cruise <- ncdf4::ncatt_get(f, 0, "cruise")$value
+    if (ncdf4::ncatt_get(nc, 0, "cruise")$hasatt) {
+        res@metadata$cruise <- ncdf4::ncatt_get(nc, 0, "cruise")$value
     }
-    if (ncdf4::ncatt_get(f, 0, "time")$hasatt) {
-        res@metadata$time <- ncdf4::ncatt_get(f, 0, "time")$value
+    if (ncdf4::ncatt_get(nc, 0, "time")$hasatt) {
+        res@metadata$time <- ncdf4::ncatt_get(nc, 0, "time")$value
     }
 
     # This flag scheme is certainly broken, and so it is commented out.  It's
