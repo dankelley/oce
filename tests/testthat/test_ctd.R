@@ -1,6 +1,22 @@
 # vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 library(oce)
 
+# https://github.com/dankelley/oce/issues/2250
+test_that("subset handles uncommon-length items", {
+    data(ctd)
+    A <- ctd
+    As <- subset(A, pressure < 5)
+    B <- ctd
+    B@data$longitude <- B@metadata$longitude
+    B@data$latitude <- B@metadata$latitude
+    Bs <- subset(B, pressure < 5)
+    expect_equal(1L, length(Bs@data$longitude))
+    expect_equal(1L, length(Bs@data$latitude))
+    for (name in names(A@data)) {
+        expect_equal(As@data[[name]], Bs@data[[name]])
+    }
+})
+
 # https://github.com/dankelley/oce/issues/1962
 test_that("as.ctd(argo,profile=1L) flattens flags", {
     data(argo)

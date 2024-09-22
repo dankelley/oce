@@ -84,7 +84,7 @@
 #' elements, and moving some of them to the `metadata` slot.
 #'
 #' @examples
-#'\dontrun{
+#' \dontrun{
 #' # Download the file.  (This may break if the server changes.)
 #' file <- tempfile(fileext = ".nc")
 #' url <- paste0(
@@ -117,21 +117,23 @@
 #' # Move some data elements to the `metadata@flags` list,
 #' # so they can be used for flag-handling operations. Some
 #' # guesses had to be made on the name mapping (see Details).
-#' flags <- list(QALTB_01 = "heightAboveBottom",
-#'               QCPHLPR01 = "cholorophyll-a",
-#'               QCNDC_01 = "conductivity",
-#'               QDOXY_01 = "oxygen",
-#'               QOXYV_01 = "oxygenVoltage",
-#'               QPOTM_01 = "theta",
-#'               QPRES_01 = "pressure",
-#'               QPSAL_01 = "salinity",
-#'               QPSAR_01 = "downwellingIrradiance",
-#'               QSIGP_01 = "sigmaTheta",
-#'               QTEMP_01 = "temperature")
+#' flags <- list(
+#'     QALTB_01 = "heightAboveBottom",
+#'     QCPHLPR01 = "cholorophyll-a",
+#'     QCNDC_01 = "conductivity",
+#'     QDOXY_01 = "oxygen",
+#'     QOXYV_01 = "oxygenVoltage",
+#'     QPOTM_01 = "theta",
+#'     QPRES_01 = "pressure",
+#'     QPSAL_01 = "salinity",
+#'     QPSAR_01 = "downwellingIrradiance",
+#'     QSIGP_01 = "sigmaTheta",
+#'     QTEMP_01 = "temperature"
+#' )
 #' for (i in seq_along(flags)) {
 #'     varName <- flags[[i]]
 #'     flagName <- names(flags)[i]
-#'     #cat("fileName=", varName, ", flagName=", flagName, "\n", sep="")
+#'     # cat("fileName=", varName, ", flagName=", flagName, "\n", sep="")
 #'     d@metadata$flags[[varName]] <- d[[flagName]] # move
 #'     d@data[[flagName]] <- NULL # delete original
 #' }
@@ -153,7 +155,7 @@
 #' # Finally, remove the downloaded file, according to CRAN
 #' # policy regarding downloads in documentation examples.
 #' file.remove(file)
-#'}
+#' }
 #'
 #' @references
 #' 1. Data variable vocabulary used by NERC/BODC.
@@ -184,24 +186,24 @@ read.netcdf <- function(file, ..., encoding = NA, renamer = NULL, debug = getOpt
     oceDebug(debug, "read.netcdf() START\n", unindent = 1)
     f <- ncdf4::nc_open(file)
     res <- new("oce")
-    fileNames <- names(f$var)
+    varNames <- names(f$var)
     # set up dno (data names original)
     dno <- list()
-    oceNames <- if (!is.null(renamer)) renamer(fileNames) else fileNames
-    for (i in seq_along(fileNames)) {
-        dno[oceNames[i]] <- fileNames[i]
+    oceNames <- if (!is.null(renamer)) renamer(varNames) else varNames
+    for (i in seq_along(varNames)) {
+        dno[oceNames[i]] <- varNames[i]
     }
     res@metadata$dataNamesOriginal <- dno
-    for (i in seq_along(fileNames)) {
-        oceDebug(debug, "fileNames[", i, "]=\"", fileNames[i], "\"\n", sep = "")
-        if (grepl("^history_", fileNames[i], ignore.case = TRUE)) {
+    for (i in seq_along(varNames)) {
+        #oceDebug(debug, "varNames[", i, "]=\"", varNames[i], "\"\n", sep = "")
+        if (grepl("^history_", varNames[i], ignore.case = TRUE)) {
             next
         }
-        units <- ncdf4::ncatt_get(f, fileNames[i], "units")
-        scale <- ncdf4::ncatt_get(f, fileNames[i], "scale")
+        units <- ncdf4::ncatt_get(f, varNames[i], "units")
+        scale <- ncdf4::ncatt_get(f, varNames[i], "scale")
         isUnixTime <- FALSE
         if (units$hasatt) {
-            oceDebug(debug, "  unit=\"", units$value, "\"\n")
+            #oceDebug(debug, "  unit=\"", units$value, "\"\n")
             # seconds since 1970-01-01T00:00:00+00:00
             if (grepl("seconds since 1970-01-01", units$value)) {
                 res@metadata$units[[oceNames[i]]] <- list(unit = expression(), scale = "")
@@ -222,7 +224,7 @@ read.netcdf <- function(file, ..., encoding = NA, renamer = NULL, debug = getOpt
                 )
             } else if (units$value == "uA") {
                 res@metadata$units[[oceNames[i]]] <- list(
-                    unit = expression(mu*A),
+                    unit = expression(mu * A),
                     scale = if (scale$hasatt) scale$value else ""
                 )
             } else {
@@ -240,19 +242,20 @@ read.netcdf <- function(file, ..., encoding = NA, renamer = NULL, debug = getOpt
                 }
             }
         }
-        item <- ncdf4::ncvar_get(f, fileNames[i])
+        #oceDebug(debug, "reading \"", varNames[i], "\"\n", sep = "")
+        item <- ncdf4::ncvar_get(f, varNames[i])
         if (is.array(item) && 1L == length(dim(item))) { # 1D array converted to vector
             item <- as.vector(item)
         }
-        if (isUnixTime) { # FALSE && tolower(name) == "time") {
-            oceDebug(
-                debug, "    interpreting this as a Unix time of length ", length(item), "\n"
-            )
+        if (isUnixTime) {
             res@data[[oceNames[i]]] <- numberAsPOSIXct(item, tz = "UTC")
+            oceDebug(debug, "converted ", varNames[i], " (of length ", length(item), ") to POSIX and saved in @data slot\n", sep="")
         } else if (tolower(oceNames[i]) == "station") {
             res@metadata[["station"]] <- trimws(item[1])
+            oceDebug(debug, "saved ", varNames[i], " (of length ", length(item), ") in @metadata slot\n", sep="")
         } else {
             res@data[[oceNames[i]]] <- item
+            oceDebug(debug, "saved ", varNames[i], " (of length ", length(item), ") in @data slot\n", sep="")
         }
     }
 

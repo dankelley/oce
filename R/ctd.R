@@ -4229,11 +4229,16 @@ setMethod(
             }
             res <- x
             indices <- dots[["indices"]]
+            nindices <- length(indices)
             for (i in seq_along(x@data)) {
-                res@data[[i]] <- x@data[[i]][indices]
+                if (length(x@data[[i]]) == nindices) {
+                    res@data[[i]] <- x@data[[i]][indices]
+                }
             }
             for (i in seq_along(x@metadata$flags)) {
-                res@metadata$flags[[i]] <- x@metadata$flags[[i]][indices]
+                if (length(x@metadata$flags[[i]]) == nindices) {
+                    res@metadata$flags[[i]] <- x@metadata$flags[[i]][indices]
+                }
             }
             subsetString <- paste(deparse(substitute(expr = subset, env = environment())), collapse = " ")
             res@processingLog <- processingLogAppend(
@@ -4242,19 +4247,24 @@ setMethod(
             )
             return(res)
         }
-        res <- new("ctd")
-        res@metadata <- x@metadata
-        res@processingLog <- x@processingLog
+        res <- x
+        #res@metadata <- x@metadata
+        #res@processingLog <- x@processingLog
         # FIXME: next 2 lines used to be in the loop but I don't see why, so moved out
         r <- eval(substitute(expr = subset, env = environment()), x@data, parent.frame(2))
         r <- r & !is.na(r)
-        for (i in seq_along(x@data)) {
-            res@data[[i]] <- x@data[[i]][r]
+        nr <- length(r)
+        for (i in seq_along(res@data)) {
+            if (length(res@data[[i]]) == nr) {
+                res@data[[i]] <- res@data[[i]][r]
+            }
         }
-        for (i in seq_along(x@metadata$flags)) {
-            res@metadata$flags[[i]] <- x@metadata$flags[[i]][r]
+        for (i in seq_along(res@metadata$flags)) {
+            if (length(res@metadata$flags[[i]]) == nr) {
+                res@metadata$flags[[i]] <- res@metadata$flags[[i]][r]
+            }
         }
-        names(res@data) <- names(x@data)
+        #names(res@data) <- names(x@data)
         subsetString <- paste(deparse(substitute(expr = subset, env = environment())), collapse = " ")
         res@processingLog <- processingLogAppend(
             res@processingLog,
@@ -5222,7 +5232,11 @@ drawIsopycnals <- function(
         FPL <- if (eos == "unesco") {
             function(x) swTFreeze(x, 0, eos = eos)
         } else {
-            function(x) swTFreeze(x, 0, longitude = longitude, latitude = latitude, eos = eos)
+            # Fix problem with NA values in longitude and latitude; see
+            # ttps://github.com/dankelley/oce/issues/2249
+            lontmp <- if (any(is.na(longitude))) mean(longitude, na.rm = TRUE) else longitude
+            lattmp <- if (any(is.na(latitude))) mean(latitude, na.rm = TRUE) else latitude
+            function(x) swTFreeze(x, 0, longitude = lontmp, latitude = lattmp, eos = eos)
         }
         frozen <- y < FPL(x)
         if (any(frozen)) {

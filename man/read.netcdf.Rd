@@ -124,21 +124,23 @@ d <- initializeFlagScheme(d, name = "DFO")
 # Move some data elements to the `metadata@flags` list,
 # so they can be used for flag-handling operations. Some
 # guesses had to be made on the name mapping (see Details).
-flags <- list(QALTB_01 = "heightAboveBottom",
-              QCPHLPR01 = "cholorophyll-a",
-              QCNDC_01 = "conductivity",
-              QDOXY_01 = "oxygen",
-              QOXYV_01 = "oxygenVoltage",
-              QPOTM_01 = "theta",
-              QPRES_01 = "pressure",
-              QPSAL_01 = "salinity",
-              QPSAR_01 = "downwellingIrradiance",
-              QSIGP_01 = "sigmaTheta",
-              QTEMP_01 = "temperature")
+flags <- list(
+    QALTB_01 = "heightAboveBottom",
+    QCPHLPR01 = "cholorophyll-a",
+    QCNDC_01 = "conductivity",
+    QDOXY_01 = "oxygen",
+    QOXYV_01 = "oxygenVoltage",
+    QPOTM_01 = "theta",
+    QPRES_01 = "pressure",
+    QPSAL_01 = "salinity",
+    QPSAR_01 = "downwellingIrradiance",
+    QSIGP_01 = "sigmaTheta",
+    QTEMP_01 = "temperature"
+)
 for (i in seq_along(flags)) {
     varName <- flags[[i]]
     flagName <- names(flags)[i]
-    #cat("fileName=", varName, ", flagName=", flagName, "\n", sep="")
+    # cat("fileName=", varName, ", flagName=", flagName, "\n", sep="")
     d@metadata$flags[[varName]] <- d[[flagName]] # move
     d@data[[flagName]] <- NULL # delete original
 }

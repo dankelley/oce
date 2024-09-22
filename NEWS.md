@@ -11,6 +11,7 @@
 * Change `read.netcdf()` to give a way to rename data (issue #2235).
 * Change `read.netcdf()` docs to show how to handle flags (issue #2236).
 * Change `subset,amsr-method` to make it handle `"pass"` as a parameter.
+* Change `subset,ctd-method` to make it handle items of unexpected length (issue #2250).
 
 # oce 1.8.3 (ON CRAN)
 
