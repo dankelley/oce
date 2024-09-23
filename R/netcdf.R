@@ -198,7 +198,7 @@ read.netcdf <- function(file, ..., encoding = NA, renamer = NULL, debug = getOpt
     }
     res@metadata$dataNamesOriginal <- dno
     for (i in seq_along(varNames)) {
-        #oceDebug(debug, "varNames[", i, "]=\"", varNames[i], "\"\n", sep = "")
+        # oceDebug(debug, "varNames[", i, "]=\"", varNames[i], "\"\n", sep = "")
         if (grepl("^history_", varNames[i], ignore.case = TRUE)) {
             next
         }
@@ -206,7 +206,7 @@ read.netcdf <- function(file, ..., encoding = NA, renamer = NULL, debug = getOpt
         scale <- ncdf4::ncatt_get(nc, varNames[i], "scale")
         isUnixTime <- FALSE
         if (units$hasatt) {
-            #oceDebug(debug, "  unit=\"", units$value, "\"\n")
+            # oceDebug(debug, "  unit=\"", units$value, "\"\n")
             # seconds since 1970-01-01T00:00:00+00:00
             if (grepl("seconds since 1970-01-01", units$value)) {
                 res@metadata$units[[oceNames[i]]] <- list(unit = expression(), scale = "")
@@ -239,27 +239,27 @@ read.netcdf <- function(file, ..., encoding = NA, renamer = NULL, debug = getOpt
                         "\"", oceNames[i], "\" unit \"", units$value,
                         "\" is not recognized; please report an issue"
                     )
-                    res@metadata$units[[oceNames[i]]] <- list(unit=units$value, scale="")
+                    res@metadata$units[[oceNames[i]]] <- list(unit = units$value, scale = "")
                 } else {
                     res@metadata$units[[oceNames[i]]] <- oceunit
                 }
             }
         }
-        #oceDebug(debug, "reading \"", varNames[i], "\"\n", sep = "")
+        # oceDebug(debug, "reading \"", varNames[i], "\"\n", sep = "")
         item <- ncdf4::ncvar_get(nc, varNames[i])
         if (is.array(item) && 1L == length(dim(item))) { # 1D array converted to vector
             item <- as.vector(item)
         }
-        #message("DAN i=", i, ", oceNames[i]='", oceNames[i], "'")
+        # message("DAN i=", i, ", oceNames[i]='", oceNames[i], "'")
         if (isUnixTime) {
             res@data[[oceNames[i]]] <- numberAsPOSIXct(item, tz = "UTC")
-            oceDebug(debug, "converted ", varNames[i], " (of length ", length(item), ") to POSIX and saved in @data slot\n", sep="")
+            oceDebug(debug, "converted ", varNames[i], " (of length ", length(item), ") to POSIX and saved in @data slot\n", sep = "")
         } else if (identical(tolower(oceNames[i]), "station")) {
             res@metadata[["station"]] <- trimws(item[1])
-            oceDebug(debug, "saved ", varNames[i], " (of length ", length(item), ") in @metadata slot\n", sep="")
+            oceDebug(debug, "saved ", varNames[i], " (of length ", length(item), ") in @metadata slot\n", sep = "")
         } else {
             res@data[[oceNames[i]]] <- item
-            oceDebug(debug, "saved ", varNames[i], " (of length ", length(item), ") in @data slot\n", sep="")
+            oceDebug(debug, "saved ", varNames[i], " (of length ", length(item), ") in @data slot\n", sep = "")
         }
     }
 
@@ -336,3 +336,101 @@ read.netcdf <- function(file, ..., encoding = NA, renamer = NULL, debug = getOpt
     oceDebug(debug, "END read.netcdf()\n", unindent = 1)
     res
 }
+
+#' Print an overview of the contents of a NetCDF file
+#'
+#' This prints an overview of the variables in a NetCDF file, along with time,
+#' longitude and latitude, if the last three are stored as dimensions.
+#'
+#' An alternative to this is to examine what is printed by running
+#' [ncdf4::nc_open()] with the given filename, but this output can be a bit
+#' confusing to read, especially for files that have voluminous global
+#' attributes.
+#'
+#' @param file character value naming a NetCDF file.
+#'
+#' @param level integer indicating the level of the overview.  If `level` is 1,
+#' which is the default, then a list holding the names of variables and
+#' dimensions is printed (and returned, silently).  If `level` is 2, then more
+#' information is printed.
+#'
+#' @template debugTemplate
+#'
+#' @return
+#' If `level` is 1, then the printed list of variables and dimensions
+#' is returned (silently).  Otherwise, much more is printed, but
+#' the return value is as for the first case.
+#'
+#' @examples
+#' library(oce)
+#' if (requireNamespace("ncdf4") && requireNamespace("jsonlite")) {
+#'     root <- "ftp://ftp.ifremer.fr/ifremer/argo/dac/bodc/6900388/profiles/"
+#'     file <- "D6900388_001.nc"
+#'     tmpfile <- tempfile(fileext = ".nc")
+#'     download.file(paste0(root, file), tmpfile)
+#'     netcdfTOC(tmpfile)
+#'     unlink(tmpfile)
+#' }
+#'
+#' @importFrom ncdf4 ncatt_get nc_close nc_open
+#' @importFrom jsonlite fromJSON
+#'
+#' @author Dan Kelley
+netcdfTOC <- function(file, level = 1L, debug = getOption("oceDebug")) {
+    if (!requireNamespace("ncdf4", quietly = TRUE)) {
+        stop("must install.packages(\"ncdf4\") to read netcdf data")
+    }
+    if (!requireNamespace("jsonlite", quietly = TRUE)) {
+        stop("must install.packages(\"jsonlite\") to read netcdf data")
+    }
+    nc <- ncdf4::nc_open(file)
+    rval <- list(variables=names(nc$var), dimensions=names(nc$dim))
+    if (level == 1L) {
+        ncdf4::nc_close(nc)
+        print(rval)
+        return(rval)
+    } else if (level == 2L) {
+        # print(sort(varnames))
+        # get info on time and location, if those things are in the file
+        varnames <- rval$variables
+        if ("time" %in% rval$dimensions) {
+            varnames <- c(varnames, "time")
+        }
+        if ("longitude" %in% rval$dimensions) {
+            varnames <- c(varnames, "longitude")
+        }
+        if ("latitude" %in% rval$dimensions) {
+            varnames <- c(varnames, "latitude")
+        }
+        # print(sort(varnames))
+        for (varname in varnames) {
+            cat("\n## ", varname, "\n\n", sep = "")
+            # Capture (and discard) the output to avoid warnings
+            # about 8-byte variables, which occur in some oceanographic
+            # files for things like CTD scan counts.
+            capture.output(att <- ncdf4::ncatt_get(nc, varname))
+            for (item in names(att)) {
+                if (item == "calibration") {
+                    cat("* ", item, ":\n", sep = "")
+                    cat(str(jsonlite::fromJSON(att[[item]])))
+                } else {
+                    cat(paste("* ", item, ": ",
+                        paste(att[[item]], collapse = " "), "\n",
+                        sep = ""
+                    ))
+                }
+            }
+            sample <- head(ncdf4::ncvar_get(nc, varname), 3L)
+            if (is.numeric(sample)) {
+                cat("* sample: ", paste(head(sample), collapse = " "), "\n")
+            }
+        }
+        ncdf4::nc_close(nc)
+        return(invisible(rval))
+    } else {
+        stop("level must be 1 or 2, not ", level, " as supplied")
+    }
+}
+
+# @examples
+# https://cioosatlantic.ca/erddap/files/bio_maritimes_region_ecosystem_survey_ctd/Maritimes%20Region%20Ecosystem%20Survey%20Summer/2023/CTD_CAR2023011_242_497961_UP.ODF.nc

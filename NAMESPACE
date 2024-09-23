@@ -204,6 +204,7 @@ export(
     matrixSmooth,
     metNames2oceNames,
     moonAngle,
+    netcdfTOC,
     numberAsHMS,
     numberAsPOSIXct,
     ODF2oce,
