@@ -39,13 +39,18 @@ attributes.
 }
 \examples{
 library(oce)
-if (requireNamespace("ncdf4") && requireNamespace("jsonlite")) {
-    root <- "ftp://ftp.ifremer.fr/ifremer/argo/dac/bodc/6900388/profiles/"
-    file <- "D6900388_001.nc"
-    tmpfile <- tempfile(fileext = ".nc")
-    download.file(paste0(root, file), tmpfile)
-    netcdfTOC(tmpfile)
-    unlink(tmpfile)
+# Saving to a temporary file for CRAN testing; in practice,
+# it's more likely that the user will retain this file, or already
+# have a target file on the local system.
+if (requireNamespace("ncdf4") &&
+    requireNamespace("jsonlite") &&
+    requireNamespace("curl")) {
+    urlroot <- "ftp://ftp.ifremer.fr/ifremer/argo/dac/bodc/6900388/profiles/"
+    remotefile <- "D6900388_001.nc"
+    localfile <- tempfile(fileext = ".nc")
+    curl::curl_download(paste0(urlroot, remotefile), localfile)
+    netcdfTOC(localfile)
+    unlink(localfile)
 }
 
 }

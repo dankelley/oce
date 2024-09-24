@@ -363,13 +363,18 @@ read.netcdf <- function(file, ..., encoding = NA, renamer = NULL, debug = getOpt
 #'
 #' @examples
 #' library(oce)
-#' if (requireNamespace("ncdf4") && requireNamespace("jsonlite")) {
-#'     root <- "ftp://ftp.ifremer.fr/ifremer/argo/dac/bodc/6900388/profiles/"
-#'     file <- "D6900388_001.nc"
-#'     tmpfile <- tempfile(fileext = ".nc")
-#'     download.file(paste0(root, file), tmpfile)
-#'     netcdfTOC(tmpfile)
-#'     unlink(tmpfile)
+#' # Saving to a temporary file for CRAN testing; in practice,
+#' # it's more likely that the user will retain this file, or already
+#' # have a target file on the local system.
+#' if (requireNamespace("ncdf4") &&
+#'     requireNamespace("jsonlite") &&
+#'     requireNamespace("curl")) {
+#'     urlroot <- "ftp://ftp.ifremer.fr/ifremer/argo/dac/bodc/6900388/profiles/"
+#'     remotefile <- "D6900388_001.nc"
+#'     localfile <- tempfile(fileext = ".nc")
+#'     curl::curl_download(paste0(urlroot, remotefile), localfile)
+#'     netcdfTOC(localfile)
+#'     unlink(localfile)
 #' }
 #'
 #' @importFrom ncdf4 ncatt_get nc_close nc_open
@@ -384,7 +389,7 @@ netcdfTOC <- function(file, level = 1L, debug = getOption("oceDebug")) {
         stop("must install.packages(\"jsonlite\") to read netcdf data")
     }
     nc <- ncdf4::nc_open(file)
-    rval <- list(variables=names(nc$var), dimensions=names(nc$dim))
+    rval <- list(variables = names(nc$var), dimensions = names(nc$dim))
     if (level == 1L) {
         ncdf4::nc_close(nc)
         print(rval)
@@ -430,7 +435,9 @@ netcdfTOC <- function(file, level = 1L, debug = getOption("oceDebug")) {
     } else {
         stop("level must be 1 or 2, not ", level, " as supplied")
     }
+    if (requireNamespace("ncdf4") &&
+        requireNamespace("jsonlite") &&
+        requireNamespace("curl")) {
+        cat("test")
+    }
 }
-
-# @examples
-# https://cioosatlantic.ca/erddap/files/bio_maritimes_region_ecosystem_survey_ctd/Maritimes%20Region%20Ecosystem%20Survey%20Summer/2023/CTD_CAR2023011_242_497961_UP.ODF.nc

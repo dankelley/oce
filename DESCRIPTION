@@ -10,6 +10,7 @@ Maintainer: Dan Kelley <Dan.Kelley@Dal.Ca>
 Depends: R (>= 4.1.0), gsw, methods, utils
 Suggests:
     automap,
+    curl,
     DBI,
     foreign,
     interp,
