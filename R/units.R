@@ -53,18 +53,34 @@ as.unit <- function(u, default = list(unit = expression(), scale = "")) {
     }
     uorig <- trimws(u) # keep this to e.g. distinguish S/m from s/m.
     u <- tolower(uorig)
-    if (grepl("^1$", u)) {
+    if (nchar(u) == 0) {
+        list(unit = expression(), scale = "")
+    } else if (grepl("^/m\\s*/sr$", u)) {
+        list(unit = expression(m^-1 * sr^-1), scale = "")
+    } else if (grepl("^%$", u)) {
+        list(unit = expression("%"), scale = "")
+    } else if (grepl("^1$", u)) {
         list(unit = expression(), scale = "")
     } else if (grepl("^1\\s*/\\s*m$", u) || grepl("^1.m-1$", u) || grepl("^m-1$", u)) {
         list(unit = expression(1 / m), scale = "")
+    } else if (grepl("^ah$", u, ignore.case = TRUE)) {
+        list(unit = expression(A * hr), scale = "")
     } else if (grepl("^amp[s]{0,1}$", u, ignore.case = TRUE)) {
         list(unit = expression(A), scale = "")
     } else if (grepl("^amp-hrs$", u, ignore.case = TRUE)) {
-        list(unit = expression(A - hour), scale = "")
+        list(unit = expression(A * hour), scale = "")
     } else if (grepl("^bar$", u, ignore.case = TRUE)) {
         list(unit = expression(bar), scale = "")
-    } else if (grepl("^byte$", u, ignore.case = TRUE)) {
+    } else if (grepl("^bool$", u, ignore.case = TRUE)) {
         list(unit = expression(), scale = "")
+    } else if (grepl("^boolean$", u, ignore.case = TRUE)) {
+        list(unit = expression(), scale = "")
+    } else if (grepl("^byte[s]{0,1}$", u, ignore.case = TRUE)) {
+        list(unit = expression(), scale = "")
+    } else if (grepl("^cc$", u, ignore.case = TRUE)) {
+        list(unit = expression(cm^3), scale = "")
+    } else if (grepl("^counts$", u, ignore.case = TRUE)) {
+        list(unit = expression(count), scale = "")
     } else if (grepl("^celsius$", u, ignore.case = TRUE)) {
         list(unit = expression(degree * C), scale = "")
     } else if (grepl("^db$", u)) {
@@ -73,6 +89,12 @@ as.unit <- function(u, default = list(unit = expression(), scale = "")) {
         list(unit = expression(dbar), scale = "")
     } else if (grepl("^decibar[s]{0,1}$", u)) {
         list(unit = expression(dbar), scale = "")
+    } else if (grepl("^deg$", u, ignore.case = TRUE)) {
+        list(unit = expression(degree), scale = "")
+    } else if (grepl("^degc$", u)) {
+        list(unit = expression(degree * "C"), scale = "")
+    } else if (grepl("^degree decimal minutes$", u)) {
+        list(unit = expression("degree dec. min."), scale = "")
     } else if (grepl("^degree[s]{0,1}$", u)) {
         list(unit = expression(degree), scale = "")
     } else if (grepl("^degree[s]{0,1}.celsius$", u)) {
@@ -87,18 +109,26 @@ as.unit <- function(u, default = list(unit = expression(), scale = "")) {
         list(unit = expression(degree * S), scale = "")
     } else if (grepl("^degrees{0,1}.west$", u)) {
         list(unit = expression(degree * W), scale = "")
+    } else if (grepl("^enum$", u)) {
+        list(unit = expression(), scale = "")
+    } else if (grepl("^inch$", u)) {
+        list(unit = expression("inch"), scale = "")
     } else if (grepl("^ipts-68$", u) ||
         grepl("^ipts\\s*68$", u)) {
         list(unit = expression(degree * C), scale = "IPTS-68")
     } else if (grepl("^its-90$", u) ||
         grepl("^its\\s*90$", u)) {
         list(unit = expression(degree * C), scale = "ITS-90")
+    } else if (grepl("^inHg$", uorig)) {
+        list(unit = expression(inch * Hg), scale = "")
     } else if (grepl("^kg\\s*/\\s*m\\^3$", u) ||
         grepl("^kg\\s+m-3", u) ||
         grepl("^kg.m-3", u)) {
         list(unit = expression(kg / m^3), scale = "")
     } else if (grepl("^m$", u)) {
         list(unit = expression(m), scale = "")
+    } else if (grepl("^mV$", uorig)) {
+        list(unit = expression(mV), scale = "")
     } else if (grepl("^m\\s*/\\s*s$", u) ||
         grepl("^m\\s+s-1$", u) ||
         grepl("^m.s-1", u)) {
@@ -123,12 +153,20 @@ as.unit <- function(u, default = list(unit = expression(), scale = "")) {
         list(unit = expression(), scale = "")
     } else if (grepl("^percent$", u, ignore.case = TRUE)) {
         list(unit = expression(), scale = "PSS-78")
+    } else if (grepl("^ppb$", u, ignore.case = TRUE)) {
+        list(unit = expression("ppb"), scale = "")
     } else if (grepl("^pss-78$", u) ||
         grepl("^pss\\s*78$", u)) {
         list(unit = expression(), scale = "PSS-78")
     } else if (grepl("^psu$", u, ignore.case = TRUE)) {
         list(unit = expression(), scale = "PSS-78")
-    } else if (grepl("^seconds since 1990-01-01T00:00:00Z$", u, ignore.case = TRUE)) {
+    } else if (grepl("^rad$", u, ignore.case = TRUE)) {
+        list(unit = expression("rad"), scale = "")
+    } else if (grepl("^s$", u, ignore.case = TRUE)) {
+        list(unit = expression(s), scale = "")
+    } else if (grepl("^sec$", u, ignore.case = TRUE)) {
+        list(unit = expression(s), scale = "")
+    } else if (grepl("^seconds since 1990-01-01.*$", u, ignore.case = TRUE)) {
         list(unit = expression(s), scale = "since 1990-01-01")
     } else if (grepl("^umol\\s*/\\s*kg$", u) ||
         grepl("^umol\\s+kg-1$", u) ||
@@ -150,6 +188,8 @@ as.unit <- function(u, default = list(unit = expression(), scale = "")) {
         grepl("^uEinsteins\\s+s-1\\s+m-2$", uorig) ||
         grepl("^uEinsteins.s-1.m-2$", uorig)) {
         list(unit = expression(mu * Einstein / s / m^2), scale = "")
+    } else if (grepl("^uw\\s*/\\s*cm\\^2\\s*/\\s*nm$", u)) {
+        list(unit = expression(mu * W / cm^2 / nm), scale = "")
     } else if (grepl("^s\\s*/\\s*m$", uorig) || # reciprocal velocity
         grepl("^s\\s+m-1$", uorig) ||
         grepl("^s.m-1$", uorig)) {
@@ -172,6 +212,10 @@ as.unit <- function(u, default = list(unit = expression(), scale = "")) {
         list(unit = expression(mu * g / l), scale = "")
     } else if (grepl("^ug\\s*/\\s*kg$", u)) {
         list(unit = expression(mu * g / kg), scale = "")
+    } else if (grepl("^unixtimestamp$", u)) {
+        list(unit = expression(s), scale = "since 1970-01-01")
+    } else if (grepl("^watt$", u)) {
+        list(unit = expression(W), scale = "")
     } else if (grepl("^volt[s]{0,1}$", u)) {
         list(unit = expression(V), scale = "")
     } else {
