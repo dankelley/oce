@@ -24,6 +24,8 @@ log gets a new item that is constructed from the function call.}
 Rename an item within the \code{data} slot of an \linkS4class{oce} object, also changing
 \code{dataNamesOriginal} in the \code{metadata} slot, so that the \code{[[} accessor will
 still work with the original name that was stored in the data.
+Note that this function does not alter associated flags or units; to
+take care of those things, use the newer \code{\link[=rename]{rename()}} function instead.
 }
 \examples{
 library(oce)

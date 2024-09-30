@@ -1,0 +1,11 @@
+PSAL,salinity,,
+accM,acceleration,m/s^2,
+cond#mS/cm,conductivity,mS/cm,
+density,density,kg/m^3,
+oxsatML/L,oxygen,ml/l,
+oxsatMg/L,oxygen,mg/l,
+oxsatMm/Kg,oxygen,mu*mol/kg,
+prM,pressure,dbar,
+t#68,temperature,degree*C,IPTS-68
+t#90,temperature,degree*C,ITS-90
+t#90C,temperature,degree*C,ITS-90

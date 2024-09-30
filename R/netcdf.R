@@ -358,8 +358,8 @@ read.netcdf <- function(file, ..., encoding = NA, renamer = NULL, debug = getOpt
 #'
 #' @return
 #' If `level` is 1, then the printed list of variables and dimensions
-#' is returned (silently).  Otherwise, much more is printed, but
-#' the return value is as for the first case.
+#' is returned.  Otherwise, more information is printed, but
+#' the return value is the same as for `level` 1.
 #'
 #' @examples
 #' library(oce)
@@ -392,7 +392,6 @@ netcdfTOC <- function(file, level = 1L, debug = getOption("oceDebug")) {
     rval <- list(variables = names(nc$var), dimensions = names(nc$dim))
     if (level == 1L) {
         ncdf4::nc_close(nc)
-        print(rval)
         return(rval)
     } else if (level == 2L) {
         # print(sort(varnames))
@@ -434,10 +433,5 @@ netcdfTOC <- function(file, level = 1L, debug = getOption("oceDebug")) {
         return(invisible(rval))
     } else {
         stop("level must be 1 or 2, not ", level, " as supplied")
-    }
-    if (requireNamespace("ncdf4") &&
-        requireNamespace("jsonlite") &&
-        requireNamespace("curl")) {
-        cat("test")
     }
 }
