@@ -122,7 +122,27 @@ renameInternal <- function(names, dictionary = "ioos.csv", debug = 0) {
 #' dictionary <- read.csv(text = dictText, header = FALSE)
 #' rename(d, dictionary)
 #' #
-#' # Example 2: a CIOOS NetCDF file (FIXME: add this)
+#' # Example 2: a CIOOS NetCDF file. Note that this file
+#' # is downloaded and removed at the end; in practice,
+#' # it is likely that the file might be retained locally.
+#' if (requireNamespace("curl")) {
+#'     file <- tempfile(fileext = ".nc") # removed later
+#'     server <- "https://cioosatlantic.ca/erddap/files"
+#'     program <- "bio_atlantic_zone_monitoring_program_ctd"
+#'     subprogram <- "Bedford%20Basin%20Monitoring%20Program"
+#'     year <- "2023"
+#'     cast <- "001"
+#'     url <- paste0(
+#'         server, "/", program, "/", subprogram, "/", year,
+#'         "/CTD_BCD2023667_", cast, "_1_DN.ODF.nc"
+#'     )
+#'     curl::curl_download(url, file)
+#'     d <- read.netcdf(file)
+#'     summary(d)
+#'     dd <- rename(d, "ioos")
+#'     summary(dd)
+#'     unlink(file)
+#' }
 #'
 #' @section History and Plans:
 #' This function was written in late September, 2024. It is likely
@@ -177,13 +197,20 @@ rename <- function(x, dictionary = "ioos.csv", debug = 0) {
         # message("DAN units 2")
         names(rval@metadata$units) <- sapply(names(rval@metadata$units), \(n) R$oceName[which(n == R$originalName)])
     } else {
-        warning("cannot set up units (length mismatch) -- can this happen?") # FIXME
+        oceDebug(debug, "renaming units one by one\n")
+        #message("DAN 1")
+        w <- sapply(names(rval@metadata$units), \(u) which(u == R$originalName))
+        #print(R$oceName[w])
+        #message("DAN 2")
+        names(rval@metadata$units) <- R$oceName[w]
+        #message("DAN 3")
+        #warning("cannot set up units (length mismatch) -- can this happen?") # FIXME
     }
     # message("DAN next is x@metadata$units")
     # print(x@metadata$units)
     # message("DAN next is R")
     # print(R)
-    names(rval@metadata$units) <- R$oceName
+    # names(rval@metadata$units) <- R$oceName
     # message("DAN next is rval@metadata$units")
     # print(rval@metadata$units)
     # Move calibrations to metadata
@@ -219,7 +246,7 @@ rename <- function(x, dictionary = "ioos.csv", debug = 0) {
     for (name in dataNames) {
         item <- rval@data[[name]]
         if (grepl("Flag$", name)) {
-            rval@metadata$flags[[name]] <- item
+            rval@metadata$flags[[gsub("Flag$", "", name)]] <- item
             rval@data[[name]] <- NULL
         }
     }

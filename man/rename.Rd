@@ -78,7 +78,27 @@ T,temperature,degree*C,ITS-90"
 dictionary <- read.csv(text = dictText, header = FALSE)
 rename(d, dictionary)
 #
-# Example 2: a CIOOS NetCDF file (FIXME: add this)
+# Example 2: a CIOOS NetCDF file. Note that this file
+# is downloaded and removed at the end; in practice,
+# it is likely that the file might be retained locally.
+if (requireNamespace("curl")) {
+    file <- tempfile(fileext = ".nc") # removed later
+    server <- "https://cioosatlantic.ca/erddap/files"
+    program <- "bio_atlantic_zone_monitoring_program_ctd"
+    subprogram <- "Bedford\%20Basin\%20Monitoring\%20Program"
+    year <- "2023"
+    cast <- "001"
+    url <- paste0(
+        server, "/", program, "/", subprogram, "/", year,
+        "/CTD_BCD2023667_", cast, "_1_DN.ODF.nc"
+    )
+    curl::curl_download(url, file)
+    d <- read.netcdf(file)
+    summary(d)
+    dd <- rename(d, "ioos")
+    summary(dd)
+    unlink(file)
+}
 
 }
 \author{
