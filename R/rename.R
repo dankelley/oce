@@ -130,11 +130,11 @@ renameInternal <- function(names, dictionary = "ioos.csv", debug = 0) {
 #'     server <- "https://cioosatlantic.ca/erddap/files"
 #'     program <- "bio_atlantic_zone_monitoring_program_ctd"
 #'     subprogram <- "Bedford%20Basin%20Monitoring%20Program"
-#'     year <- "2023"
-#'     cast <- "001"
-#'     url <- paste0(
-#'         server, "/", program, "/", subprogram, "/", year,
-#'         "/CTD_BCD2023667_", cast, "_1_DN.ODF.nc"
+#'     year <- 2023
+#'     cast <- 1
+#'     url <- sprintf(
+#'         "%s/%s/%s/%s/CTD_BCD%s667_%03d_1_DN.ODF.nc",
+#'         server, program, subprogram, year, year, cast
 #'     )
 #'     curl::curl_download(url, file)
 #'     d <- read.netcdf(file)
