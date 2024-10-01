@@ -15,7 +15,7 @@ or the name of a CSV file that defines a dictionary. If it is a data frame,
 the it must have unnamed columns containing information as in the file
 method; to see an example, type the following in an R console.
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{system.file("extdata", "dictionary_sbe.csv", package = "oce")
+\if{html}{\out{<div class="sourceCode">}}\preformatted{readLines(system.file("extdata", "dictionary_ioos.csv", package = "oce"))
 }\if{html}{\out{</div>}}}
 
 \item{debug}{an integer specifying whether debugging information is

@@ -106,7 +106,7 @@ renameInternal <- function(names, dictionary = "ioos.csv", debug = 0) {
 #' the it must have unnamed columns containing information as in the file
 #' method; to see an example, type the following in an R console.
 #'```
-#' system.file("extdata", "dictionary_sbe.csv", package = "oce")
+#' readLines(system.file("extdata", "dictionary_ioos.csv", package = "oce"))
 #'```
 #'
 #' @template debugTemplate
