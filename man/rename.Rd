@@ -10,13 +10,10 @@ rename(x, dictionary = "ioos.csv", debug = 0)
 \item{x}{an \linkS4class{oce} object.}
 
 \item{dictionary}{either a string or a data frame.  If a string, then it is
-either the name of a built-in vocabulary (e.g. \code{sbe}; see \sQuote{Details})
-or the name of a CSV file that defines a dictionary. If it is a data frame,
-the it must have unnamed columns containing information as in the file
-method; to see an example, type the following in an R console.
-
-\if{html}{\out{<div class="sourceCode">}}\preformatted{readLines(system.file("extdata", "dictionary_ioos.csv", package = "oce"))
-}\if{html}{\out{</div>}}}
+either the name of a built-in vocabulary (e.g. \code{ioos} or \code{sbe}; see
+\sQuote{Details}) or the name of a CSV file that defines a dictionary. If it
+is a data frame, the it must have four unnamed columns containing information as
+described in \sQuote{Details}.}
 
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
@@ -27,25 +24,40 @@ be printed. If one function calls another, it usually reduces the value of
 by specifying higher \code{debug} values.}
 }
 \description{
-The is a provisional function, added in September 2024, and likely to change
-through the end of that year.
+There are many conventions for naming oceanographic variables, and this
+function provides a way to map names in data files to names to be used in an
+object created from those files.
 }
 \details{
 The dictionary format, whether read from a built-in CSV file, or from a
-user-supplied CSV file, or as a data frame, is as follows.
+user-supplied CSV file, or as a data frame, contains four character-valued
+columns, as follows.
 \enumerate{
-\item A character value that specifies the original name of a variable in the
-\code{data} slot of \code{x}. This is used in matching such names against targets.
-Matches may be in the form of equality, or string match (in which any \verb{#}
-characters in the column are matched to single digits in variable names).
-\item The oce-convention name to be used for a match.
-\item The unit for the column (only used if the object does not already hold a
-unit for this entry).
+\item The original name of a variable in the \code{data} slot of \code{x}. This is used in
+matching such names against targets. Matches may be in the form of
+equality, or \link{regexp} match. In the latter case, a \verb{#} character may be
+used as an abbreviation for a digit.  Note that \code{^} is inserted at the
+start of the value, and \code{$} at the end, before searching for a match with
+\code{\link[=grep]{grep()}}.
+\item The desired oce-convention name to be used for a match. Many files will
+yield duplicates, e.g. for multiple temperature sensors, so
+\code{\link[=unduplicateNames]{unduplicateNames()}} is called after all names are processed, to avoid
+problems.
+\item The unit for the column, typically in a format handled by \code{\link[=expression]{expression()}}.
+Note that this value is ignored if the object already holds stated units
+for the quantity in question.
 \item The scale for the column (again, only used if the object does not already
 hold a scale).
 }
 
-For example, an entry in a CSV file
+For examples, see the built-in dictionaries, which are stored in
+files with locations that are revealed with the following.
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{readLines(system.file("extdata", "dictionary_sbe.csv", package = "oce"))
+readLines(system.file("extdata", "dictionary_ioos.csv", package = "oce"))
+}\if{html}{\out{</div>}}
+
+For example, the entry
 
 \if{html}{\out{<div class="sourceCode">}}\preformatted{PSALST##,salinity,,PSS-78
 }\if{html}{\out{</div>}}
@@ -54,11 +66,6 @@ specifies that a variable named \code{"PSALT"} followed by 2 digits
 is to be renamed as \code{"salinity"}, that the unit (if not
 already defined within \code{x}) is to be blank, and that
 the scale (again, if not already defined) is to be \code{"PSS-78"}.
-
-Note that after the renaming is done, duplicate names are handled
-in the standard oce way, e.g. if the object holds three temperature
-variables, they will be named \code{temperature}, \code{temperature2} and
-\code{temperature3}.
 }
 \section{History and Plans}{
 

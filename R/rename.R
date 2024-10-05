@@ -21,7 +21,7 @@ renameInternal <- function(names, dictionary = "ioos.csv", debug = 0) {
         cat("next is vocabulary, after adding regexp pattern\n")
         print(vocab)
     }
-    rval <- data.frame()
+    rval <- data.frame(originalName = NULL, oceName = NULL, unit = NULL, scale = NULL)
     for (i in seq_along(names)) {
         name <- names[i]
         # Look up
@@ -44,15 +44,25 @@ renameInternal <- function(names, dictionary = "ioos.csv", debug = 0) {
             }
         }
         if (length(w) == 0L) {
-            oceDebug(debug, "  * \"", name, "\" is not in vocabulary, so it is retained without renaming\n", sep = "")
+            oceDebug(debug, "  * \"", name, "\" is not in vocabulary; so not renamed\n", sep = "")
             rval <- rbind(rval, c(originalName = name, oceName = name, unit = "", scale = ""))
         } else {
-            # oceDebug(debug, "  \"", name, "\" matches vocabulary at index ", w, "\n", sep = "")
-            # oceDebug(debug, vectorShow(vocab[w, ]))
-            rval <- rbind(rval, c(
+            if (length(w) == 1L) {
+                oceDebug(debug, "  \"", name, "\" matches vocabulary at index ", w, "\n", sep = "")
+            } else {
+                oceDebug(debug, "  \"", name, "\" matches vocabulary at indices ",
+                         paste(w, collapse = ", "), "; using the first of these\n", sep = "")
+                warning("  \"", name, "\" matches vocabulary at indices ",
+                         paste(w, collapse = ", "), "; using the first of these\n")
+                w <- w[1]
+            }
+            oceDebug(debug, vectorShow(vocab[w, ]))
+            newrow <- c(
                 originalName = name,
                 oceName = vocab$oce[w], unit = vocab$unit[w], scale = vocab$scale[w]
-            ))
+            )
+            newrow <- c(name, vocab$oce[w], vocab$unit[w], vocab$scale[w])
+            rval <- rbind(rval, newrow)
         }
     }
     colnames(rval) <- c("originalName", "oceName", "units", "scale")
@@ -65,49 +75,59 @@ renameInternal <- function(names, dictionary = "ioos.csv", debug = 0) {
 
 #' Rename variables according to a specified dictionary
 #'
-#' The is a provisional function, added in September 2024, and likely to change
-#' through the end of that year.
+#' There are many conventions for naming oceanographic variables, and this
+#' function provides a way to map names in data files to names to be used in an
+#' object created from those files.
 #'
 #' The dictionary format, whether read from a built-in CSV file, or from a
-#' user-supplied CSV file, or as a data frame, is as follows.
+#' user-supplied CSV file, or as a data frame, contains four character-valued
+#' columns, as follows.
 #'
-#' 1. A character value that specifies the original name of a variable in the
-#'    `data` slot of `x`. This is used in matching such names against targets.
-#'    Matches may be in the form of equality, or string match (in which any `#`
-#'    characters in the column are matched to single digits in variable names).
+#' 1. The original name of a variable in the `data` slot of `x`. This is used in
+#'    matching such names against targets. Matches may be in the form of
+#'    equality, or [regexp] match. In the latter case, a `#` character may be
+#'    used as an abbreviation for a digit.  Note that `^` is inserted at the
+#'    start of the value, and `$` at the end, before searching for a match with
+#'    [grep()].
 #'
-#' 2. The oce-convention name to be used for a match.
+#' 2. The desired oce-convention name to be used for a match. Many files will
+#'    yield duplicates, e.g. for multiple temperature sensors, so
+#'    [unduplicateNames()] is called after all names are processed, to avoid
+#'    problems.
 #'
-#' 3. The unit for the column (only used if the object does not already hold a
-#'    unit for this entry).
+#' 3. The unit for the column, typically in a format handled by [expression()].
+#'    Note that this value is ignored if the object already holds stated units
+#'    for the quantity in question.
 #'
 #' 4. The scale for the column (again, only used if the object does not already
 #'    hold a scale).
 #'
-#' For example, an entry in a CSV file
+#' For examples, see the built-in dictionaries, which are stored in
+#' files with locations that are revealed with the following.
+#'
+#'```
+#' readLines(system.file("extdata", "dictionary_sbe.csv", package = "oce"))
+#' readLines(system.file("extdata", "dictionary_ioos.csv", package = "oce"))
+#'```
+#'
+#' For example, the entry
+#'
 #' ```
 #' PSALST##,salinity,,PSS-78
 #' ```
+#'
 #' specifies that a variable named `"PSALT"` followed by 2 digits
 #' is to be renamed as `"salinity"`, that the unit (if not
 #' already defined within `x`) is to be blank, and that
 #' the scale (again, if not already defined) is to be `"PSS-78"`.
 #'
-#' Note that after the renaming is done, duplicate names are handled
-#' in the standard oce way, e.g. if the object holds three temperature
-#' variables, they will be named `temperature`, `temperature2` and
-#' `temperature3`.
-#'
 #' @param x an [oce-class] object.
 #'
 #' @param dictionary either a string or a data frame.  If a string, then it is
-#' either the name of a built-in vocabulary (e.g. `sbe`; see \sQuote{Details})
-#' or the name of a CSV file that defines a dictionary. If it is a data frame,
-#' the it must have unnamed columns containing information as in the file
-#' method; to see an example, type the following in an R console.
-#'```
-#' readLines(system.file("extdata", "dictionary_ioos.csv", package = "oce"))
-#'```
+#' either the name of a built-in vocabulary (e.g. `ioos` or `sbe`; see
+#' \sQuote{Details}) or the name of a CSV file that defines a dictionary. If it
+#' is a data frame, the it must have four unnamed columns containing information as
+#' described in \sQuote{Details}.
 #'
 #' @template debugTemplate
 #'
@@ -198,13 +218,13 @@ rename <- function(x, dictionary = "ioos.csv", debug = 0) {
         names(rval@metadata$units) <- sapply(names(rval@metadata$units), \(n) R$oceName[which(n == R$originalName)])
     } else {
         oceDebug(debug, "renaming units one by one\n")
-        #message("DAN 1")
+        # message("DAN 1")
         w <- sapply(names(rval@metadata$units), \(u) which(u == R$originalName))
-        #print(R$oceName[w])
-        #message("DAN 2")
+        # print(R$oceName[w])
+        # message("DAN 2")
         names(rval@metadata$units) <- R$oceName[w]
-        #message("DAN 3")
-        #warning("cannot set up units (length mismatch) -- can this happen?") # FIXME
+        # message("DAN 3")
+        # warning("cannot set up units (length mismatch) -- can this happen?") # FIXME
     }
     # message("DAN next is x@metadata$units")
     # print(x@metadata$units)

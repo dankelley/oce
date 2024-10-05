@@ -56,3 +56,26 @@ TEMPERATURE,temperature,degree*C,ITS-90"
     expect_equal(x[["flags"]]$SALINITY, y[["salinityFlag"]])
     expect_equal(x[["flags"]]$SALINITY, y[["flags"]]$salinity)
 })
+
+test_that("rename() with skeleton objects (with user's list dictionary)", {
+    if (1L == length(list.files(path = ".", pattern = "local_data"))) {
+        colnames <- strsplit(readLines("local_data/rename.csv", encoding = "latin1", n = 1), ",")[[1]]
+        d <- read.csv("local_data/rename.csv", encoding = "latin1", skip = 1)
+        names(d) <- colnames
+        o <- new("oce")
+        for (name in names(d)) {
+            o@data[name] <- d[name]
+        }
+        oo <- rename(o, "sbe")
+        expect_equal(
+            names(oo[["data"]]),
+            c(
+                "scan", "pressure", "depth", "temperature", "temperature2",
+                "conductivity", "conductivity2", "oxygenRaw", "beamTransmission",
+                "v1", "fluorescence", "v0", "fluorescence2", "v4", "upoly", "PAR",
+                "spar", "altimeter", "oxygen", "salinity", "salinity2", "theta",
+                "sigmaTheta", "soundSpeed", "nbin", "flag"
+            )
+        )
+    }
+})
