@@ -74,7 +74,12 @@ Copied directly from the above UH page, follow below to install the python minic
 
 ### Install Miniconda base
 
-To begin, install the current 64-bit Python 3 [Miniconda](https://conda.io/miniconda.html) base that matches your operating system. We will use the shell script version (`*.sh`) of the installer, not a GUI version (`*.pkg` on the Mac). We don’t even need a browser to download the installer. Open a terminal window so you can run commands. Then you can download the Mac installer by executing:
+To begin, install the current 64-bit Python 3
+[Miniconda](https://docs.conda.io/miniconda.html) base that matches your
+operating system. We will use the shell script version (`*.sh`) of the
+installer, not a GUI version (`*.pkg` on the Mac). We don’t even need a browser
+to download the installer. Open a terminal window so you can run commands. Then
+you can download the Mac installer by executing:
 ```
 curl -O https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh
 ```
