@@ -1286,8 +1286,18 @@ oce.plot.ts <- function(
         tz <- attr(x, "tzone") # cause gridded x to inherit timezone from original x
         x <- rep(unname(sapply(dfSplit, function(DF) if (length(DF$x) > 2) mean(DF$x, na.rm = TRUE) else NA)), each = 2)
         x <- numberAsPOSIXct(x, tz = tz)
-        ymin <- unname(sapply(dfSplit, function(DF) if (length(DF$y) > 2) min(DF$y, na.rm = TRUE) else NA))
-        ymax <- unname(sapply(dfSplit, function(DF) if (length(DF$y) > 2) max(DF$y, na.rm = TRUE) else NA))
+        ymin <- unname(sapply(
+            dfSplit,
+            function(DF) {
+                if (sum(is.finite(DF$y)) > 2) min(DF$y, na.rm = TRUE) else NA
+            }
+        ))
+        ymax <- unname(sapply(
+            dfSplit,
+            function(DF) {
+                if (sum(is.finite(DF$y)) > 2) max(DF$y, na.rm = TRUE) else NA
+            }
+        ))
         y <- as.vector(rbind(ymin, ymax))
         # Remove any segments for which min and max could not be computed
         bad <- !is.finite(y)
