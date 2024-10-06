@@ -81,7 +81,7 @@ used by \code{\link[=swPressure]{swPressure()}}.
 }
 \references{
 \enumerate{
-\item \verb{https://saiv.no/sd204-ctd-profiler}
+\item SAIV A/S company website \url{https://saiv.no/sd204-ctd-profiler}
 }
 }
 \seealso{
