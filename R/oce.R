@@ -1276,6 +1276,13 @@ oce.plot.ts <- function(
     # Handle 'simplify' argument
     nx <- length(x)
     if (type == "l" && is.numeric(simplify) && nx > (5L * simplify)) {
+        # simplification works by replacing all the points in each sub-interval
+        # with just two points: one for the minimum y value there, and the other
+        # for the maximum y value there.  (NA is used if all the data in the
+        # interval are missing.)  This way, the graph displays the data quite
+        # faithfully in most cases.  By contrast, if we instead used, say, the
+        # mean y in each interval, the curve could get smoothed enough to
+        # be unrepresentative.
         warning("simplifying a large dataset; set simplify=NA to see raw data\n")
         xgrid <- seq(min(x, na.rm = TRUE), max(x, na.rm = TRUE), length.out = simplify)
         df <- data.frame(x, y)
@@ -1286,6 +1293,8 @@ oce.plot.ts <- function(
         tz <- attr(x, "tzone") # cause gridded x to inherit timezone from original x
         x <- rep(unname(sapply(dfSplit, function(DF) if (length(DF$x) > 2) mean(DF$x, na.rm = TRUE) else NA)), each = 2)
         x <- numberAsPOSIXct(x, tz = tz)
+        # FIXME: I think thhis might be faster if another 'apply' function were
+        # used, to return 2 values, but I (DEK) can't recall what that function is.
         ymin <- unname(sapply(
             dfSplit,
             function(DF) {
@@ -1299,10 +1308,6 @@ oce.plot.ts <- function(
             }
         ))
         y <- as.vector(rbind(ymin, ymax))
-        # Remove any segments for which min and max could not be computed
-        bad <- !is.finite(y)
-        x <- x[!bad]
-        y <- y[!bad]
     }
     xrange <- range(x, na.rm = TRUE)
     yrange <- range(y, finite = TRUE)
