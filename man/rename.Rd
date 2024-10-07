@@ -7,13 +7,18 @@
 rename(x, dictionary = "ioos.csv", debug = 0)
 }
 \arguments{
-\item{x}{an \linkS4class{oce} object.}
+\item{x}{either an \linkS4class{oce} object, the elements of which will
+be renamed, or NULL. In the latter case, the dictionary is returned
+as a data frame, which can be useful for users who want to use \code{\link[=rbind]{rbind()}}
+to append dictionary elements of their own, thus customizing the
+action of \code{rename()}.}
 
 \item{dictionary}{either a string or a data frame.  If a string, then it is
-either the name of a built-in vocabulary (e.g. \code{ioos} or \code{sbe}; see
-\sQuote{Details}) or the name of a CSV file that defines a dictionary. If it
-is a data frame, the it must have four unnamed columns containing information as
-described in \sQuote{Details}.}
+either the name of a built-in vocabulary, either \code{ioos} or \code{sbe}
+or the name of a CSV file that defines a dictionary in a four-column
+format as described in \sQuote{Details}. If it is a data frame, then
+it must hold four columns that follow the same pattern as in the CSV
+style.}
 
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
@@ -50,22 +55,22 @@ for the quantity in question.
 hold a scale).
 }
 
-For examples, see the built-in dictionaries, which are stored in
-files with locations that are revealed with the following.
+The built-in dictionaries are stored in locations
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{readLines(system.file("extdata", "dictionary_sbe.csv", package = "oce"))
-readLines(system.file("extdata", "dictionary_ioos.csv", package = "oce"))
+\if{html}{\out{<div class="sourceCode">}}\preformatted{system.file("extdata", "dictionary_ioos.csv", package = "oce")
+system.file("extdata", "dictionary_sbe.csv", package = "oce")
 }\if{html}{\out{</div>}}
 
-For example, the entry
+The data for these come from References 1 and 2, respectively.  The
+format is simple, e.g. the entry
 
 \if{html}{\out{<div class="sourceCode">}}\preformatted{PSALST##,salinity,,PSS-78
 }\if{html}{\out{</div>}}
 
-specifies that a variable named \code{"PSALT"} followed by 2 digits
-is to be renamed as \code{"salinity"}, that the unit (if not
-already defined within \code{x}) is to be blank, and that
-the scale (again, if not already defined) is to be \code{"PSS-78"}.
+indicates that a variable named \code{"PSALT"} followed by 2 digits is to be
+renamed as \code{"salinity"}, that the unit (if not already defined within \code{x}) is
+to be blank, and that the scale (again, if not already defined within \code{x}) is
+to be \code{"PSS-78"}.
 }
 \section{History and Plans}{
 
@@ -107,6 +112,19 @@ if (requireNamespace("curl")) {
     unlink(file)
 }
 
+}
+\references{
+\enumerate{
+\item IOOS naming convention
+\url{https://cfconventions.org/Data/cf-standard-names/78/build/cf-standard-name-table.html}
+\item The SBE names come from a processing manual that was once at
+\verb{http://www.seabird.com/document/sbe-data-processing-manual}, but as of
+summer 2018, this no longer seems to be provided by SeaBird. A web search
+will turn up copies of the manual that have been put online by various
+research groups and data-archiving agencies.  On 2018-07-05, the latest
+version was named \code{SBEDataProcessing_7.26.4.pdf} and had release date
+12/08/2017; this was the reference version used in coding \code{oce}.
+}
 }
 \author{
 Dan Kelley

@@ -1,26 +1,58 @@
 # vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
+renameVocabulary <- function(dictionary = "ioos.csv", debug = 0) {
+    if (is.character(dictionary)) {
+        if (!grepl(".csv(.gz){0,1}$", dictionary)) {
+            dictionary <- system.file("extdata", paste0("dictionary_", dictionary, ".csv"), package = "oce")
+        }
+        vocab <- read.csv(dictionary,
+            header = FALSE,
+            col.names = c("originalName", "oceName", "units", "scale")
+        )
+    } else if (is.data.frame(dictionary)) {
+        vocab <- dictionary
+        names(vocab) <- c("originalName", "oceName", "units", "scale")
+    }
+    # Paste regexp anchors, and substitute for single-digit search
+    oceDebug(debug, "dictionary ", if (is.character(dictionary)) paste0("\"", dictionary, "\" "), "has ", nrow(vocab), " entries\n", sep = "")
+    vocab$pattern <- paste0("^", gsub("#", "[0-9]", vocab$original), "$")
+    vocab
+}
+
 # An internal function, used by rename(); not exported.
 # @author Dan Kelley
 renameInternal <- function(names, dictionary = "ioos.csv", debug = 0) {
     debug <- min(3L, max(debug, 0L))
-    if (is.character(dictionary) && grepl(".csv(.gz){0,1}$", dictionary)) {
-        vocab <- read.csv(dictionary,
-            header = FALSE,
-            col.names = c("original", "oce", "units", "scale")
-        )
-        oceDebug(debug, "  \"", dictionary, "\" has ", nrow(vocab), " entries\n", sep = "")
-    } else if (is.data.frame(dictionary)) {
-        vocab <- dictionary
-        names(vocab) <- c("originalName", "oceName", "units", "scale")
-        oceDebug(debug, "data-frame dictionary has ", nrow(vocab), "entries\n")
-    }
-    # The system is that # can represent a digit
-    vocab$pattern <- paste0("^", gsub("#", "[0-9]", vocab$original), "$")
     if (debug > 1) {
-        cat("next is vocabulary, after adding regexp pattern\n")
-        print(vocab)
+        if (is.character(dictionary) && grepl(".csv(.gz){0,1}$", dictionary)) {
+            vocab <- read.csv(dictionary,
+                              header = FALSE,
+                              col.names = c("originalName", "oceName", "units", "scale")
+            )
+            oceDebug(debug, "  \"", dictionary, "\" has ", nrow(vocab), " entries\n", sep = "")
+        } else if (is.data.frame(dictionary)) {
+            vocab <- dictionary
+            names(vocab) <- c("originalName", "oceName", "units", "scale")
+            oceDebug(debug, "data-frame dictionary has ", nrow(vocab), " entries\n")
+        }
+        # The system is that # can represent a digit
+        vocab$pattern <- paste0("^", gsub("#", "[0-9]", vocab$original), "$")
+        if (debug > 1) {
+            cat("next is vocabulary, after adding regexp pattern\n")
+            print(vocab)
+        }
+        vocabNew <- renameVocabulary(dictionary, debug)
+        if (!identical(vocab, vocabNew)) {
+            message("vocab (ORIGINAL)")
+            print(vocab)
+            message("vocab (NEW)")
+            print(vocab)
+            warning("internal error: old- and new-style codes disagree (please tell author)")
+            browser()
+        }
+        vocab <- vocabNew
     }
+    vocab <- renameVocabulary(dictionary, debug)
     rval <- data.frame(originalName = NULL, oceName = NULL, unit = NULL, scale = NULL)
     for (i in seq_along(names)) {
         name <- names[i]
@@ -51,9 +83,13 @@ renameInternal <- function(names, dictionary = "ioos.csv", debug = 0) {
                 oceDebug(debug, "  \"", name, "\" matches vocabulary at index ", w, "\n", sep = "")
             } else {
                 oceDebug(debug, "  \"", name, "\" matches vocabulary at indices ",
-                         paste(w, collapse = ", "), "; using the first of these\n", sep = "")
-                warning("  \"", name, "\" matches vocabulary at indices ",
-                         paste(w, collapse = ", "), "; using the first of these\n")
+                    paste(w, collapse = ", "), "; using the first of these\n",
+                    sep = ""
+                )
+                warning(
+                    "  \"", name, "\" matches vocabulary at indices ",
+                    paste(w, collapse = ", "), "; using the first of these\n"
+                )
                 w <- w[1]
             }
             oceDebug(debug, vectorShow(vocab[w, ]))
@@ -102,32 +138,37 @@ renameInternal <- function(names, dictionary = "ioos.csv", debug = 0) {
 #' 4. The scale for the column (again, only used if the object does not already
 #'    hold a scale).
 #'
-#' For examples, see the built-in dictionaries, which are stored in
-#' files with locations that are revealed with the following.
+#' The built-in dictionaries are stored in locations
 #'
-#'```
-#' readLines(system.file("extdata", "dictionary_sbe.csv", package = "oce"))
-#' readLines(system.file("extdata", "dictionary_ioos.csv", package = "oce"))
-#'```
+#' ```
+#' system.file("extdata", "dictionary_ioos.csv", package = "oce")
+#' system.file("extdata", "dictionary_sbe.csv", package = "oce")
+#' ```
 #'
-#' For example, the entry
+#' The data for these come from References 1 and 2, respectively.  The
+#' format is simple, e.g. the entry
 #'
 #' ```
 #' PSALST##,salinity,,PSS-78
 #' ```
 #'
-#' specifies that a variable named `"PSALT"` followed by 2 digits
-#' is to be renamed as `"salinity"`, that the unit (if not
-#' already defined within `x`) is to be blank, and that
-#' the scale (again, if not already defined) is to be `"PSS-78"`.
+#' indicates that a variable named `"PSALT"` followed by 2 digits is to be
+#' renamed as `"salinity"`, that the unit (if not already defined within `x`) is
+#' to be blank, and that the scale (again, if not already defined within `x`) is
+#' to be `"PSS-78"`.
 #'
-#' @param x an [oce-class] object.
+#' @param x either an [oce-class] object, the elements of which will
+#' be renamed, or NULL. In the latter case, the dictionary is returned
+#' as a data frame, which can be useful for users who want to use [rbind()]
+#' to append dictionary elements of their own, thus customizing the
+#' action of `rename()`.
 #'
 #' @param dictionary either a string or a data frame.  If a string, then it is
-#' either the name of a built-in vocabulary (e.g. `ioos` or `sbe`; see
-#' \sQuote{Details}) or the name of a CSV file that defines a dictionary. If it
-#' is a data frame, the it must have four unnamed columns containing information as
-#' described in \sQuote{Details}.
+#' either the name of a built-in vocabulary, either `ioos` or `sbe`
+#' or the name of a CSV file that defines a dictionary in a four-column
+#' format as described in \sQuote{Details}. If it is a data frame, then
+#' it must hold four columns that follow the same pattern as in the CSV
+#' style.
 #'
 #' @template debugTemplate
 #'
@@ -169,6 +210,19 @@ renameInternal <- function(names, dictionary = "ioos.csv", debug = 0) {
 #' to evolve through the remaining months of 2024, after real-world
 #' testing by the developers.
 #'
+#' @references
+#'
+#' 1. IOOS naming convention
+#'    <https://cfconventions.org/Data/cf-standard-names/78/build/cf-standard-name-table.html>
+#'
+#' 2. The SBE names come from a processing manual that was once at
+#'    `http://www.seabird.com/document/sbe-data-processing-manual`, but as of
+#'    summer 2018, this no longer seems to be provided by SeaBird. A web search
+#'    will turn up copies of the manual that have been put online by various
+#'    research groups and data-archiving agencies.  On 2018-07-05, the latest
+#'    version was named `SBEDataProcessing_7.26.4.pdf` and had release date
+#'    12/08/2017; this was the reference version used in coding `oce`.
+#'
 #' @author Dan Kelley
 rename <- function(x, dictionary = "ioos.csv", debug = 0) {
     oceDebug(debug, "rename(..., dictionary=",
@@ -177,9 +231,12 @@ rename <- function(x, dictionary = "ioos.csv", debug = 0) {
         } else {
             paste0("\"", dictionary, "\"")
         },
-        "\") START\n",
+        ") START\n",
         sep = "", unindent = 1
     )
+    if (is.null(x)) {
+        return(renameVocabulary(dictionary, debug = debug))
+    }
     if (!inherits(x, "oce")) stop("x is not an oce-class object")
     # if (!is.character(dictionary)) {
     #    stop("FIXME: code to allow dictionary to be a data frame")
