@@ -26,8 +26,8 @@ renameInternal <- function(names, dictionary = "ioos.csv", debug = 0) {
     if (debug > 1) {
         if (is.character(dictionary) && grepl(".csv(.gz){0,1}$", dictionary)) {
             vocab <- read.csv(dictionary,
-                              header = FALSE,
-                              col.names = c("originalName", "oceName", "units", "scale")
+                header = FALSE,
+                col.names = c("originalName", "oceName", "units", "scale")
             )
             oceDebug(debug, "  \"", dictionary, "\" has ", nrow(vocab), " entries\n", sep = "")
         } else if (is.data.frame(dictionary)) {
@@ -315,7 +315,9 @@ rename <- function(x, dictionary = "ioos.csv", debug = 0) {
         ))
         oceDebug(debug, "  ", vectorShow(newFlagNames, n = 100))
         # print(R)
-        names(rval@metadata$flags) <- newFlagNames
+        if (length(newFlagNames) > 0L) {
+            names(rval@metadata$flags) <- newFlagNames
+        }
     }
     # message("next is x@metadata$flags")
     # print(x@metadata$flags)

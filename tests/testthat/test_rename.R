@@ -79,3 +79,21 @@ test_that("rename() with skeleton objects (with user's list dictionary)", {
         )
     }
 })
+
+
+test_that("rename() and built-in renaming", {
+    f <- system.file("extdata", "ctd.cnv.gz", package = "oce")
+    expect_warning(
+        expect_warning(
+            d1 <- read.ctd(f), "turn-of-the-century"
+        ),
+        "IPTS-68"
+    )
+    expect_warning(
+        tmp <- read.ctd(f, rename = FALSE),
+        "turn-of-the-century"
+    )
+    d2 <- tmp |> rename("sbe")
+    expect_equal(d1[["data"]], d2[["data"]])
+    expect_equal(d1[["metadata"]], d2[["metadata"]])
+})

@@ -663,6 +663,15 @@ cnvName2oceName <- function(h, columns = NULL, debug = getOption("oceDebug")) {
 #'
 #' @template encodingTemplate
 #'
+#' @param rename optional logical value indicating whether to
+#' rename variables from the values in the file to the oce
+#' convention, using [cnvName2oceName()] for the translation.
+#' This is done by default, but setting `rename=FALSE` can
+#' be helpful if there is a wish to control the renaming,
+#' either using a built-in dictionary or using a dictionary
+#' set up by the user.  See Examples 1 and 2.
+#' if there is a desire to control renaming using [rename()].
+#'
 #' @param btl a logical value, with `TRUE` indicating that this is a `.BTL` file and `FALSE`
 #' (the default) indicating a `.CNV` file.  Note that if `btl` is `TRUE`, the data column
 #' names are taken directly from the file (without e.g. translating to `"Sal00"`
@@ -812,8 +821,12 @@ cnvName2oceName <- function(h, columns = NULL, debug = getOption("oceDebug")) {
 #' Note that reading a file that contains IPTS-68 temperatures produces a warning.
 #'
 #' @examples
+#' # Example 1: default variable renaming
 #' f <- system.file("extdata", "ctd.cnv.gz", package = "oce")
-#' d <- read.ctd(f)
+#' d1 <- read.ctd(f)
+#'
+#' # Example 2: handle variable renaming after reading
+#' d2 <- read.ctd(f, rename = FALSE) |> rename("sbe")
 #'
 #' @references
 #' 1. The Sea-Bird SBE 19plus profiler is described at
@@ -834,10 +847,13 @@ cnvName2oceName <- function(h, columns = NULL, debug = getOption("oceDebug")) {
 read.ctd.sbe <- function(
     file, columns = NULL, station = NULL, missingValue,
     deploymentType = "unknown", btl = FALSE, monitor = FALSE,
-    encoding = "latin1",
+    encoding = "latin1", rename = TRUE,
     debug = getOption("oceDebug"), processingLog, ...) {
     if (missing(file)) {
         stop("must supply 'file'")
+    }
+    if (!is.logical(rename)) {
+        stop("rename must be a logical value")
     }
     if (is.character(file)) {
         if (!file.exists(file)) {
@@ -870,7 +886,7 @@ read.ctd.sbe <- function(
         }
         return(res)
     }
-    oceDebug(debug, "read.ctd.sbe(file=\"", file, "\") BEGIN\n", unindent = 1)
+    oceDebug(debug, "read.ctd.sbe(file=\"", file, "\", rename =", rename, ") BEGIN\n", unindent = 1)
     # Read Seabird data file.  Note on headers: '*' is machine-generated,
     # '**' is a user header, and '#' is a post-processing header.
     filename <- ""
@@ -919,6 +935,9 @@ read.ctd.sbe <- function(
     #<> message("try\na<-with(DAN, lines[nameLines[23]])\nEncoding(a)")
     for (iline in seq_along(nameLines)) {
         nu <- cnvName2oceName(lines[nameLines[iline]], columns, debug = debug - 1)
+        if (!rename) {
+            nu$name <- nu$OriginalName
+        }
         #<> if (iline==23)
         #<> message("iline=", iline, ", nu$name=\"", nu$name, "\", nu$nameOriginal=\"", nu$nameOriginal, "\"")
         if (nu$name %in% namesUsed) {
@@ -1146,7 +1165,7 @@ read.ctd.sbe <- function(
         }
     }
     # Require p,S,T data at least
-    if (!btl && !("temperature" %in% colNamesInferred)) {
+    if (!btl && (!("temperature" %in% colNamesInferred) && rename)) {
         warning("cannot find temperature; try using the \"columns\" argument")
     }
     res@metadata$header <- header
@@ -1337,9 +1356,11 @@ read.ctd.sbe <- function(
                 )
                 warning("created 'salinity' from 'temperature', 'conductivity' and 'pressure'", immediate. = TRUE)
             } else {
-                warning("cannot find salinity or conductivity in .cnv file; try using columns argument if the file actually contains these items",
-                    immediate. = TRUE
-                )
+                if (rename) {
+                    warning("cannot find salinity or conductivity in .cnv file; try using columns argument if the file actually contains these items",
+                            immediate. = TRUE
+                    )
+                }
             }
         }
         if ("pressurePSI" %in% names && !("pressure" %in% names)) {
