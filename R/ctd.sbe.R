@@ -41,7 +41,7 @@
 #' `https://github.com/dankelley/oce/issues` so that the developers can add the
 #' data type in question.
 #'
-#' The table below has wll over 100 entries, but this only scratches the
+#' The table below has well over 100 entries, but this only scratches the
 #' surface; the SBE documents list over 40 variants for oxygen alone.  To save
 #' development time, there is no plan to add all possible data types without a
 #' reasonable and specific expression user interest.
@@ -414,10 +414,10 @@ cnvName2oceName <- function(h, columns = NULL, debug = getOption("oceDebug")) {
         name <- "CPAR/Corrected Irradience"
         unit <- list(unit = expression(percent), scale = "")
     } else if (1 == length(grep("^par[0-9]?$", name))) {
-        name <- "par"
+        name <- "PAR"
         unit <- list(unit = expression(), scale = "Biospherical/Licor")
     } else if (1 == length(grep("^par/log$", name))) {
-        name <- "par"
+        name <- "PAR"
         unit <- list(unit = expression(log), scale = "Satlantic")
     } else if (1 == length(grep("^ph$", name))) {
         name <- "pH"
@@ -867,7 +867,7 @@ read.ctd.sbe <- function(
     # that filename, 'encoding' and 'debug' are passed along, so if you need
     # detailed customization, call the function on those files directly.
     if (is.character(file) && grepl("\\*", file, ignore.case = TRUE)) {
-        oceDebug(debug, "read.ctd.sbe(file=\"", file, "\") BEGIN will read a series of files\n", unindent = 1)
+        oceDebug(debug, "read.ctd.sbe(file=\"", file, "\") BEGIN will read a series of files\n", sep = " ", unindent = 1)
         files <- list.files(pattern = file)
         nfiles <- length(files)
         if (monitor) {
@@ -886,7 +886,7 @@ read.ctd.sbe <- function(
         }
         return(res)
     }
-    oceDebug(debug, "read.ctd.sbe(file=\"", file, "\", rename =", rename, ") BEGIN\n", unindent = 1)
+    oceDebug(debug, "read.ctd.sbe(file=\"", file, "\", rename =", rename, ") BEGIN\n", sep = "", unindent = 1)
     # Read Seabird data file.  Note on headers: '*' is machine-generated,
     # '**' is a user header, and '#' is a post-processing header.
     filename <- ""
@@ -970,10 +970,11 @@ read.ctd.sbe <- function(
     foundConductivityRatio <- "conductivity.ratio" %in% colNamesInferred
     # FIXME: should we insist on having salinity, temperature, and pressure?
     fileType <- "unknown"
+    oceDebug(debug, "Reading header\n")
     for (iline in seq_along(lines)) {
         line <- lines[iline]
         # line <- scan(file, what=\"char\", sep="\n", n=1, quiet=TRUE)
-        oceDebug(debug > 1L, paste("Examining header line ", iline, " '", line, "'\n", sep = ""))
+        oceDebug(debug > 1L, paste("  examining header line ", iline, " '", line, "'\n", sep = ""))
         header <- c(header, line)
         # if (length(grep("\*END\*", line))) #BUG# why is this regexp no good (new with R-2.1.0)
         aline <- iconv(line, from = "UTF-8", to = "ASCII", sub = "?")
@@ -999,7 +1000,7 @@ read.ctd.sbe <- function(
                 warning("cannot parse date in `", aline, "`, but will try a '** Date:' line, if there is one", sep = "")
             } else {
                 date <- dateTry
-                oceDebug(debug, "inferred date=", format(date), " from automatically-generated NMEA-time line\n")
+                oceDebug(debug, "  inferred date ", format(date), "\n")
             }
         }
         # Look at hand-entered date only if an NMEA time was not found, or was unparseable
@@ -1021,24 +1022,24 @@ read.ctd.sbe <- function(
                 if (dateTry < as.POSIXct("1900-01-01")) {
                     warning("impossible date in `", aline, "` is being ignored\n", sep = "")
                 } else {
-                    oceDebug(debug, "inferred date=", format(date), " from `", aline, "`\n", sep = "")
+                    oceDebug(debug, "  inferred date ", format(date), " from `", aline, "`\n", sep = "")
                     date <- dateTry
                 }
             }
         }
-        if (0 < regexpr(".*seacat profiler.*", lline)) {
+        if (grepl(".*seacat profiler.*", lline)) {
             serialNumber <- trimws(gsub("[ ].*$", "", gsub(".*sn[ ]*", "", lline)))
         }
-        if (length(grep("^\\* Temperature SN", lline, ignore.case = TRUE))) {
+        if (grepl("^\\* Temperature SN", lline, ignore.case = TRUE)) {
             serialNumberTemperature <- trimws(gsub("^.*=\\s", "", lline))
         }
-        if (length(grep("^\\* Conductivity SN", lline, ignore.case = TRUE))) {
+        if (grepl("^\\* Conductivity SN", lline, ignore.case = TRUE)) {
             serialNumberConductivity <- trimws(gsub("^.*=\\s", "", lline))
         }
-        if (length(grep("^#[ \t]*file_type[ \t]*=[ \t]*", lline))) {
+        if (grepl("^#[ \t]*file_type[ \t]*=[ \t]*", lline)) {
             fileType <- trimws(gsub("[ \t\n]+$", "", gsub(".*=[ \t]*", "", lline)))
         }
-        if (length(grep("^\\* Sea-Bird SBE (.*) Data File:$", lline, ignore.case = TRUE))) {
+        if (grepl("^\\* Sea-Bird SBE (.*) Data File:$", lline, ignore.case = TRUE)) {
             model <- gsub("^\\* sea-bird sbe (.*) data file:$", "\\1", lline)
             res@metadata$model <- model
         }
@@ -1048,7 +1049,7 @@ read.ctd.sbe <- function(
         if (grepl("system upload time", lline)) {
             d <- sub("([^=]*)[ ]*=[ ]*", "", ignore.case = TRUE, lline)
             systemUploadTime <- decodeTime(d)
-            oceDebug(debug, " systemUploadTime ", format(systemUploadTime), " inferred from substring '", d, "'\n", sep = "")
+            oceDebug(debug, "  inferred systemUploadTime ", format(systemUploadTime), "\n")
         }
         # Styles:
         # * NMEA Latitude = 47 54.760 N
@@ -1064,7 +1065,7 @@ read.ctd.sbe <- function(
         if (grepl("start_time =", lline)) {
             d <- sub("#[ ]*start_time[ ]*=[ ]*", "", lline)
             startTime <- decodeTime(d)
-            oceDebug(debug, " startTime ", format(startTime), "' inferred from substring '", d, "'\n", sep = "")
+            oceDebug(debug, "  inferred startTime ", format(startTime), "\n", sep = "")
         }
         if (grepl("ship:", lline)) {
             ship <- sub("(.*)ship:([ \t])*", "", ignore.case = TRUE, line) # note: using full string
@@ -1072,16 +1073,16 @@ read.ctd.sbe <- function(
         }
         if (grepl("scientist:", lline)) {
             scientist <- sub("(.*)scientist:([ ])*", "", ignore.case = TRUE, line)
-        } # full string
+        }
         if (grepl("chef", lline)) {
             scientist <- sub("(.*):([ ])*", "", ignore.case = TRUE, line)
-        } # full string
+        }
         if (grepl("institute:", lline)) {
             institute <- sub("(.*)institute:([ ])*", "", ignore.case = TRUE, line)
-        } # full string
+        }
         if (grepl("address:", lline)) {
             address <- sub("(.*)address:([ ])*", "", ignore.case = TRUE, line)
-        } # full string
+        }
         if (grepl("cruise:", lline)) {
             cruise <- sub("(.*)cruise:([ ])*", "", ignore.case = TRUE, line) # full string
             cruise <- sub("[ ]*$", "", ignore.case = TRUE, cruise) # full string
@@ -1113,7 +1114,7 @@ read.ctd.sbe <- function(
             # Remove any non-numeric (e.g. sometimes a unit is here)
             look <- trimws(gsub("[-a-zA-Z]", "", look))
             waterDepth <- as.numeric(look)
-            oceDebug(debug, "inferred waterDepth=", waterDepth, "[m] from '", aline, "'\n", sep = "")
+            oceDebug(debug, "  inferred waterDepth ", waterDepth, "\n", sep = "")
         }
         # [1] "# interval = seconds: 1
         # [1] "# interval = decibars: 1
@@ -1146,7 +1147,6 @@ read.ctd.sbe <- function(
             }
         }
     }
-    oceDebug(debug, "Finished reading header\n")
     if (debug > 0) {
         if (is.nan(sampleInterval)) {
             warning("\"* sample rate =\" not found in header")
@@ -1160,6 +1160,7 @@ read.ctd.sbe <- function(
         if (is.na(date)) {
             warning("\"** Date:\" not found in header")
         }
+        # This item is in most files, but not all. Keep the warning?
         if (is.na(recoveryTime)) {
             warning("\"** Recovery:\" not found in header")
         }
@@ -1211,7 +1212,7 @@ read.ctd.sbe <- function(
         # The .BTL format was reverse-engineered by inspecting some files, since I could
         # not discover any documentation on the format.  Therefore, there is a good chance
         # of errors in this code.  See https://github.com/dankelley/oce/issues/1681
-        oceDebug(debug, "About to read .btl data\n")
+        oceDebug(debug, "Reading .btl data\n")
         dataHeaderStartLine <- grep("^[^#^*]", lines)[1]
         if (!length(dataHeaderStartLine)) {
             stop("cannot find the start of .btl data")
@@ -1265,7 +1266,7 @@ read.ctd.sbe <- function(
         names <- colNames # used later (perhaps incorrectly, since we don't have flags etc for .btl files)
     } else {
         pushBack(lines, file) # push back header so we can read from a file, not a text vector (for speed)
-        oceDebug(debug, "About to read .cnv data with these names: c(\"",
+        oceDebug(debug, "Reading .cnv data named: c(\"",
             paste(colNamesInferred, collapse = "\",\""), "\")\n",
             sep = ""
         )
@@ -1307,7 +1308,7 @@ read.ctd.sbe <- function(
                     name = "salinity", value = S,
                     unit = list(unit = expression(), scale = "PSS-78")
                 )
-                warning("created 'salinity' from 'temperature', 'conductivity' and 'pressure'", immediate. = TRUE)
+                warning("created salinity from temperature, conductivityRatio and pressure", immediate. = TRUE)
             } else if (foundConductivity) {
                 C <- data$conductivity
                 if (!is.null(res@metadata$units$conductivity)) {
@@ -1354,11 +1355,11 @@ read.ctd.sbe <- function(
                     name = "salinity", value = S,
                     unit = list(unit = expression(), scale = "PSS-78")
                 )
-                warning("created 'salinity' from 'temperature', 'conductivity' and 'pressure'", immediate. = TRUE)
+                warning("created salinity from temperature, conductivity and pressure", immediate. = TRUE)
             } else {
                 if (rename) {
                     warning("cannot find salinity or conductivity in .cnv file; try using columns argument if the file actually contains these items",
-                            immediate. = TRUE
+                        immediate. = TRUE
                     )
                 }
             }
@@ -1401,6 +1402,6 @@ read.ctd.sbe <- function(
     # in user code, and it became unnecessary when the scale started being
     # stored in the unit. See the "note on scales" in the documentation for
     # the scheme used to prevent problems.
-    oceDebug(debug, "END read.ctd.sbe()\n")
+    oceDebug(debug, "END read.ctd.sbe()\n", sep = "", unindent = 1)
     res
 }

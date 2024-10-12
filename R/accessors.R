@@ -76,17 +76,19 @@ oceDeleteData <- function(object, name) {
 #'
 #' @param object an [oce-class] object.
 #'
-#' @param name String indicating the name of the `data` item to be set.
+#' @param name the name of the `data` item to be set.
 #'
-#' @param value Value for the item.
+#' @param value value for the item.
 #'
-#' @param unit An optional indication of the units for the item. This has
+#' @param unit an optional indication of the units for the item. This has
 #' three possible forms (see \dQuote{Details}).
 #'
-#' @param originalName Optional character string giving an 'original' name (e.g.
-#' as stored in the header of a data file).
+#' @param originalName character string giving an 'original' name (e.g.
+#' as stored in the header of a data file). The default, `"-"`, is
+#' taken by `summary()` functions to mean that there was no original
+#' name in `object`.
 #'
-#' @param note Either empty (the default), a character string, or `NULL`,
+#' @param note either empty (the default), a character string, or `NULL`,
 #' to control additions made to the processing log of the return value. If
 #' `note=""` then the an entry is created based on deparsing the function call.
 #' If `note` is a non-empty string, then that string gets added added
@@ -96,9 +98,8 @@ oceDeleteData <- function(object, name) {
 #' in an overly verbose processing log; in such cases, it might help
 #' to add a note by e.g. `processingLog(a) <- "QC (memo dek-2018-01/31)"`
 #'
-#' @return An [oce-class] object, the `data` slot of which has
-#' been altered either by adding a new item or modifying an existing
-#' item.
+#' @return `oceSetData` returns an [oce-class] object, the `data` slot of which
+#' has been altered either by adding a new item or modifying an existing item.
 #'
 #' @examples
 #' data(ctd)
@@ -111,7 +112,7 @@ oceDeleteData <- function(object, name) {
 #' @author Dan Kelley
 #'
 #' @family things related to the data slot
-oceSetData <- function(object, name, value, unit, originalName, note = "") {
+oceSetData <- function(object, name, value, unit, originalName = "-", note = "") {
     if (!inherits(object, "oce")) {
         stop("oceSetData() only works for oce objects")
     }
@@ -145,22 +146,20 @@ oceSetData <- function(object, name, value, unit, originalName, note = "") {
             stop("'unit' must be a list, an expression, or a character string")
         }
     }
-    # Handle originalName, if provided. Note that we have some code {
-    # here to cover two types of storage.
-    if (!missing(originalName)) {
-        if ("dataNamesOriginal" %in% names(object@metadata)) {
-            if (is.list(object@metadata$dataNamesOriginal)) {
-                # After 2016-07-24 (issue 1017) we use a list.
-                object@metadata$dataNamesOriginal[[name]] <- originalName
-            } else {
-                # Before 2016-07-24 (issue 1017) we used a character vector.
-                object@metadata$dataNamesOriginal <- as.list(object@metadata$dataNamesOriginal)
-                object@metadata$dataNamesOriginal[[name]] <- originalName
-            }
+    # Handle originalName, if provided. Note that we have try to handle
+    # two types of storage.
+    if ("dataNamesOriginal" %in% names(object@metadata)) {
+        if (is.list(object@metadata$dataNamesOriginal)) {
+            # After 2016-07-24 (issue 1017) we use a list.
+            object@metadata$dataNamesOriginal[[name]] <- originalName
         } else {
-            object@metadata$dataNamesOriginal <- list()
+            # Before 2016-07-24 (issue 1017) we used a character vector.
+            object@metadata$dataNamesOriginal <- as.list(object@metadata$dataNamesOriginal)
             object@metadata$dataNamesOriginal[[name]] <- originalName
         }
+    } else {
+        object@metadata$dataNamesOriginal <- list()
+        object@metadata$dataNamesOriginal[[name]] <- originalName
     }
     if (!is.null(note)) {
         if (nchar(note) > 0) {

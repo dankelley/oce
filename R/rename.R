@@ -47,8 +47,7 @@ renameInternal <- function(names, dictionary = "ioos.csv", debug = 0) {
             print(vocab)
             message("vocab (NEW)")
             print(vocab)
-            warning("internal error: old- and new-style codes disagree (please tell author)")
-            browser()
+            warning("internal error with renamer(): old- and new-style codes disagree (please tell author)")
         }
         vocab <- vocabNew
     }
@@ -250,13 +249,13 @@ rename <- function(x, dictionary = "ioos.csv", debug = 0) {
     R <- renameInternal(originalNames, dictionary = dictionary, debug = debug)
     oceDebug(debug, "setting up @metadata$dataNamesOriginal\n")
     # set up original names
-    # print(sort(names(rval@metadata)))
-    # cat(str(R))
     if (is.null(rval@metadata$dataNamesOriginal)) {
         rval@metadata$dataNamesOriginal <- as.list(R$originalName)
         # print(rval@metadata$dataNamesOriginal)
     }
     # print(R$oceName)
+    # cat(vectorShow(names(rval@metadata$dataNamesOriginal), n = 30))
+    # cat(vectorShow(R$oceName, n = 30))
     names(rval@metadata$dataNamesOriginal) <- R$oceName
     # print(rval@metadata$dataNamesOriginal)
     # message("DAN 2")

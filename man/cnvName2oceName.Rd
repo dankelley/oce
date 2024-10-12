@@ -62,7 +62,7 @@ Finally, please publish an 'issue' on the oce Github site
 \verb{https://github.com/dankelley/oce/issues} so that the developers can add the
 data type in question.
 
-The table below has wll over 100 entries, but this only scratches the
+The table below has well over 100 entries, but this only scratches the
 surface; the SBE documents list over 40 variants for oxygen alone.  To save
 development time, there is no plan to add all possible data types without a
 reasonable and specific expression user interest.
