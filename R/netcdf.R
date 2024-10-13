@@ -230,6 +230,21 @@ read.netcdf <- function(file, ..., encoding = NA, renamer = NULL, debug = getOpt
                     unit = expression(mu * A),
                     scale = if (scale$hasatt) scale$value else ""
                 )
+            } else if (units$value == "MicroEinsteins m-2 s-1") {
+                res@metadata$units[[oceNames[i]]] <- list(
+                    unit = expression(mu * Einstein/m^2/s),
+                    scale = if (scale$hasatt) scale$value else ""
+                )
+            } else if (units$value == "NTU") {
+                res@metadata$units[[oceNames[i]]] <- list(
+                    unit = expression(NTU),
+                    scale = if (scale$hasatt) scale$value else ""
+                )
+            } else if (units$value == "pH units") {
+                res@metadata$units[[oceNames[i]]] <- list(
+                    unit = expression(pH),
+                    scale = if (scale$hasatt) scale$value else ""
+                )
             } else {
                 # Tell as.unit() to return NULL if unknown, so we can do
                 # more logic here, where we know the scale, etc.
