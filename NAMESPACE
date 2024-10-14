@@ -158,6 +158,7 @@ export(
     handleFlags,
     handleFlagsInternal,
     imagep,
+    inferUnits,
     initializeFlagScheme,
     initializeFlagSchemeInternal,
     initializeFlags,

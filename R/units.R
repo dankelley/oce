@@ -226,3 +226,78 @@ as.unit <- function(u, default = list(unit = expression(), scale = "")) {
         }
     }
 }
+
+#' Infer units and scales from character strings
+#'
+#' @param s vector of character values.
+#'
+#' @param dictionary either a data frame or a string indicating a csv
+#' file that holds a data frame.  If a string, and if it ends in `".csv"`,
+#' then that file is used, but if it has another ending, it is taken
+#' as an indicator of a built-in file that is provided with
+#' the package, named `units_`, followed by the supplied `dictionary`
+#' value, and ending with `.csv`.
+#'
+#' @param ignore.case logical alue indicating whether to ignore the
+#' case in `strings`.  This defaults to TRUE, so that e.g. `"deg C"`
+#' and `"deg c"` can both be matched easily.
+#'
+#' @return if the unit is recognized, a list is returned, with the first
+#' column, named `unit`, being an [expression()] and the second,
+#' named `scale`, being an optional descriptor of the unit.
+#'
+#' @author Dan Kelley
+inferUnits <- function(strings, dictionary = "default", ignore.case = TRUE, debug = 0) {
+    oceDebug(debug, "inferUnits(..., dictionary=",
+             if (is.data.frame(dictionary)) {
+                 "[data frame]"
+             } else if (is.character(dictionary)) {
+                 paste0("\"", dictionary, "\"")
+             },
+             ") START\n", sep = "", unindent = 1)
+    if (is.character(dictionary)) {
+        if (!grepl(".csv$", dictionary)) {
+            dictionary <- system.file("extdata", paste0("units_", dictionary, ".csv"), package = "oce")
+            oceDebug(debug, "using internal dictionary \"", dictionary, "\"\n")
+        }
+        dictionary <- read.csv(dictionary, header = FALSE)
+    }
+    if (!is.data.frame(dictionary)) {
+        stop("dictionary must be either a data frame or a character string")
+    }
+    message("DAN 1")
+    dictionary <- cbind(dictionary, data.frame(V4 = paste0("^", dictionary$V1, "$")))
+    message("DAN 2")
+    dictionary$V4 <- gsub("#", "[0-9]", dictionary$V4)
+    message("DAN 3")
+    stringsOrig <- strings
+    if (ignore.case) {
+        strings <- tolower(strings)
+    }
+    n <- length(strings)
+    message("DAN 4")
+    rval <- vector("list", n)
+    for (i in seq_len(n)) {
+        message("DAN 5 i=", i, " string=\"", strings[i], "\"")
+        w <- which(sapply(dictionary$V4, \(p) grepl(p, strings[i])))
+        message("DAN 6 i=", i)
+        wlen <- length(w)
+        message("DAN 7 wlen=", wlen)
+        if (wlen > 1L) {
+            warning("unit matches more than 1 entry in the dictionary. Indices are: ", paste(w, collapse=" "))
+            print(dictionary[w, ])
+            w <- w[1]
+        }
+        if (length(w) == 1) {
+            #if (i == 9) browser("DANNN")
+            rval[[i]] <- list(
+                unit = as.expression(parse(text = dictionary$V2[w])),
+                scale = dictionary$V3[w]
+            )
+        } else {
+            rval[[i]] <- list(unit = "unit?", scale = "scale?")
+        }
+    }
+    names(rval) <- stringsOrig
+    rval
+}
