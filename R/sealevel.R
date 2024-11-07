@@ -611,8 +611,8 @@ setMethod(
                     xx@data[[i]] <- x@data[[i]][look]
                 }
                 if (any(is.finite(xx@data$elevation))) {
-                    xlim <- if (xlimGiven) xlim else (range(x@data$time, na.rm = TRUE))
-                    ylim <- if (ylimGiven) ylim else (range(x@data$elevation, na.rm = TRUE))
+                    xlim <- if (xlimGiven) xlim else (range(xx@data$time, na.rm = TRUE))
+                    ylim <- if (ylimGiven) ylim else (range(xx@data$elevation, na.rm = TRUE))
                     atWeek <- seq(from = from, to = to, by = "week")
                     atDay <- seq(from = from, to = to, by = "day")
                     plot(xx@data$time, xx@data$elevation,
