@@ -1579,17 +1579,12 @@ tidem <- function(
     icBad <- NULL
     sdCriterion <- 1e-2
     oceDebug(debug, vectorShow(sdCriterion))
-    # 20230122 danS <- danC <- NULL
     for (i in 1:nc) {
-        # 20230122 oceDebug(debug+1, "setting ", i, "-th coefficient (name=", name[i], " period=", 1/freq[i], " h)", "\n", sep="")
         ft <- freq[i] * hour2pi
         C <- cos(ft)
         S <- sin(ft)
         sdS <- sd(S)
         sdC <- sd(C)
-        # 20230122 danS <- c(danS, sdS) # FIXME: remove
-        # 20230122 danC <- c(danC, sdC) # FIXME: remove
-        # 20230122 oceDebug(debug+1, sprintf("    sdC %.4g; sdS %.4g\n", sdC, sdS))
         # Find whether anything is uncomputable. We ignore Z0 because that is handled later.
         if (name[i] != "Z0" && (sdS < sdCriterion || sdC < sdCriterion)) {
             oceDebug(debug, "    ** uncomputable at ", name[i], " (period ", 1 / freq[i], "h) **\n")
@@ -2086,7 +2081,7 @@ webtide <- function(
     plot = TRUE, tformat, debug = getOption("oceDebug"), ...) {
     debug <- max(0, min(floor(debug), 2))
     oceDebug(debug, "webtide(action=\"", action, "\", ...)\n",
-        sep = "", unindent = 1 
+        sep = "", unindent = 1
     )
     rpd <- atan2(1, 1) / 45 # radians per degree
     action <- match.arg(action)
