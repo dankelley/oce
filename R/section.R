@@ -67,14 +67,14 @@ setClass("section", contains = "oce")
 #' The following code was used to download the datafile and create the `section`
 #' object.
 #'
-#'```
+#' ```
 #' download.file("https://cchdo.ucsd.edu/data/7872/a03_hy1.csv",
 #'     "a03_hy1.csv")
 #' section <- read.section("a03_hy1.csv",
 #'     sectionId = "a03", institute = "SIO",
 #'     ship = "R/V Professor Multanovskiy",
 #'     scientist = "Vladimir Tereschenkov")
-#'```
+#' ```
 #'
 #' @examples
 #' library(oce)
@@ -1112,11 +1112,19 @@ sectionAddCtd <- sectionAddStation
 #' Creates a summary plot for a CTD section, with one panel for each value of
 #' `which`.
 #'
-#' The type of plot is governed by `which`, as follows.
-#' * `which=0` or `"potential temperature"` for potential temperature contours
-#' * `which=1` or `"temperature"` for in-situ temperature contours (the default)
+#' The type of plot is governed by `which`, as listed below;
+#' if `which` is not supplied, it defaults to
+#' `c(1,2,3,99)` if `eos` is `"unesco"` or to
+#' `c(1.5,2.5,3.5,99)` if `eos` is `"gsw"`.
+#'
+#' * `which=0` or `"potential temperature"` for
+#' potential temperature contours
+#' * `which=1` or `"temperature"` for in-situ temperature contours
+#' * `which=1.5` or `"CT"` for Conservative Temperature contours
 #' * `which=2` or `"salinity"` for salinity contours
-#' * `which=3` or `"sigmaTheta"` for sigma-theta contours
+#' * `which=2.5` or `"SA"` for Absolute Salinity contours
+#' * `which=3` or `"sigmaTheta"` for sigma-theta (a unesco variable) contours
+#' * `which=3.5` or `"sigma0"` for sigma0 (a gsw variable) contours
 #' * `which=4` or `"nitrate"` for nitrate concentration contours
 #' * `which=5` or `"nitrite"` for nitrite concentration contours
 #' * `which=6` or `"oxygen"` for oxygen concentration  contours
@@ -1405,7 +1413,7 @@ sectionAddCtd <- sectionAddStation
 setMethod(
     f = "plot", signature = signature("section"),
     definition = function(x,
-                          which = c(1, 2, 3, 99), eos,
+                          which, eos,
                           at = NULL, labels = TRUE, grid = FALSE,
                           contourLevels = NULL, contourLabels = NULL,
                           stationIndices, coastline = "best", colLand = "gray",
@@ -1420,6 +1428,10 @@ setMethod(
                           ...) {
         debug <- if (debug > 4) 4 else floor(0.5 + debug)
         if (missing(eos)) eos <- getOption("oceEOS", default = "gsw")
+        if (!eos %in% c("unesco", "gsw")) stop("eos=\"", eos, "\" not understood; try either \"gsw\" or \"unesco\"")
+        if (missing(which)) {
+            which <- if (eos == "unesco") c(1, 2, 3, 99) else c(1.5, 2.5, 3.5, 99)
+        }
         # UNUSED zlimOrig <- zlim
         xtype <- match.arg(
             xtype,
@@ -1485,8 +1497,11 @@ setMethod(
         if (is.numeric(which)) {
             which[which == 0] <- "potential temperature"
             which[which == 1] <- "temperature"
+            which[which == 1.5] <- "CT"
             which[which == 2] <- "salinity"
+            which[which == 2.5] <- "SA"
             which[which == 3] <- "sigmaTheta"
+            which[which == 3.5] <- "sigma0"
             which[which == 4] <- "nitrate"
             which[which == 5] <- "nitrite"
             which[which == 6] <- "oxygen"
@@ -1760,7 +1775,7 @@ setMethod(
                 }
             } else {
                 # not isMap
-                oceDebug(debug, "not a map\n")
+                oceDebug(debug, "not a map; variable=", variable, "\n")
                 z <- x[[variable]]
                 zAllMissing <- all(is.na(z))
                 # Use try() to quiet warnings if all data are NA

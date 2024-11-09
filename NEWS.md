@@ -8,13 +8,14 @@
 * Change `as.unit()` to handle more units (issue #2240).
 * Change `download.amsr()` to handle realtime data files (issue #2231).
 * Change `mapPlot()` to handle `las` as a parameter (issue #1707).
+* Change `plot.section()` to handle `eos="gsw"` (issue #2256).
 * Change `read.amsr()` to handle realtime data files (issue #2230).
 * Change `read.ctd.aml()` to handle "type 3" format (issue #2247).
 * Change `read.netcdf()` docs to show how to handle flags (issue #2236).
 * Change `read.netcdf()` to give a way to rename data (issue #2235).
 * Change `read.netcdf()` to handle units better.
-* Change `subset,amsr-method` to handle `"pass"` parameter.
-* Change `subset,ctd-method` to handle items of unexpected length (issue #2250).
+* Change `subset,amsr-method()` to handle `"pass"` parameter.
+* Change `subset,ctd-method()` to handle items of unexpected length (issue #2250).
 
 # oce 1.8.3 (ON CRAN)
 

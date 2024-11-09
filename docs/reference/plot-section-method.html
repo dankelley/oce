@@ -56,7 +56,7 @@ which."></head><body>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co"># S4 method for class 'section'</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span></span>
 <span>  <span class="va">x</span>,</span>
-<span>  which <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">3</span>, <span class="fl">99</span><span class="op">)</span>,</span>
+<span>  <span class="va">which</span>,</span>
 <span>  <span class="va">eos</span>,</span>
 <span>  at <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  labels <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -355,10 +355,17 @@ of the grid, including adding elements to the plot (see example 5).</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>The type of plot is governed by <code>which</code>, as follows.</p><ul><li><p><code>which=0</code> or <code>"potential temperature"</code> for potential temperature contours</p></li>
-<li><p><code>which=1</code> or <code>"temperature"</code> for in-situ temperature contours (the default)</p></li>
+    <p>The type of plot is governed by <code>which</code>, as listed below;
+if <code>which</code> is not supplied, it defaults to
+<code>c(1,2,3,99)</code> if <code>eos</code> is <code>"unesco"</code> or to
+<code>c(1.5,2.5,3.5,99)</code> if <code>eos</code> is <code>"gsw"</code>.</p><ul><li><p><code>which=0</code> or <code>"potential temperature"</code> for
+potential temperature contours</p></li>
+<li><p><code>which=1</code> or <code>"temperature"</code> for in-situ temperature contours</p></li>
+<li><p><code>which=1.5</code> or <code>"CT"</code> for Conservative Temperature contours</p></li>
 <li><p><code>which=2</code> or <code>"salinity"</code> for salinity contours</p></li>
-<li><p><code>which=3</code> or <code>"sigmaTheta"</code> for sigma-theta contours</p></li>
+<li><p><code>which=2.5</code> or <code>"SA"</code> for Absolute Salinity contours</p></li>
+<li><p><code>which=3</code> or <code>"sigmaTheta"</code> for sigma-theta (a unesco variable) contours</p></li>
+<li><p><code>which=3.5</code> or <code>"sigma0"</code> for sigma0 (a gsw variable) contours</p></li>
 <li><p><code>which=4</code> or <code>"nitrate"</code> for nitrate concentration contours</p></li>
 <li><p><code>which=5</code> or <code>"nitrite"</code> for nitrite concentration contours</p></li>
 <li><p><code>which=6</code> or <code>"oxygen"</code> for oxygen concentration  contours</p></li>
