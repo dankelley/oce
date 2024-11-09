@@ -53,7 +53,7 @@ data slot has been altered, or added."></head><body>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">oceSetData</span><span class="op">(</span><span class="va">object</span>, <span class="va">name</span>, <span class="va">value</span>, <span class="va">unit</span>, <span class="va">originalName</span>, note <span class="op">=</span> <span class="st">""</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">oceSetData</span><span class="op">(</span><span class="va">object</span>, <span class="va">name</span>, <span class="va">value</span>, <span class="va">unit</span>, originalName <span class="op">=</span> <span class="st">"-"</span>, note <span class="op">=</span> <span class="st">""</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -65,25 +65,27 @@ data slot has been altered, or added."></head><body>
 
 
 <dt id="arg-name">name<a class="anchor" aria-label="anchor" href="#arg-name"></a></dt>
-<dd><p>String indicating the name of the <code>data</code> item to be set.</p></dd>
+<dd><p>the name of the <code>data</code> item to be set.</p></dd>
 
 
 <dt id="arg-value">value<a class="anchor" aria-label="anchor" href="#arg-value"></a></dt>
-<dd><p>Value for the item.</p></dd>
+<dd><p>value for the item.</p></dd>
 
 
 <dt id="arg-unit">unit<a class="anchor" aria-label="anchor" href="#arg-unit"></a></dt>
-<dd><p>An optional indication of the units for the item. This has
+<dd><p>an optional indication of the units for the item. This has
 three possible forms (see “Details”).</p></dd>
 
 
 <dt id="arg-originalname">originalName<a class="anchor" aria-label="anchor" href="#arg-originalname"></a></dt>
-<dd><p>Optional character string giving an 'original' name (e.g.
-as stored in the header of a data file).</p></dd>
+<dd><p>character string giving an 'original' name (e.g.
+as stored in the header of a data file). The default, <code>"-"</code>, is
+taken by <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code> functions to mean that there was no original
+name in <code>object</code>.</p></dd>
 
 
 <dt id="arg-note">note<a class="anchor" aria-label="anchor" href="#arg-note"></a></dt>
-<dd><p>Either empty (the default), a character string, or <code>NULL</code>,
+<dd><p>either empty (the default), a character string, or <code>NULL</code>,
 to control additions made to the processing log of the return value. If
 <code>note=""</code> then the an entry is created based on deparsing the function call.
 If <code>note</code> is a non-empty string, then that string gets added added
@@ -96,9 +98,8 @@ to add a note by e.g. <code>processingLog(a) &lt;- "QC (memo dek-2018-01/31)"</c
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>An <a href="oce-class.html">oce</a> object, the <code>data</code> slot of which has
-been altered either by adding a new item or modifying an existing
-item.</p>
+    <p><code>oceSetData</code> returns an <a href="oce-class.html">oce</a> object, the <code>data</code> slot of which
+has been altered either by adding a new item or modifying an existing item.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
