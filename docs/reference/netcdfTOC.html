@@ -84,8 +84,8 @@ by specifying higher <code>debug</code> values.</p></dd>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>If <code>level</code> is 1, then the printed list of variables and dimensions
-is returned (silently).  Otherwise, much more is printed, but
-the return value is as for the first case.</p>
+is returned.  Otherwise, more information is printed, but
+the return value is the same as for <code>level</code> 1.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
@@ -116,43 +116,6 @@ attributes.</p>
 <span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/base/unlink.html" class="external-link">unlink</a></span><span class="op">(</span><span class="va">localfile</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Loading required namespace: ncdf4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $variables</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [1] "DATA_TYPE"                    "FORMAT_VERSION"              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [3] "HANDBOOK_VERSION"             "REFERENCE_DATE_TIME"         </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [5] "DATE_CREATION"                "DATE_UPDATE"                 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [7] "PLATFORM_NUMBER"              "PROJECT_NAME"                </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [9] "PI_NAME"                      "STATION_PARAMETERS"          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [11] "CYCLE_NUMBER"                 "DIRECTION"                   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [13] "DATA_CENTRE"                  "DC_REFERENCE"                </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [15] "DATA_STATE_INDICATOR"         "DATA_MODE"                   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [17] "INST_REFERENCE"               "WMO_INST_TYPE"               </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [19] "JULD"                         "JULD_QC"                     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [21] "JULD_LOCATION"                "LATITUDE"                    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [23] "LONGITUDE"                    "POSITION_QC"                 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [25] "POSITIONING_SYSTEM"           "PROFILE_PRES_QC"             </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [27] "PRES"                         "PRES_QC"                     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [29] "PRES_ADJUSTED"                "PRES_ADJUSTED_QC"            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [31] "PRES_ADJUSTED_ERROR"          "PROFILE_PSAL_QC"             </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [33] "PSAL"                         "PSAL_QC"                     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [35] "PSAL_ADJUSTED"                "PSAL_ADJUSTED_QC"            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [37] "PSAL_ADJUSTED_ERROR"          "PROFILE_TEMP_QC"             </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [39] "TEMP"                         "TEMP_QC"                     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [41] "TEMP_ADJUSTED"                "TEMP_ADJUSTED_QC"            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [43] "TEMP_ADJUSTED_ERROR"          "PARAMETER"                   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [45] "SCIENTIFIC_CALIB_EQUATION"    "SCIENTIFIC_CALIB_COEFFICIENT"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [47] "SCIENTIFIC_CALIB_COMMENT"     "CALIBRATION_DATE"            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [49] "HISTORY_INSTITUTION"          "HISTORY_STEP"                </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [51] "HISTORY_SOFTWARE"             "HISTORY_SOFTWARE_RELEASE"    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [53] "HISTORY_REFERENCE"            "HISTORY_DATE"                </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [55] "HISTORY_ACTION"               "HISTORY_PARAMETER"           </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [57] "HISTORY_START_PRES"           "HISTORY_STOP_PRES"           </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [59] "HISTORY_PREVIOUS_VALUE"       "HISTORY_QCTEST"              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $dimensions</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [1] "DATE_TIME" "STRING256" "STRING64"  "STRING32"  "STRING16"  "STRING8"  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [7] "STRING4"   "STRING2"   "N_PROF"    "N_PARAM"   "N_LEVELS"  "N_CALIB"  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [13] "N_HISTORY"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

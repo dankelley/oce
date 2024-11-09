@@ -5,36 +5,32 @@
 \alias{section}
 \title{Sample section Data}
 \source{
-This is based on the WOCE file named \code{a03_hy1.csv}, downloaded
-from \verb{https://cchdo.ucsd.edu/cruise/90CT40_1}, 13 April 2015.
+The following code was used to download the datafile and create the \code{section}
+object.
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{download.file("https://cchdo.ucsd.edu/data/7872/a03_hy1.csv",
+    "a03_hy1.csv")
+section <- read.section("a03_hy1.csv",
+    sectionId = "a03", institute = "SIO",
+    ship = "R/V Professor Multanovskiy",
+    scientist = "Vladimir Tereschenkov")
+}\if{html}{\out{</div>}}
 }
 \usage{
 data(section)
 }
 \description{
-This is line A03 (ExpoCode 90CT40_1, with nominal sampling date 1993-09-11).
-The chief scientist was Tereschenkov of SOI, working aboard the Russian ship
-Multanovsky, undertaking a westward transect from the Mediterranean outflow
-region across to North America, with a change of heading in the last few dozen
-stations to run across the nominal Gulf Stream axis.
-The data flags follow the "WHP Bottle"convention, set by
-\code{\link[=initializeFlagScheme,section-method]{initializeFlagScheme,section-method()}} to \code{"WHP bottle"}.  This convention
-used to be described at the link
-\verb{https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm}
-but that was found to fail in December 2020.
+This is from a 1993 occupation of WOCE line A03 that ran westward across the
+Atlantic at approximately 36 N, ending with a turn to the northwest in the
+Gulf Stream region.
 }
-\section{Speculation on a timing error}{
-
-In May 2022, it was discovered that the times in this dataset are not fully
-sequential, at two spots.  This might be a reporting error. Station 41 has
-time listed as 1993-10-03T00:06:00 and that leads to a time reversal.
-However, if that time were actually on the day before, then
-the time reversal would vanish, and the inter-station timing of
-about 5 to 6 hours would be recovered. A similar pattern is seen at station
-45.  Of course, this hypothesis of incorrect recording is difficult to test,
-for data taken thirty years ago.
+\details{
+The sampling times in this dataset are not fully sequential. For example,
+Station 41 is reported to be at \verb{1993-10-03T00:06:00}, which, going by
+station numbers, suggests an error in the reported day. Station 45 seems to
+have a similar problem. However, the goal here is to represent the data as
+archived, so no changes are made to the times.
 }
-
 \examples{
 library(oce)
 # Gulf Stream

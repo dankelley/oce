@@ -2,6 +2,7 @@
 
 * Add `bodcNames2oceNames()` to rename NERC/BODC variables (issue #2235).
 * Add `netcdfTOC()` to overview NetCDF files (issue #2232).
+* Add `rename()` to rename variables, flags and units (issue #2238).
 * Add `Tidal Analysis` vignette (issue #2243).
 * Change `amsr[[` to handle `"metadata"` parameter (issue #2229).
 * Change `as.unit()` to handle more units (issue #2240).

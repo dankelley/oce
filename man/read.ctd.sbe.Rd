@@ -13,6 +13,7 @@ read.ctd.sbe(
   btl = FALSE,
   monitor = FALSE,
   encoding = "latin1",
+  rename = TRUE,
   debug = getOption("oceDebug"),
   processingLog,
   ...
@@ -79,6 +80,15 @@ progress.  This is useful if \code{filename} is a wildcard.}
 this data file, if it is textual.  The default value for most functions is
 \code{"latin1"}, which seems to be suitable for files containing text written in
 English and French.}
+
+\item{rename}{optional logical value indicating whether to
+rename variables from the values in the file to the oce
+convention, using \code{\link[=cnvName2oceName]{cnvName2oceName()}} for the translation.
+This is done by default, but setting \code{rename=FALSE} can
+be helpful if there is a wish to control the renaming,
+either using a built-in dictionary or using a dictionary
+set up by the user.  See Examples 1 and 2.
+if there is a desire to control renaming using \code{\link[=rename]{rename()}}.}
 
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
@@ -243,8 +253,12 @@ Note that reading a file that contains IPTS-68 temperatures produces a warning.
 }
 
 \examples{
+# Example 1: default variable renaming
 f <- system.file("extdata", "ctd.cnv.gz", package = "oce")
-d <- read.ctd(f)
+d1 <- read.ctd(f)
+
+# Example 2: handle variable renaming after reading
+d2 <- read.ctd(f, rename = FALSE) |> rename("sbe")
 
 }
 \references{

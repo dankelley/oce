@@ -24,8 +24,8 @@ by specifying higher \code{debug} values.}
 }
 \value{
 If \code{level} is 1, then the printed list of variables and dimensions
-is returned (silently).  Otherwise, much more is printed, but
-the return value is as for the first case.
+is returned.  Otherwise, more information is printed, but
+the return value is the same as for \code{level} 1.
 }
 \description{
 This prints an overview of the variables in a NetCDF file, along with time,

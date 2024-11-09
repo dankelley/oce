@@ -490,7 +490,7 @@ test_that("original names pair with final names", {
             "scan", "pressure", "depth", "temperature",
             "temperature2", "conductivity", "conductivity2",
             "oxygenRaw", "beamTransmission", "v1", "fluorescence",
-            "v0", "fluorescence2", "v4", "upoly", "par", "spar",
+            "v0", "fluorescence2", "v4", "upoly", "PAR", "spar",
             "altimeter", "oxygen", "salinity", "salinity2",
             "theta", "sigmaTheta", "soundSpeed", "nbin", "flag"
         )
@@ -511,7 +511,7 @@ test_that("original names pair with final names", {
     expect_equal(dno$fluorescence2, "wetCDOM")
     expect_equal(dno$v4, "v4")
     expect_equal(dno$upoly, "upoly0")
-    expect_equal(dno$par, "par")
+    expect_equal(dno$PAR, "par")
     expect_equal(dno$spar, "spar")
     expect_equal(dno$altimeter, "altM")
     expect_equal(dno$oxygen, "sbeox0ML/L")
