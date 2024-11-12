@@ -19,7 +19,7 @@ read.xbt(
 load.}
 
 \item{type}{character string indicating type of file, with valid choices being
-\code{"sippican"} and \code{"noaa1"}.}
+\code{"sippican"}, \code{"sippican2"}, and \code{"noaa1"}.}
 
 \item{longitude, latitude}{optional signed numbers indicating the longitude in degrees
 East and latitude in degrees North. These values are used if \code{type="sippican"},
@@ -41,11 +41,12 @@ provides is better for normal calls by a user.}
 An \linkS4class{xbt} object.
 }
 \description{
-Two file types are handled: (1) the \code{"sippican"} format, used
-for Sippican XBT files, handled with \code{\link[=read.xbt.edf]{read.xbt.edf()}}, and (2)
-the \code{"noaa1"} format, handled with \code{\link[=read.xbt.noaa1]{read.xbt.noaa1()}}. The first of
-these is recognized by \code{\link[=read.oce]{read.oce()}}, but the second must be called
-directly with \code{\link[=read.xbt.noaa1]{read.xbt.noaa1()}}.
+Three file types are handled: (1) the \code{"sippican"} format of Sippican XBT
+files with space-separated data columns, (2) the related \verb{"sippican2} format
+that uses tab characters to space data columns, and (3) the \code{"noaa1"} format.
+These three types are handled either by setting \code{type} to the named string,
+or by directly calling \code{\link[=read.xbt.edf]{read.xbt.edf()}}, \code{\link[=read.xbt.edf2]{read.xbt.edf2()}}, or
+\code{\link[=read.xbt.noaa1]{read.xbt.noaa1()}}.
 }
 \examples{
 library(oce)

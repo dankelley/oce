@@ -318,17 +318,18 @@ as.xbt <- function(
 
 #' Read an xbt file
 #'
-#' Two file types are handled: (1) the `"sippican"` format, used
-#' for Sippican XBT files, handled with [read.xbt.edf()], and (2)
-#' the `"noaa1"` format, handled with [read.xbt.noaa1()]. The first of
-#' these is recognized by [read.oce()], but the second must be called
-#' directly with [read.xbt.noaa1()].
+#' Three file types are handled: (1) the `"sippican"` format of Sippican XBT
+#' files with space-separated data columns, (2) the related `"sippican2` format
+#' that uses tab characters to space data columns, and (3) the `"noaa1"` format.
+#' These three types are handled either by setting `type` to the named string,
+#' or by directly calling [read.xbt.edf()], [read.xbt.edf2()], or
+#' [read.xbt.noaa1()].
 #'
 #' @param file a connection or a character string giving the name of the file to
 #' load.
 #'
 #' @param type character string indicating type of file, with valid choices being
-#' `"sippican"` and `"noaa1"`.
+#' `"sippican"`, `"sippican2"`, and `"noaa1"`.
 #'
 #' @param longitude,latitude optional signed numbers indicating the longitude in degrees
 #' East and latitude in degrees North. These values are used if `type="sippican"`,
@@ -385,9 +386,13 @@ read.xbt <- function(
     if (is.character(file) && "http://" != substr(file, 1, 7) && 0 == file.info(file)$size) {
         stop("empty file (read.xbt)")
     }
-    type <- match.arg(type)
     res <- if (type == "sippican") {
         read.xbt.edf(
+            file = file, longitude = longitude, latitude = latitude,
+            encoding = encoding, debug = debug - 1, processingLog = processingLog
+        )
+    } else if (type == "sippican2") {
+        read.xbt.edf2(
             file = file, longitude = longitude, latitude = latitude,
             encoding = encoding, debug = debug - 1, processingLog = processingLog
         )
@@ -400,18 +405,18 @@ read.xbt <- function(
         }
         read.xbt.noaa1(file = file, encoding = encoding, debug = debug - 1, processingLog = processingLog)
     } else {
-        stop("unknown type of current meter")
+        stop("unknown XBT type; try \"sippican\", \"sippican2\", or \"noaa1\"")
     }
     oceDebug(debug, "END read.xbt()\n", sep = "", unindent = 1)
     res
 }
 
-#' Read an xbt File in Sippican Format
-#'
+#' Read an xbt File in Sippican Format Type 1
 #'
 #' The function was written by inspection of a particular file, and might
 #' be wrong for other files; see \dQuote{Details} for a note on character
-#' translation.
+#' translation. The format uses space-separated data columns, unlike the tab-
+#' separated columns of [read.xbt.edf2()].
 #'
 #' The header is converted to ASCII format prior to storage in
 #' the `metadata` slot, so that e.g. a degree sign in the original file will
@@ -470,7 +475,7 @@ read.xbt.edf <- function(
     if (is.character(file) && "http://" != substr(file, 1, 7) && 0 == file.info(file)$size) {
         stop("empty file (read.xbt.edf)")
     }
-    oceDebug(debug, "read.xbt(file=\"", file, "\", longitude=", longitude, ", latitude=", latitude, "...) START\n",
+    oceDebug(debug, "read.xbt.edf(file=\"", file, "\", longitude=", longitude, ", latitude=", latitude, "...) START\n",
         sep = "", unindent = 1
     )
     filename <- ""
@@ -525,6 +530,81 @@ read.xbt.edf <- function(
     res@metadata$units$soundSpeed <- list(unit = expression(m / s), scale = "")
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep = "", collapse = ""))
     oceDebug(debug, "END read.xbt.edf()\n", unindent = 1)
+    res
+}
+
+#' Read an xbt File in Sippican Format Type 2
+#'
+#' The function was written by inspection of a particular file, and might
+#' be wrong for other files; see \dQuote{Details} for a note on character
+#' translation. The format uses tab-separated data columns, unlike the space-
+#' separated columns of [read.xbt.edf()].
+#'
+#' @inheritParams read.xbt.edf
+#'
+#' @return An [xbt-class] object.
+#'
+#' @author Dan Kelley
+read.xbt.edf2 <- function(
+    file, longitude = NA, latitude = NA, encoding = "latin1",
+    debug = getOption("oceDebug"), processingLog) {
+    if (missing(file)) {
+        stop("must supply 'file'")
+    }
+    oceDebug(debug, "read.xbt.edf2(file=\"", file, "\", longitude=", longitude, ", latitude=", latitude, "...) START\n",
+        sep = "", unindent = 1
+    )
+    res <- new("xbt")
+    res@metadata$longitude <- longitude
+    res@metadata$latitude <- latitude
+    res@metadata$filename <- "(file connection)"
+    if (is.character(file)) {
+        res@metadata$filename <- file
+        if (!file.exists(file)) {
+            stop("cannot find file \"", file, "\"")
+        }
+        if (0L == file.info(file)$size) {
+            stop("empty file \"", file, "\"")
+        }
+    }
+    lines <- readLines(file)
+    nlines <- length(lines)
+    endOfHeader <- grep("^// Data$", lines)
+    if (0 == length(endOfHeader)) {
+        stop("cannot find '// Data' line")
+    }
+    if (1 < length(endOfHeader)) {
+        stop("cannot handle multiple '// Data' lines")
+    }
+    headerLines <- lines[seq_len(endOfHeader)]
+    res@metadata$header <- headerLines
+    # FIXME: what does next do if there is no match?
+    res@metadata$probeType <- trimws(strsplit(headerLines[grep("^Probe Type", headerLines)], ":")[[1]][2])
+    dataLines <- lines[seq(endOfHeader + 1, nlines)]
+    nameLines <- headerLines[grep("^Field.*:", headerLines)]
+    originalNames <- gsub(".*:[ ]*(.*)[ ].*", "\\1", nameLines)
+    names <- originalNames
+    # rename to oce conventions
+    names[names == "Temperature"] <- "temperature"
+    names[names == "Time"] <- "time"
+    names[names == "Depth"] <- "depth"
+    names[names == "Sound Velocity"] <- "soundSpeed"
+    names[names == "Resistance"] <- "resistance"
+    names(originalNames) <- names
+    res@metadata$dataNamesOriginal <- originalNames
+    u <- gsub(".*[(](.*)[)]", "\\1", nameLines)
+    # as.unit() does not like the degree sign I see in a file,
+    # and I fear encoding issues, so let's just brute-force
+    # the unit. Note that we cannot guess the scale.
+    needToFix <- grep("C$", u)
+    if (1 == length(needToFix)) {
+        u[needToFix] <- "degree C"
+    }
+    units <- lapply(u, as.unit)
+    names(units) <- names
+    res@metadata$units <- units
+    res@data <- read.delim(text = dataLines, sep = "\t", header = FALSE, col.names = names)
+    oceDebug(debug, "END read.xbt.edf2()\n", sep = "", unindent = 1)
     res
 }
 
