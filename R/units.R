@@ -194,6 +194,8 @@ as.unit <- function(u, default = list(unit = expression(), scale = "")) {
         grepl("^s\\s+m-1$", uorig) ||
         grepl("^s.m-1$", uorig)) {
         list(unit = expression(s / m), scale = "")
+    } else if (grepl("^ohm[s]{0,1}$", u)) {
+        list(unit = expression(ohm), scale = "")
     } else if (grepl("^S\\s*/\\s*m$", uorig) || # conductivity
         grepl("^S\\s+m-1$", uorig) ||
         grepl("^S.m-1$", uorig)) {
