@@ -8,7 +8,7 @@
 Sample adp File in RDI Format
 }
 \examples{
-read.oce(system.file("extdata", "adp_rdi.000", package="oce"))
+read.oce(system.file("extdata", "adp_rdi.000", package = "oce"))
 
 }
 \seealso{
@@ -19,7 +19,8 @@ Other raw datasets:
 \code{\link{ctd_aml_type3.csv.gz}},
 \code{\link{d200321-001.ctd.gz}},
 \code{\link{d201211_0011.cnv.gz}},
-\code{\link{xbt.edf}}
+\code{\link{xbt.edf}},
+\code{\link{xbt2.edf}}
 
 Other things related to adp data: 
 \code{\link{[[,adp-method}},

@@ -348,7 +348,7 @@ as.xbt <- function(
 #'
 #' @examples
 #' library(oce)
-#' xbt <- read.oce(system.file("extdata", "xbt.edf", package = "oce"))
+#' xbt <- read.xbt(system.file("extdata", "xbt.edf", package = "oce"))
 #' summary(xbt)
 #' plot(xbt)
 #'
@@ -363,11 +363,12 @@ as.xbt <- function(
 read.xbt <- function(
     file,
     type = "sippican",
-    longitude = NA,
-    latitude = NA,
+    longitude,
+    latitude,
     encoding = "latin1",
     debug = getOption("oceDebug"),
     processingLog) {
+    debug <- max(0L, min(debug, 2L))
     if (missing(file)) {
         stop("must supply 'file'")
     }
@@ -380,7 +381,7 @@ read.xbt <- function(
         }
     }
     oceDebug(debug, "read.xbt(file=\"", file, "\", type=\"",
-        type, "\", longitude=", longitude, ", latitude=", latitude, "...) START\n",
+        type, "\" ...) START\n",
         sep = "", unindent = 1
     )
     if (is.character(file) && "http://" != substr(file, 1, 7) && 0 == file.info(file)$size) {
@@ -389,12 +390,12 @@ read.xbt <- function(
     res <- if (type == "sippican") {
         read.xbt.edf(
             file = file, longitude = longitude, latitude = latitude,
-            encoding = encoding, debug = debug - 1, processingLog = processingLog
+            encoding = encoding, debug = debug - 1L, processingLog = processingLog
         )
     } else if (type == "sippican2") {
         read.xbt.edf2(
             file = file, longitude = longitude, latitude = latitude,
-            encoding = encoding, debug = debug - 1, processingLog = processingLog
+            encoding = encoding, debug = debug - 1L, processingLog = processingLog
         )
     } else if (type == "noaa1") {
         if (!is.null(longitude)) {
@@ -403,7 +404,7 @@ read.xbt <- function(
         if (!is.null(latitude)) {
             warning("latitude argument is ignored for type=\"noaa1\"\n")
         }
-        read.xbt.noaa1(file = file, encoding = encoding, debug = debug - 1, processingLog = processingLog)
+        read.xbt.noaa1(file = file, encoding = encoding, debug = debug - 1L, processingLog = processingLog)
     } else {
         stop("unknown XBT type; try \"sippican\", \"sippican2\", or \"noaa1\"")
     }
@@ -451,7 +452,6 @@ read.xbt <- function(
 #' library(oce)
 #' xbt <- read.oce(system.file("extdata", "xbt.edf", package = "oce"))
 #' summary(xbt)
-#' plot(xbt)
 #'
 #' @author Dan Kelley
 read.xbt.edf <- function(
@@ -521,7 +521,7 @@ read.xbt.edf <- function(
     londeg <- as.numeric(lons[1])
     lonmin <- as.numeric(gsub("[EWew]", "", lons[2]))
     res@metadata$longitude <- (londeg + lonmin / 60) * ifelse(length(grep("W", lons[2])), -1, 1)
-    res@metadata$probeType <- getHeaderItem(l, "Probe Type")
+    res@metadata$probeType <- trimws(getHeaderItem(l, "Probe Type"))
     res@metadata$terminalDepth <- as.numeric(gsub("[ ]*m$", "", getHeaderItem(l, "Terminal Depth"))) # FIXME: assumes metric
     res@data <- as.list(read.table(file, skip = headerEnd + 1, col.names = c("depth", "temperature", "soundSpeed"), encoding = encoding))
     res@metadata$filename <- filename
@@ -545,21 +545,33 @@ read.xbt.edf <- function(
 #'
 #' @inheritParams read.xbt.edf
 #'
+#' @examples
+#' library(oce)
+#' xbt2 <- read.xbt(system.file("extdata", "xbt2.edf", package = "oce"), type = "sippican2")
+#' summary(xbt2)
+#'
 #' @return An [xbt-class] object.
 #'
 #' @author Dan Kelley
 read.xbt.edf2 <- function(
-    file, longitude = NA, latitude = NA, encoding = "latin1",
+    file, longitude, latitude, encoding = "latin1",
     debug = getOption("oceDebug"), processingLog) {
+    getHeaderItem <- function(headerLines, name) {
+        w <- grep(name, headerLines)
+        if (length(w) == 0L) {
+            return(NULL)
+        }
+        if (length(w) > 1L) {
+            warning("multiple matches for header item \"", name, "\"")
+            w <- w[1]
+        }
+        trimws(strsplit(headerLines[w], " : ")[[1]][2])
+    }
     if (missing(file)) {
         stop("must supply 'file'")
     }
-    oceDebug(debug, "read.xbt.edf2(file=\"", file, "\", longitude=", longitude, ", latitude=", latitude, "...) START\n",
-        sep = "", unindent = 1
-    )
+    oceDebug(debug, "read.xbt.edf2(file=\"", file, "\", ...) START\n", sep = "", unindent = 1)
     res <- new("xbt")
-    res@metadata$longitude <- longitude
-    res@metadata$latitude <- latitude
     res@metadata$filename <- "(file connection)"
     if (is.character(file)) {
         res@metadata$filename <- file
@@ -581,6 +593,50 @@ read.xbt.edf2 <- function(
     }
     headerLines <- lines[seq_len(endOfHeader)]
     res@metadata$header <- headerLines
+    if (missing(longitude)) { # decode E or W; also decode sign (unlikely to be used)
+        tmp <- trimws(getHeaderItem(headerLines, "Longitude"))
+        signFactor <- 1.0
+        if (grepl("W$", tmp)) {
+            signFactor <- -signFactor
+        }
+        tmp <- gsub("[ ]{0,1}[EW]$", "", tmp)
+        if (grepl("-", tmp)) {
+            signFactor <- -signFactor
+            tmp <- gsub("-", "", tmp)
+        }
+        longitude <- if (grepl(" ", tmp)) {
+            tmp <- as.numeric(strsplit(tmp, " ")[[1]])
+            signFactor * (tmp[1] + tmp[2] / 60)
+        } else {
+            signFactor * as.numeric(tmp)
+        }
+    }
+    res@metadata$longitude <- longitude
+    if (missing(latitude)) { # decode N or S; also decode sign (unlikely to be used)
+        tmp <- trimws(getHeaderItem(headerLines, "Latitude"))
+        signFactor <- 1.0
+        if (grepl("S$", tmp)) {
+            signFactor <- -signFactor
+        }
+        tmp <- gsub("[ ]{0,1}[NS]$", "", tmp)
+        if (grepl("-", tmp)) {
+            signFactor <- -signFactor
+            tmp <- gsub("-", "", tmp)
+        }
+        latitude <- if (grepl(" ", tmp)) {
+            tmp <- as.numeric(strsplit(tmp, " ")[[1]])
+            signFactor * (tmp[1] + tmp[2] / 60)
+        } else {
+            signFactor * as.numeric(tmp)
+        }
+    }
+    res@metadata$latitude <- latitude
+    res@metadata$serialNumber <- getHeaderItem(headerLines, "Serial Number")
+    res@metadata$type <- trimws(getHeaderItem(headerLines, "Probe Type"))
+    # Decode time (relies on d/m/y ordering in a sample file)
+    dateOfLaunch <- getHeaderItem(headerLines, "Date of Launch")
+    timeOfLaunch <- getHeaderItem(headerLines, "Time of Launch")
+    res@metadata$time <- as.POSIXct(paste(dateOfLaunch, timeOfLaunch), "%d/%m/%y %H:%M:%S", tz="UTC")
     # FIXME: what does next do if there is no match?
     res@metadata$probeType <- trimws(strsplit(headerLines[grep("^Probe Type", headerLines)], ":")[[1]][2])
     dataLines <- lines[seq(endOfHeader + 1, nlines)]
@@ -661,7 +717,7 @@ read.xbt.noaa1 <- function(
             stop("empty file \"", file, "\"")
         }
     }
-    oceDebug(debug, "read.xbt(file=\"", file, "\", type=\"", "...) START\n", sep = "", unindent = 1)
+    oceDebug(debug, "read.xbt.noaa(file=\"", file, "\", type=\"", "...) START\n", sep = "", unindent = 1)
     filename <- "?"
     if (is.character(file)) {
         filename <- fullFilename(file)

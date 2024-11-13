@@ -38,7 +38,8 @@ Other things related to xbt data:
 \code{\link{summary,xbt-method}},
 \code{\link{xbt}},
 \code{\link{xbt-class}},
-\code{\link{xbt.edf}}
+\code{\link{xbt.edf}},
+\code{\link{xbt2.edf}}
 
 Other functions that subset oce objects: 
 \code{\link{subset,adp-method}},

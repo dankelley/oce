@@ -56,3 +56,22 @@ test_that("[[ works for 'z', 'depth', and 'pressure' (given depth)", {
     expect_equal(xbt[["depth"]], c(5.4, 6, 6.7, 7.4, 8, 8.7))
     expect_equal(xbt[["pressure"]], swPressure(-xbt[["z"]], xbt[["latitude"]]))
 })
+
+test_that("read.xbt(type=\"sippican2\") works", {
+    xbt2 <- read.xbt(system.file("extdata", "xbt2.edf", package = "oce"), type = "sippican2")
+    expect_equal(xbt2[["type"]], "T-xx")
+    expect_equal(xbt2[["time"]], as.POSIXct("2025-01-07 12:01:02", tz = "UTC"))
+    expect_equal(xbt2[["longitude"]], -50.5)
+    expect_equal(xbt2[["latitude"]], 40.5)
+    expect_equal(xbt2[["serialNumber"]], "1")
+    expect_equal(
+        xbt2[["data"]],
+        structure(list(
+            time = c(0, 0.1), resistance = c(6600, 6601),
+            depth = c(0, 0.5), temperature = c(18, 17.9), soundSpeed = c(
+                1521,
+                1520
+            )
+        ), class = "data.frame", row.names = c(NA, -2L))
+    )
+})

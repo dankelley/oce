@@ -6,8 +6,8 @@
 \usage{
 read.xbt.edf2(
   file,
-  longitude = NA,
-  latitude = NA,
+  longitude,
+  latitude,
   encoding = "latin1",
   debug = getOption("oceDebug"),
   processingLog
@@ -45,6 +45,12 @@ columns are separated by tab characters, not spaces. The reading of header
 data is more rudimentary than is the case for \code{\link[=read.xbt.edf]{read.xbt.edf()}}, because the
 sample data file made available to the author did not seem to have much
 useful information in its header.
+}
+\examples{
+library(oce)
+xbt2 <- read.xbt(system.file("extdata", "xbt2.edf", package = "oce"), type = "sippican2")
+summary(xbt2)
+
 }
 \author{
 Dan Kelley

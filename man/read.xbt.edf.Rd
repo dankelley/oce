@@ -58,7 +58,6 @@ can find a way to otherwise silence the NOTE.
 library(oce)
 xbt <- read.oce(system.file("extdata", "xbt.edf", package = "oce"))
 summary(xbt)
-plot(xbt)
 
 }
 \author{

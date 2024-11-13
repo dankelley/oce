@@ -7,8 +7,8 @@
 read.xbt(
   file,
   type = "sippican",
-  longitude = NA,
-  latitude = NA,
+  longitude,
+  latitude,
   encoding = "latin1",
   debug = getOption("oceDebug"),
   processingLog
@@ -50,7 +50,7 @@ either by setting \code{type} to the named string, or by directly calling
 }
 \examples{
 library(oce)
-xbt <- read.oce(system.file("extdata", "xbt.edf", package = "oce"))
+xbt <- read.xbt(system.file("extdata", "xbt.edf", package = "oce"))
 summary(xbt)
 plot(xbt)
 
@@ -73,7 +73,8 @@ Other things related to xbt data:
 \code{\link{summary,xbt-method}},
 \code{\link{xbt}},
 \code{\link{xbt-class}},
-\code{\link{xbt.edf}}
+\code{\link{xbt.edf}},
+\code{\link{xbt2.edf}}
 }
 \author{
 Dan Kelley

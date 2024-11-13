@@ -9,7 +9,7 @@
 Sample ctd File in .cnv Format
 }
 \examples{
-read.oce(system.file("extdata", "ctd.cnv.gz", package="oce"))
+read.oce(system.file("extdata", "ctd.cnv.gz", package = "oce"))
 
 }
 \seealso{
@@ -20,7 +20,8 @@ Other raw datasets:
 \code{\link{ctd_aml_type3.csv.gz}},
 \code{\link{d200321-001.ctd.gz}},
 \code{\link{d201211_0011.cnv.gz}},
-\code{\link{xbt.edf}}
+\code{\link{xbt.edf}},
+\code{\link{xbt2.edf}}
 
 Other things related to ctd data: 
 \code{\link{CTD_BCD2014666_008_1_DN.ODF.gz}},

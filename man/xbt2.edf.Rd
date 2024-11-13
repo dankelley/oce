@@ -2,15 +2,17 @@
 % Please edit documentation in R/extdata.R
 \docType{data}
 \encoding{UTF-8}
-\name{xbt.edf}
-\alias{xbt.edf}
-\title{Sample xbt File in space-separated .edf Format}
+\name{xbt2.edf}
+\alias{xbt2.edf}
+\title{Sample xbt File in tab-separated .edf Format}
 \description{
-Sample xbt File in space-separated .edf Format
+Sample xbt File in tab-separated .edf Format
 }
 \examples{
-xbt <- read.xbt(system.file("extdata", "xbt.edf", package = "oce"))
-summary(xbt)
+xbt2 <- read.xbt(system.file("extdata", "xbt2.edf", package = "oce"),
+    type = "sippican2"
+)
+summary(xbt2)
 
 }
 \seealso{
@@ -22,7 +24,7 @@ Other raw datasets:
 \code{\link{ctd_aml_type3.csv.gz}},
 \code{\link{d200321-001.ctd.gz}},
 \code{\link{d201211_0011.cnv.gz}},
-\code{\link{xbt2.edf}}
+\code{\link{xbt.edf}}
 
 Other things related to xbt data: 
 \code{\link{[[,xbt-method}},
@@ -35,7 +37,7 @@ Other things related to xbt data:
 \code{\link{summary,xbt-method}},
 \code{\link{xbt}},
 \code{\link{xbt-class}},
-\code{\link{xbt2.edf}}
+\code{\link{xbt.edf}}
 }
 \concept{raw datasets}
 \concept{things related to xbt data}
