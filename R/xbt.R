@@ -319,11 +319,11 @@ as.xbt <- function(
 #' Read an xbt file
 #'
 #' Three file types are handled: (1) the `"sippican"` format of Sippican XBT
-#' files with space-separated data columns, (2) the related `"sippican2` format
-#' that uses tab characters to space data columns, and (3) the `"noaa1"` format.
-#' These three types are handled either by setting `type` to the named string,
-#' or by directly calling [read.xbt.edf()], [read.xbt.edf2()], or
-#' [read.xbt.noaa1()].
+#' files with space-separated data columns, (2) a related `"sippican2` format,
+#' (also known as MK21 export format) in which data columns are separated by tab
+#' characters, and (3) the `"noaa1"` format. These three types are handled
+#' either by setting `type` to the named string, or by directly calling
+#' [read.xbt.edf()], [read.xbt.edf2()], or [read.xbt.noaa1()].
 #'
 #' @param file a connection or a character string giving the name of the file to
 #' load.
@@ -535,10 +535,13 @@ read.xbt.edf <- function(
 
 #' Read an xbt File in Sippican Format Type 2
 #'
-#' The function was written by inspection of a particular file, and might
-#' be wrong for other files; see \dQuote{Details} for a note on character
-#' translation. The format uses tab-separated data columns, unlike the space-
-#' separated columns of [read.xbt.edf()].
+#' The function was written by inspection of a particular file provided by a
+#' user in late 2024. The format has been referred to as MK21 export format, and
+#' a key difference to the format handled by [read.xbt.edf()] is that data
+#' columns are separated by tab characters, not spaces. The reading of header
+#' data is more rudimentary than is the case for [read.xbt.edf()], because the
+#' sample data file made available to the author did not seem to have much
+#' useful information in its header.
 #'
 #' @inheritParams read.xbt.edf
 #'

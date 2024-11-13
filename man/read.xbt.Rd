@@ -42,11 +42,11 @@ An \linkS4class{xbt} object.
 }
 \description{
 Three file types are handled: (1) the \code{"sippican"} format of Sippican XBT
-files with space-separated data columns, (2) the related \verb{"sippican2} format
-that uses tab characters to space data columns, and (3) the \code{"noaa1"} format.
-These three types are handled either by setting \code{type} to the named string,
-or by directly calling \code{\link[=read.xbt.edf]{read.xbt.edf()}}, \code{\link[=read.xbt.edf2]{read.xbt.edf2()}}, or
-\code{\link[=read.xbt.noaa1]{read.xbt.noaa1()}}.
+files with space-separated data columns, (2) a related \verb{"sippican2} format,
+(also known as MK21 export format) in which data columns are separated by tab
+characters, and (3) the \code{"noaa1"} format. These three types are handled
+either by setting \code{type} to the named string, or by directly calling
+\code{\link[=read.xbt.edf]{read.xbt.edf()}}, \code{\link[=read.xbt.edf2]{read.xbt.edf2()}}, or \code{\link[=read.xbt.noaa1]{read.xbt.noaa1()}}.
 }
 \examples{
 library(oce)

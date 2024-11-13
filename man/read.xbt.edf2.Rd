@@ -38,10 +38,13 @@ provides is better for normal calls by a user.}
 An \linkS4class{xbt} object.
 }
 \description{
-The function was written by inspection of a particular file, and might
-be wrong for other files; see \dQuote{Details} for a note on character
-translation. The format uses tab-separated data columns, unlike the space-
-separated columns of \code{\link[=read.xbt.edf]{read.xbt.edf()}}.
+The function was written by inspection of a particular file provided by a
+user in late 2024. The format has been referred to as MK21 export format, and
+a key difference to the format handled by \code{\link[=read.xbt.edf]{read.xbt.edf()}} is that data
+columns are separated by tab characters, not spaces. The reading of header
+data is more rudimentary than is the case for \code{\link[=read.xbt.edf]{read.xbt.edf()}}, because the
+sample data file made available to the author did not seem to have much
+useful information in its header.
 }
 \author{
 Dan Kelley
