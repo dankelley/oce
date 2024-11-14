@@ -2,10 +2,10 @@
 
 #' Class to Store XBT (Expendable Bathythermograph) Data
 #'
-#' This class stores expendable bathythermograph (XBT) data, e.g. from a Sippican
-#' device.  Reference 1 gives some information on Sippican
-#' devices, and reference 2 is a useful introduction to the
-#' modern literature on XBTs in general.
+#' This class stores expendable bathythermograph (XBT) data, e.g. as read using
+#' [read.xbt()] and related functions. Reference 1 gives some information on
+#' Sippican devices, and reference 2 is a useful introduction to the modern
+#' literature on XBTs in general.
 #'
 #' @references
 #' 1. Sippican, Inc. "Bathythermograph Data Acquisition System: Installation, Operation and Maintenance
@@ -20,7 +20,7 @@
 #' @templateVar class xbt
 #'
 # nolint start (long lines)
-#' @templateVar dataExample The key items stored in this slot are `depth` (or `z`) and `temperature`, although some datasets also have `soundSpeed`.  Note that `depth` and `z` are inferred from time in water, using an empirical formula for instrument descent rate, and that `soundSpeed` is #' calculated using a fixed  practical salinity of 35. Note that the `[[` accessor will compute any of `depth`, `z` or `pressure`, based on whatever is in the data object.  Similarly, `soundspeed` will compute sound speed (assuming a practical salinity of 35), if that that item is present in the `data` slot.
+#' @templateVar dataExample The key items stored in this slot are `depth` (or `z`) and `temperature`, although some datasets also have `soundSpeed`.  Note that `depth` and `z` are inferred from time in water, using an empirical formula for instrument descent rate, and that `soundSpeed` is calculated using a fixed  practical salinity of 35. Note that the `[[` accessor will compute any of `depth`, `z` or `pressure`, based on whatever is in the data object.  Similarly, `soundspeed` will compute sound speed (assuming a practical salinity of 35), if that that item is present in the `data` slot.
 # nolint end(long lines)
 #'
 #' @templateVar metadataExample {}
@@ -39,8 +39,9 @@ setClass("xbt", contains = "oce")
 
 #' Sample xbt Data
 #'
-#' An [xbt-class] object created by using [read.xbt()] on a Sippican file created by extracting the near-surface
-#' fraction of the sample provided in Section 5.5.6 of reference 1.
+#' An [xbt-class] object created by using [read.xbt()] on a Sippican file
+#' created by extracting the near-surface fraction of the sample provided in
+#' Section 5.5.6 of reference 1.
 #'
 #' @name xbt
 #'
@@ -55,9 +56,10 @@ setClass("xbt", contains = "oce")
 #' plot(xbt)
 #'
 #' @references
-#' 1. Sippican, Inc. "Bathythermograph Data Acquisition System: Installation, Operation and Maintenance
-#' Manual (P/N 308195, Rev. A)," 2003.
-#' https://pages.uoregon.edu/drt/MGL0910_Science_Report/attachments/MK21_ISA_Manual_Rev_A.pdf.
+#'
+#' 1. Sippican, Inc. "Bathythermograph Data Acquisition System: Installation,
+#'    Operation and Maintenance Manual (P/N 308195, Rev. A)," 2003.
+#'    https://pages.uoregon.edu/drt/MGL0910_Science_Report/attachments/MK21_ISA_Manual_Rev_A.pdf.
 #'
 #' @family datasets provided with oce
 #' @family things related to xbt data

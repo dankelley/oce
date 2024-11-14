@@ -8,8 +8,9 @@
 data(xbt)
 }
 \description{
-An \linkS4class{xbt} object created by using \code{\link[=read.xbt]{read.xbt()}} on a Sippican file created by extracting the near-surface
-fraction of the sample provided in Section 5.5.6 of reference 1.
+An \linkS4class{xbt} object created by using \code{\link[=read.xbt]{read.xbt()}} on a Sippican file
+created by extracting the near-surface fraction of the sample provided in
+Section 5.5.6 of reference 1.
 }
 \examples{
 library(oce)
@@ -20,8 +21,8 @@ plot(xbt)
 }
 \references{
 \enumerate{
-\item Sippican, Inc. "Bathythermograph Data Acquisition System: Installation, Operation and Maintenance
-Manual (P/N 308195, Rev. A)," 2003.
+\item Sippican, Inc. "Bathythermograph Data Acquisition System: Installation,
+Operation and Maintenance Manual (P/N 308195, Rev. A)," 2003.
 https://pages.uoregon.edu/drt/MGL0910_Science_Report/attachments/MK21_ISA_Manual_Rev_A.pdf.
 }
 }
