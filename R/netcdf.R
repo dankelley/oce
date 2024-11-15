@@ -206,9 +206,12 @@ read.netcdf <- function(file, ..., encoding = NA, renamer = NULL, debug = getOpt
         scale <- ncdf4::ncatt_get(nc, varNames[i], "scale")
         isUnixTime <- FALSE
         if (units$hasatt) {
-            # oceDebug(debug, "  unit=\"", units$value, "\"\n")
-            # seconds since 1970-01-01T00:00:00+00:00
-            if (grepl("seconds since 1970-01-01", units$value)) {
+            if (grepl("^days since", units$value)) {
+                res@metadata$units[[oceNames[i]]] <- list(
+                    unit = expression(day),
+                    scale = gsub("days ", "", units$value)
+                )
+            } else if (grepl("seconds since 1970-01-01", units$value)) {
                 res@metadata$units[[oceNames[i]]] <- list(unit = expression(), scale = "")
                 isUnixTime <- TRUE
             } else if (units$value == "1e-3" && scale$hasatt && scale$value == "PSS-78") {
@@ -230,9 +233,19 @@ read.netcdf <- function(file, ..., encoding = NA, renamer = NULL, debug = getOpt
                     unit = expression(mu * A),
                     scale = if (scale$hasatt) scale$value else ""
                 )
+            } else if (units$value == "meter") {
+                res@metadata$units[[oceNames[i]]] <- list(
+                    unit = expression(m),
+                    scale = ""
+                )
+            } else if (units$value == "meter second-1") {
+                res@metadata$units[[oceNames[i]]] <- list(
+                    unit = expression(m / s),
+                    scale = ""
+                )
             } else if (units$value == "MicroEinsteins m-2 s-1") {
                 res@metadata$units[[oceNames[i]]] <- list(
-                    unit = expression(mu * Einstein/m^2/s),
+                    unit = expression(mu * Einstein / m^2 / s),
                     scale = if (scale$hasatt) scale$value else ""
                 )
             } else if (units$value == "NTU") {
