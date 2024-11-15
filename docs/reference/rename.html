@@ -110,10 +110,23 @@ for the quantity in question.</p></li>
 <li><p>The scale for the column (again, only used if the object does not already
 hold a scale).</p></li>
 </ol><p>The built-in dictionaries are stored in locations</p>
-<p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">system.file</span>(<span class="st">"extdata"</span>, <span class="st">"dictionary_ioos.csv"</span>, <span class="at">package =</span> <span class="st">"oce"</span>)</span>
-<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">system.file</span>(<span class="st">"extdata"</span>, <span class="st">"dictionary_sbe.csv"</span>, <span class="at">package =</span> <span class="st">"oce"</span>)</span></code></pre><p></p></div>
-<p>The data for these come from References 1 and 2, respectively.  The
-format is simple, e.g. the entry</p>
+<p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">system.file</span>(<span class="st">"extdata"</span>, <span class="st">"dictionary_codas.csv"</span>, <span class="at">package =</span> <span class="st">"oce"</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">system.file</span>(<span class="st">"extdata"</span>, <span class="st">"dictionary_ioos.csv"</span>, <span class="at">package =</span> <span class="st">"oce"</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">system.file</span>(<span class="st">"extdata"</span>, <span class="st">"dictionary_sbe.csv"</span>, <span class="at">package =</span> <span class="st">"oce"</span>)</span></code></pre><p></p></div>
+<p>The data for these come from References 1, 2 and 3, respectively.  The format
+is simple, consisting of 4 columns, with no header. The column entries
+are as follows.</p>
+<ol><li><p>The first column holds a specialized regular expression for the variable
+name as stored in the datafile.  This is conventional, except that <code>#</code> is a
+stand-in for the regular expression <code>[0-9]</code> (that is, a single digit).
+Formulating these expressions requires a bit of care, so it can make sense to
+look at the <code>dictionary_sbe.csv</code> file to get some hints.</p></li>
+<li><p>The second column holds the oce name.</p></li>
+<li><p>The third column is the unit.</p></li>
+<li><p>The fourth column is the scale.</p></li>
+</ol><p>In many cases, the third and fourth columns are empty, and even if values are
+provided, they will be superceded by values within the data file.</p>
+<p>As an example, the entry</p>
 <p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>PSALST<span class="do">##,salinity,,PSS-78</span></span></code></pre><p></p></div>
 <p>indicates that a variable named <code>"PSALT"</code> followed by 2 digits is to be
 renamed as <code>"salinity"</code>, that the unit (if not already defined within <code>x</code>) is
@@ -131,7 +144,9 @@ testing by the developers.</p>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
 
-<ol><li><p>IOOS naming convention
+<ol><li><p>CODAS naming convention
+<a href="https://currents.soest.hawaii.edu/docs/adcp_doc/UHDAS_OPERATIONS/UHDAS_atsea/adcp_access/read_netCDF.html" class="external-link">https://currents.soest.hawaii.edu/docs/adcp_doc/UHDAS_OPERATIONS/UHDAS_atsea/adcp_access/read_netCDF.html</a></p></li>
+<li><p>IOOS naming convention
 <a href="https://cfconventions.org/Data/cf-standard-names/78/build/cf-standard-name-table.html" class="external-link">https://cfconventions.org/Data/cf-standard-names/78/build/cf-standard-name-table.html</a></p></li>
 <li><p>The SBE names come from a processing manual that was once at
 <code>http://www.seabird.com/document/sbe-data-processing-manual</code>, but as of
@@ -223,8 +238,8 @@ version was named <code>SBEDataProcessing_7.26.4.pdf</code> and had release date
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Processing Log</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2024-11-13 19:46:30 UTC: `Create oce object`</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2024-11-13 19:46:30 UTC: `read.netcdf("/var/folders/8b/l4h64m1j22v5pb7vj049ff140000gn/T//RtmpzKZnDx/file948e24c0bf97.nc")`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2024-11-15 19:01:55 UTC: `Create oce object`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2024-11-15 19:01:55 UTC: `read.netcdf("/var/folders/8b/l4h64m1j22v5pb7vj049ff140000gn/T//Rtmp77fVuh/file141e540cba79.nc")`</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Time: 2023-01-05 13:14:45</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Data Overview</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -268,9 +283,9 @@ version was named <code>SBEDataProcessing_7.26.4.pdf</code> and had release date
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Processing Log</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2024-11-13 19:46:30 UTC: `Create oce object`</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2024-11-13 19:46:30 UTC: `read.netcdf("/var/folders/8b/l4h64m1j22v5pb7vj049ff140000gn/T//RtmpzKZnDx/file948e24c0bf97.nc")`</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2024-11-13 19:46:30 UTC: `rename(..., "/private/var/folders/8b/l4h64m1j22v5pb7vj049ff140000gn/T/RtmpuwtHxb/temp_libpath872e45e97763/oce/extdata/dictionary_ioos.csv")`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2024-11-15 19:01:55 UTC: `Create oce object`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2024-11-15 19:01:55 UTC: `read.netcdf("/var/folders/8b/l4h64m1j22v5pb7vj049ff140000gn/T//Rtmp77fVuh/file141e540cba79.nc")`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2024-11-15 19:01:56 UTC: `rename(..., "/private/var/folders/8b/l4h64m1j22v5pb7vj049ff140000gn/T/RtmpylElyc/temp_libpath12ec464dc3f70/oce/extdata/dictionary_ioos.csv")`</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

@@ -140,12 +140,34 @@ renameInternal <- function(names, dictionary = "ioos.csv", debug = 0) {
 #' The built-in dictionaries are stored in locations
 #'
 #' ```
+#' system.file("extdata", "dictionary_codas.csv", package = "oce")
 #' system.file("extdata", "dictionary_ioos.csv", package = "oce")
 #' system.file("extdata", "dictionary_sbe.csv", package = "oce")
 #' ```
 #'
-#' The data for these come from References 1 and 2, respectively.  The
-#' format is simple, e.g. the entry
+#' The data for these come from References 1, 2 and 3, respectively.  The format
+#' is simple, consisting of 4 columns, with no header. The column entries
+#' are as follows.
+#'
+#' \enumerate{
+#'
+#' \item The first column holds a specialized regular expression for the variable
+#' name as stored in the datafile.  This is conventional, except that `#` is a
+#' stand-in for the regular expression `[0-9]` (that is, a single digit).
+#' Formulating these expressions requires a bit of care, so it can make sense to
+#' look at the `dictionary_sbe.csv` file to get some hints.
+#'
+#' \item The second column holds the oce name.
+#'
+#' \item The third column is the unit.
+#'
+#' \item The fourth column is the scale.
+#' }
+#'
+#' In many cases, the third and fourth columns are empty, and even if values are
+#' provided, they will be superceded by values within the data file.
+#'
+#' As an example, the entry
 #'
 #' ```
 #' PSALST##,salinity,,PSS-78
@@ -211,10 +233,13 @@ renameInternal <- function(names, dictionary = "ioos.csv", debug = 0) {
 #'
 #' @references
 #'
-#' 1. IOOS naming convention
+#' 1. CODAS naming convention
+#' <https://currents.soest.hawaii.edu/docs/adcp_doc/UHDAS_OPERATIONS/UHDAS_atsea/adcp_access/read_netCDF.html>
+#'
+#' 2. IOOS naming convention
 #'    <https://cfconventions.org/Data/cf-standard-names/78/build/cf-standard-name-table.html>
 #'
-#' 2. The SBE names come from a processing manual that was once at
+#' 3. The SBE names come from a processing manual that was once at
 #'    `http://www.seabird.com/document/sbe-data-processing-manual`, but as of
 #'    summer 2018, this no longer seems to be provided by SeaBird. A web search
 #'    will turn up copies of the manual that have been put online by various

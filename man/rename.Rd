@@ -57,12 +57,34 @@ hold a scale).
 
 The built-in dictionaries are stored in locations
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{system.file("extdata", "dictionary_ioos.csv", package = "oce")
+\if{html}{\out{<div class="sourceCode">}}\preformatted{system.file("extdata", "dictionary_codas.csv", package = "oce")
+system.file("extdata", "dictionary_ioos.csv", package = "oce")
 system.file("extdata", "dictionary_sbe.csv", package = "oce")
 }\if{html}{\out{</div>}}
 
-The data for these come from References 1 and 2, respectively.  The
-format is simple, e.g. the entry
+The data for these come from References 1, 2 and 3, respectively.  The format
+is simple, consisting of 4 columns, with no header. The column entries
+are as follows.
+
+\enumerate{
+
+\item The first column holds a specialized regular expression for the variable
+name as stored in the datafile.  This is conventional, except that \verb{#} is a
+stand-in for the regular expression \verb{[0-9]} (that is, a single digit).
+Formulating these expressions requires a bit of care, so it can make sense to
+look at the \code{dictionary_sbe.csv} file to get some hints.
+
+\item The second column holds the oce name.
+
+\item The third column is the unit.
+
+\item The fourth column is the scale.
+}
+
+In many cases, the third and fourth columns are empty, and even if values are
+provided, they will be superceded by values within the data file.
+
+As an example, the entry
 
 \if{html}{\out{<div class="sourceCode">}}\preformatted{PSALST##,salinity,,PSS-78
 }\if{html}{\out{</div>}}
@@ -115,6 +137,8 @@ if (requireNamespace("curl")) {
 }
 \references{
 \enumerate{
+\item CODAS naming convention
+\url{https://currents.soest.hawaii.edu/docs/adcp_doc/UHDAS_OPERATIONS/UHDAS_atsea/adcp_access/read_netCDF.html}
 \item IOOS naming convention
 \url{https://cfconventions.org/Data/cf-standard-names/78/build/cf-standard-name-table.html}
 \item The SBE names come from a processing manual that was once at
