@@ -1482,7 +1482,7 @@ as.ctd <- function(
         } else { # oce object, not argo
             oceDebug(debug, "x is a general oce object (not ctd, and not argo)\n")
             for (field in names(d)) {
-                #print(field)
+                # print(field)
                 if (field != "time") {
                     res@data[[field]] <- d[[field]]
                 }
@@ -1521,7 +1521,7 @@ as.ctd <- function(
                 res@data[[dataNames[iflag]]] <- NULL
             }
         }
-        #message("FIXME DAN L1552: longitude=", longitude)
+        # message("FIXME DAN L1552: longitude=", longitude)
     } else if (is.list(salinity) || is.data.frame(salinity)) {
         # 2. coerce a data-frame or list
         if (length(salinity) == 0) {
@@ -1736,7 +1736,7 @@ as.ctd <- function(
         }
         res@data <- data
     }
-    #message("FIXME DAN L1767: longitude=", longitude)
+    # message("FIXME DAN L1767: longitude=", longitude)
     if (!is.null(ounits)) {
         oceDebug(debug, "copying units from first parameter\n")
         res@metadata$units <- ounits
@@ -1776,7 +1776,7 @@ as.ctd <- function(
     if (is.na(res@metadata$waterDepth) && !is.na(waterDepth)) {
         res@metadata$waterDepth <- waterDepth
     }
-    #message("FIXME DAN L1807: longitude=", longitude)
+    # message("FIXME DAN L1807: longitude=", longitude)
     # Remove lon and lat form metadata, if they are in data. This is so plot()
     # will show multiple stations, as can be the case in converting from
     # multi-station data.
@@ -4249,8 +4249,8 @@ setMethod(
             return(res)
         }
         res <- x
-        #res@metadata <- x@metadata
-        #res@processingLog <- x@processingLog
+        # res@metadata <- x@metadata
+        # res@processingLog <- x@processingLog
         # FIXME: next 2 lines used to be in the loop but I don't see why, so moved out
         r <- eval(substitute(expr = subset, env = environment()), x@data, parent.frame(2))
         r <- r & !is.na(r)
@@ -4265,7 +4265,7 @@ setMethod(
                 res@metadata$flags[[i]] <- res@metadata$flags[[i]][r]
             }
         }
-        #names(res@data) <- names(x@data)
+        # names(res@data) <- names(x@data)
         subsetString <- paste(deparse(substitute(expr = subset, env = environment())), collapse = " ")
         res@processingLog <- processingLogAppend(
             res@processingLog,
@@ -5838,7 +5838,7 @@ plotProfile <- function(
                 xlab = "", ylab = "", type = type,
                 axes = FALSE, xaxs = xaxs, yaxs = yaxs,
                 xlim = xlim, ylim = ylim,
-                col = col, lty = lty, cex = cex, pch = pch, ...
+                cex = cex, col = col, lty = lty, lwd = lwd, pch = pch, ...
             )
             if (list(...)$axes) {
                 axis(3)
@@ -5853,7 +5853,7 @@ plotProfile <- function(
                 xlab = "", ylab = "", type = type,
                 axes = FALSE, xaxs = xaxs, yaxs = yaxs,
                 xlim = if (!missing(xlim)) xlim, ylim = if (!missing(ylim)) ylim,
-                col = col, lty = lty, cex = cex, pch = pch, ...
+                cex = cex, col = col, lty = lty, lwd = lwd, pch = pch, ...
             )
             axis(3)
             mtext(xlab, side = 3, line = axisNameLoc, cex = par("cex"))
@@ -6786,7 +6786,7 @@ plotProfile <- function(
             plot(xplot, y[look],
                 xlim = if (xlimGiven) xlim else range(xplot, na.rm = TRUE),
                 ylim = ylim, lty = lty, cex = cex, pch = pch,
-                type = "n", xlab = "", ylab = "",
+                type = "n", xlab = "", ylab = "", lwd = lwd,
                 axes = FALSE, xaxs = xaxs, yaxs = yaxs
             )
             axis(3)
