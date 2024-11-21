@@ -8,6 +8,7 @@
 * Change `amsr[[` to handle `"metadata"` parameter (issue #2229).
 * Change `as.unit()` to handle more units (issue #2240).
 * Change `download.amsr()` to handle realtime data files (issue #2231).
+* Change `imagep()` to handle `decimate` as set in `~/.Rprofile` (issue #2263).
 * Change `mapPlot()` to handle `las` as a parameter (issue #1707).
 * Change `plot.section()` to handle `eos="gsw"` (issue #2256).
 * Change `read.amsr()` to handle realtime data files (issue #2230).
