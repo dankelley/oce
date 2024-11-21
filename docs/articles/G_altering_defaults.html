@@ -93,7 +93,8 @@ file:</p>
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>oceEOS <span class="op">=</span> <span class="st">"gsw"</span><span class="op">)</span></span></code></pre></div>
 <p><em>but</em> it should be noted that setting values in
 <code>~/.Rprofile</code> will render the user’s code non-reproducible
-(unless that file is provided along with the analysis code).</p>
+(unless that file is provided to colleagues along with the analysis
+code).</p>
 <p>The preferred method is not to use <code>~/.Rprofile</code>, but
 instead to specify the desired properties as arguments to relevant
 functions. For example, calling <code>plotTS(..., eos="unesco")</code>
@@ -134,31 +135,36 @@ table.)</p>
 <td>yes</td>
 </tr>
 <tr class="odd">
+<td><code>oceImagepDecimate</code></td>
+<td><code>TRUE</code></td>
+<td>yes</td>
+</tr>
+<tr class="even">
 <td><code>oceMar</code></td>
 <td><code>c(3, 3, 2, 2)</code></td>
 <td>yes</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><code>oceMgp</code></td>
 <td><code>c(2.0, 0.7, 0)</code></td>
 <td>yes</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><code>oceTimeFormat</code></td>
 <td><code>"%Y-%m-%d %H:%M:%S"</code></td>
 <td>yes</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><code>oceTz</code></td>
 <td><code>"UTC"</code></td>
 <td>yes</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><code>oceUnitBracket</code></td>
 <td><code>"["</code></td>
 <td>no</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><code>webtide</code></td>
 <td><code>"/usr/local/WebTide"</code></td>
 <td>yes</td>

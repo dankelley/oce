@@ -32,8 +32,8 @@ operations like plotting CTD data, might insert the following line in the
 options(oceEOS = "gsw")
 ```
 *but* it should be noted that setting values in `~/.Rprofile` will render the
-user's code non-reproducible (unless that file is provided along with the
-analysis code).
+user's code non-reproducible (unless that file is provided to colleagues along
+with the analysis code).
 
 The preferred method is not to use `~/.Rprofile`, but instead to specify the
 desired properties as arguments to relevant functions.  For example, calling
@@ -47,6 +47,7 @@ indicated in the right-most column of the following table.)
 | `oceDebug`               | `0`                    | yes                              |
 | `oceDrawTimeRange`       | `TRUE`                 | yes                              |
 | `oceEOS`                 | `"gsw"`                | yes                              |
+| `oceImagepDecimate`      | `TRUE`                 | yes                              |
 | `oceMar`                 | `c(3, 3, 2, 2)`        | yes                              |
 | `oceMgp`                 | `c(2.0, 0.7, 0)`       | yes                              |
 | `oceTimeFormat`          | `"%Y-%m-%d %H:%M:%S"`  | yes                              |
