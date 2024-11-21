@@ -73,7 +73,7 @@ e.g. to get an x-y plot with points colored according to a palette, use
 <span>  zlab <span class="op">=</span> <span class="st">""</span>,</span>
 <span>  zlabPosition <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"top"</span>, <span class="st">"side"</span><span class="op">)</span>,</span>
 <span>  las.palette <span class="op">=</span> <span class="fl">0</span>,</span>
-<span>  decimate <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  decimate <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceImagepDecimate"</span>, <span class="cn">TRUE</span><span class="op">)</span>,</span>
 <span>  quiet <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  <span class="va">breaks</span>,</span>
 <span>  <span class="va">col</span>,</span>
@@ -195,10 +195,14 @@ documentation for <code><a href="drawPalette.html">drawPalette()</a></code> for 
 
 
 <dt id="arg-decimate">decimate<a class="anchor" aria-label="anchor" href="#arg-decimate"></a></dt>
-<dd><p>Controls whether the image will be decimated before plotting,
-in three possible cases.</p><ol><li><p>If <code>decimate=FALSE</code> then every grid cell in the matrix will
+<dd><p>an item that controls whether the image will be decimated
+before plotting, in three possible cases. Note that the default value
+of TRUE can be overridden by using <code><a href="https://rdrr.io/r/base/options.html" class="external-link">options()</a></code> as e.g.
+<code>options(oceImageDecimate = FALSE)</code> in a <code>~/.Rprofile</code>
+startup file.</p><ol><li><p>If <code>decimate=FALSE</code> then every grid cell in the matrix will
 be represented by a pixel in the image.</p></li>
-<li><p>If <code>decimate=TRUE</code> (the default), then decimation will be done
+<li><p>If <code>decimate=TRUE</code> (the default, unless <code>"oceImagepDecimate"</code> is
+set to another value in the startup file), then decimation will be done
 in the horizontal or vertical direction (or both) if the length of the
 corresponding edge of the <code>z</code> matrix exceeds 800. (This also creates
 a warning message.) The decimation
