@@ -196,10 +196,10 @@ documentation for <code><a href="drawPalette.html">drawPalette()</a></code> for 
 
 <dt id="arg-decimate">decimate<a class="anchor" aria-label="anchor" href="#arg-decimate"></a></dt>
 <dd><p>an item that controls whether the image will be decimated
-before plotting, in three possible cases. Note that the default value
-of TRUE can be overridden by using <code><a href="https://rdrr.io/r/base/options.html" class="external-link">options()</a></code> as e.g.
-<code>options(oceImageDecimate = FALSE)</code> in a <code>~/.Rprofile</code>
-startup file.</p><ol><li><p>If <code>decimate=FALSE</code> then every grid cell in the matrix will
+before plotting, in four possible cases. Note that the default value of
+TRUE can be overridden by using <code><a href="https://rdrr.io/r/base/options.html" class="external-link">options()</a></code> as e.g.
+<code>options(oceImageDecimate = FALSE)</code> in a <code>~/.Rprofile</code> startup file
+or locally within a script or session.</p><ol><li><p>If <code>decimate=FALSE</code> then every grid cell in the matrix will
 be represented by a pixel in the image.</p></li>
 <li><p>If <code>decimate=TRUE</code> (the default, unless <code>"oceImagepDecimate"</code> is
 set to another value in the startup file), then decimation will be done

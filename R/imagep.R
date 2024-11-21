@@ -758,10 +758,10 @@ drawPalette <- function(
 #' documentation for [drawPalette()] for details.
 
 #' @param decimate an item that controls whether the image will be decimated
-#' before plotting, in three possible cases. Note that the default value
-#' of TRUE can be overridden by using [options()] as e.g.
-#' `options(oceImageDecimate = FALSE)` in a `~/.Rprofile`
-#' startup file.
+#' before plotting, in four possible cases. Note that the default value of
+#' TRUE can be overridden by using [options()] as e.g.
+#' `options(oceImageDecimate = FALSE)` in a `~/.Rprofile` startup file
+#' or locally within a script or session.
 #'
 #' 1. If `decimate=FALSE` then every grid cell in the matrix will
 #'    be represented by a pixel in the image.

@@ -121,10 +121,10 @@ image palette, passed as the \code{las} argument to \code{\link[=drawPalette]{dr
 documentation for \code{\link[=drawPalette]{drawPalette()}} for details.}
 
 \item{decimate}{an item that controls whether the image will be decimated
-before plotting, in three possible cases. Note that the default value
-of TRUE can be overridden by using \code{\link[=options]{options()}} as e.g.
-\code{options(oceImageDecimate = FALSE)} in a \verb{~/.Rprofile}
-startup file.
+before plotting, in four possible cases. Note that the default value of
+TRUE can be overridden by using \code{\link[=options]{options()}} as e.g.
+\code{options(oceImageDecimate = FALSE)} in a \verb{~/.Rprofile} startup file
+or locally within a script or session.
 \enumerate{
 \item If \code{decimate=FALSE} then every grid cell in the matrix will
 be represented by a pixel in the image.
