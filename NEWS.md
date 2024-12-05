@@ -7,6 +7,7 @@
 * Add `Tidal Analysis` vignette (issue #2243).
 * Change `amsr[[` to handle `"metadata"` parameter (issue #2229).
 * Change `as.unit()` to handle more units (issue #2240).
+* Change `binApply1D()` to handle the `...` argument (issue #2265).
 * Change `download.amsr()` to handle realtime data files (issue #2231).
 * Change `imagep()` to handle `decimate` as set in `~/.Rprofile` (issue #2263).
 * Change `mapPlot()` to handle `las` as a parameter (issue #1707).

@@ -80,7 +80,7 @@ binApply1D <- function(x, f, xbreaks, FUN, include.lowest = FALSE, ...) {
     # Use cut, instead of old loopy code ... why re-invent the wheel?
     xmids <- xbreaks[-1L] - 0.5 * diff(xbreaks)
     ysplit <- split(f, cut(x, xbreaks, include.lowest = include.lowest))
-    result <- unname(sapply(ysplit, FUN))
+    result <- unname(sapply(ysplit, FUN, ...))
     result[!is.finite(result)] <- NA
     list(xbreaks = xbreaks, xmids = xmids, result = result)
 } # binApply1D()
