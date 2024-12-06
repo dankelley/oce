@@ -57,6 +57,19 @@ binApply1D <- function(x, f, xbreaks, FUN, include.lowest = FALSE, ...) {
     if (missing(xbreaks)) {
         xbreaks <- pretty(x, 20)
     }
+    # If both x and xbreaks are POSIX times, insist that they
+    # are in the same timezone, to avoid problems like that in
+    # https://github.com/dankelley/oce/issues/2266
+    if (!identical(inherits(x, "POSIXt"), inherits(xbreaks, "POSIXt"))) {
+        stop("if either x or xbreaks is a POSIXt object, both must be")
+    }
+    if (inherits(x, "POSIXt")) {
+        xTZ <- attributes(x)$tzone
+        xbreaksTZ <- attributes(xbreaks)$tzone
+        if (!identical(xTZ, xbreaksTZ)) {
+            stop("x has tzone \"", xTZ, "\" but xbreaks has tzone \"", xbreaksTZ, "\"")
+        }
+    }
     if (missing(FUN)) {
         stop("must supply 'FUN'")
     }
@@ -82,6 +95,9 @@ binApply1D <- function(x, f, xbreaks, FUN, include.lowest = FALSE, ...) {
     ysplit <- split(f, cut(x, xbreaks, include.lowest = include.lowest))
     result <- unname(sapply(ysplit, FUN, ...))
     result[!is.finite(result)] <- NA
+    if (length(xmids) != length(result)) {
+        stop("length mismatch between xmids and xresult; please report as an issue")
+    }
     list(xbreaks = xbreaks, xmids = xmids, result = result)
 } # binApply1D()
 
@@ -581,30 +597,30 @@ binMean2D <- function(x, y, f, xbreaks, ybreaks, flatten = FALSE,
     if (fill) {
         resMean$result <- fillGapMatrix(resMean$result, fillgap = fillgap)
     }
-    #issue2199-wip-dropped oceDebug(debug, "calling C code bin_mean_2d\n")
-    #issue2199-wip-dropped M <- .C("bin_mean_2d", length(x), as.double(x), as.double(y), as.double(f),
-    #issue2199-wip-dropped     length(xbreaks), as.double(xbreaks),
-    #issue2199-wip-dropped     length(ybreaks), as.double(ybreaks),
-    #issue2199-wip-dropped     as.integer(fill), as.integer(fillgap),
-    #issue2199-wip-dropped     number = integer((nxbreaks - 1L) * (nybreaks - 1L)),
-    #issue2199-wip-dropped     mean = double((nxbreaks - 1L) * (nybreaks - 1L)),
-    #issue2199-wip-dropped     debug = as.integer(debug),
-    #issue2199-wip-dropped     NAOK = TRUE, PACKAGE = "oce"
-    #issue2199-wip-dropped )
+    # issue2199-wip-dropped oceDebug(debug, "calling C code bin_mean_2d\n")
+    # issue2199-wip-dropped M <- .C("bin_mean_2d", length(x), as.double(x), as.double(y), as.double(f),
+    # issue2199-wip-dropped     length(xbreaks), as.double(xbreaks),
+    # issue2199-wip-dropped     length(ybreaks), as.double(ybreaks),
+    # issue2199-wip-dropped     as.integer(fill), as.integer(fillgap),
+    # issue2199-wip-dropped     number = integer((nxbreaks - 1L) * (nybreaks - 1L)),
+    # issue2199-wip-dropped     mean = double((nxbreaks - 1L) * (nybreaks - 1L)),
+    # issue2199-wip-dropped     debug = as.integer(debug),
+    # issue2199-wip-dropped     NAOK = TRUE, PACKAGE = "oce"
+    # issue2199-wip-dropped )
     oceDebug(debug, "setting up return value\n")
     res <- list(
         xbreaks = xbreaks,
         ybreaks = ybreaks,
         xmids = xbreaks[-1] - 0.5 * diff(xbreaks),
         ymids = ybreaks[-1] - 0.5 * diff(ybreaks),
-        #issue2199-wip-dropped number = matrix(M$number, nrow = nxbreaks - 1L),
+        # issue2199-wip-dropped number = matrix(M$number, nrow = nxbreaks - 1L),
         number = resCount$number,
         result = resMean$result
-        #issue2199-wip-dropped if (fGiven) {
-        #issue2199-wip-dropped     matrix(M$mean, nrow = nxbreaks - 1)
-        #issue2199-wip-dropped } else {
-        #issue2199-wip-dropped     matrix(NA, ncol = nybreaks - 1, nrow = nxbreaks - 1)
-        #issue2199-wip-dropped }
+        # issue2199-wip-dropped if (fGiven) {
+        # issue2199-wip-dropped     matrix(M$mean, nrow = nxbreaks - 1)
+        # issue2199-wip-dropped } else {
+        # issue2199-wip-dropped     matrix(NA, ncol = nybreaks - 1, nrow = nxbreaks - 1)
+        # issue2199-wip-dropped }
     )
     if (flatten) {
         oceDebug(debug, "flattening\n")
