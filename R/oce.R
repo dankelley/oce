@@ -1358,7 +1358,9 @@ oce.plot.ts <- function(
             drawxaxis <- !is.null(xaxt) && xaxt != "n"
             yaxt <- list(...)["yaxt"]
             drawyaxis <- !is.null(yaxt) && yaxt != "n"
+            xlabs <- NULL # over-written if drawing a horizontal (time) axis
             if (drawxaxis) {
+                #message("FIXME DAN defining xlabs here")
                 xlabs <- oce.axis.POSIXct(1,
                     x = x, drawTimeRange = drawTimeRange, main = main,
                     mgp = mgp,
@@ -1367,6 +1369,9 @@ oce.plot.ts <- function(
                     tformat = tformat,
                     debug = debug - 1
                 )
+                #message("DAN xlabs from oce.axis.POSIXct() follows:")
+                #print(xlabs)
+                #print(class(xlabs))
                 xat <- xlabs
                 oceDebug(debug, "drawing x axis; set xat=c(", paste(xat, collapse = ","), ")", "\n", sep = "")
             }
@@ -1410,7 +1415,21 @@ oce.plot.ts <- function(
             } else {
                 abline(h = axTicks(2), col = grid.col, lty = grid.lty, lwd = grid.lwd)
             }
-            abline(v = axTicks(1), col = grid.col, lty = grid.lty, lwd = grid.lwd)
+            #message("FIXME DAN")
+            #<2267> sh <- function(x) {
+            #<2267>     cat(deparse(substitute(expr = x, env = environment())), "\n")
+            #<2267>     print(x)
+            #<2267> }
+            #<2267> sh(axTicks(1))
+            #<2267> sh(diff(axTicks(1)))
+            #<2267> sh(numberAsPOSIXct(axTicks(1)))
+            #<2267> sh(round(numberAsPOSIXct(axTicks(1))))
+            #<2267> sh(pretty(range(t)))
+            #<2267> sh(xlabs)
+            #<2267> sh(xat)
+            abline(v = axTicks(1), col = 4, lty = 1)
+            #abline(v = pretty(range(t)), col = 4, lty=1, lwd=4)#grid.col, lty = grid.lty, lwd = grid.lwd)
+            abline(v = xlabs, col = grid.col, lty = grid.lty, lwd = grid.lwd)
         }
         oceDebug(debug, "END oce.plot.ts()\n", unindent = 1)
         invisible(list(xat = xat, yat = yat))
