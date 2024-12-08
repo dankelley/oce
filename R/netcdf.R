@@ -248,6 +248,16 @@ read.netcdf <- function(file, ..., encoding = NA, renamer = NULL, debug = getOpt
                     unit = expression(mu * Einstein / m^2 / s),
                     scale = if (scale$hasatt) scale$value else ""
                 )
+            } else if (units$value == "mbar") {
+                res@metadata$units[[oceNames[i]]] <- list(
+                    unit = expression(mbar),
+                    scale = ""
+                )
+            } else if (units$value == "hPa") {
+                res@metadata$units[[oceNames[i]]] <- list(
+                    unit = expression(hPa),
+                    scale = ""
+                )
             } else if (units$value == "NTU") {
                 res@metadata$units[[oceNames[i]]] <- list(
                     unit = expression(NTU),
