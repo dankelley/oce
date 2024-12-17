@@ -21,6 +21,7 @@
 * Change `read.netcdf()` to handle units better.
 * Change `subset,amsr-method()` to handle `"pass"` parameter.
 * Change `subset,ctd-method()` to handle items of unexpected length (issue #2250).
+* Change `tidem()` to stop if there are any non-finite time values (issue #2269).
 
 # oce 1.8.3 (ON CRAN)
 

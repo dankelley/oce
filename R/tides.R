@@ -1095,11 +1095,13 @@ tidemConstituentNameFix <- function(names, debug = 1) {
 #' In the first case, `x` must be provided.  In the second
 #' case, though, any `x` that is provided will be ignored,
 #' because sealevel objects contain both `time` and water
-#' `elevation`, and the latter is used for `x`.
+#' `elevation`, and the latter is used for `x`.  Note that
+#' an error will be reported if any `t` values are non-finite.
 #'
 #' @param x an optional numerical vector holding something that varies with
 #' time.  This is ignored if `t` is a [sealevel-class] object,
 #' because it is inferred automatically, using `t[["elevation"]]`.
+#' Note that non-finite values are permitted for `x`.
 #'
 #' @param constituents an optional character vector holding the names
 #' of tidal constituents to which the fit is done; see \dQuote{Details}
@@ -1331,6 +1333,11 @@ tidem <- function(
         }
         sl <- as.sealevel(x, t)
     }
+    tIsBad <- !is.finite(sl[["time"]])
+    if (any(tIsBad)) {
+        stop("found ", sum(tIsBad), " non-finite times; try e.g. ok<-is.finite(t);tidem(t[ok],x[ok])")
+    }
+
     # Check infer extensively, to prevent weird errors for e.g. an improperly-named
     # constituent.
     data("tidedata", package = "oce", envir = environment())

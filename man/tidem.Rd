@@ -21,11 +21,13 @@ tidem(
 In the first case, \code{x} must be provided.  In the second
 case, though, any \code{x} that is provided will be ignored,
 because sealevel objects contain both \code{time} and water
-\code{elevation}, and the latter is used for \code{x}.}
+\code{elevation}, and the latter is used for \code{x}.  Note that
+an error will be reported if any \code{t} values are non-finite.}
 
 \item{x}{an optional numerical vector holding something that varies with
 time.  This is ignored if \code{t} is a \linkS4class{sealevel} object,
-because it is inferred automatically, using \code{t[["elevation"]]}.}
+because it is inferred automatically, using \code{t[["elevation"]]}.
+Note that non-finite values are permitted for \code{x}.}
 
 \item{constituents}{an optional character vector holding the names
 of tidal constituents to which the fit is done; see \dQuote{Details}
