@@ -90,13 +90,15 @@ see “Application to non-hourly data”.</p>
 In the first case, <code>x</code> must be provided.  In the second
 case, though, any <code>x</code> that is provided will be ignored,
 because sealevel objects contain both <code>time</code> and water
-<code>elevation</code>, and the latter is used for <code>x</code>.</p></dd>
+<code>elevation</code>, and the latter is used for <code>x</code>.  Note that
+an error will be reported if any <code>t</code> values are non-finite.</p></dd>
 
 
 <dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
 <dd><p>an optional numerical vector holding something that varies with
 time.  This is ignored if <code>t</code> is a <a href="sealevel-class.html">sealevel</a> object,
-because it is inferred automatically, using <code>t[["elevation"]]</code>.</p></dd>
+because it is inferred automatically, using <code>t[["elevation"]]</code>.
+Note that non-finite values are permitted for <code>x</code>.</p></dd>
 
 
 <dt id="arg-constituents">constituents<a class="anchor" aria-label="anchor" href="#arg-constituents"></a></dt>
@@ -438,8 +440,8 @@ Computers and Geosciences, 28, 929-937.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Processing Log</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2024-12-07 18:25:01 UTC: `create 'tidem' object`</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2024-12-07 18:25:01 UTC: `tidem(t = sealevelTuktoyaktuk)`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2024-12-17 16:40:21 UTC: `create 'tidem' object`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2024-12-17 16:40:21 UTC: `tidem(t = sealevelTuktoyaktuk)`</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># AIC analysis</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/stats/extractAIC.html" class="external-link">extractAIC</a></span><span class="op">(</span><span class="va">tide</span><span class="op">[[</span><span class="st">"model"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></span>
@@ -478,8 +480,8 @@ Computers and Geosciences, 28, 929-937.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Processing Log</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2024-12-07 18:25:01 UTC: `create 'tidem' object`</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2024-12-07 18:25:01 UTC: `tidem(t = sl)`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2024-12-17 16:40:21 UTC: `create 'tidem' object`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2024-12-17 16:40:21 UTC: `tidem(t = sl)`</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
