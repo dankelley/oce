@@ -1398,13 +1398,29 @@ as.ctd <- function(
             if (length(res@metadata$startTime) > 1) {
                 res@metadata$startTime <- res@metadata$startTime[profile]
             }
-            ## Have to handle lon and lat before going into @data because it was
-            ## already pulled out above:
+            # Have to handle lon and lat before going into @data because it was
+            # already pulled out above:
             if (length(longitude) > 1) {
                 longitude <- longitude[profile]
             }
             if (length(latitude) > 1) {
                 latitude <- latitude[profile]
+            }
+            # Extract metadata item, by profile. FIXME: do we capture all cases?
+            getMetadataItem <- function(o, item, profile) {
+                value <- o@metadata[[item]]
+                if (is.vector(value)) {
+                    value[profile]
+                } else if (is.matrix(value)) {
+                    value[, profile]
+                } else {
+                    value
+                }
+            }
+            # FIXME: for issue 2270, add more items to copy
+            for (item in c("id", "dataMode")) {
+                res@metadata[item] <- getMetadataItem(o, item, profile)
+                oceDebug(debug, "  copied metadata$", item, "\n", sep = "")
             }
             # Convert data items from array to vector
             for (field in names(d)) {
