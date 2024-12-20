@@ -207,13 +207,13 @@ as.ctd <- function(
 
     # Already a ctd-class object.
     if (salinityGiven && inherits(salinity, "ctd")) {
-        oceDebug(debug, "first parameter is 'ctd-class', so returning as-is\n")
+        oceDebug(debug, "first parameter is 'ctd-class', so it is returned as-is\n", sep = "")
         oceDebug(debug, "END as.ctd()\n", sep = "", unindent = 1)
         return(salinity)
     }
     # An rsk-class object.
     if (salinityGiven && inherits(salinity, "rsk")) {
-        oceDebug(debug, "first parameter is 'rsk-class', so converting with rsk2ctd()\n")
+        oceDebug(debug, "first parameter is 'rsk-class', so it is converted with rsk2ctd()\n", sep = "")
         res <- rsk2ctd(salinity,
             pressureAtmospheric = pressureAtmospheric,
             longitude = longitude,
@@ -226,12 +226,21 @@ as.ctd <- function(
         )
         oceDebug(debug, "END as.ctd() with rsk object as first parameter\n", sep = "", unindent = 1)
         return(res)
-    } # end of rsk case
-    # Not an rsk object.
+    }
+    # An argo-class object. FIXME: document that other parameters are skipped
+    if (salinityGiven && inherits(salinity, "argo")) {
+        oceDebug(debug, "first parameter is 'argo-class', so it is converted with argo2ctd()\n", sep = "")
+        res <- argo2ctd(o = salinity, profile = profile, debug = debug - 1)
+        oceDebug(debug, "END as.ctd() with argo object as first parameter\n", sep = "", unindent = 1)
+        return(res)
+    }
+    # Not a ctd, rsk or argo object.
+    oceDebug(debug, "x is not a ctd, argo or rsk subclass of an oce object\n")
     res <- new("ctd")
     if (!is.null(startTime) && is.character(startTime)) {
         startTime <- as.POSIXct(startTime, tz = "UTC")
     }
+    # compute salinity, if it is not given but C, T and p are given
     if (!salinityGiven) {
         if (!missing(conductivity) && !missing(temperature) && !missing(pressure)) {
             salinity <- swSCTp(conductivity = conductivity, temperature = temperature, pressure = pressure)
@@ -245,7 +254,7 @@ as.ctd <- function(
     ounits <- NULL # replace with metadata$units if first parameter is an oce object
     # First parameter is an oce object
     if (inherits(salinity, "oce")) {
-        oceDebug(debug, "first parameter is an oce object, so ignoring some other arguments\n")
+        oceDebug(debug, "first parameter is an oce object, but not of type ctd, rsk or argo\n")
         # dataNamesOriginal <- list()
         o <- salinity
         d <- o@data
@@ -439,157 +448,14 @@ as.ctd <- function(
                 res@metadata$time <- d$time
             }
         }
-        # if ("quality" %in% dnames) res@data$quality <- d$quality
-        # if ("oxygen" %in% dnames) res@data$oxygen <- d$oxygen
-        # if ("nitrate" %in% dnames) res@data$nitrate <- d$nitrate
-        # if ("nitrite" %in% dnames) res@data$nitrite <- d$nitrite
-        # if ("phosphate" %in% dnames) res@data$phosphate <- d$phosphate
-        # if ("silicate" %in% dnames) res@data$silicate <- d$silicate
-        if (inherits(o, "argo")) {
-            oceDebug(debug, "first parameter is an argo-class object\n")
-            if (is.null(profile)) {
-                profile <- 1
-                if (dim(o[["pressure"]])[2] != 1) {
-                    warning("using just column 1 of matrix data; use the \"profile\" argument to select a specific profile")
-                }
+        for (field in names(d)) {
+            # print(field)
+            oceDebug(debug, "inserting the '", field, "' component\n", sep = "")
+            if (field != "time") {
+                res@data[[field]] <- d[[field]]
             }
-            if (!is.numeric(profile) || length(profile) != 1 || profile < 1) {
-                stop("profile must be a positive integer")
-            }
-            # Pull out the startTime
-            if (length(res@metadata$startTime) > 1) {
-                res@metadata$startTime <- res@metadata$startTime[profile]
-            }
-            # Have to handle lon and lat before going into @data because it was
-            # already pulled out above:
-            if (length(longitude) > 1) {
-                longitude <- longitude[profile]
-            }
-            if (length(latitude) > 1) {
-                latitude <- latitude[profile]
-            }
-            # Extract metadata item, by profile. FIXME: do we capture all cases?
-            getMetadataItem <- function(o, item, profile) {
-                value <- o@metadata[[item]]
-                if (is.vector(value)) {
-                    value[profile]
-                } else if (is.matrix(value)) {
-                    value[, profile]
-                } else {
-                    value
-                }
-            }
-            # FIXME: for issue 2270, add more items to copy
-            for (item in c("id", "dataMode")) {
-                res@metadata[item] <- getMetadataItem(o, item, profile)
-                oceDebug(debug, "  copied metadata$", item, "\n", sep = "")
-            }
-            # Convert data items from array to vector
-            for (field in names(d)) {
-                dataInField <- d[[field]]
-                oceDebug(debug, "  handling data$", field, "\n", sep = "")
-                # in argo objects there are both matrix (temperature,
-                # salinity, etc) and vector (time, latitude, etc)
-                # data fields. For the former we want to extract the
-                # single column. For the longitude and latitude we extract a
-                # single value.  We do that also for time, storing the single
-                # value in the `metadata` slot, *unless* MTIME is
-                # defined, in which case we can construct a full time vector and
-                # place it in the 'data` slot.
-                #<old>if (field == "time") { # apparently POSIXct class things aren't vectors
-                #<old>    message("TIME")
-                #<old>    if ("MTIME" %in% names(d)) {
-                #<old>        # FIXME: is profile correct in the next line?
-                #<old>        res@data$time <- d[["time"]][profile] + d[["MTIME"]][profile] * 86400.0
-                #<old>    } else {
-                #<old>        res@metadata$time <- d[[field]][profile]
-                #<old>    }
-                #<old>}
-                if (field == "mtime") {
-                    if (is.matrix(dataInField)) {
-                        ncol <- ncol(d[[field]])
-                        if (profile > ncol) {
-                            stop("profile cannot exceed ", ncol, " for a data matrix with ", ncol, " columns")
-                        }
-                        res@data[[field]] <- as.vector(d[[field]][, profile])
-                    } else {
-                        res@data[[field]] <- as.vector(d[[field]])
-                    }
-                    res@data$time <- res@metadata$startTime + 86400 * res@data$mtime
-                } else if (is.vector(dataInField)) {
-                    ncol <- length(d[[field]])
-                    if (profile > ncol) {
-                        stop("profile cannot exceed ", ncol, " for a data matrix with ", ncol, " columns")
-                    }
-                    ## I'm not sure the below for lon/lat will ever be
-                    ## triggered, as lon and lat are pulled out separately above
-                    ## and should be in the `d` variable at this point
-                    if (field %in% c("longitude", "latitude")) {
-                        res@metadata[[field]] <- d[[field]][profile]
-                    } else {
-                        res@data[[field]] <- d[[field]][profile]
-                    }
-                } else if (is.matrix(dataInField)) {
-                    ncol <- ncol(d[[field]])
-                    if (profile > ncol) {
-                        stop("profile cannot exceed ", ncol, " for a data matrix with ", ncol, " columns")
-                    }
-                    res@data[[field]] <- d[[field]][, profile]
-                } else if (is.array(dataInField)) { # argo can sometimes come out this (odd) way
-                    warning("argo data \"", field, "\" converted from 1-D array to 1-col matrix")
-                    if (1 == length(dim(d[[field]]))) {
-                        d[[field]] <- as.vector(d[[field]])
-                    }
-                    res@data[[field]] <- d[[field]]
-                } else {
-                    if (1 == length(dim(d[[field]]))) {
-                        d[[field]] <- as.vector(d[[field]])
-                    }
-                    res@data[[field]] <- d[[field]]
-                }
-            }
-            # Convert flags from array to vector
-            if ("flags" %in% names(res@metadata)) {
-                for (iflag in seq_along(res@metadata$flags)) {
-                    if (is.matrix(res@metadata$flags[[iflag]])) {
-                        res@metadata$flags[[iflag]] <- res@metadata$flags[[iflag]][, profile]
-                    }
-                }
-            }
-            # end of argo case
-        } else { # oce object, not argo
-            oceDebug(debug, "x is a general oce object (not ctd, and not argo)\n")
-            for (field in names(d)) {
-                # print(field)
-                if (field != "time") {
-                    res@data[[field]] <- d[[field]]
-                }
-            }
-            #<20240825> # whilst looking at issue 2237, I realized that we
-            #<20240824> # already inferred longitude and latitude above, before looking
-            #<20240824> # at special cases.
-            #<20240825> if ("longitude" %in% dnames && "latitude" %in% dnames) {
-            #<20240825>     oceDebug(debug, "longitude and latitude are in x@data\n")
-            #<20240825>     longitude <- d$longitude
-            #<20240825>     latitude <- d$latitude
-            #<20240825>     if (length(longitude) != length(latitude)) {
-            #<20240825>         stop("lengths of longitude and latitude must match")
-            #<20240825>     }
-            #<20240825>     if (length(longitude) == length(temperature)) {
-            #<20240825>         res@data$longitude <- longitude
-            #<20240825>         res@data$latitude <- latitude
-            #<20240825>     } else {
-            #<20240825>         res@metadata$longitude <- longitude[1]
-            #<20240825>         res@metadata$latitude <- latitude[1]
-            #<20240825>     }
-            #<20240825> } else if ("longitude" %in% mnames && "latitude" %in% mnames) {
-            #<20240825>     res@metadata$longitude <- m$longitude
-            #<20240825>     res@metadata$latitude <- m$latitude
-            #<20240825> }
         }
         res@metadata$deploymentType <- deploymentType
-        # res@metadata$dataNamesOriginal <- m$dataNamesOriginal
-        # move e.g. salinityFlag from data slot to metadata$flags
         dataNames <- names(res@data)
         flagNameIndices <- grep(".*Flag$", dataNames)
         if (length(flagNameIndices)) {
@@ -601,11 +467,11 @@ as.ctd <- function(
         }
         # message("FIXME DAN L1552: longitude=", longitude)
     } else if (is.list(salinity) || is.data.frame(salinity)) {
+        oceDebug(debug, "case 1: first parameter is a list or data frame\n")
         # 2. coerce a data-frame or list
         if (length(salinity) == 0) {
             stop("first parameter cannot be a zero-length list or data frame")
         }
-        oceDebug(debug, "case 1: first parameter is a list or data frame\n")
         x <- salinity
         if (is.list(x) && inherits(x[[1]], "oce")) {
             oceDebug(debug, "case 1A: list holds oce objects\n")
@@ -711,24 +577,6 @@ as.ctd <- function(
         if (!missing(pressureAtmospheric)) {
             pressure <- pressure - pressureAtmospheric
         }
-        # 1108 haveSA <- !missing(SA)
-        # 1108 haveCT <- !missing(CT)
-        # 1108 if (haveSA != haveCT)
-        # 1108     stop("SA and CT must both be supplied, if either is")
-        # 1108 if (!missing(SA)) {
-        # 1108     n <- length(SA)
-        # 1108     if (length(CT) != n)
-        # 1108         stop("lengths of SA and CT must match")
-        # 1108     if (missing(longitude)) {
-        # 1108         longitude <- rep(300, n)
-        # 1108         latitude <- rep(0, n)
-        # 1108         warning("longitude and latitude set to default values, since none given")
-        # 1108     }
-        # 1108     salinity <- gsw::gsw_SP_from_SA(SA, pressure, longitude, latitude)
-        # 1108     temperature <- gsw::gsw_t_from_CT(SA, CT, pressure)
-        # 1108 }
-        # depths <- max(length(salinity), length(temperature), length(pressure))
-        # 2015-01-24: now insist that lengths make sense; only pressure can be mismatched
         salinity <- as.vector(salinity)
         temperature <- as.vector(temperature)
         pressure <- as.vector(pressure)
@@ -757,12 +605,6 @@ as.ctd <- function(
         if (!missing(conductivity)) {
             data$conductivity <- as.vector(conductivity)
         }
-        # 1108 if (!missing(quality)) data$quality <- quality
-        # 1108 if (!missing(oxygen)) data$oxygen <- oxygen
-        # 1108 if (!missing(nitrate)) data$nitrate <- nitrate
-        # 1108 if (!missing(nitrite)) data$nitrite <- nitrite
-        # 1108 if (!missing(phosphate)) data$phosphate <- phosphate
-        # 1108 if (!missing(silicate)) data$silicate <- silicate
         if (!missing(time)) {
             data$time <- time
         }
@@ -814,7 +656,6 @@ as.ctd <- function(
         }
         res@data <- data
     }
-    # message("FIXME DAN L1767: longitude=", longitude)
     if (!is.null(ounits)) {
         oceDebug(debug, "copying units from first parameter\n")
         res@metadata$units <- ounits
@@ -854,10 +695,6 @@ as.ctd <- function(
     if (is.na(res@metadata$waterDepth) && !is.na(waterDepth)) {
         res@metadata$waterDepth <- waterDepth
     }
-    # message("FIXME DAN L1807: longitude=", longitude)
-    # Remove lon and lat form metadata, if they are in data. This is so plot()
-    # will show multiple stations, as can be the case in converting from
-    # multi-station data.
     if (!"longitude" %in% names(res@metadata)) {
         res@metadata$longitude <- longitude
     }
