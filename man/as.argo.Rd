@@ -65,6 +65,7 @@ Other things related to argo data:
 \code{\link{argo-class}},
 \code{\link{argoGrid}()},
 \code{\link{argoNames2oceNames}()},
+\code{\link{as.ctd.argo}()},
 \code{\link{handleFlags,argo-method}},
 \code{\link{plot,argo-method}},
 \code{\link{read.argo}()},

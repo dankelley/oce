@@ -144,19 +144,17 @@ relatively straightforward.
 The following sections provide an some notes on how \code{as.ctd()} handles
 certain object types given as the first parameter.
 
-\strong{Converting argo objects}
+\strong{Converting argo objects (note breaking change)}
 
 If the \code{salinity} argument is an object of \linkS4class{argo}, then that
 object is dismantled and reassembled as a \linkS4class{ctd} object in ways that
 are mostly straightforward, although the handling of time depends
 on the information in the original NetCDF data file that was used
-by \code{\link[=read.argo]{read.argo()}} to create the \linkS4class{argo} object.
-
-All Argo data files contain an item called \code{juld} from which the profile
-time can be computed, and some also contain an additional item named \code{MTIME},
-from which the times of individual measurements can also be computed.  Both
-cases are handled by \code{as.ctd()}, using a scheme outlined in
-Note 4 of the Details section of the \code{\link[=read.argo]{read.argo()}} documentation.
+by \code{\link[=read.argo]{read.argo()}} to create the \linkS4class{argo} object. \emph{Breaking change:}
+as of oce version 1.8.4, the conversion is done with \code{\link[=as.ctd.argo]{as.ctd.argo()}},
+which tries to decode all the metadata and data in the original object,
+\emph{but} ignores all parameters given to \code{\link[=as.ctd]{as.ctd()}} except \code{profile} and \code{debug},
+the latter of which is decremented by 1.
 
 \strong{Converting rsk objects}
 
@@ -232,6 +230,7 @@ Other things related to ctd data:
 \code{\link{CTD_BCD2014666_008_1_DN.ODF.gz}},
 \code{\link{[[,ctd-method}},
 \code{\link{[[<-,ctd-method}},
+\code{\link{as.ctd.argo}()},
 \code{\link{cnvName2oceName}()},
 \code{\link{ctd}},
 \code{\link{ctd-class}},

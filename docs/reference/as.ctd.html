@@ -52,7 +52,7 @@ relatively straightforward."></head><body>
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Coerce Data Into a ctd Object</h1>
-      <small class="dont-index">Source: <a href="https://github.com/dankelley/oce/blob/HEAD/R/ctd.R" class="external-link"><code>R/ctd.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/dankelley/oce/blob/HEAD/R/as_ctd.R" class="external-link"><code>R/as_ctd.R</code></a></small>
       <div class="d-none name"><code>as.ctd.Rd</code></div>
     </div>
 
@@ -248,17 +248,16 @@ by specifying higher <code>debug</code> values.</p></dd>
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>The following sections provide an some notes on how <code>as.ctd()</code> handles
 certain object types given as the first parameter.</p>
-<p><strong>Converting argo objects</strong></p>
+<p><strong>Converting argo objects (note breaking change)</strong></p>
 <p>If the <code>salinity</code> argument is an object of <a href="argo-class.html">argo</a>, then that
 object is dismantled and reassembled as a <a href="ctd-class.html">ctd</a> object in ways that
 are mostly straightforward, although the handling of time depends
 on the information in the original NetCDF data file that was used
-by <code><a href="read.argo.html">read.argo()</a></code> to create the <a href="argo-class.html">argo</a> object.</p>
-<p>All Argo data files contain an item called <code>juld</code> from which the profile
-time can be computed, and some also contain an additional item named <code>MTIME</code>,
-from which the times of individual measurements can also be computed.  Both
-cases are handled by <code>as.ctd()</code>, using a scheme outlined in
-Note 4 of the Details section of the <code><a href="read.argo.html">read.argo()</a></code> documentation.</p>
+by <code><a href="read.argo.html">read.argo()</a></code> to create the <a href="argo-class.html">argo</a> object. <em>Breaking change:</em>
+as of oce version 1.8.4, the conversion is done with <code><a href="as.ctd.argo.html">as.ctd.argo()</a></code>,
+which tries to decode all the metadata and data in the original object,
+<em>but</em> ignores all parameters given to <code>as.ctd()</code> except <code>profile</code> and <code>debug</code>,
+the latter of which is decremented by 1.</p>
 <p><strong>Converting rsk objects</strong></p>
 <p>If the <code>salinity</code> argument is an object of <a href="rsk-class.html">rsk</a>,
 then <code>as.ctd</code> passes it,
@@ -306,6 +305,7 @@ Engineering</em>, volume <strong>5</strong>, pages 22-23.</p></li>
 <code><a href="CTD_BCD2014666_008_1_DN.ODF.gz.html">CTD_BCD2014666_008_1_DN.ODF.gz</a></code>,
 <code><a href="sub-sub-ctd-method.html">[[,ctd-method</a></code>,
 <code>[[&lt;-,ctd-method</code>,
+<code><a href="as.ctd.argo.html">as.ctd.argo</a>()</code>,
 <code><a href="cnvName2oceName.html">cnvName2oceName</a>()</code>,
 <code><a href="ctd.html">ctd</a></code>,
 <code><a href="ctd-class.html">ctd-class</a></code>,
@@ -380,9 +380,9 @@ Engineering</em>, volume <strong>5</strong>, pages 22-23.</p></li>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Processing Log</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2024-12-17 16:38:44 UTC: `create 'ctd' object`</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2024-12-17 16:38:44 UTC: `as.ctd(salinity = salinity, temperature = temperature, pressure = pressure)`</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2024-12-17 16:38:44 UTC: `oceSetData(object = ctd, name = "fluorescence", value = fluo,     unit = list(unit = expression(mg/m^3), scale = ""))`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2024-12-21 17:31:14 UTC: `create 'ctd' object`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2024-12-21 17:31:14 UTC: `as.ctd(salinity = salinity, temperature = temperature, pressure = pressure)`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2024-12-21 17:31:14 UTC: `oceSetData(object = ctd, name = "fluorescence", value = fluo,     unit = list(unit = expression(mg/m^3), scale = ""))`</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># 2. fake data, with supplied units (which are the defaults, actually)</span></span></span>
 <span class="r-in"><span><span class="va">ctd</span> <span class="op">&lt;-</span> <span class="fu">as.ctd</span><span class="op">(</span><span class="va">salinity</span>, <span class="va">temperature</span>, <span class="va">pressure</span>,</span></span>

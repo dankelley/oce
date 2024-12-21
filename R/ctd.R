@@ -565,6 +565,8 @@ setMethod(
         type <- object@metadata$type
         model <- object@metadata$model
         mnames <- names(object@metadata)
+        showMetadataItem(object, "filename", "File:                ", quote = TRUE)
+        #showMetadataItem(object, "source",        "Source:              ")
         if (!is.null(type) && nchar(type)) {
             if (is.null(model)) {
                 cat("* Instrument:          ", type, "\n", sep = "")
@@ -577,12 +579,17 @@ setMethod(
         # showMetadataItem(object, "serialNumber",              "Instr. serial no.:   ")
         showMetadataItem(object, "serialNumberTemperature", "Temp. serial no.:    ")
         showMetadataItem(object, "serialNumberConductivity", "Cond. serial no.:    ")
-        showMetadataItem(object, "filename", "File:                ", quote = TRUE)
         showMetadataItem(object, "hexfilename", "Original file:       ")
         showMetadataItem(object, "institute", "Institute:           ")
         showMetadataItem(object, "scientist", "Chief scientist:     ")
         # showMetadataItem(object, "date",                      "Date:                ", isdate=TRUE)
         showMetadataItem(object, "startTime", "Start time:          ", isdate = TRUE)
+        showMetadataItem(object, "time", "Argo time:           ", isdate = TRUE)
+        # Next defined for argo floats
+        if (identical(object@metadata$source, "Argo float")) {
+            showMetadataItem(object, "id",          "Argo id:             ")
+            showMetadataItem(object, "cycleNumber", "Argo cycleNumber:    ")
+        }
         # showMetadataItem(object, "systemUploadTime",          "System upload time:  ", isdate=TRUE)
         if ("sampleInterval" %in% mnames && "sampleIntervalUnits" %in% mnames) {
             cat("* Sample interval:     ",
@@ -590,9 +597,9 @@ setMethod(
                 sep = ""
             )
         }
-        showMetadataItem(object, "cruise", "Cruise:              ")
-        showMetadataItem(object, "ship", "Vessel:              ")
-        showMetadataItem(object, "station", "Station:             ")
+        showMetadataItem(object, "cruise",      "Cruise:              ")
+        showMetadataItem(object, "ship",        "Vessel:              ")
+        showMetadataItem(object, "station",     "Station:             ")
         deploymentType <- object@metadata$deploymentType
         if (!is.null(deploymentType) && deploymentType != "unknown") {
             showMetadataItem(object, "deploymentType", "Deployment type:     ")

@@ -2,12 +2,9 @@
 library(oce)
 data(argo)
 
-test_that("as.ctd works with multi-column argo", {
+test_that("as.ctd works with built-in argo dataset", {
     expect_silent(as.ctd(argo[["profile", 1]]))
-})
-
-test_that("as.ctd works with multi-column argo", {
-    expect_warning(as.ctd(argo[["profile", 1:5]]), "using just column 1")
+    expect_warning(as.ctd(argo[["profile", 1:5]]), "since 'profile' not given, defaulting to 1")
 })
 
 test_that("global attributes in metadata", {
@@ -260,8 +257,9 @@ if (file.exists(file)) {
 
 file <- "local_data/argo/D4903224_012.nc"
 if (file.exists(file)) {
-    test_that("can get spiciness from 2-column argo file", {
+    test_that("can get spiciness from 2-column private (non-CRAN) argo file", {
         expect_silent(d <- read.argo(file))
+        print(dim(d[["pressure"]]))
         spiciness0 <- d[["spiciness0"]]
         expect_equal(c(1011, 2), dim(spiciness0))
         expect_equal(
@@ -274,6 +272,8 @@ if (file.exists(file)) {
                 6.18102988626372
             ), dim = c(6L, 2L))
         )
+        ctd <- as.ctd(d, profile = 1)
+        expect_equal(ctd[["spiciness0"]], d[["spiciness0"]][, 1])
     })
 }
 
@@ -292,5 +292,7 @@ if (file.exists(file)) {
                 7.02504314496063
             ), dim = c(6L, 1L))
         )
+        ctd <- as.ctd(d, profile = 1)
+        expect_equal(ctd[["spiciness0"]], d[["spiciness0"]][, 1])
     })
 }
