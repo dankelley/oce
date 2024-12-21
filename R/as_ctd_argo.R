@@ -38,19 +38,20 @@ as.ctd.argo <- function(argo, profile = NULL, debug = getOption("oceDebug")) {
     if (profile > nprofiles) {
         stop("cannot handle profile=", profile, " because dataset has only ", nprofiles, " profiles")
     }
-    res@metadata$time <- as.POSIXct(argo@metadata$time[profile],
-        format = "%Y-%m-%d %H:%M:%S UTC",
-        tz = "UTC"
-    )
     # Extract items for the requested profile
     oceDebug(debug, "STEP 1: move argo@data items to ctd@data (unless otherwise stated)\n")
     for (field in names(argo@data)) {
         # oceDebug(debug, "working on argo@data$", field, "\n", sep="")
         d <- argo@data[[field]]
         # Move some things from argo@data to ctd@metadata, for historical reasons
-        if (field %in% c("longitude", "latitude", "time")) {
+        if (field == "time") {
+            res@metadata$time <- as.POSIXct(argo@metadata$time[profile],
+                format = "%Y-%m-%d %H:%M:%S UTC",
+                tz = "UTC"
+            )
+        } else if (field %in% c("longitude", "latitude")) {
+            oceDebug(debug, "  argo@data$", field, "[", profile, "] -> ctd@metadata$", field, "\n", sep = "")
             res@metadata[[field]] <- d[profile]
-            oceDebug(debug, "  argo@data$", field, " -> ctd@metadata$", field, "\n", sep = "")
         } else if (is.vector(d)) {
             oceDebug(debug, "  argo@data$", field, "[", profile, "\n")
             res@data[[field]] <- d[profile]
@@ -94,6 +95,9 @@ as.ctd.argo <- function(argo, profile = NULL, debug = getOption("oceDebug")) {
         )) {
             oceDebug(debug, "  argo@metadata$", mname, "\n")
             res@metadata[[mname]] <- m
+        } else if (mname %in% c("direction", "juldQC", "positionQC")) {
+            oceDebug(debug, "  argo@metadata$", mname, " at character number ", profile, "\n")
+            res@metadata[[mname]] <- substr(m, profile, profile)
         } else if (mname == "flags") {
             res@metadata$flags <- list()
             oceDebug(debug, "  argo@metadata$flags\n")
