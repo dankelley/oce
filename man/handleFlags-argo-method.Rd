@@ -129,6 +129,7 @@ Other things related to argo data:
 \code{\link{argoGrid}()},
 \code{\link{argoNames2oceNames}()},
 \code{\link{as.argo}()},
+\code{\link{as.ctd.argo}()},
 \code{\link{plot,argo-method}},
 \code{\link{read.argo}()},
 \code{\link{read.argo.copernicus}()},

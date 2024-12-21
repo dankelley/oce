@@ -7,7 +7,7 @@
 as.ctd.argo(argo, profile = NULL, debug = getOption("oceDebug"))
 }
 \arguments{
-\item{argo}{an [argo-class object.size(}
+\item{argo}{an \linkS4class{argo} object.}
 
 \item{profile}{an integer specifying the profile to pick within the argo
 object. This will be set to 1, with a warning, if it is not supplied.}
@@ -21,12 +21,27 @@ be printed. If one function calls another, it usually reduces the value of
 by specifying higher \code{debug} values.}
 }
 \description{
-Assemble argo data into a \linkS4class{ctd} object.  This function is normally
-called by \code{\link[=as.ctd]{as.ctd()}}, but can also be called directly. In the first
-casefold(the only parameters provided by \code{\link[=as.ctd]{as.ctd()}} are the \linkS4class{argo}
-object, called \code{o} here, the profile number, and the debugging controller
+Assemble argo data into a \linkS4class{ctd} object.  This function may be
+called by \code{\link[=as.ctd]{as.ctd()}} or called directly. In the first
+case, note that the only \code{\link[=as.ctd]{as.ctd()}} parameters that are provide
+are the object, the profile number, and the debug value.
 }
 \seealso{
+Other things related to argo data: 
+\code{\link{[[,argo-method}},
+\code{\link{[[<-,argo-method}},
+\code{\link{argo}},
+\code{\link{argo-class}},
+\code{\link{argoGrid}()},
+\code{\link{argoNames2oceNames}()},
+\code{\link{as.argo}()},
+\code{\link{handleFlags,argo-method}},
+\code{\link{plot,argo-method}},
+\code{\link{read.argo}()},
+\code{\link{read.argo.copernicus}()},
+\code{\link{subset,argo-method}},
+\code{\link{summary,argo-method}}
+
 Other things related to ctd data: 
 \code{\link{CTD_BCD2014666_008_1_DN.ODF.gz}},
 \code{\link{[[,ctd-method}},
@@ -73,6 +88,7 @@ Other things related to ctd data:
 \code{\link{write.ctd}()}
 }
 \author{
-Dan Kelley, with help from Clark Richards
+Dan Kelley
 }
+\concept{things related to argo data}
 \concept{things related to ctd data}

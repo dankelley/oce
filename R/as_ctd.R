@@ -22,7 +22,8 @@
 #' by [read.argo()] to create the [argo-class] object. *Breaking change:*
 #' as of oce version 1.8.4, the conversion is done with [as.ctd.argo()],
 #' which tries to decode all the metadata and data in the original object,
-#' *but* ignores all parameters given to [as.ctd()] except `profile` and `debug`.
+#' *but* ignores all parameters given to [as.ctd()] except `profile` and `debug`,
+#' the latter of which is decremented by 1.
 #'
 ## All Argo data files contain an item called `juld` from which the profile
 ## time can be computed, and some also contain an additional item named `MTIME`,
@@ -232,7 +233,7 @@ as.ctd <- function(
     }
     # An argo-class object. FIXME: document that other parameters are skipped
     if (salinityGiven && inherits(salinity, "argo")) {
-        oceDebug(debug, "first parameter is 'argo-class', so it is converted with argo2ctd()\n", sep = "")
+        oceDebug(debug, "first parameter is 'argo-class', so it is converted with as.ctd.argo()\n", sep = "")
         res <- as.ctd.argo(argo = salinity, profile = profile, debug = debug - 1)
         oceDebug(debug, "END as.ctd() with argo object as first parameter\n", sep = "", unindent = 1)
         return(res)

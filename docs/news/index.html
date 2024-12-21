@@ -52,6 +52,7 @@
 <li>Add <code>Tidal Analysis</code> vignette (issue <a href="https://github.com/dankelley/oce/issues/2243" class="external-link">#2243</a>).</li>
 <li>Change <code>amsr[[</code> to handle <code>"metadata"</code> parameter (issue <a href="https://github.com/dankelley/oce/issues/2229" class="external-link">#2229</a>).</li>
 <li>Change <code><a href="../reference/as.unit.html">as.unit()</a></code> to handle more units (issue <a href="https://github.com/dankelley/oce/issues/2240" class="external-link">#2240</a>).</li>
+<li>Change <code><a href="../reference/as.ctd.html">as.ctd()</a></code> to handle Argo data better, with <code><a href="../reference/as.ctd.argo.html">as.ctd.argo()</a></code>. This should handle all the data and metadata, which was not the case before. There is also a breaking change, in that it does not permit specifying things like <code>station</code>, which make no sense for Argo data.</li>
 <li>Change <code><a href="../reference/binApply1D.html">binApply1D()</a></code> to handle the <code>...</code> argument (issue <a href="https://github.com/dankelley/oce/issues/2265" class="external-link">#2265</a>).</li>
 <li>Change <code><a href="../reference/binApply1D.html">binApply1D()</a></code> to handle the time zones better (issue <a href="https://github.com/dankelley/oce/issues/2266" class="external-link">#2266</a>).</li>
 <li>Change <code><a href="../reference/download.amsr.html">download.amsr()</a></code> to handle realtime data files (issue <a href="https://github.com/dankelley/oce/issues/2231" class="external-link">#2231</a>).</li>
@@ -461,7 +462,7 @@
 <li>
 <code>makeSection()</code> deprecated; use as.section() instead</li>
 <li>
-<code><a href="../reference/read.adp.rdi.html">read.adp.rdi()</a></code> handles Teledyne/RDI vsn 23.19 bottom-track data</li>
+<code><a href="../reference/read.adp.rdi.html">read.adp.rdi()</a></code> handles Teledyne/RDI version 23.19 bottom-track data</li>
 <li>
 <code><a href="../reference/geodXyInverse.html">geodXyInverse()</a></code> added; geod functions now spell out longitude etc</li>
 <li>
@@ -638,7 +639,7 @@
 <li>
 <code><a href="../reference/mapPlot.html">mapPlot()</a></code>: improve zone and meridian aesthetics</li>
 <li>
-<code><a href="../reference/detrend.html">detrend()</a></code> returns list with detrend vector and coefs</li>
+<code><a href="../reference/detrend.html">detrend()</a></code> returns list with detrend vector and coefficients</li>
 <li>
 <code><a href="../reference/decodeTime.html">decodeTime()</a></code> improvements</li>
 <li>
@@ -657,7 +658,7 @@
 <li>
 <code><a href="../reference/read.adv.nortek.html">read.adv.nortek()</a></code>: read salinity</li>
 <li>
-<code><a href="../reference/ctdDecimate.html">ctdDecimate()</a></code>: fix bug for NULL columns [issue 327]</li>
+<code><a href="../reference/ctdDecimate.html">ctdDecimate()</a></code>: fix bug for NULL columns (issue <a href="https://github.com/dankelley/oce/issues/327" class="external-link">#327</a>)</li>
 <li>
 <code><a href="../reference/plot-section-method.html">plot.section()</a></code> now chooses best coastline file</li>
 <li>
@@ -703,7 +704,7 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.9-9" id="oce-09-9">oce 0.9-9<a class="anchor" aria-label="anchor" href="#oce-09-9"></a></h2>
 <ul><li>
-<code><a href="../reference/mapPlot.html">mapPlot()</a></code> uses … graphical parameters (e.g. cex) in labelling axes</li>
+<code><a href="../reference/mapPlot.html">mapPlot()</a></code> uses <code>...</code> graphical parameters (e.g. cex) in labelling axes</li>
 <li>fix recent bug in reading CNV files (issue 318)</li>
 <li>
 <code>plotTS(...,mar=NULL)</code> now avoids setting <code>par(mar)</code>
@@ -716,7 +717,7 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.9-7" id="oce-09-7">oce 0.9-7<a class="anchor" aria-label="anchor" href="#oce-09-7"></a></h2>
 <ul><li>make <code><a href="../reference/ctdTrim.html">ctdTrim()</a></code> work in R 3.0</li>
-<li>support for adp vmdas nav data (coded by Clark Richards)</li>
+<li>support for adp vmdas navigation data (coded by Clark Richards)</li>
 <li>
 <code><a href="../reference/approx3d.html">approx3d()</a></code>: added</li>
 <li>
@@ -743,7 +744,7 @@
 <ul><li>address compilation error on Windows-64 platform</li>
 <li>make some long-running operations more interruptible</li>
 <li>
-<code><a href="../reference/oceApprox.html">oceApprox()</a></code>: permit equal x values [issue 279]</li>
+<code><a href="../reference/oceApprox.html">oceApprox()</a></code>: permit equal x values (issue <a href="https://github.com/dankelley/oce/issues/279" class="external-link">#279</a>)</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.9-5" id="oce-09-5">oce 0.9-5<a class="anchor" aria-label="anchor" href="#oce-09-5"></a></h2><p class="text-muted">CRAN release: 2012-12-15</p>
@@ -770,11 +771,11 @@
 <li>
 <code><a href="../reference/oce.plot.ts.html">oce.plot.ts()</a></code> and <code><a href="../reference/oce.axis.POSIXct.html">oce.axis.POSIXct()</a></code>: add tformat argument</li>
 <li>
-<code><a href="../reference/read.aquadopp.html">read.aquadopp()</a></code> and cousins added [issues 253 and 258]</li>
+<code><a href="../reference/read.aquadopp.html">read.aquadopp()</a></code> and cousins added (issues <a href="https://github.com/dankelley/oce/issues/253" class="external-link">#253</a> and <a href="https://github.com/dankelley/oce/issues/258" class="external-link">#258</a>)</li>
 <li>
-<code><a href="../reference/read.ctd.html">read.ctd()</a></code> guesses waterDepth if not supplied [issue 253]</li>
+<code><a href="../reference/read.ctd.html">read.ctd()</a></code> guesses waterDepth if not supplied (issue <a href="https://github.com/dankelley/oce/issues/253" class="external-link">#253</a>)</li>
 <li>
-<code><a href="../reference/plotTS.html">plotTS()</a></code>: extend isopycnal range [issue 252]</li>
+<code><a href="../reference/plotTS.html">plotTS()</a></code>: extend isopycnal range (issue <a href="https://github.com/dankelley/oce/issues/252" class="external-link">#252</a>)</li>
 <li>
 <code><a href="../reference/plot-section-method.html">plot.section()</a></code> contouring improved</li>
 <li>
@@ -786,7 +787,7 @@
 <li>
 <code><a href="../reference/read.lobo.html">read.lobo()</a></code> is more flexible on column names</li>
 <li>
-<code>imagep(..., axes=FALSE)</code>: no longer plots axis box [issue 249]</li>
+<code>imagep(..., axes=FALSE)</code>: no longer plots axis box (issue <a href="https://github.com/dankelley/oce/issues/249" class="external-link">#249</a>)</li>
 <li>
 <code><a href="../reference/oce.plot.ts.html">oce.plot.ts()</a></code>: alter time auto-ranging method</li>
 <li>
@@ -853,7 +854,8 @@
 <li>add support for Nortek aquadopp-profiler instruments</li>
 <li>
 <code><a href="../reference/oce.contour.html">oce.contour()</a></code> added</li>
-<li>lisst class added</li>
+<li>
+<code>lisst</code> class added</li>
 <li>
 <code><a href="../reference/plotTaylor.html">plotTaylor()</a></code> added</li>
 <li>
@@ -882,7 +884,8 @@
 <li>
 <code><a href="../reference/plotTS.html">plotTS()</a></code>: add argument teos</li>
 <li>add <code>teos()</code> as an interface to the TEOS-10 library</li>
-<li>add <code><a href="../reference/moonAngle.html">moonAngle()</a></code> plus other astronomy functions, e.g. julianDay()</li>
+<li>add <code><a href="../reference/moonAngle.html">moonAngle()</a></code> plus other astronomy functions, e.g. <code><a href="../reference/julianDay.html">julianDay()</a></code>
+</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.8-7" id="oce-08-7">oce 0.8-7<a class="anchor" aria-label="anchor" href="#oce-08-7"></a></h2><p class="text-muted">CRAN release: 2012-04-05</p>
@@ -896,13 +899,14 @@
 <code><a href="../reference/plotTS.html">plotTS()</a></code>: add argument <code>inset</code>
 </li>
 <li>
-<code><a href="../reference/read.adp.rdi.html">read.adp.rdi()</a></code>: fix a bug in bottom-tracking; add soundSpeed vector</li>
+<code><a href="../reference/read.adp.rdi.html">read.adp.rdi()</a></code>: fix a bug in bottom-tracking; add <code>soundSpeed</code> vector</li>
 <li>
 <code>data(echosounder)</code> created</li>
 <li>
 <code><a href="../reference/formatPosition.html">formatPosition()</a></code> created</li>
 <li>
-<code>plot(echosounder)</code>: new arguments atTop and labelsTop</li>
+<code>plot(echosounder)</code>: new arguments <code>atTop</code> and <code>labelsTop</code>
+</li>
 <li>adp objects now also hold <code>percent good</code> for RDI instruments</li>
 <li>
 <code>plot.drifter()</code>: improve multi-panel plots</li>
@@ -916,7 +920,7 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.8-6" id="oce-08-6">oce 0.8-6<a class="anchor" aria-label="anchor" href="#oce-08-6"></a></h2><p class="text-muted">CRAN release: 2012-03-04</p>
 <ul><li>
-<code><a href="../reference/imagep.html">imagep()</a></code>: permit POSIXt type for zlim</li>
+<code><a href="../reference/imagep.html">imagep()</a></code>: permit <code>POSIXt</code> type for <code>zlim</code>.</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.8-5" id="oce-08-5">oce 0.8-5<a class="anchor" aria-label="anchor" href="#oce-08-5"></a></h2>
@@ -926,11 +930,12 @@
 <li>
 <code><a href="https://rdrr.io/r/graphics/grid.html" class="external-link">grid()</a></code> works for oce-based time axes</li>
 <li>
-<code>imagep(..., filledContours)</code>: obey ylab argument</li>
+<code>imagep(..., filledContours)</code>: obey <code>ylab</code> argument</li>
 <li>
 <code><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset()</a></code>: permit subsetting ADP by pressure</li>
 <li>
-<code><a href="../reference/oce.plot.ts.html">oce.plot.ts()</a></code>: obey arguments xaxt and yaxt</li>
+<code><a href="../reference/oce.plot.ts.html">oce.plot.ts()</a></code>: obey arguments <code>xaxt</code> and <code>yaxt</code>
+</li>
 <li>improve support for shapefile coastlines</li>
 </ul></div>
     <div class="section level2">
@@ -951,16 +956,17 @@
 <code>draw.section()</code>: permit <code>xtype="latitude"</code> or <code>"longitude"</code>
 </li>
 <li>
-<code><a href="../reference/imagep.html">imagep()</a></code> has drawPalette=“space” option</li>
+<code><a href="../reference/imagep.html">imagep()</a></code> has <code>drawPalette="space"</code> option</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.8-2" id="oce-08-2">oce 0.8-2<a class="anchor" aria-label="anchor" href="#oce-08-2"></a></h2><p class="text-muted">CRAN release: 2011-11-03</p>
-<ul><li>fix bug in read.coastline(), reversing lon and lat (issue 162)</li>
+<ul><li>fix bug in <code><a href="../reference/read.coastline.html">read.coastline()</a></code>, reversing <code>lon</code> and <code>lat</code> (issue <a href="https://github.com/dankelley/oce/issues/162" class="external-link">#162</a>)</li>
 <li>fix bug in S4 adp validity checker</li>
 <li>
 <code><a href="../reference/geodDist.html">geodDist()</a></code>: add argument <code>alongPath</code>
 </li>
-<li>remove compilation warning about doc for summary.ctd()</li>
+<li>remove compilation warning about doc for <code><a href="../reference/summary-ctd-method.html">summary.ctd()</a></code>
+</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.8-1" id="oce-08-1">oce 0.8-1<a class="anchor" aria-label="anchor" href="#oce-08-1"></a></h2><p class="text-muted">CRAN release: 2011-10-26</p>
@@ -1046,17 +1052,19 @@
 <h2 class="pkg-version" data-toc-text="0.3-1" id="oce-03-1">oce 0.3-1<a class="anchor" aria-label="anchor" href="#oce-03-1"></a></h2><p class="text-muted">CRAN release: 2011-06-22</p>
 <ul><li>add <code>read.oce.odf()</code>
 </li>
-<li>add findInOrdered</li>
+<li>add <code>findInOrdered()</code>
+</li>
 <li>generalize <code><a href="../reference/tidem.html">tidem()</a></code> argument list</li>
 <li>
 <code><a href="../reference/read.adv.nortek.html">read.adv.nortek()</a></code>: handle burst-mode data</li>
-<li>add datasets wilson, redfieldNP, redfieldNC, redfieldPlankton, and riley</li>
+<li>add datasets <code>wilson</code>, <code>redfieldNP</code>, <code>redfieldNC</code>, <code>redfieldPlankton</code>, and <code>riley</code>
+</li>
 <li>change <code>data(ctd)</code> to be derived from <code>data(ctdRaw)</code>
 </li>
 <li>change to monitor=FALSE for all reading functions</li>
 <li>add accessor functions <code>heading()</code>, <code>latitude()</code>, <code>longitude()</code>, <code>pitch()</code>, <code>pressure()</code>, <code>processingLog()</code>, <code>roll()</code>, <code>salinity()</code>, <code>temperature()</code>, <code><a href="https://rdrr.io/r/stats/time.html" class="external-link">time()</a></code>, and <code>velocity()</code>
 </li>
-<li>rename history as `processingLog.</li>
+<li>rename history as <code>processingLog</code>.</li>
 <li>flatten data objects to be 1 level thick (for future matlab exports)</li>
 <li>add <code><a href="../reference/threenum.html">threenum()</a></code> added, and use it in all summaries (for speed)</li>
 </ul></div>
@@ -1114,7 +1122,8 @@
 </li>
 <li>speed up conversion of ADP and ADV to enu by more than a factor of 10</li>
 <li>change RDI coordinate handling</li>
-<li>rename <code>match.bytes()</code> as `matchBytes()</li>
+<li>rename <code>match.bytes()</code> as <code><a href="../reference/matchBytes.html">matchBytes()</a></code>
+</li>
 <li>add <code><a href="../reference/drawPalette.html">drawPalette()</a></code>
 </li>
 <li>remove <code>matlab2POSIXt()</code>, now a sub-case of <code>number.as.POSIXct()</code>
@@ -1153,7 +1162,7 @@
 <code><a href="../reference/oceDebug.html">oce.debug()</a></code>: flush the console after printing a message</li>
 <li>
 <code>sw.theta()</code>: rename the method possibilities, to lower case</li>
-<li>in some sw functions, rename <code>pref</code> as <code>reference.pressure</code>
+<li>in some <code>sw</code> functions, rename <code>pref</code> as <code>reference.pressure</code>
 </li>
 <li>
 <code><a href="../reference/read.ctd.html">read.ctd()</a></code>: fix bug in getting start.time for some time formats</li>
@@ -1194,7 +1203,7 @@
 <li>
 <code><a href="../reference/plot-ctd-method.html">plot.ctd()</a></code>: add more plot types; which=9 for salinity, not density</li>
 <li>
-<code><a href="../reference/as.ctd.html">as.ctd()</a></code>: improve flexibilty</li>
+<code><a href="../reference/as.ctd.html">as.ctd()</a></code>: improve flexibility</li>
 <li>
 <code><a href="../reference/predict.tidem.html">predict.tidem()</a></code>: add <code>newdata</code> argument</li>
 <li>
@@ -1208,7 +1217,7 @@
 <code><a href="../reference/plot-adp-method.html">plot.adp()</a></code>: add <code>use.layout</code> argument</li>
 <li>
 <code><a href="../reference/window.oce.html">window.oce()</a></code> added</li>
-<li>make objects remember full filename, not just local filename (issue8)</li>
+<li>make objects remember full filename, not just local filename (issue <a href="https://github.com/dankelley/oce/issues/8" class="external-link">#8</a>)</li>
 <li>
 <code><a href="../reference/plot-tidem-method.html">plot.tidem()</a></code>: remove argument <code>plot.type</code>, using <code>which</code> instead</li>
 <li>
@@ -1218,14 +1227,15 @@
 </li>
 <li>
 <code><a href="../reference/oceApprox.html">oceApprox()</a></code> added</li>
-<li>topoWorld dataset added</li>
+<li>
+<code>topoWorld</code> dataset added</li>
 <li>
 <code><a href="../reference/plot-ctd-method.html">plot.ctd()</a></code>: by default, make coastlines extend to box boundaries</li>
 <li>reformulate sun.angle in R</li>
 <li>fix google-code issue 56; <code><a href="../reference/plot-topo-method.html">plot.topo()</a></code> should accept land.z=NULL]</li>
 <li>fix google-code issue 55; <code><a href="../reference/plot-topo-method.html">plot.topo()</a></code> could go past poles]</li>
 <li>fix google-code issue 54; <code><a href="../reference/plot-topo-method.html">plot.topo()</a></code> was resetting par() on exit]</li>
-<li>fix google-code issue 53; <code>interp.barnes()</code> gives poor error msg for mismatched x and y</li>
+<li>fix google-code issue 53; <code>interp.barnes()</code> gives poor error message for mismatched x and y</li>
 <li>fix google-code issue 52; <code><a href="../reference/plot-section-method.html">plot.section()</a></code> draws incorrect bottom shape</li>
 </ul></div>
     <div class="section level2">
@@ -1238,26 +1248,27 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1-79" id="oce-01-79">oce 0.1-79<a class="anchor" aria-label="anchor" href="#oce-01-79"></a></h2><p class="text-muted">CRAN release: 2009-10-26</p>
 <ul><li>fix google-code issue 48; <code>oce.plot.sticks()</code> ignored page ratio</li>
-<li>fix google-code issue 47; cannot read new MEDS sealevel format</li>
+<li>fix google-code issue 47; cannot read new MEDS sea level format</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1-78" id="oce-01-78">oce 0.1-78<a class="anchor" aria-label="anchor" href="#oce-01-78"></a></h2><p class="text-muted">CRAN release: 2009-10-02</p>
 <ul><li>add <code>data(RRprofile)</code>
 </li>
-<li>to <code>plot.TS()</code>, add arguments lwd.rho and lty.rho</li>
+<li>to <code>plot.TS()</code>, add arguments <code>lwd.rho</code> and <code>lty.rho</code>.</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1-77" id="oce-01-77">oce 0.1-77<a class="anchor" aria-label="anchor" href="#oce-01-77"></a></h2><p class="text-muted">CRAN release: 2009-09-13</p>
-<ul><li>refactor adp code wrt transformation matrices</li>
+<ul><li>refactor adp code with respect to transformation matrices</li>
 <li>add <code>matrix.smooth()</code>
 </li>
 <li>improve labels for <code><a href="../reference/oce.axis.POSIXct.html">oce.axis.POSIXct()</a></code>
 </li>
-<li>set default for <code>debug</code> argument to getOption(“oceDebug”) in all functions</li>
+<li>set default for <code>debug</code> argument to <code>getOption("oceDebug")</code> in all functions</li>
 <li>
-<code>plot.profile()</code>: add argument ytype; change <code>type</code> to <code>xtype</code>
+<code>plot.profile()</code>: add argument <code>ytype</code>; change <code>type</code> to <code>xtype</code>
 </li>
-<li>add `swZ()</li>
+<li>add <code><a href="../reference/swZ.html">swZ()</a></code>
+</li>
 <li>add <code><a href="../reference/oceSmooth.html">oce.smooth()</a></code>
 </li>
 <li>add <code><a href="../reference/read.adv.html">read.adv()</a></code>, etc., supporting Nortek and Sontek devices</li>
