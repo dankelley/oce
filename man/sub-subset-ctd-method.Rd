@@ -92,6 +92,7 @@ Other things related to ctd data:
 \code{\link{CTD_BCD2014666_008_1_DN.ODF.gz}},
 \code{\link{[[,ctd-method}},
 \code{\link{as.ctd}()},
+\code{\link{as.ctd.argo}()},
 \code{\link{cnvName2oceName}()},
 \code{\link{ctd}},
 \code{\link{ctd-class}},

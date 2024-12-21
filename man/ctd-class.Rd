@@ -157,6 +157,7 @@ Other things related to ctd data:
 \code{\link{[[,ctd-method}},
 \code{\link{[[<-,ctd-method}},
 \code{\link{as.ctd}()},
+\code{\link{as.ctd.argo}()},
 \code{\link{cnvName2oceName}()},
 \code{\link{ctd}},
 \code{\link{ctd.cnv.gz}},

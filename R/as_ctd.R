@@ -13,19 +13,22 @@
 #' The following sections provide an some notes on how `as.ctd()` handles
 #' certain object types given as the first parameter.
 #'
-#' **Converting argo objects**
+#' **Converting argo objects (note breaking change)**
 #'
 #' If the `salinity` argument is an object of [argo-class], then that
 #' object is dismantled and reassembled as a [ctd-class] object in ways that
 #' are mostly straightforward, although the handling of time depends
 #' on the information in the original NetCDF data file that was used
-#' by [read.argo()] to create the [argo-class] object.
+#' by [read.argo()] to create the [argo-class] object. *Breaking change:*
+#' as of oce version 1.8.4, the conversion is done with [as.ctd.argo()],
+#' which tries to decode all the metadata and data in the original object,
+#' *but* ignores all parameters given to [as.ctd()] except `profile` and `debug`.
 #'
-#' All Argo data files contain an item called `juld` from which the profile
-#' time can be computed, and some also contain an additional item named `MTIME`,
-#' from which the times of individual measurements can also be computed.  Both
-#' cases are handled by `as.ctd()`, using a scheme outlined in
-#' Note 4 of the Details section of the [read.argo()] documentation.
+## All Argo data files contain an item called `juld` from which the profile
+## time can be computed, and some also contain an additional item named `MTIME`,
+## from which the times of individual measurements can also be computed.  Both
+## cases are handled by `as.ctd()`, using a scheme outlined in
+## Note 4 of the Details section of the [read.argo()] documentation.
 #'
 #' **Converting rsk objects**
 #'
@@ -230,7 +233,7 @@ as.ctd <- function(
     # An argo-class object. FIXME: document that other parameters are skipped
     if (salinityGiven && inherits(salinity, "argo")) {
         oceDebug(debug, "first parameter is 'argo-class', so it is converted with argo2ctd()\n", sep = "")
-        res <- argo2ctd(o = salinity, profile = profile, debug = debug - 1)
+        res <- as.ctd.argo(argo = salinity, profile = profile, debug = debug - 1)
         oceDebug(debug, "END as.ctd() with argo object as first parameter\n", sep = "", unindent = 1)
         return(res)
     }

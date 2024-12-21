@@ -590,9 +590,11 @@ setMethod(
                 sep = ""
             )
         }
-        showMetadataItem(object, "cruise", "Cruise:              ")
-        showMetadataItem(object, "ship", "Vessel:              ")
-        showMetadataItem(object, "station", "Station:             ")
+        showMetadataItem(object, "cruise",      "Cruise:              ")
+        showMetadataItem(object, "ship",        "Vessel:              ")
+        showMetadataItem(object, "station",     "Station:             ")
+        showMetadataItem(object, "id",          "Argo id:             ")
+        showMetadataItem(object, "cycleNumber", "Argo cycleNumber:    ")
         deploymentType <- object@metadata$deploymentType
         if (!is.null(deploymentType) && deploymentType != "unknown") {
             showMetadataItem(object, "deploymentType", "Deployment type:     ")

@@ -7,6 +7,10 @@
 * Add `Tidal Analysis` vignette (issue #2243).
 * Change `amsr[[` to handle `"metadata"` parameter (issue #2229).
 * Change `as.unit()` to handle more units (issue #2240).
+* Change `as.ctd()` to handle Argo data better, with `as.ctd.argo()`. This
+  should handle all the data and metadata, which was not the case before. There
+  is also a breaking change, in that it does not permit specifying things like
+  `station`, which make no sense for Argo data.
 * Change `binApply1D()` to handle the `...` argument (issue #2265).
 * Change `binApply1D()` to handle the time zones better (issue #2266).
 * Change `download.amsr()` to handle realtime data files (issue #2231).
@@ -404,7 +408,7 @@
 * `as.adp()` added
 * convert argo objects to sections
 * `makeSection()` deprecated; use as.section() instead
-* `read.adp.rdi()` handles Teledyne/RDI vsn 23.19 bottom-track data
+* `read.adp.rdi()` handles Teledyne/RDI version 23.19 bottom-track data
 * `geodXyInverse()` added; geod functions now spell out longitude etc
 * `read.odf()` speeded up by a factor of about 30
 * add colour palettes from the `cmocean` Python package by Kristen Thyng
@@ -503,7 +507,7 @@
 * `magneticField()` replaces `magneticDeclination()`
 * `ungrid()` added
 * `mapPlot()`: improve zone and meridian aesthetics
-* `detrend()` returns list with detrend vector and coefs
+* `detrend()` returns list with detrend vector and coefficients
 * `decodeTime()` improvements
 * `interpBarnes()` has new argument `trim`
 * `standardDepths()` added
@@ -512,7 +516,7 @@
 * `swRrho()` added
 * `plotProfile()` now accepts type="o"
 * `read.adv.nortek()`: read salinity
-* `ctdDecimate()`: fix bug for NULL columns [issue 327]
+* `ctdDecimate()`: fix bug for NULL columns (issue #327)
 * `plot.section()` now chooses best coastline file
 * `swPressure()` added
 * `ctdFindProfiles()` added
@@ -545,7 +549,7 @@
 
 # oce 0.9-9
 
-* `mapPlot()` uses ... graphical parameters (e.g. cex) in labelling axes
+* `mapPlot()` uses `...` graphical parameters (e.g. cex) in labelling axes
 * fix recent bug in reading CNV files (issue 318)
 * `plotTS(...,mar=NULL)` now avoids setting `par(mar)`
 
@@ -556,7 +560,7 @@
 # oce 0.9-7
 
 * make `ctdTrim()` work in R 3.0
-* support for adp vmdas nav data (coded by Clark Richards)
+* support for adp vmdas navigation data (coded by Clark Richards)
 * `approx3d()`: added
 * `drawPalette()`: new arg `fullpage`
 * `plot.lobo()`: add arg `which`
@@ -570,7 +574,7 @@
 
 * address compilation error on Windows-64 platform
 * make some long-running operations more interruptible
-* `oceApprox()`: permit equal x values [issue 279]
+* `oceApprox()`: permit equal x values (issue #279)
 
 # oce 0.9-5
 
@@ -587,15 +591,15 @@
 * `read.section()`: add `directory` argument
 * `sectionSmooth()`: add `barnes` method
 * `oce.plot.ts()` and `oce.axis.POSIXct()`: add tformat argument
-* `read.aquadopp()` and cousins added [issues 253 and 258]
-* `read.ctd()` guesses waterDepth if not supplied [issue 253]
-* `plotTS()`: extend isopycnal range [issue 252]
+* `read.aquadopp()` and cousins added (issues #253 and #258)
+* `read.ctd()` guesses waterDepth if not supplied (issue #253)
+* `plotTS()`: extend isopycnal range (issue #252)
 * `plot.section()` contouring improved
 * `data(oceans)` added
 * `data(papa)` added
 * `fillGap()` works on matrices as well as vectors
 * `read.lobo()` is more flexible on column names
-* `imagep(..., axes=FALSE)`: no longer plots axis box [issue 249]
+* `imagep(..., axes=FALSE)`: no longer plots axis box (issue #249)
 * `oce.plot.ts()`: alter time auto-ranging method
 * `oceBisect()`: increase generality of function whose root is sought
 * `plotTS()`: clean axes after isopycnals drawn
@@ -636,7 +640,7 @@
 * `plot.topo()`: automatic cut-point shift
 * add support for Nortek aquadopp-profiler instruments
 * `oce.contour()` added
-* lisst class added
+* `lisst` class added
 * `plotTaylor()` added
 * `oce.as.raw()` added
 * `binmap()` added
@@ -655,7 +659,7 @@
 * add `integrateTrapezoid()`
 * `plotTS()`: add argument teos
 * add `teos()` as an interface to the TEOS-10 library
-* add `moonAngle()` plus other astronomy functions, e.g. julianDay()
+* add `moonAngle()` plus other astronomy functions, e.g. `julianDay()`
 
 # oce 0.8-7
 
@@ -663,10 +667,10 @@
 * `plotTS()`: add `bg` argument
 * rename `dt` object and functions to `tdr`
 * `plotTS()`: add argument `inset`
-* `read.adp.rdi()`: fix a bug in bottom-tracking; add soundSpeed vector
+* `read.adp.rdi()`: fix a bug in bottom-tracking; add `soundSpeed` vector
 * `data(echosounder)` created
 * `formatPosition()` created
-* `plot(echosounder)`: new arguments atTop and labelsTop
+* `plot(echosounder)`: new arguments `atTop` and `labelsTop`
 * adp objects now also hold `percent good` for RDI instruments
 * `plot.drifter()`: improve multi-panel plots
 * `imagep()`: add argument `missingColor`
@@ -674,16 +678,16 @@
 
 # oce 0.8-6
 
-* `imagep()`: permit POSIXt type for zlim
+* `imagep()`: permit `POSIXt` type for `zlim`.
 
 # oce 0.8-5
 
 * reconstruct data(ctd) so plot will focus maps better
 * `plotInset()` added
 * `grid()` works for oce-based time axes
-* `imagep(..., filledContours)`: obey ylab argument
+* `imagep(..., filledContours)`: obey `ylab` argument
 * `subset()`: permit subsetting ADP by pressure
-* `oce.plot.ts()`: obey arguments xaxt and yaxt
+* `oce.plot.ts()`: obey arguments `xaxt` and `yaxt`
 * improve support for shapefile coastlines
 
 # oce 0.8-4
@@ -699,14 +703,14 @@
 * add `met` class
 * `subset.oce()` handles section objects
 * `draw.section()`: permit `xtype="latitude"` or `"longitude"`
-* `imagep()` has drawPalette="space" option
+* `imagep()` has `drawPalette="space"` option
 
 # oce 0.8-2
 
-* fix bug in read.coastline(), reversing lon and lat (issue 162)
+* fix bug in `read.coastline()`, reversing `lon` and `lat` (issue #162)
 * fix bug in S4 adp validity checker
 * `geodDist()`: add argument `alongPath`
-* remove compilation warning about doc for summary.ctd()
+* remove compilation warning about doc for `summary.ctd()`
 
 # oce 0.8-1
 
@@ -761,16 +765,16 @@
 # oce 0.3-1
 
 * add `read.oce.odf()`
-* add findInOrdered
+* add `findInOrdered()`
 * generalize `tidem()` argument list
 * `read.adv.nortek()`: handle burst-mode data
-* add datasets wilson, redfieldNP, redfieldNC, redfieldPlankton, and riley
+* add datasets `wilson`, `redfieldNP`, `redfieldNC`, `redfieldPlankton`, and `riley`
 * change `data(ctd)` to be derived from `data(ctdRaw)`
 * change to monitor=FALSE for all reading functions
 * add accessor functions `heading()`, `latitude()`, `longitude()`, `pitch()`,
   `pressure()`, `processingLog()`, `roll()`, `salinity()`, `temperature()`,
   `time()`, and `velocity()`
-* rename history as `processingLog.
+* rename history as `processingLog`.
 * flatten data objects to be 1 level thick (for future matlab exports)
 * add `threenum()` added, and use it in all summaries (for speed)
 
@@ -809,7 +813,7 @@
 * rename e.g. `adv.2enu()` as `to.enu.adv()`
 * speed up conversion of ADP and ADV to enu by more than a factor of 10
 * change RDI coordinate handling
-* rename `match.bytes()` as `matchBytes()
+* rename `match.bytes()` as `matchBytes()`
 * add `drawPalette()`
 * remove `matlab2POSIXt()`, now a sub-case of `number.as.POSIXct()`
 * `number.as.POSIXct()`: added
@@ -827,7 +831,7 @@
 * `plot.TS()`: add argument `use.smoothScatter`
 * `oce.debug()`: flush the console after printing a message
 * `sw.theta()`: rename the method possibilities, to lower case
-* in some sw functions, rename `pref` as `reference.pressure`
+* in some `sw` functions, rename `pref` as `reference.pressure`
 * `read.ctd()`: fix bug in getting start.time for some time formats
 * `pwelch()` added
 * `plot.sealevel()`: make y axis obey range in data subset, if xlim is given
@@ -850,7 +854,7 @@
 * `read.adv.nortek()`: detect the velocity range
 * add processing.log.add(), an alternative to processing.log.append()
 * `plot.ctd()`: add more plot types; which=9 for salinity, not density
-* `as.ctd()`: improve flexibilty
+* `as.ctd()`: improve flexibility
 * `predict.tidem()`: add `newdata` argument
 * `adv.2enu()` added
 * `adp.xyz2enu()`: make it correct for heading.bias
@@ -858,19 +862,19 @@
 * improve (but temporarily limit) fill.gap
 * `plot.adp()`: add `use.layout` argument
 * `window.oce()` added
-* make objects remember full filename, not just local filename (issue8)
+* make objects remember full filename, not just local filename (issue #8)
 * `plot.tidem()`: remove argument `plot.type`, using `which` instead
 * `read.pt()`: add arguments from, by, and to
 * fix issue 57; `read.adp.rdi()` read the heading incorrectly
 * add "rr" method to `ctdDecimate()`
 * `oceApprox()` added
-* topoWorld dataset added
+* `topoWorld` dataset added
 * `plot.ctd()`: by default, make coastlines extend to box boundaries
 * reformulate sun.angle in R
 * fix google-code issue 56; `plot.topo()` should accept land.z=NULL]
 * fix google-code issue 55; `plot.topo()` could go past poles]
 * fix google-code issue 54; `plot.topo()` was resetting par() on exit]
-* fix google-code issue 53; `interp.barnes()` gives poor error msg for
+* fix google-code issue 53; `interp.barnes()` gives poor error message for
   mismatched x and y
 * fix google-code issue 52; `plot.section()` draws incorrect bottom shape
 
@@ -884,21 +888,21 @@
 # oce 0.1-79
 
 * fix google-code issue 48; `oce.plot.sticks()` ignored page ratio
-* fix google-code issue 47; cannot read new MEDS sealevel format
+* fix google-code issue 47; cannot read new MEDS sea level format
 
 # oce 0.1-78
 
 * add `data(RRprofile)`
-* to `plot.TS()`, add arguments lwd.rho and lty.rho
+* to `plot.TS()`, add arguments `lwd.rho` and `lty.rho`.
 
 # oce 0.1-77
 
-* refactor adp code wrt transformation matrices
+* refactor adp code with respect to transformation matrices
 * add `matrix.smooth()`
 * improve labels for `oce.axis.POSIXct()`
-* set default for `debug` argument to getOption("oceDebug") in all functions
-* `plot.profile()`: add argument ytype; change `type` to `xtype`
-* add `swZ()
+* set default for `debug` argument to `getOption("oceDebug")` in all functions
+* `plot.profile()`: add argument `ytype`; change `type` to `xtype`
+* add `swZ()`
 * add `oce.smooth()`
 * add `read.adv()`, etc., supporting Nortek and Sontek devices
 * add `read.adp()`, etc., supporting Nortek, RDI and Sontek devices
