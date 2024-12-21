@@ -7,10 +7,7 @@
 * Add `Tidal Analysis` vignette (issue #2243).
 * Change `amsr[[` to handle `"metadata"` parameter (issue #2229).
 * Change `as.unit()` to handle more units (issue #2240).
-* Change `as.ctd()` to handle Argo data better, with `as.ctd.argo()`. This
-  should handle all the data and metadata, which was not the case before. There
-  is also a breaking change, in that it does not permit specifying things like
-  `station`, which make no sense for Argo data.
+* Change `as.ctd()` to handle Argo data better (issue #2270).
 * Change `binApply1D()` to handle the `...` argument (issue #2265).
 * Change `binApply1D()` to handle the time zones better (issue #2266).
 * Change `download.amsr()` to handle realtime data files (issue #2231).
