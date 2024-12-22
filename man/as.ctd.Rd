@@ -151,7 +151,7 @@ object is dismantled and reassembled as a \linkS4class{ctd} object in ways that
 are mostly straightforward, although the handling of time depends
 on the information in the original NetCDF data file that was used
 by \code{\link[=read.argo]{read.argo()}} to create the \linkS4class{argo} object. \emph{Breaking change:}
-as of oce version 1.8.4, the conversion is done with \code{\link[=as.ctd.argo]{as.ctd.argo()}},
+as of oce version 1.8.4, the conversion is done with \code{\link[=argo2ctd]{argo2ctd()}},
 which tries to decode all the metadata and data in the original object,
 \emph{but} ignores all parameters given to \code{\link[=as.ctd]{as.ctd()}} except \code{profile} and \code{debug},
 the latter of which is decremented by 1.

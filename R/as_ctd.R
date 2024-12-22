@@ -20,7 +20,7 @@
 #' are mostly straightforward, although the handling of time depends
 #' on the information in the original NetCDF data file that was used
 #' by [read.argo()] to create the [argo-class] object. *Breaking change:*
-#' as of oce version 1.8.4, the conversion is done with [as.ctd.argo()],
+#' as of oce version 1.8.4, the conversion is done with [argo2ctd()],
 #' which tries to decode all the metadata and data in the original object,
 #' *but* ignores all parameters given to [as.ctd()] except `profile` and `debug`,
 #' the latter of which is decremented by 1.
