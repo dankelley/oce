@@ -45,7 +45,7 @@ as.ctd.argo <- function(argo, profile = NULL, debug = getOption("oceDebug")) {
         d <- argo@data[[field]]
         # Move some things from argo@data to ctd@metadata, for historical reasons
         if (field == "time") {
-            res@metadata$time <- as.POSIXct(argo@metadata$time[profile],
+            res@metadata$time <- as.POSIXct(d[profile],
                 format = "%Y-%m-%d %H:%M:%S UTC",
                 tz = "UTC"
             )
