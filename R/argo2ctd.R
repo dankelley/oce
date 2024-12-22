@@ -2,15 +2,18 @@
 
 #' Coerce argo Data Into a ctd Object
 #'
-#' Assemble argo data into a [ctd-class] object.  This function may be
-#' called by [as.ctd()] or called directly. In the first
-#' case, note that the only [as.ctd()] parameters that are provide
-#' are the object, the profile number, and the debug value.
+#' Convert a [argo-class] object into a [ctd-class] object.  This
+#' function may be called by [as.ctd()] or called directly. In the
+#' first case, note that the only [as.ctd()] parameters that are
+#' provided to the present function are the object itself,
+#' the index number of the desired profile, and the debug
+#' value.
 #'
 #' @param argo an [argo-class] object.
 #'
 #' @param profile an integer specifying the profile to pick within the argo
-#' object. This will be set to 1, with a warning, if it is not supplied.
+#' object. If this is not provided, it will be set to 1, and a warning
+#' will be issued telling of this setting.
 #'
 #' @template debugTemplate
 #'

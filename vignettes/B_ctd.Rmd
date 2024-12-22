@@ -129,7 +129,7 @@ the example provided, this text contains the division of the institute (WHPO),
 the institute itself (SIO), and initial of the investigator (DAM). The problem
 is that no dividers separate these items, and that there seem to be no
 standards for the item lengths. Rather than spend a great deal of time coding
-special cases (e.g. scanning to see if the string `WHOI` occurs in the header
+special cases (e.g. scanning to see if the string `SIO` occurs in the header
 line), the approach taken with `oce` is to ignore such issues relating to
 quirky headers, on the assumption that users can scan human-written headers
 with high skill.

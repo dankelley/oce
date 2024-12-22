@@ -254,7 +254,7 @@ object is dismantled and reassembled as a <a href="ctd-class.html">ctd</a> objec
 are mostly straightforward, although the handling of time depends
 on the information in the original NetCDF data file that was used
 by <code><a href="read.argo.html">read.argo()</a></code> to create the <a href="argo-class.html">argo</a> object. <em>Breaking change:</em>
-as of oce version 1.8.4, the conversion is done with <code><a href="as.ctd.argo.html">as.ctd.argo()</a></code>,
+as of oce version 1.8.4, the conversion is done with <code><a href="argo2ctd.html">argo2ctd()</a></code>,
 which tries to decode all the metadata and data in the original object,
 <em>but</em> ignores all parameters given to <code>as.ctd()</code> except <code>profile</code> and <code>debug</code>,
 the latter of which is decremented by 1.</p>
@@ -305,7 +305,7 @@ Engineering</em>, volume <strong>5</strong>, pages 22-23.</p></li>
 <code><a href="CTD_BCD2014666_008_1_DN.ODF.gz.html">CTD_BCD2014666_008_1_DN.ODF.gz</a></code>,
 <code><a href="sub-sub-ctd-method.html">[[,ctd-method</a></code>,
 <code>[[&lt;-,ctd-method</code>,
-<code><a href="as.ctd.argo.html">as.ctd.argo</a>()</code>,
+<code><a href="argo2ctd.html">argo2ctd</a>()</code>,
 <code><a href="cnvName2oceName.html">cnvName2oceName</a>()</code>,
 <code><a href="ctd.html">ctd</a></code>,
 <code><a href="ctd-class.html">ctd-class</a></code>,
@@ -380,9 +380,9 @@ Engineering</em>, volume <strong>5</strong>, pages 22-23.</p></li>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Processing Log</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2024-12-21 18:02:32 UTC: `create 'ctd' object`</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2024-12-21 18:02:32 UTC: `as.ctd(salinity = salinity, temperature = temperature, pressure = pressure)`</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2024-12-21 18:02:32 UTC: `oceSetData(object = ctd, name = "fluorescence", value = fluo,     unit = list(unit = expression(mg/m^3), scale = ""))`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2024-12-22 18:24:06 UTC: `create 'ctd' object`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2024-12-22 18:24:06 UTC: `as.ctd(salinity = salinity, temperature = temperature, pressure = pressure)`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2024-12-22 18:24:06 UTC: `oceSetData(object = ctd, name = "fluorescence", value = fluo,     unit = list(unit = expression(mg/m^3), scale = ""))`</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># 2. fake data, with supplied units (which are the defaults, actually)</span></span></span>
 <span class="r-in"><span><span class="va">ctd</span> <span class="op">&lt;-</span> <span class="fu">as.ctd</span><span class="op">(</span><span class="va">salinity</span>, <span class="va">temperature</span>, <span class="va">pressure</span>,</span></span>

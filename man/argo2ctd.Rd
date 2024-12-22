@@ -10,7 +10,8 @@ argo2ctd(argo, profile = NULL, debug = getOption("oceDebug"))
 \item{argo}{an \linkS4class{argo} object.}
 
 \item{profile}{an integer specifying the profile to pick within the argo
-object. This will be set to 1, with a warning, if it is not supplied.}
+object. If this is not provided, it will be set to 1, and a warning
+will be issued telling of this setting.}
 
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
@@ -21,10 +22,12 @@ be printed. If one function calls another, it usually reduces the value of
 by specifying higher \code{debug} values.}
 }
 \description{
-Assemble argo data into a \linkS4class{ctd} object.  This function may be
-called by \code{\link[=as.ctd]{as.ctd()}} or called directly. In the first
-case, note that the only \code{\link[=as.ctd]{as.ctd()}} parameters that are provide
-are the object, the profile number, and the debug value.
+Convert a \linkS4class{argo} object into a \linkS4class{ctd} object.  This
+function may be called by \code{\link[=as.ctd]{as.ctd()}} or called directly. In the
+first case, note that the only \code{\link[=as.ctd]{as.ctd()}} parameters that are
+provided to the present function are the object itself,
+the index number of the desired profile, and the debug
+value.
 }
 \seealso{
 Other things related to argo data: 
