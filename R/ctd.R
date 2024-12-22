@@ -584,7 +584,7 @@ setMethod(
         showMetadataItem(object, "scientist", "Chief scientist:     ")
         # showMetadataItem(object, "date",                      "Date:                ", isdate=TRUE)
         showMetadataItem(object, "startTime", "Start time:          ", isdate = TRUE)
-        showMetadataItem(object, "time", "Argo time:           ", isdate = TRUE)
+        showMetadataItem(object, "time", "Time:                ", isdate = TRUE)
         # Next defined for argo floats
         if (identical(object@metadata$source, "Argo float")) {
             showMetadataItem(object, "id",          "Argo id:             ")

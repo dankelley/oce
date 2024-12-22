@@ -4666,17 +4666,17 @@ matrixShiftLongitude <- function(m, longitude) {
     if (max(longitude, na.rm = TRUE) > 180) {
         cut <- which.min(abs(longitude - 180))
         longitude <- c(longitude[seq.int(cut + 1L, n)] - 360, longitude[seq.int(1L, cut)])
-        #message("DEBUGGING matrixShiftLongitude()...")
-        #cat(vectorShow(length(dim(m))))
-        #cat(vectorShow(m))
-        #cat(vectorShow(n))
-        #cat(vectorShow(cut))
+        # message("DEBUGGING matrixShiftLongitude()...")
+        # cat(vectorShow(length(dim(m))))
+        # cat(vectorShow(m))
+        # cat(vectorShow(n))
+        # cat(vectorShow(cut))
         ndim <- length(dim(m))
         if (identical(2L, ndim)) {
-            #cat("ndim is 2\n")
+            # cat("ndim is 2\n")
             m <- m[c(seq.int(cut + 1L, n), seq.int(1L, cut)), ]
         } else if (identical(3L, ndim)) {
-            #cat("ndim is 3\n")
+            # cat("ndim is 3\n")
             m <- m[c(seq.int(cut + 1L, n), seq.int(1L, cut)), , ]
         } else {
             stop("can only handle 2D or 3D arrays, not a ", ndim, "D array")
@@ -4831,16 +4831,8 @@ ctimeToSeconds <- function(ctime) {
 showMetadataItem <- function(object, name, label = "", postlabel = "", isdate = FALSE, quote = FALSE) {
     if (name %in% names(object@metadata)) {
         item <- object@metadata[[name]]
-        if (is.null(item)) {
-            return()
-        }
-        if (is.na(item)) {
-            return()
-        }
-        if (is.character(item) && nchar(item) == 0) {
-            return()
-        }
-        if (is.na(item)) {
+        if (length(item) == 0L || is.null(item) || is.na(item) ||
+            (is.character(item) && nchar(item) == 0)) {
             return()
         }
         if (isdate) {
