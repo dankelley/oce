@@ -18,12 +18,12 @@
 #'
 #' @family things related to argo data
 #' @family things related to ctd data
-as.ctd.argo <- function(argo, profile = NULL, debug = getOption("oceDebug")) {
+argo2ctd <- function(argo, profile = NULL, debug = getOption("oceDebug")) {
     if (!inherits(argo, "argo")) {
         stop("first parameter must be an argo-class object")
     }
     res <- new("ctd")
-    oceDebug(debug, "as.ctd.argo(argo, profile = ", profile, ") START\n", sep = "", unindent = 1)
+    oceDebug(debug, "argo2ctd(argo, profile = ", profile, ") START\n", sep = "", unindent = 1)
     nprofiles <- tail(dim(argo[["pressure"]]), 1L)
     oceDebug(debug, "this dataset contains ", nprofiles, " profiles\n")
     if (is.null(profile)) {
@@ -169,6 +169,6 @@ as.ctd.argo <- function(argo, profile = NULL, debug = getOption("oceDebug")) {
     } # extracting argo@metadata
     res@processingLog <- argo@processingLog
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep = "", collapse = ""))
-    oceDebug(debug, "END as.ctd.argo()\n", sep = "", unindent = 1)
+    oceDebug(debug, "END argo2ctd()\n", sep = "", unindent = 1)
     res
 }

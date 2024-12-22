@@ -259,7 +259,6 @@ file <- "local_data/argo/D4903224_012.nc"
 if (file.exists(file)) {
     test_that("can get spiciness from 2-column private (non-CRAN) argo file", {
         expect_silent(d <- read.argo(file))
-        print(dim(d[["pressure"]]))
         spiciness0 <- d[["spiciness0"]]
         expect_equal(c(1011, 2), dim(spiciness0))
         expect_equal(

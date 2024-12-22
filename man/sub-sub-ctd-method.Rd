@@ -249,8 +249,8 @@ Other functions that extract parts of oce objects:
 Other things related to ctd data: 
 \code{\link{CTD_BCD2014666_008_1_DN.ODF.gz}},
 \code{\link{[[<-,ctd-method}},
+\code{\link{argo2ctd}()},
 \code{\link{as.ctd}()},
-\code{\link{as.ctd.argo}()},
 \code{\link{cnvName2oceName}()},
 \code{\link{ctd}},
 \code{\link{ctd-class}},
