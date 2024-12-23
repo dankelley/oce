@@ -1303,7 +1303,7 @@ read.argo <- function(file, encoding = NA, debug = getOption("oceDebug"), proces
     if (is.character(file)) {
         filename <- fullFilename(file)
         file <- ncdf4::nc_open(file)
-        #on.exit(ncdf4::nc_close(file))
+        # on.exit(ncdf4::nc_close(file))
     } else {
         if (!inherits(file, "connection")) {
             ncdf4::nc_close(file)
@@ -1311,7 +1311,7 @@ read.argo <- function(file, encoding = NA, debug = getOption("oceDebug"), proces
         }
         if (!isOpen(file)) {
             file <- ncdf4::nc_open(file)
-            #on.exit(ncdf4::nc_close(file))
+            # on.exit(ncdf4::nc_close(file))
         }
     }
     oceDebug(debug, "read.argo(file=\"", filename, "\", ...) START\n", sep = "", unindent = 1)
@@ -2129,7 +2129,7 @@ setMethod(
         }
         par(mgp = mgp, mar = mar)
         if (missing(level) || level == "all") {
-            level <- seq(1L, dim(x@data$temperature)[1])
+            level <- seq_len(dim(x@data$pressure)[1])
         }
         longitude <- x[["longitude"]]
         latitude <- x[["latitude"]]
@@ -2142,13 +2142,19 @@ setMethod(
             longitude <- rep(x[["longitude"]], each = dim[1])
             latitude <- rep(x[["latitude"]], each = dim[1])
         }
-        ctd <- as.ctd(x@data$salinity, x@data$temperature, x@data$pressure,
-            longitude = longitude, latitude = latitude,
-            units = list(
-                temperature = list(unit = expression(degree * C), scale = "ITS-90"),
-                conductivity = list(list = expression(), scale = "")
-            )
-        ) # guess on units
+        # We don't need a ctd object for a trajectory plot. Also,
+        # bgc-argo data often lack salinity and temperature, so this
+        # call will fail.
+        if (!any(which %in% c(1, 2))) {
+            oceDebug(debug, "creating a ctd object for plotting\n")
+            ctd <- as.ctd(x@data$salinity, x@data$temperature, x@data$pressure,
+                longitude = longitude, latitude = latitude,
+                units = list(
+                    temperature = list(unit = expression(degree * C), scale = "ITS-90"),
+                    conductivity = list(list = expression(), scale = "")
+                )
+            ) # guess on units
+        }
         whichOrig <- which
         which <- oce.pmatch(
             which,
@@ -2182,7 +2188,7 @@ setMethod(
             par(mfcol = c(nnn, ceiling(lw / nnn)))
             rm(nnn)
         }
-        for (w in 1:nw) {
+        for (w in seq_len(nw)) {
             oceDebug(debug, "handling which[", w, "]=\"", which[w], "\"\n", sep = "")
             if (is.na(which[w])) {
                 oceDebug(debug, "not a special case, so passing 'which' to plot,ctd-method\n")
