@@ -1,11 +1,13 @@
 # oce 1.8.4
 
 * Add `bodcNames2oceNames()` to rename NERC/BODC variables (issue #2235).
+* Add `D4902337_219.nc` built-in Argo profile data file (issue #2272).
 * Add `netcdfTOC()` to overview NetCDF files (issue #2232).
 * Add `rename()` to rename variables, flags and units (issue #2238).
 * Add `read.xbt.edf2()` to read a tab-separated file type.
 * Add `Tidal Analysis` vignette (issue #2243).
 * Change `amsr[[` to handle `"metadata"` parameter (issue #2229).
+* Change `argo2ctd()` (issue #2270).
 * Change `as.unit()` to handle more units (issue #2240).
 * Change `as.ctd()` to handle Argo data better (issue #2270).
 * Change `binApply1D()` to handle the `...` argument (issue #2265).

@@ -114,11 +114,23 @@ just one line of code:
 plot(ctdDecimate(ctdTrim(read.ctd("stn123.cnv"))))
 ```
 
+# Argo-derived Data
+
+The Argo program provides data that have very expansive coverage, (see, for
+example, Figures 1 and 2 of Kelley et al. 2021) and so the `oce` package
+provides several ways to work with them. Sometimes it makes sense to work
+directly with `argo-class` data (which has generic functions for summaries,
+plotting, data extraction, subsets, etc.), and other times it makes sense to
+convert to `ctd-class` first. Entries to the two approaches are outlined in the
+documentation for `read.argo()` and `argo2ctd()`, respectively; in both cases,
+there are links to related functions that are worth exploring.
+
+
 # WOCE archive data
 
 The package has a harder time scanning the headers of data files in the WOCE
-archive format than it does in the Seabird format illustrated in the previous
-examples. This is mainly because front-line researchers tend to work in the
+archive format than it does in the Seabird format illustrated earlier.
+This is mainly because front-line researchers tend to work in the
 Seabird format, and partly because the WOCE format is odd. For example, the
 first line of a WOCE file is of the form `CTD,20060609WHPOSIODAM` (or
 `BOTTLE,...`).  Scanning the item to the left of the comma is not difficult
@@ -167,6 +179,7 @@ the method of the following exercise might be useful.
 **Exercise 2. (advanced)** Make a multi-file plot summarizing the TS
 relationship in a collection of CTD datasets, with each plot file showing the
 overall relationship in gray and the individual profile in black.
+
 
 
 # Solutions to exercises
@@ -228,3 +241,10 @@ for (i in 1:n) {
 }
 dev.off()
 ```
+
+# References
+
+1. Kelley, Dan E., Jaimie Harbin, and Clark Richards. “argoFloats: An R Package
+   for Analyzing Argo Data.” Frontiers in Marine Science 8 (May 2021).
+   https://doi.org/10.3389/fmars.2021.635922.)
+

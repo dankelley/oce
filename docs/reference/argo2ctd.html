@@ -95,6 +95,7 @@ by specifying higher <code>debug</code> values.</p></dd>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p>Other things related to argo data:
+<code><a href="D4902337_219.nc.html">D4902337_219.nc</a></code>,
 <code><a href="sub-sub-argo-method.html">[[,argo-method</a></code>,
 <code>[[&lt;-,argo-method</code>,
 <code><a href="argo.html">argo</a></code>,
@@ -158,6 +159,19 @@ by specifying higher <code>debug</code> values.</p></dd>
     <p>Dan Kelley</p>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Read a built-in Argo dataset and convert to a CTD object</span></span></span>
+<span class="r-in"><span><span class="co"># for plotting.</span></span></span>
+<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/">oce</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">argo</span> <span class="op">&lt;-</span> <span class="fu"><a href="read.argo.html">read.argo</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"D4902337_219.nc"</span>, package <span class="op">=</span> <span class="st">"oce"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">ctd</span> <span class="op">&lt;-</span> <span class="fu"><a href="as.ctd.html">as.ctd</a></span><span class="op">(</span><span class="va">argo</span><span class="op">)</span> <span class="co"># warns of a default 'profile' choice</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>since 'profile' not given, defaulting to 1</span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">ctd</span><span class="op">)</span></span></span>
+<span class="r-plt img"><img src="argo2ctd-1.png" alt="" width="700" height="700"></span>
+<span class="r-in"><span></span></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 

@@ -243,6 +243,27 @@ test_that("[[ handles both cycleNumber and cycle", {
     expect_equal(argo[["cycle"]], 1:223)
 })
 
+test_that("can get spiciness from 2-column built-in argo file", {
+    file <- system.file("extdata", "D4902337_219.nc", package = "oce")
+    expect_silent(d <- read.argo(file))
+    spiciness0 <- d[["spiciness0"]]
+    dim(spiciness0)
+    nrow <- 501
+    ncol <- 2
+    expect_equal(c(nrow, ncol), dim(spiciness0))
+    expect_equal(
+        head(spiciness0),
+        structure(c(
+            -0.740665385460943, -0.777904393473634, -0.843097049624618,
+            -0.869665638826788, -0.888032049002035, -0.898649902384776, -0.735575985145829,
+            -0.737577845207895, -0.73793188835235, -0.739934295750885, -0.741397992241687,
+            -0.74540191167246
+        ), dim = c(6L, 2L))
+    )
+    ctd <- as.ctd(d, profile = 1)
+    expect_equal(ctd[["spiciness0"]], d[["spiciness0"]][, 1])
+})
+
 file <- "local_data/GL_PR_PF_5906438.nc"
 if (file.exists(file)) {
     test_that("can read a Copernicus BGC file", {

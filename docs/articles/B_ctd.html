@@ -67,7 +67,7 @@
                         <h4 data-toc-skip class="author">Dan Kelley (<a href="https://orcid.org/0000-0001-7808-5911" class="external-link uri">https://orcid.org/0000-0001-7808-5911</a>) and Clark
 Richards (<a href="https://orcid.org/0000-0002-7833-206X" class="external-link uri">https://orcid.org/0000-0002-7833-206X</a>)</h4>
             
-            <h4 data-toc-skip class="date">2024-12-22</h4>
+            <h4 data-toc-skip class="date">2024-12-23</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/dankelley/oce/blob/HEAD/vignettes/B_ctd.Rmd" class="external-link"><code>vignettes/B_ctd.Rmd</code></a></small>
       <div class="d-none name"><code>B_ctd.Rmd</code></div>
@@ -204,13 +204,27 @@ file takes just one line of code:</p>
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="../reference/ctdDecimate.html">ctdDecimate</a></span><span class="op">(</span><span class="fu"><a href="../reference/ctdTrim.html">ctdTrim</a></span><span class="op">(</span><span class="fu"><a href="../reference/read.ctd.html">read.ctd</a></span><span class="op">(</span><span class="st">"stn123.cnv"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
+<h2 id="argo-derived-data">Argo-derived Data<a class="anchor" aria-label="anchor" href="#argo-derived-data"></a>
+</h2>
+<p>The Argo program provides data that have very expansive coverage,
+(see, for example, Figures 1 and 2 of Kelley et al. 2021) and so the
+<code>oce</code> package provides several ways to work with them.
+Sometimes it makes sense to work directly with <code>argo-class</code>
+data (which has generic functions for summaries, plotting, data
+extraction, subsets, etc.), and other times it makes sense to convert to
+<code>ctd-class</code> first. Entries to the two approaches are outlined
+in the documentation for <code><a href="../reference/read.argo.html">read.argo()</a></code> and
+<code><a href="../reference/argo2ctd.html">argo2ctd()</a></code>, respectively; in both cases, there are links to
+related functions that are worth exploring.</p>
+</div>
+<div class="section level2">
 <h2 id="woce-archive-data">WOCE archive data<a class="anchor" aria-label="anchor" href="#woce-archive-data"></a>
 </h2>
 <p>The package has a harder time scanning the headers of data files in
 the WOCE archive format than it does in the Seabird format illustrated
-in the previous examples. This is mainly because front-line researchers
-tend to work in the Seabird format, and partly because the WOCE format
-is odd. For example, the first line of a WOCE file is of the form
+earlier. This is mainly because front-line researchers tend to work in
+the Seabird format, and partly because the WOCE format is odd. For
+example, the first line of a WOCE file is of the form
 <code>CTD,20060609WHPOSIODAM</code> (or <code>BOTTLE,...</code>).
 Scanning the item to the left of the comma is not difficult (although
 there are variants to the two shown, e.g. <code>CTDO</code> sometimes
@@ -221,10 +235,10 @@ the division of the institute (WHPO), the institute itself (SIO), and
 initial of the investigator (DAM). The problem is that no dividers
 separate these items, and that there seem to be no standards for the
 item lengths. Rather than spend a great deal of time coding special
-cases (e.g. scanning to see if the string <code>WHOI</code> occurs in
-the header line), the approach taken with <code>oce</code> is to ignore
-such issues relating to quirky headers, on the assumption that users can
-scan human-written headers with high skill.</p>
+cases (e.g. scanning to see if the string <code>SIO</code> occurs in the
+header line), the approach taken with <code>oce</code> is to ignore such
+issues relating to quirky headers, on the assumption that users can scan
+human-written headers with high skill.</p>
 <p>Quite commonly, CTD profiles taken during a cruise are collected
 together in a sequence of files in a given directory. For a real-world
 example, one might visit the website mentioned in the code provided
@@ -317,6 +331,15 @@ fairly large dataset, so the processing will take up to a minute.)</p>
 <span>    <span class="fu"><a href="https://rdrr.io/r/graphics/mtext.html" class="external-link">mtext</a></span><span class="op">(</span><span class="va">station</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, side <span class="op">=</span> <span class="fl">3</span>, line <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/grDevices/dev.html" class="external-link">dev.off</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+</h2>
+<ol style="list-style-type: decimal">
+<li>Kelley, Dan E., Jaimie Harbin, and Clark Richards. “argoFloats: An R
+Package for Analyzing Argo Data.” Frontiers in Marine Science 8 (May
+2021). <a href="https://doi.org/10.3389/fmars.2021.635922" class="external-link uri">https://doi.org/10.3389/fmars.2021.635922</a>.)</li>
+</ol>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
