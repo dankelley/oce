@@ -17,6 +17,14 @@
 #'
 #' @template debugTemplate
 #'
+#' @examples
+#' # Read a built-in Argo dataset and convert to a CTD object
+#' # for plotting.
+#' library(oce)
+#' argo <- read.argo(system.file("extdata", "D4902337_219.nc", package = "oce"))
+#' ctd <- as.ctd(argo) # warns of a default 'profile' choice
+#' plot(ctd)
+#'
 #' @author Dan Kelley
 #'
 #' @family things related to argo data

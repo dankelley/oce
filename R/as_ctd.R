@@ -2,69 +2,41 @@
 
 #' Coerce Data Into a ctd Object
 #'
-#' Assemble data into a [ctd-class] object.  This function is complicated
-#' (spanning approximately 600 lines of code) because it tries to handle many
-#' special cases, and tries to make sensible defaults for unspecified
-#' parameters.  If odd results are found, users might find it helpful to call
-#' this function with the first parameter being a simple vector of Practical
-#' Salinity values, in which case the processing of the other arguments is
-#' relatively straightforward.
+#' Assemble data into a [ctd-class] object. There are two ways this can work.
+#' First, `salinity` can be a vector of numeric values, in which case
+#' the other parameters will be interpreted as described below. Second,
+#' `salinity` can be an [oce-class] object, in which case the action
+#' depends on the object class, as described in the \sQuote{Details}.
 #'
-#' The following sections provide an some notes on how `as.ctd()` handles
-#' certain object types given as the first parameter.
+#' If the first parameter, `salinity`, is an [oce-class] object, then
+#' the action depends on the class of that object.
 #'
-#' **Converting argo objects (note breaking change)**
+#' 1. If `salinity` is [ctd-class] object, then `as.ctd()1 returns a copy of it.
 #'
-#' If the `salinity` argument is an object of [argo-class], then that
-#' object is dismantled and reassembled as a [ctd-class] object in ways that
-#' are mostly straightforward, although the handling of time depends
-#' on the information in the original NetCDF data file that was used
-#' by [read.argo()] to create the [argo-class] object. *Breaking change:*
-#' as of oce version 1.8.4, the conversion is done with [argo2ctd()],
-#' which tries to decode all the metadata and data in the original object,
-#' *but* ignores all parameters given to [as.ctd()] except `profile` and `debug`,
-#' the latter of which is decremented by 1.
+#' 2. If `salinity` is an [argo-class] object, then `as.ctd()` calls
+#'    [argo2ctd()] with that object as its first parameter, along with the value
+#'    of `profile` and the value of `debug` minus 1. All other parameters
+#'    provided to `as.ctd()` are ignored.  Note that Argo notation is retained
+#'    in the return value, so that e.g. there is no
+#' metadata item named `station` (instead, `id` and `cycleNumber` are defined),
+#' and no item named `startTime` (instead, `time` is defined. These name changes
+#' are understood by the `summary()` and `plot()` functions. **Breaking
+#' Change:** Until version 1.8-4, `as.ctd()` also processed the parameters that are
+#' ignored now. This behaviour was changed because many of those parameters
+#' (e.g. `cruise` and `ship`) make no sense for Argo data. Users should now
+#' use [oceSetMetadata()] to insert additional items as desired.
 #'
-## All Argo data files contain an item called `juld` from which the profile
-## time can be computed, and some also contain an additional item named `MTIME`,
-## from which the times of individual measurements can also be computed.  Both
-## cases are handled by `as.ctd()`, using a scheme outlined in
-## Note 4 of the Details section of the [read.argo()] documentation.
-#'
-#' **Converting rsk objects**
-#'
-#' If the `salinity` argument is an object of [rsk-class],
-#' then `as.ctd` passes it,
-#' `pressureAtmospheric`,
-#' `longitude`,
-#' and `latitude`
-#' to [rsk2ctd()], which builds the ctd object that is
-#' returned by `as.ctd`. The other arguments to `as.ctd`
-#' are ignored in this instance, because `rsk` objects already
-#' contain their information. If required, any data or metadata
-#' element can be added to the value returned by `as.ctd`
-#' using [oceSetData()] or [oceSetMetadata()],
-#' respectively.
-#'
-#' The returned [rsk-class] object contains pressure in a form that
-#' may need to be adjusted, because `rsk` objects may contain
-#' either absolute pressure or sea pressure. This adjustment is handled
-#' automatically by `as.ctd`, by examination of the metadata item
-#' named `pressureType` (described in the documentation for
-#' [read.rsk()]).  Once the sea pressure is determined,
-#' adjustments may be made with the `pressureAtmospheric` argument,
-#' although in that case it is better considered a pressure adjustment
-#' than the atmospheric pressure.
-#'
-#' [rsk-class] objects may store sea pressure or absolute pressure (the
-#' sum of sea pressure and atmospheric pressure), depending on how the object was
-#' created with [as.rsk()] or [read.rsk()].  However,
-#' [ctd-class] objects store sea pressure, which is needed for
-#' plotting, calculating density, etc. This poses no difficulties, however,
-#' because `as.ctd` automatically converts absolute pressure to sea pressure,
-#' if the metadata in the [rsk-class] object indicates that this is
-#' appropriate. Further alteration of the pressure can be accomplished with the
-#' `pressureAtmospheric` argument, as noted above.
+#' 3. If `salinity` is an [rsk-class] object, then `as.ctd()` calls [rsk2ctd()]
+#'    with that object as its first argument, along with `pressureAtmospheric`,
+#'    `longitude`, `latitude` and `debug` minus 1, ignoring all the other
+#'    parameters. Note that pressure in the returned object
+#' may need to be adjusted, because `rsk` objects may contain either absolute
+#' pressure or sea pressure. This adjustment is handled automatically by
+#' `as.ctd`, by examination of the metadata item named `pressureType` (described
+#' in the documentation for [read.rsk()]).  Once the sea pressure is determined,
+#' adjustments may be made with the `pressureAtmospheric` argument, although in
+#' that case it is better considered a pressure adjustment than the atmospheric
+#' pressure.
 #'
 #' @param salinity may be (1) a numeric vector holding Practical Salinity,
 #' (2) a list or data frame holding `salinity` and other
@@ -189,7 +161,7 @@
 #'
 #' @references
 #'
-#' 1. Culkin, F., and Norman D. Smith, 1980. Determination of the
+#' Culkin, F., and Norman D. Smith, 1980. Determination of the
 #' concentration of potassium chloride solution having the same electrical
 #' conductivity, at 15 C and infinite frequency, as standard seawater of salinity
 #' 35.0000 ppt (Chlorinity 19.37394 ppt). *IEEE Journal of Oceanic

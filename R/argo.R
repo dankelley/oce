@@ -2142,19 +2142,6 @@ setMethod(
             longitude <- rep(x[["longitude"]], each = dim[1])
             latitude <- rep(x[["latitude"]], each = dim[1])
         }
-        # We don't need a ctd object for a trajectory plot. Also,
-        # bgc-argo data often lack salinity and temperature, so this
-        # call will fail.
-        if (!any(which %in% c(1, 2))) {
-            oceDebug(debug, "creating a ctd object for plotting\n")
-            ctd <- as.ctd(x@data$salinity, x@data$temperature, x@data$pressure,
-                longitude = longitude, latitude = latitude,
-                units = list(
-                    temperature = list(unit = expression(degree * C), scale = "ITS-90"),
-                    conductivity = list(list = expression(), scale = "")
-                )
-            ) # guess on units
-        }
         whichOrig <- which
         which <- oce.pmatch(
             which,
@@ -2173,6 +2160,22 @@ setMethod(
                 "spiciness2 profile" = 11
             )
         )
+        # We don't need a ctd object for a trajectory plot, i.e. if
+        # which is either 1 or 2. Also, prevent attempts to plot S or T
+        # if x lacks such data (as may be so with BGC-argo data).
+        if (any(!(which %in% c(1, 2)))) {
+            oceDebug(debug, "creating a ctd object for plotting\n")
+            if (2 != sum(c("salinity", "temperature") %in% names(x@data))) {
+                stop("Cannot make hydrographic plots, because dataset lacks S or T")
+            }
+            ctd <- as.ctd(x@data$salinity, x@data$temperature, x@data$pressure,
+                longitude = longitude, latitude = latitude,
+                units = list(
+                    temperature = list(unit = expression(degree * C), scale = "ITS-90"),
+                    conductivity = list(list = expression(), scale = "")
+                )
+            ) # guess on units
+        }
         # if (any(is.na(which)))
         #    stop("In plot,argo-method() :\n  unrecognized value(s) of which: ", paste(whichOrig[is.na(which)], collapse=", "), call.=FALSE)
         lw <- length(which)

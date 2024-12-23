@@ -29,8 +29,18 @@ provided to the present function are the object itself,
 the index number of the desired profile, and the debug
 value.
 }
+\examples{
+# Read a built-in Argo dataset and convert to a CTD object
+# for plotting.
+library(oce)
+argo <- read.argo(system.file("extdata", "D4902337_219.nc", package = "oce"))
+ctd <- as.ctd(argo) # warns of a default 'profile' choice
+plot(ctd)
+
+}
 \seealso{
 Other things related to argo data: 
+\code{\link{D4902337_219.nc}},
 \code{\link{[[,argo-method}},
 \code{\link{[[<-,argo-method}},
 \code{\link{argo}},

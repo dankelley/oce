@@ -132,64 +132,41 @@ by specifying higher \code{debug} values.}
 A \linkS4class{ctd} object.
 }
 \description{
-Assemble data into a \linkS4class{ctd} object.  This function is complicated
-(spanning approximately 600 lines of code) because it tries to handle many
-special cases, and tries to make sensible defaults for unspecified
-parameters.  If odd results are found, users might find it helpful to call
-this function with the first parameter being a simple vector of Practical
-Salinity values, in which case the processing of the other arguments is
-relatively straightforward.
+Assemble data into a \linkS4class{ctd} object. There are two ways this can work.
+First, \code{salinity} can be a vector of numeric values, in which case
+the other parameters will be interpreted as described below. Second,
+\code{salinity} can be an \linkS4class{oce} object, in which case the action
+depends on the object class, as described in the \sQuote{Details}.
 }
 \details{
-The following sections provide an some notes on how \code{as.ctd()} handles
-certain object types given as the first parameter.
-
-\strong{Converting argo objects (note breaking change)}
-
-If the \code{salinity} argument is an object of \linkS4class{argo}, then that
-object is dismantled and reassembled as a \linkS4class{ctd} object in ways that
-are mostly straightforward, although the handling of time depends
-on the information in the original NetCDF data file that was used
-by \code{\link[=read.argo]{read.argo()}} to create the \linkS4class{argo} object. \emph{Breaking change:}
-as of oce version 1.8.4, the conversion is done with \code{\link[=argo2ctd]{argo2ctd()}},
-which tries to decode all the metadata and data in the original object,
-\emph{but} ignores all parameters given to \code{\link[=as.ctd]{as.ctd()}} except \code{profile} and \code{debug},
-the latter of which is decremented by 1.
-
-\strong{Converting rsk objects}
-
-If the \code{salinity} argument is an object of \linkS4class{rsk},
-then \code{as.ctd} passes it,
-\code{pressureAtmospheric},
-\code{longitude},
-and \code{latitude}
-to \code{\link[=rsk2ctd]{rsk2ctd()}}, which builds the ctd object that is
-returned by \code{as.ctd}. The other arguments to \code{as.ctd}
-are ignored in this instance, because \code{rsk} objects already
-contain their information. If required, any data or metadata
-element can be added to the value returned by \code{as.ctd}
-using \code{\link[=oceSetData]{oceSetData()}} or \code{\link[=oceSetMetadata]{oceSetMetadata()}},
-respectively.
-
-The returned \linkS4class{rsk} object contains pressure in a form that
-may need to be adjusted, because \code{rsk} objects may contain
-either absolute pressure or sea pressure. This adjustment is handled
-automatically by \code{as.ctd}, by examination of the metadata item
-named \code{pressureType} (described in the documentation for
-\code{\link[=read.rsk]{read.rsk()}}).  Once the sea pressure is determined,
-adjustments may be made with the \code{pressureAtmospheric} argument,
-although in that case it is better considered a pressure adjustment
-than the atmospheric pressure.
-
-\linkS4class{rsk} objects may store sea pressure or absolute pressure (the
-sum of sea pressure and atmospheric pressure), depending on how the object was
-created with \code{\link[=as.rsk]{as.rsk()}} or \code{\link[=read.rsk]{read.rsk()}}.  However,
-\linkS4class{ctd} objects store sea pressure, which is needed for
-plotting, calculating density, etc. This poses no difficulties, however,
-because \code{as.ctd} automatically converts absolute pressure to sea pressure,
-if the metadata in the \linkS4class{rsk} object indicates that this is
-appropriate. Further alteration of the pressure can be accomplished with the
-\code{pressureAtmospheric} argument, as noted above.
+If the first parameter, \code{salinity}, is an \linkS4class{oce} object, then
+the action depends on the class of that object.
+\enumerate{
+\item If \code{salinity} is \linkS4class{ctd} object, then `as.ctd()1 returns a copy of it.
+\item If \code{salinity} is an \linkS4class{argo} object, then \code{as.ctd()} calls
+\code{\link[=argo2ctd]{argo2ctd()}} with that object as its first parameter, along with the value
+of \code{profile} and the value of \code{debug} minus 1. All other parameters
+provided to \code{as.ctd()} are ignored.  Note that Argo notation is retained
+in the return value, so that e.g. there is no
+metadata item named \code{station} (instead, \code{id} and \code{cycleNumber} are defined),
+and no item named \code{startTime} (instead, \code{time} is defined. These name changes
+are understood by the \code{summary()} and \code{plot()} functions. \strong{Breaking
+Change:} Until version 1.8-4, \code{as.ctd()} also processed the parameters that are
+ignored now. This behaviour was changed because many of those parameters
+(e.g. \code{cruise} and \code{ship}) make no sense for Argo data. Users should now
+use \code{\link[=oceSetMetadata]{oceSetMetadata()}} to insert additional items as desired.
+\item If \code{salinity} is an \linkS4class{rsk} object, then \code{as.ctd()} calls \code{\link[=rsk2ctd]{rsk2ctd()}}
+with that object as its first argument, along with \code{pressureAtmospheric},
+\code{longitude}, \code{latitude} and \code{debug} minus 1, ignoring all the other
+parameters. Note that pressure in the returned object
+may need to be adjusted, because \code{rsk} objects may contain either absolute
+pressure or sea pressure. This adjustment is handled automatically by
+\code{as.ctd}, by examination of the metadata item named \code{pressureType} (described
+in the documentation for \code{\link[=read.rsk]{read.rsk()}}).  Once the sea pressure is determined,
+adjustments may be made with the \code{pressureAtmospheric} argument, although in
+that case it is better considered a pressure adjustment than the atmospheric
+pressure.
+}
 }
 \examples{
 library(oce)
@@ -217,13 +194,11 @@ ctd <- as.ctd(salinity, temperature, pressure,
 
 }
 \references{
-\enumerate{
-\item Culkin, F., and Norman D. Smith, 1980. Determination of the
+Culkin, F., and Norman D. Smith, 1980. Determination of the
 concentration of potassium chloride solution having the same electrical
 conductivity, at 15 C and infinite frequency, as standard seawater of salinity
 35.0000 ppt (Chlorinity 19.37394 ppt). \emph{IEEE Journal of Oceanic
 Engineering}, volume \strong{5}, pages 22-23.
-}
 }
 \seealso{
 Other things related to ctd data: 

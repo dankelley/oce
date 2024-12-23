@@ -1,3 +1,25 @@
+#' Sample Argo Profile File
+#'
+#' Cycle 219 of the Argo float with ID 4902337, holding
+#' delayed-mode hydrographic data acquired in July 2021,
+#' over the continental slope, approximately 650km east
+#' of Halifax, Nova Scotia, and 300km south of St. Pierre
+#' and Miquelon (near the south coast of Newfoundland).
+#' This file is used in the documentation for [argo2ctd()].
+#'
+#' @name D4902337_219.nc
+#'
+#' @docType data
+#'
+#' @examples
+#' argo <- read.argo(system.file("extdata", "D4902337_219.nc", package = "oce"))
+#' summary(argo)
+#'
+#' @family raw datasets
+#' @family things related to argo data
+NULL
+
+
 #' Sample ctd File in aml Format 1
 #'
 #' This file may be read with [read.ctd.aml()].  It is based

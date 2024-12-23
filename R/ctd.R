@@ -3177,19 +3177,30 @@ setMethod(
                         mapPoints(stationLon, stationLat, cex = latlon.cex, col = latlon.col, pch = latlon.pch)
                     }
                     # draw some text in top margin
-                    if (!is.null(x@metadata$station) && !is.na(x@metadata$station)) {
-                        mtext(x@metadata$station,
+                    mnames <- names(x@metadata)
+                    if ("station" %in% mnames) { # ctd from a file
+                        mtext(x[["station"]],
+                            side = 3, adj = 0, cex = par("cex"), line = 0.5
+                        )
+                    } else if ("id" %in% mnames) { # ctd from an argo object
+                        msg <- x[["id"]]
+                        if ("cycleNumber" %in% mnames) {
+                            msg <- paste0(msg, "_", x[["cycleNumber"]])
+                        }
+                        mtext(msg,
                             side = 3, adj = 0, cex = par("cex"), line = 0.5
                         )
                     }
-                    if (!is.null(x@metadata$startTime) && !is.na(x@metadata$startTime) && 4 < nchar(x@metadata$startTime, "bytes")) {
-                        mtext(format(x@metadata$startTime, "%Y-%m-%d %H:%M"),
+                    if ("startTime" %in% mnames) {
+                        mtext(format(x[["startTime"]], "%Y-%m-%d %H:%M"),
                             side = 3, adj = 1, cex = par("cex"), line = 0.5
                         )
-                    } else if (!is.null(x@data$time)) {
-                        goodTimes <- which(!is.na(x@data$time))
+                    } else if ("time" %in% mnames) {
+                        timeForLabel <- x[["time"]]
+                        goodTimes <- which(!is.na(timeForLabel))
                         if (length(goodTimes)) {
-                            mtext(format(x@data$time[goodTimes[1]], "%Y-%m-%d %H:%M:%S"),
+                            mtext(format(timeForLabel[goodTimes[1]],
+                                         "%Y-%m-%d %H:%M"),
                                 side = 3, adj = 1, cex = par("cex"), line = 0.5
                             )
                         }

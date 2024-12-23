@@ -10,7 +10,6 @@ README.rst
 README.tex
 Rplots.pdf
 ^.*.ODF$
-^.*.nc$
 ^.*.odf$
 ^.*.org$
 ^.*.out$
