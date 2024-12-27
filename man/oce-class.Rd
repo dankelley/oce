@@ -6,8 +6,8 @@
 \title{Base Class for oce Objects}
 \description{
 This is mainly used within oce to create sub-classes, although
-users can use \code{new("oce")} to create a blank \code{oce}
-object, if desired.
+users may wish to mek direct calls to \code{new("oce")} for
+their own purposes.
 }
 \section{Slots}{
 

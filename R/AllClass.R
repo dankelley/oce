@@ -3,8 +3,8 @@
 #' Get the Present Time, in a Stated Timezone
 #'
 #' @param tz String indicating the desired timezone. The default is
-#' to use UTC, which is used very commonly in oceanographic work. To
-#' get the local time, use `tz=""` or `tz=NULL`,
+#' to use UTC, which is used commonly in oceanographic work. To
+#' get the local time, use `tz=""` or `tz=NULL`, as in \dQuote{Examples}.
 #'
 #' @examples
 #' presentTime() # UTC
@@ -25,8 +25,8 @@ presentTime <- function(tz = "UTC") {
 #' Base Class for oce Objects
 #'
 #' This is mainly used within oce to create sub-classes, although
-#' users can use `new("oce")` to create a blank `oce`
-#' object, if desired.
+#' users may wish to mek direct calls to `new("oce")` for
+#' their own purposes.
 #'
 #' @slot metadata A list containing information about the data. The
 #' contents vary across sub-classes, e.g. an [adp-class]
@@ -481,7 +481,7 @@ setMethod(
     f = "[[",
     signature(x = "oce", i = "ANY", j = "ANY"),
     definition = function(x, i, j, ...) {
-        #message("DAN AllClass [[ method: 1 i=", i)
+        # message("DAN AllClass [[ method: 1 i=", i)
         metadataNames <- sort(names(x@metadata))
         dataNames <- sort(names(x@data))
         # dots <- list(...)

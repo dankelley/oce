@@ -8,8 +8,8 @@ presentTime(tz = "UTC")
 }
 \arguments{
 \item{tz}{String indicating the desired timezone. The default is
-to use UTC, which is used very commonly in oceanographic work. To
-get the local time, use \code{tz=""} or \code{tz=NULL},}
+to use UTC, which is used commonly in oceanographic work. To
+get the local time, use \code{tz=""} or \code{tz=NULL}, as in \dQuote{Examples}.}
 }
 \value{
 A \code{\link[=POSIXct]{POSIXct()}}-style object holding the present time, in the
