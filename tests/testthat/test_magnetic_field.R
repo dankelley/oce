@@ -33,3 +33,22 @@ test_that("magneticField version 13 (why not perfect?)", {
     expect_equal(66.855, mf$inclination, tolerance = 0.001)
     expect_equal(51498, mf$intensity, tolerance = 3) # Q: why does tol=1 fail?
 })
+
+test_that("magneticField version 14", {
+    # REF: http://www.geomag.bgs.ac.uk/data_service/models_compass/wmm_calc.html
+    # version 14 by default as of oce "develop" branch date 2025-01-07
+    # NB: the tests are from clicking on a map. I cannot see, in 2025-01-07,
+    # how to enter numbers for longitude and latitude. Note the tolerances
+    # below, all of which are to the digits on the website. In previous
+    # versions, I had to relax the tolerances to get tests to pass.
+    # I've no idea why, but I'm happy to get improved agreement.
+    mf <- magneticField(-63.389, 44.746, as.POSIXct("2025-01-01 00:00:00", tz = "UTC"), version = 14)
+    mf2 <- magneticField(-63.389, 44.746, as.POSIXct("2025-01-01 00:00:00", tz = "UTC"))
+    # DOes the version default correctly?
+    expect_equal(mf, mf2)
+    # Test declination, inclination, and intensity; on the website these
+    # are called 'D', 'I' and 'F'.
+    expect_equal(-16.369, mf$declination, tolerance = 0.001)
+    expect_equal(66.425, mf$inclination, tolerance = 0.001)
+    expect_equal(51144, mf$intensity, tolerance = 1)
+})
