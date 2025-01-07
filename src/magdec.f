@@ -24,6 +24,14 @@
               inclination(i) = 57.2957795130823*atan2(z,sqrt(x**2+y**2))
               intensity(i) = f
           end do
+      else if (iversion .EQ. 14) then
+          do i = 1, n
+              call igrf14syn(isv, date(i), itype, alt, colat(i),
+     1                       elong(i), x, y, z, f)
+              declination(i) = 57.2957795130823*atan2(y,x)
+              inclination(i) = 57.2957795130823*atan2(z,sqrt(x**2+y**2))
+              intensity(i) = f
+          end do
       end if
       return
       end
