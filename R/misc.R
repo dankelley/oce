@@ -4407,13 +4407,14 @@ integerToAscii <- function(i) {
 #' (IGRF), based on a reworked version of a Fortran program downloaded from a
 #' NOAA website (see \dQuote{References}).
 #'
-#' The code (subroutines `igrf12syn` and `igrf13syn`) seem to have
+#' The code (subroutines `igrf12syn`, `igrf13syn` and `igrf14syn`) seem to have
 #' been written by Susan Macmillan of the British Geological Survey.  Comments
-#' in the source code `igrf13syn` (the current default used here)
+#' in the source code `igrf14syn` (the current default used here)
 #' indicate that its coefficients were agreed to in
-#' December 2019 by the IAGA Working Group V-MOD.  Other comments in that code
-#' suggest that the proposed application time interval is from years 1900 to 2025, inclusive,
-#' but that only dates from 1945 to 2015 are to be considered definitive.
+#' November 2024 by the IAGA Working Group V-MOD.  Other comments in that code
+#' suggest that the proposed application time interval is from years 1900 to
+#' 2030, inclusive, but that only dates from 1945 to 2020 are to be
+#' considered definitive.
 #'
 #' @param longitude longitude in degrees east (negative for degrees west), as a
 #' number, a vector, or a matrix.
@@ -4521,7 +4522,7 @@ integerToAscii <- function(i) {
 #' lines(coastlineWorld[["longitude"]], coastlineWorld[["latitude"]])
 #' }
 #' @family things related to magnetism
-magneticField <- function(longitude, latitude, time, version = 13) {
+magneticField <- function(longitude, latitude, time, version = 14) {
     if (missing(longitude) || missing(latitude) || missing(time)) {
         stop("must provide longitude, latitude, and time")
     }
@@ -4557,8 +4558,8 @@ magneticField <- function(longitude, latitude, time, version = 13) {
     elong <- ifelse(longitude < 0, 360 + longitude, longitude)
     colat <- 90 - latitude
     iversion <- as.integer(version)
-    if (!(iversion %in% c(12L, 13L))) {
-        stop("version must be 12 or 13, but it is ", iversion)
+    if (!(iversion %in% c(12L, 13L, 14L))) {
+        stop("version must be 12, 13 or 14, but it is ", iversion)
     }
     # message("time:", time, " (", as.numeric(time), ")")
     r <- .Fortran("md_driver",
