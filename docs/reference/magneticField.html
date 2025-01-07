@@ -46,7 +46,7 @@ NOAA website (see &amp;#8220;References&amp;#8221;)."></head><body>
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Earth Magnetic Declination, Inclination, and Intensity</h1>
-      <small class="dont-index">Source: <a href="https://github.com/dankelley/oce/blob/HEAD/R/misc.R" class="external-link"><code>R/misc.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/dankelley/oce/blob/HEAD/R/magfield.R" class="external-link"><code>R/magfield.R</code></a></small>
       <div class="d-none name"><code>magneticField.Rd</code></div>
     </div>
 
@@ -59,7 +59,7 @@ NOAA website (see “References”).</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">magneticField</span><span class="op">(</span><span class="va">longitude</span>, <span class="va">latitude</span>, <span class="va">time</span>, version <span class="op">=</span> <span class="fl">13</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">magneticField</span><span class="op">(</span><span class="va">longitude</span>, <span class="va">latitude</span>, <span class="va">time</span>, version <span class="op">=</span> <span class="fl">14</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -97,13 +97,14 @@ to work as it did before that date.</p></dd>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>The code (subroutines <code>igrf12syn</code> and <code>igrf13syn</code>) seem to have
+    <p>The code (subroutines <code>igrf12syn</code>, <code>igrf13syn</code> and <code>igrf14syn</code>) seem to have
 been written by Susan Macmillan of the British Geological Survey.  Comments
-in the source code <code>igrf13syn</code> (the current default used here)
+in the source code <code>igrf14syn</code> (the current default used here)
 indicate that its coefficients were agreed to in
-December 2019 by the IAGA Working Group V-MOD.  Other comments in that code
-suggest that the proposed application time interval is from years 1900 to 2025, inclusive,
-but that only dates from 1945 to 2015 are to be considered definitive.</p>
+November 2024 by the IAGA Working Group V-MOD.  Other comments in that code
+suggest that the proposed application time interval is from years 1900 to
+2030, inclusive, but that only dates from 1945 to 2020 are to be
+considered definitive.</p>
     </div>
     <div class="section level2">
     <h2 id="historical-notes">Historical Notes<a class="anchor" aria-label="anchor" href="#historical-notes"></a></h2>
@@ -154,13 +155,13 @@ to that date; see “Historical Notes”.</p>
 <span class="r-in"><span><span class="co"># 1. Today's value at Halifax NS</span></span></span>
 <span class="r-in"><span><span class="fu">magneticField</span><span class="op">(</span><span class="op">-</span><span class="op">(</span><span class="fl">63</span> <span class="op">+</span> <span class="fl">36</span> <span class="op">/</span> <span class="fl">60</span><span class="op">)</span>, <span class="fl">44</span> <span class="op">+</span> <span class="fl">39</span> <span class="op">/</span> <span class="fl">60</span>, <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $declination</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] -16.303</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] -16.32175</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $inclination</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 66.3866</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 66.39804</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $intensity</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 51189.37</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 51129.72</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># 2. World map of declination in year 2000.</span></span></span>
