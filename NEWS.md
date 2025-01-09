@@ -17,6 +17,7 @@
 * Change `magneticField()` to handle the latest (generation 14) IGRF formulation (issue #2274).
 * Change `mapPlot()` to handle `las` as a parameter (issue #1707).
 * Change `oce.plot.ts()` to handle `grid` better (issue #2267).
+* Change `oce.plot.ts()` to handle `simplify` better (issue #2277).
 * Change `plot.section()` to handle `eos="gsw"` (issue #2256).
 * Change `read.amsr()` to handle realtime data files (issue #2230).
 * Change `read.ctd.aml()` to handle "type 3" format (issue #2247).

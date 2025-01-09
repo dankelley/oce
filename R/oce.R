@@ -1206,7 +1206,7 @@ oce.plot.ts <- function(
     }
     # oceDebug(debug, "length(x)", length(x), "; length(y)", length(y), "\n")
     # oceDebug(debug, "marginsAsImage=", marginsAsImage, ")\n")
-    oceDebug(debug, "x has timezone", attr(x[1], "tzone"), "\n")
+    oceDebug(debug, "x has timezone ", attr(x[1], "tzone"), "\n")
     # Repeat col, pch and cex to the right length, for possible trimming later.
     drawingPoints <- type == "p" || type == "o" || type == "b"
     if (drawingPoints) {
@@ -1218,7 +1218,7 @@ oce.plot.ts <- function(
         oceDebug(debug, "made col, pch and cex of length ", nx, " to match length(x)\n")
     }
     pc <- paletteCalculations(maidiff = rep(0, 4))
-    oceDebug(debug, as.character(dput(pc)), "\n")
+    #oceDebug(if (debug > 1) 1 else 0, vectorShow(pc), "\n")
     par(mgp = mgp, mar = mar)
     args <- list(...)
     xlimGiven <- !missing(xlim)
@@ -1257,7 +1257,7 @@ oce.plot.ts <- function(
         # FIXME: obey their mar?
         the.mai <- pc$mai0
         the.mai <- clipmin(the.mai, 0) # just in case
-        oceDebug(debug, "the.mai=", vectorShow(the.mai))
+        oceDebug(debug - 1, vectorShow(the.mai)) # only show for deep debugging
         par(mai = the.mai)
         drawPalette(mai = rep(0, 4))
     }
@@ -1265,6 +1265,7 @@ oce.plot.ts <- function(
     # sensible; thus the na.rm argument to range() is suitable for trimming bad
     # values.  However, for y, we emulate plot(), by trimming (and warning).
     if ("y" %in% log) {
+        oceDebug(debug, "prevent trying to do log of a negative number, since the y axis is logarithmic\n")
         yBAD <- (!is.finite(y)) | y <= 0.0
         nyBAD <- sum(yBAD)
         if (nyBAD > 0L) {
@@ -1283,48 +1284,80 @@ oce.plot.ts <- function(
         # faithfully in most cases.  By contrast, if we instead used, say, the
         # mean y in each interval, the curve could get smoothed enough to
         # be unrepresentative.
-        warning("simplifying a large dataset; set simplify=NA to see raw data\n")
+        oceDebug(debug, "simplifying a large dataset for type=\"l\" plotting; set simplify=NA to see raw data\n")
+        warning("simplifying a large dataset for type=\"l\" plotting; set simplify=NA to see raw data\n")
         xgrid <- seq(min(x, na.rm = TRUE), max(x, na.rm = TRUE), length.out = simplify)
         df <- data.frame(x, y)
         # Tests N=1e8 suggest split(X,findInterval()) is 2X faster than split(X,cut())
         #>>> dfSplit <- split(df, cut(df$x, xgrid))
         dfSplit <- split(df, as.factor(findInterval(df$x, xgrid)))
+        oceDebug(debug, "simplification is using ", length(dfSplit), " splits of a dataset with ", nx, " elements, yielding ", nx / length(dfSplit), " entries per split\n")
         # Compute within the sub-intervals, inserting NAs when no data there
         tz <- attr(x, "tzone") # cause gridded x to inherit timezone from original x
-        x <- rep(unname(sapply(dfSplit, function(DF) if (length(DF$x) > 2) mean(DF$x, na.rm = TRUE) else NA)), each = 2)
+        x <- rep(unname(sapply(
+            dfSplit,
+            function(DF) {
+                mean(DF$x, na.rm = TRUE)
+                #if (length(DF$x) > 2) {
+                #    mean(DF$x, na.rm = TRUE)
+                #} else {
+                #    NA
+                #}
+            }
+        )), each = 2)
         x <- numberAsPOSIXct(x, tz = tz)
-        # FIXME: I think thhis might be faster if another 'apply' function were
-        # used, to return 2 values, but I (DEK) can't recall what that function is.
-        ymin <- unname(sapply(
+        oceDebug(debug, "after simplifying, have ", vectorShow(x))
+        #(issue2277) # FIXME: I think this might be faster if another 'apply' function were
+        #(issue2277) # used, to return 2 values, but I (DEK) can't recall what that function is.
+        #(issue2277) ymin <- unname(sapply(
+        #(issue2277)     dfSplit,
+        #(issue2277)     function(DF) {
+        #(issue2277)         # if (sum(is.finite(DF$y)) > 2) min(DF$y, na.rm = TRUE) else NA
+        #(issue2277)         min(DF$y, na.rm = TRUE)
+        #(issue2277)     }
+        #(issue2277) ))
+        #(issue2277) ymax <- unname(sapply(
+        #(issue2277)     dfSplit,
+        #(issue2277)     function(DF) {
+        #(issue2277)         # if (sum(is.finite(DF$y)) > 2) max(DF$y, na.rm = TRUE) else NA
+        #(issue2277)         max(DF$y, na.rm = TRUE)
+        #(issue2277)     }
+        #(issue2277) ))
+        y <- unname(sapply(
             dfSplit,
             function(DF) {
-                if (sum(is.finite(DF$y)) > 2) min(DF$y, na.rm = TRUE) else NA
+                range(DF$y, na.rm = TRUE)
             }
         ))
-        ymax <- unname(sapply(
-            dfSplit,
-            function(DF) {
-                if (sum(is.finite(DF$y)) > 2) max(DF$y, na.rm = TRUE) else NA
-            }
-        ))
-        y <- as.vector(rbind(ymin, ymax))
+        y <- as.vector(y)
+        y[!is.finite(y)] <- NA # the above makes Inf values where no data
+        oceDebug(debug, "after simplifying, have ", vectorShow(y))
+        xrange <- range(x, na.rm = TRUE)
+        yrange <- range(y, na.rm = TRUE)
+    } else {
+        xrange <- range(x, na.rm = TRUE)
+        yrange <- range(y, na.rm = TRUE)
     }
-    xrange <- range(x, na.rm = TRUE)
-    yrange <- range(y, finite = TRUE)
     maybeflip <- function(y) if (flipy) rev(sort(y)) else y
-    if (!is.finite(yrange[1])) {
-        plot(xrange, c(0, 1),
-            axes = FALSE, xaxs = xaxs, yaxs = yaxs,
-            xlim = if (xlimGiven) xlim else xrange,
-            ylim = if (missing(ylim)) maybeflip(range(y, na.rm = TRUE)) else maybeflip(ylim),
-            xlab = xlab, ylab = ylab, type = "n", log = log, col = col, pch = pch, cex = cex
-        )
-        oce.axis.POSIXct(1, drawTimeRange = FALSE)
-        box()
-        mtext("bad data", side = 3, line = -1, cex = cex)
-        warning("no valid data for '", ylab, "'", sep = "")
+    if (!any(is.finite(yrange))) {
+        if (!missing(ylim)) {
+            plot(xrange, c(0, 1),
+                axes = FALSE, xaxs = xaxs, yaxs = yaxs,
+                xlim = if (xlimGiven) xlim else xrange,
+                ylim = ylim,
+                xlab = xlab, ylab = ylab, type = "n", log = log, col = col, pch = pch, cex = cex
+            )
+            oce.axis.POSIXct(1, drawTimeRange = FALSE)
+            box()
+            mtext("no non-NA y values to plot", side = 3, line = -1, cex = cex)
+            warning("no valid y data for '", ylab, "'", sep = "")
+        } else {
+            if (!identical(simplify, NA)) {
+                stop("simplification eliminated all y data; try using simplify=NA")
+            }
+        }
         oceDebug(debug, "END oce.plot.ts()\n", unindent = 1)
-        return()
+        return(invisible(NULL))
     } else {
         if (fill) {
             xx <- c(x[1], x, x[length(x)])
@@ -1360,7 +1393,7 @@ oce.plot.ts <- function(
             drawyaxis <- !is.null(yaxt) && yaxt != "n"
             xlabs <- NULL # over-written if drawing a horizontal (time) axis
             if (drawxaxis) {
-                #message("FIXME DAN defining xlabs here")
+                # message("FIXME DAN defining xlabs here")
                 xlabs <- oce.axis.POSIXct(1,
                     x = x, drawTimeRange = drawTimeRange, main = main,
                     mgp = mgp,
@@ -1369,9 +1402,9 @@ oce.plot.ts <- function(
                     tformat = tformat,
                     debug = debug - 1
                 )
-                #message("DAN xlabs from oce.axis.POSIXct() follows:")
-                #print(xlabs)
-                #print(class(xlabs))
+                # message("DAN xlabs from oce.axis.POSIXct() follows:")
+                # print(xlabs)
+                # print(class(xlabs))
                 xat <- xlabs
                 oceDebug(debug, "drawing x axis; set xat=c(", paste(xat, collapse = ","), ")", "\n", sep = "")
             }
