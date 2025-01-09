@@ -1012,7 +1012,7 @@
 * make processing log timestamps be in GMT
 * add `as.windrose()` and `plot.windrose()`
 * add `sealevel.tuk` sea-level dataset
-* add `tidem()`, `predict.tide()`, `summary.tide()`, `plot.tide()`, data(tidedata)`
+* add `tidem()`, `predict.tide()`, `summary.tide()`, `plot.tide()`, `data(tidedata)`
 * establish a uniform form for objects created by "read" and "as"
 * let `swRho()` and similar functions take a ctd object as a single argument
 * add `swDynamicHeight()`
