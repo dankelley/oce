@@ -23,6 +23,7 @@ Concatenate oce Objects (Generic)
 }
 \seealso{
 Other functions for concatenating oce objects: 
+\code{\link{concatenate,adp-method}},
 \code{\link{concatenate,list-method}}
 }
 \concept{functions for concatenating oce objects}

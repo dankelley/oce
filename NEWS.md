@@ -12,6 +12,7 @@
 * Change `as.ctd()` to handle Argo data better (issue #2270).
 * Change `binApply1D()` to handle the `...` argument (issue #2265).
 * Change `binApply1D()` to handle the time zones better (issue #2266).
+* Change `concatenate()` to handle lists properly (issue #2278).
 * Change `download.amsr()` to handle realtime data files (issue #2231).
 * Change `imagep()` to handle `decimate` as set in `~/.Rprofile` (issue #2263).
 * Change `magneticField()` to handle the latest (generation 14) IGRF formulation (issue #2274).

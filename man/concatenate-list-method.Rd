@@ -22,6 +22,7 @@ Concatenate a List of oce Objects
 }
 \seealso{
 Other functions for concatenating oce objects: 
-\code{\link{concatenate}()}
+\code{\link{concatenate}()},
+\code{\link{concatenate,adp-method}}
 }
 \concept{functions for concatenating oce objects}

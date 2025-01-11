@@ -654,6 +654,7 @@ setMethod(
 
 #' Concatenate adp Objects
 #'
+#'
 #' @param object an [adp-class] object.
 #'
 #' @param ... optional additional [adp-class] objects.
@@ -661,6 +662,8 @@ setMethod(
 #' @templateVar class adp
 #'
 #' @template concatenateTemplate
+#'
+#' @family functions for concatenating oce objects
 setMethod(
     f = "concatenate",
     signature = "adp",
