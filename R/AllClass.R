@@ -1660,7 +1660,7 @@ initializeFlagSchemeInternal <- function(object, name = NULL, mapping = NULL, de
 #'
 #' @return An object of class corresponding to that of `object`.
 #'
-#' @family functions that concatenate oce objects
+#' @family functions for concatenating oce objects
 setGeneric(
     "concatenate",
     function(object, ..., debug = getOption("oceDebug")) {
@@ -1778,15 +1778,30 @@ setMethod("concatenate",
 
 #' Concatenate a List of oce Objects
 #'
-#' @param object a [list] of [oce-class] objects.
+#' @param object a [list] of [oce-class] objects, all of which must have the
+#' same sub-class (e.g. all of [ctd-class], or [adp-class], etc).
 #'
-#' @return An object of class corresponding to that in `object`.
+#' @param debug a debugging flag, set to a positive value to get debugging. Note
+#' that `debug-1` is passed to the other `concatenate()` functions that are
+#' called by the present function.
 #'
-#' @family functions that concatenate oce objects
-setMethod(
-    "concatenate",
-    c(object = "list"),
-    function(object) {
-        do.call("concatenate", list(object[[1]], object[[2:length(object)]]))
+#' @return An object of class corresponding to that in the elements of `object`.
+#'
+#' @family functions for concatenating oce objects
+setMethod("concatenate",
+    signature = "list",
+    definition = function(object, debug = getOption("oceDebug")) {
+        oceDebug(debug, "list concatenate() START\n", sep = "", unindent = 1)
+        classes <- sapply(object, class)
+        if (!all(classes == classes[1])) {
+            stop("All elements of the list must have the same class, but they are: \"",
+                 paste(classes, collapse="\", \""), "\"")
+        }
+        debugOld <- getOption("oceDebug")
+        options(oceDebug = debug - 1) # this passes debug-1 to the generic
+        rval <- do.call("concatenate", object)
+        options(oceDebug = debugOld) # restore original global oceDebug
+        oceDebug(debug, "END list concatenate()\n", sep = "", unindent = 1)
+        rval
     }
 )

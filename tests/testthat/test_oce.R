@@ -406,6 +406,28 @@ test_that("trim_ts", {
     expect_equal(oce:::trimTs(x, xlim, 0), list(from = 20, to = 31))
 })
 
+test_that("concatenate_list", {
+    data(ctd)
+    data(adp)
+    # 1. normal operation
+    ctds <- vector("list", 3)
+    ctd2 <- ctd
+    ctd2[["temperature"]] <- ctd[["temperature"]] + 1
+    ctd3 <- ctd
+    ctd3[["temperature"]] <- ctd[["temperature"]] + 2
+    ctds[[1]] <- ctd
+    ctds[[2]] <- ctd2
+    ctds[[3]] <- ctd3
+    CTDS <- expect_silent(concatenate(ctds))
+    expect_equal(length(CTDS[["pressure"]]), 3L * length(ctd[["pressure"]]))
+    # 2. catch the error of dissimilar sub-types
+    ctds[[2]] <- adp
+    expect_error(
+        concatenate(ctds),
+        "All elements of the list must have the same class, but they are: \"ctd\", \"adp\", \"ctd\""
+    )
+})
+
 test_that("concatenate adp", {
     data(adp)
     t0 <- median(adp[["time"]])

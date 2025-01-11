@@ -4,21 +4,24 @@
 \alias{concatenate,list-method}
 \title{Concatenate a List of oce Objects}
 \usage{
-\S4method{concatenate}{list}(object)
+\S4method{concatenate}{list}(object, debug = getOption("oceDebug"))
 }
 \arguments{
-\item{object}{a \link{list} of \linkS4class{oce} objects.}
+\item{object}{a \link{list} of \linkS4class{oce} objects, all of which must have the
+same sub-class (e.g. all of \linkS4class{ctd}, or \linkS4class{adp}, etc).}
+
+\item{debug}{a debugging flag, set to a positive value to get debugging. Note
+that \code{debug-1} is passed to the other \code{concatenate()} functions that are
+called by the present function.}
 }
 \value{
-An object of class corresponding to that in \code{object}.
+An object of class corresponding to that in the elements of \code{object}.
 }
 \description{
 Concatenate a List of oce Objects
 }
 \seealso{
-Other functions that concatenate oce objects: 
-\code{\link{concatenate}()},
-\code{\link{concatenate,adp-method}},
-\code{\link{concatenate,oce-method}}
+Other functions for concatenating oce objects: 
+\code{\link{concatenate}()}
 }
-\concept{functions that concatenate oce objects}
+\concept{functions for concatenating oce objects}
