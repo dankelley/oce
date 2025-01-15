@@ -200,6 +200,22 @@ However, for the case of <code>.btl</code> files, the column names are as descri
 in the documentation entry for the <code>btl</code> argument.</p>
     </div>
     <div class="section level2">
+    <h2 id="a-note-on-freshwater-files">A note on freshwater files<a class="anchor" aria-label="anchor" href="#a-note-on-freshwater-files"></a></h2>
+
+
+
+<p>As of version 1.8-4 of the package, <code>read.ctd.sbe()</code> can handle
+files that lack both salinity data and conductivity data. The existence of
+such files is possible for sampling done in lakes. In prior versions,
+the function reported an error, but as of 1.8-4, it reports only
+a warning. The recommended practice in such a case is to do e.g.</p>
+<p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>d <span class="ot">&lt;-</span> <span class="fu">read.ctd.sbe</span>(<span class="st">"file.cnv"</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>d <span class="ot">&lt;-</span> <span class="fu">ctdAddData</span>(d, <span class="st">"salinity"</span>, <span class="fu">rep</span>(<span class="fl">0.0</span>, <span class="fu">length</span>(d[[<span class="st">"pressure"</span>]]))</span></code></pre><p></p></div>
+<p>to add a salinity column. That will permit e.g. density calculations,
+although the accuracy of such calculations is questionable, since the
+equations of state are meant to apply to salt water.</p>
+    </div>
+    <div class="section level2">
     <h2 id="a-note-on-hand-entered-headers">A note on hand-entered headers<a class="anchor" aria-label="anchor" href="#a-note-on-hand-entered-headers"></a></h2>
 
 
@@ -373,12 +389,12 @@ and this was the reference version used in coding <code>oce</code>.</p></li>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Example 1: default variable renaming</span></span></span>
 <span class="r-in"><span><span class="va">f</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"ctd.cnv.gz"</span>, package <span class="op">=</span> <span class="st">"oce"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">d1</span> <span class="op">&lt;-</span> <span class="fu"><a href="read.ctd.html">read.ctd</a></span><span class="op">(</span><span class="va">f</span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>startTime (1903-10-15 11:38:38) is &lt; 1950, suggesting a turn-of-the-century problem in this cnv file</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>suspicious startTime 1903-10-15 11:38:38 changed to 2003-10-15 11:38:38; see 'start_time' in file header</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>this CNV file has temperature in the IPTS-68 scale, and this is stored in object, but note  that [["temperature"]] and the sw* functions convert the numbers to ITS-90 values</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Example 2: handle variable renaming after reading</span></span></span>
 <span class="r-in"><span><span class="va">d2</span> <span class="op">&lt;-</span> <span class="fu"><a href="read.ctd.html">read.ctd</a></span><span class="op">(</span><span class="va">f</span>, rename <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="rename.html">rename</a></span><span class="op">(</span><span class="st">"sbe"</span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>startTime (1903-10-15 11:38:38) is &lt; 1950, suggesting a turn-of-the-century problem in this cnv file</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>suspicious startTime 1903-10-15 11:38:38 changed to 2003-10-15 11:38:38; see 'start_time' in file header</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

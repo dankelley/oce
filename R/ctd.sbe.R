@@ -708,6 +708,22 @@ cnvName2oceName <- function(h, columns = NULL, debug = getOption("oceDebug")) {
 #' However, for the case of `.btl` files, the column names are as described
 #' in the documentation entry for the `btl` argument.
 #'
+#' @section A note on freshwater files:
+#'
+#' As of version 1.8-4 of the package, `read.ctd.sbe()` can handle
+#' files that lack both salinity data and conductivity data. The existence of
+#' such files is possible for sampling done in lakes. In prior versions,
+#' the function reported an error, but as of 1.8-4, it reports only
+#' a warning. The recommended practice in such a case is to do e.g.
+#'
+#' ```
+#' d <- read.ctd.sbe("file.cnv")
+#' d <- ctdAddData(d, "salinity", rep(0.0, length(d[["pressure"]]))
+#' ```
+#' to add a salinity column. That will permit e.g. density calculations,
+#' although the accuracy of such calculations is questionable, since the
+#' equations of state are meant to apply to salt water.
+#'
 #' @section A note on hand-entered headers:
 #'
 #' CNV files may have a section that contains human-entered information. This is
@@ -1138,12 +1154,13 @@ read.ctd.sbe <- function(
             sampleIntervalUnits <- "s"
             if (rtmp[[1]][3] == "minutes") {
                 sampleInterval <- sampleInterval / 60
-            } else {
-                if (rtmp[[1]][3] == "hours") {
-                    sampleInterval <- sampleInterval / 3600
-                } else {
-                    warning("cannot understand `", rtmp[[1]][2], "' as a unit of time for sampleInterval")
-                }
+            } else if (rtmp[[1]][3] == "hours") {
+                sampleInterval <- sampleInterval / 3600
+            } else if (rtmp[[1]][3] != "seconds") {
+                warning(
+                    "cannot understand `", rtmp[[1]][3],
+                    "' as a unit of time for sampleInterval; the offending line follows\n", lline
+                )
             }
         }
     }
@@ -1188,11 +1205,34 @@ read.ctd.sbe <- function(
     res@metadata$deploymentType <- deploymentType
     res@metadata$date <- date
     if (!is.na(startTime) && startTime < as.POSIXct("1950-01-01")) {
-        warning("startTime (", startTime, ") is < 1950, suggesting a turn-of-the-century problem in this cnv file")
+        tmp <- as.POSIXlt(startTime)
+        if (tmp$year < 0) { # e.g. year 107 date 107, which we conver to 107 + 1900 = 2007
+            tmp$year <- tmp$year + 1900
+        } else { # e.g. year 3 means 1903, which we convert to 1903+100 = 2003
+            tmp$year <- tmp$year + 100
+        }
+        if (tmp < Sys.time() + 48 * 86400) {
+            warning("suspicious startTime ", startTime, " changed to ", tmp, "; see 'start_time' in file header")
+            startTime <- tmp
+        } else {
+            warning("suspicious startTime ", startTime, "; see 'start_time' in file header")
+        }
     }
     res@metadata$startTime <- startTime
     if (!is.na(recoveryTime) && recoveryTime < as.POSIXct("1950-01-01")) {
-        warning("recoveryTime < 1950, suggesting y2k problem in this cnv file")
+        tmp <- as.POSIXlt(recoveryTime)
+        tmp$year <- tmp$year + 1900
+        if (tmp$year < 0) { # e.g. year 107 date 107, which we conver to 107 + 1900 = 2007
+            tmp$year <- tmp$year + 1900
+        } else { # e.g. year 3 means 1903, which we convert to 1903+100 = 2003
+            tmp$year <- tmp$year + 100
+        }
+        if (tmp < Sys.time() + 48 * 86400) {
+            warning("suspicious recoveryTime ", recoveryTime, " changed to ", tmp, "; see 'recovery_time' in file header")
+            recoveryTime <- tmp
+        } else {
+            warning("suspicious recoveryTime ", recoveryTime, "; see 'recovery_time' in file header")
+        }
     }
     res@metadata$recoveryTime <- recoveryTime
     res@metadata$latitude <- latitude
@@ -1378,15 +1418,19 @@ read.ctd.sbe <- function(
             # BUG: this is a poor, nonrobust approximation of pressure
             g <- if (foundHeaderLatitude) gravity(latitude) else 9.8
             # on use of eos, see https://github.com/dankelley/oce/issues/2161
-            rho0 <- 1000 + swSigmaTheta(median(res[["salinity"]]), median(res[["temperature"]]), 0, eos = "unesco")
-            # res <- ctdAddColumn(res, res@data$depth * g * rho0 / 1e4, name="pressure", label="Pressure",
-            #                     unit=list(unit=expression("dbar"), scale=""), debug=debug-1)
-            res <- oceSetData(res,
-                name = "pressure", value = res@data$depth * g * rho0 / 1e4,
-                unit = list(unit = expression("dbar"), scale = "")
-            )
-            # colNamesOriginal <- c(colNamesOriginal, "NA")
-            warning("created 'pressure' from 'depth'")
+            dnames <- names(res@data)
+            if ("salinity" %in% dnames || "conductivity" %in% dnames) {
+                oceDebug(debug, "trying to infer pressure from depth\n")
+                rho0 <- 1000 + swSigmaTheta(median(res[["salinity"]]), median(res[["temperature"]]), 0, eos = "unesco")
+                # res <- ctdAddColumn(res, res@data$depth * g * rho0 / 1e4, name="pressure", label="Pressure",
+                #                     unit=list(unit=expression("dbar"), scale=""), debug=debug-1)
+                res <- oceSetData(res,
+                    name = "pressure", value = res@data$depth * g * rho0 / 1e4,
+                    unit = list(unit = expression("dbar"), scale = "")
+                )
+                # colNamesOriginal <- c(colNamesOriginal, "NA")
+                warning("created 'pressure' from 'depth'")
+            }
         }
     }
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep = "", collapse = ""))

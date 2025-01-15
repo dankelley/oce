@@ -258,7 +258,7 @@ test_that("column renaming with a cnv file", {
             d1 <- read.oce(system.file("extdata", "ctd.cnv.gz", package = "oce")),
             "this CNV file has temperature in the IPTS\\-68 scale"
         ),
-        "1950, suggesting"
+        "suspicious startTime 1903-10-15 11:38:38 changed to 2003-10-15 11:38:38"
     )
     expect_equal(
         names(d1[["data"]]),
@@ -277,7 +277,7 @@ test_that("column renaming with a cnv file", {
             ),
             "cannot find salinity or conductivity in .cnv file"
         ),
-        "1950, suggesting"
+        "suspicious startTime 1903-10-15 11:38:38 changed to 2003-10-15 11:38:38"
     )
     expect_equal(
         names(d2[["data"]]),
@@ -299,7 +299,7 @@ test_that("Dalhousie-produced cnv file", {
             d1 <- read.oce(system.file("extdata", "ctd.cnv.gz", package = "oce")),
             "this CNV file has temperature in the IPTS\\-68 scale"
         ),
-        "1950, suggesting"
+        "suspicious startTime 1903-10-15 11:38:38 changed to 2003-10-15 11:38:38"
     )
     expect_equal(d1[["temperatureUnit"]]$unit, expression(degree * C))
     # NB. the file holds IPTS-68 but we # store ITS-90 internally
@@ -631,3 +631,20 @@ test_that("ctdDecimate() handles na.rm", {
     expect_equal(as.vector(table(is.na(CTD2[["temperature"]]))), c(8, 1))
     expect_equal(as.vector(table(is.na(CTD2narm[["temperature"]]))), 9)
 })
+
+f <- "local_data/ctd/Alpha130-07.bin.cnv"
+if (file.exists(f)) {
+    skip_on_cran() # save CRAN testing, since being ok developer's machine is enough
+    test_that("read.ctd.sbe() handles 'seconds' as a unit of sampling time", {
+        expect_warning(
+            expect_warning(
+                expect_warning(
+                    d <- read.ctd(f),
+                    "this CNV file has temperature in the IPTS-68"
+                ),
+                "cannot find salinity or conductivity in .cnv file"
+            ),
+            "suspicious startTime 107-05-10 16:11:52 changed to 2007-05-10 16:11:52"
+        )
+    })
+}

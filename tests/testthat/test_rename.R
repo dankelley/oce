@@ -85,13 +85,14 @@ test_that("rename() and built-in renaming", {
     f <- system.file("extdata", "ctd.cnv.gz", package = "oce")
     expect_warning(
         expect_warning(
-            d1 <- read.ctd(f), "turn-of-the-century"
+            d1 <- read.ctd(f),
+            "suspicious startTime 1903-10-15 11:38:38 changed to 2003-10-15 11:38:38"
         ),
         "IPTS-68"
     )
     expect_warning(
         tmp <- read.ctd(f, rename = FALSE),
-        "turn-of-the-century"
+        "suspicious startTime 1903-10-15 11:38:38 changed to 2003-10-15 11:38:38"
     )
     d2 <- tmp |> rename("sbe")
     expect_equal(d1[["data"]], d2[["data"]])

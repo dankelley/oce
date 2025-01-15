@@ -130,6 +130,24 @@ names (in the "Short Name" column of the table spanning pages 161 through 172).
 However, for the case of \code{.btl} files, the column names are as described
 in the documentation entry for the \code{btl} argument.
 }
+\section{A note on freshwater files}{
+
+
+As of version 1.8-4 of the package, \code{read.ctd.sbe()} can handle
+files that lack both salinity data and conductivity data. The existence of
+such files is possible for sampling done in lakes. In prior versions,
+the function reported an error, but as of 1.8-4, it reports only
+a warning. The recommended practice in such a case is to do e.g.
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{d <- read.ctd.sbe("file.cnv")
+d <- ctdAddData(d, "salinity", rep(0.0, length(d[["pressure"]]))
+}\if{html}{\out{</div>}}
+
+to add a salinity column. That will permit e.g. density calculations,
+although the accuracy of such calculations is questionable, since the
+equations of state are meant to apply to salt water.
+}
+
 \section{A note on hand-entered headers}{
 
 

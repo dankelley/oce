@@ -139,7 +139,7 @@ if (1 == length(list.files(path = ".", pattern = "local_data"))) {
                 d1 <- read.oce("local_data/ctd/ctd.cnv"),
                 "this CNV file has temperature in the IPTS-68 scale"
             ),
-            "1950, suggesting"
+            "suspicious startTime 1903-10-15 11:38:38 changed to 2003-10-15 11:38:38"
         )
         expect_warning(
             expect_warning(
@@ -149,7 +149,7 @@ if (1 == length(list.files(path = ".", pattern = "local_data"))) {
                 ),
                 "this CNV file has temperature in the IPTS-68 scale"
             ),
-            "1950, suggesting"
+            "suspicious startTime 1903-10-15 11:38:38 changed to 2003-10-15 11:38:38"
         )
         # use 1e-5 to reflect the number of digits I was using in
         # creating and then cut/pasting the fake data
