@@ -900,7 +900,9 @@ read.rsk <- function(
         # Get time stamp. Note the trick of making it floating-point
         # to avoid the problem that R lacks 64 bit integers.
         fields <- DBI::dbListFields(con, "data")
+        message("FIXME: rsk.R:903 mark 'a'")
         fields <- fields[!grepl("tstamp", fields)]
+        cat(vectorShow(fields, n = -1))
         sql_fields <- if (packageVersion("RSQLite") < "2.0") "1.0*tstamp AS tstamp" else "tstamp"
         sql_fields <- paste(c(sql_fields, fields), collapse = ",")
         sql_fields <- paste("SELECT", sql_fields, "FROM data")
@@ -999,6 +1001,21 @@ read.rsk <- function(
         data <- data[, -1L, drop = FALSE] # drop the corrupted time column
         # Get column names from the 'channels' table.
         names <- tolower(RSQLite::dbReadTable(con, "channels")$longName)
+        channelsTMP <- RSQLite::dbReadTable(con, "channels")
+        message("FIXME DAN rsk.R:1005 'd'")
+        TMP <- as.integer(gsub("channel", "", fields))
+        cat(vectorShow(TMP, n = -1))
+        cat(vectorShow(as.integer(gsub("channel", "", fields)), n = -1))
+        cat(vectorShow(channelsTMP$channelID, n = -1))
+        cat(vectorShow(channelsTMP$longName, n = -1))
+        keepTMP <- channelsTMP$channelID %in% TMP
+        print(channelsTMP[keepTMP, ])
+        print(head(data))
+        DAN<-data
+        names(DAN) <- channelsTMP$longNamePlainText[keepTMP]
+        print(channelsTMP[keepTMP, c("shortName", "longNamePlainText")])
+        print(head(DAN))
+        plot(DAN[, "Temperature"], -DAN[, "Sea pressure"])
         # FIXME: some longnames have UTF-8 characters, and/or
         # spaces. Should coerce to ascii with no spaces, or at least
         # recognize fields and rename (e.g. `dissolved O2` should
@@ -1039,6 +1056,7 @@ read.rsk <- function(
         RSQLite::dbDisconnect(con)
         res@data$time <- time
         res@metadata$dataNamesOriginal <- dataNamesOriginal
+        message("DAN L1059 inserting data")
         for (iname in seq_along(names)) {
             res@data[[names[iname]]] <- data[[names[iname]]]
             res@metadata$units[[names[iname]]] <- unitFromStringRsk(unitsRsk[iname])
@@ -1181,6 +1199,8 @@ read.rsk <- function(
             channels[[iChannel]] <- d[, iChannel + 2]
         }
         names(channels) <- channelNames
+        message("FIXME DAN rsk.R:1186 'b'")
+        print(channels)
         # Now do subsetting
         if (inherits(from, "POSIXt") || inherits(from, "character")) {
             if (!inherits(to, "POSIXt") && !inherits(to, "character")) {
@@ -1224,6 +1244,8 @@ read.rsk <- function(
         for (iChannel in 1:numberOfChannels) {
             channelsSub[[iChannel]] <- channels[[iChannel]][keep]
         }
+        message("FIXME DAN rsk.R:1231 'c'")
+        print(channels)
         names(channelsSub) <- channelNames
         res <- as.rsk(time,
             columns = channelsSub,
