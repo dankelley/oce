@@ -21,9 +21,9 @@
 * Change `oce.plot.ts()` to handle `simplify` better (issue #2277).
 * Change `plot.section()` to handle `eos="gsw"` (issue #2256).
 * Change `read.amsr()` to handle realtime data files (issue #2230).
+* Change `read.ctd.sbe()` to handle files that lack salinity and conductivity (issues #2279 and #2282).
+* Change `read.ctd.sbe()` to handle time-related header elements better (issues #2280 and #2281).
 * Change `read.ctd.aml()` to handle "type 3" format (issue #2247).
-* Change `read.ctd.sbe()` to handle cases with no salinity or conductivity data (issue #2279).
-* Change `read.ctd.sbe()` to handle some time-related header elements better (issues #2280 and #2281).
 * Change `read.netcdf()` docs to show how to handle flags (issue #2236).
 * Change `read.netcdf()` to give a way to rename data (issue #2235).
 * Change `read.netcdf()` to handle units better.
