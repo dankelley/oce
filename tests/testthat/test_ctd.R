@@ -256,7 +256,7 @@ test_that("column renaming with a cnv file", {
     expect_warning(
         expect_warning(
             d1 <- read.oce(system.file("extdata", "ctd.cnv.gz", package = "oce")),
-            "this CNV file has temperature in the IPTS\\-68 scale"
+            "file has temperature in IPTS\\-68"
         ),
         "suspicious startTime 1903-10-15 11:38:38 changed to 2003-10-15 11:38:38"
     )
@@ -264,6 +264,7 @@ test_that("column renaming with a cnv file", {
         names(d1[["data"]]),
         c("scan", "timeS", "pressure", "depth", "temperature", "salinity", "flag")
     )
+
     expect_warning(
         expect_warning(
             expect_warning(
@@ -271,17 +272,29 @@ test_that("column renaming with a cnv file", {
                     columns = list(FAKE = list(
                         name = "sal00",
                         unit = list(unit = expression(), scale = "PSS-78")
-                    ))
+                    )), requireSalinity = FALSE
                 ),
-                "this CNV file has temperature in the IPTS\\-68 scale"
+                "no salinity or conductivity in file"
             ),
-            "cannot find salinity or conductivity in .cnv file"
-        ),
-        "suspicious startTime 1903-10-15 11:38:38 changed to 2003-10-15 11:38:38"
+            "suspicious startTime 1903-10-15 11:38:38 changed to 2003-10-15 11:38:38"
+        ), "file has temperature in IPTS\\-68"
     )
     expect_equal(
         names(d2[["data"]]),
         c("scan", "timeS", "pressure", "depth", "temperature", "FAKE", "flag")
+    )
+
+    expect_warning(
+        expect_error(
+            d3 <- read.oce(system.file("extdata", "ctd.cnv.gz", package = "oce"),
+                columns = list(FAKE = list(
+                    name = "sal00",
+                    unit = list(unit = expression(), scale = "PSS-78")
+                ))
+            ),
+            "no salinity or conductivity in file"
+        ),
+        "suspicious startTime 1903-10-15 11:38:38 changed to 2003-10-15 11:38:38"
     )
 })
 
@@ -297,7 +310,7 @@ test_that("Dalhousie-produced cnv file", {
     expect_warning(
         expect_warning(
             d1 <- read.oce(system.file("extdata", "ctd.cnv.gz", package = "oce")),
-            "this CNV file has temperature in the IPTS\\-68 scale"
+            "file has temperature in IPTS\\-68"
         ),
         "suspicious startTime 1903-10-15 11:38:38 changed to 2003-10-15 11:38:38"
     )
@@ -633,16 +646,31 @@ test_that("ctdDecimate() handles na.rm", {
 })
 
 f <- "local_data/ctd/Alpha130-07.bin.cnv"
-if (file.exists(f)) {
-    skip_on_cran() # save CRAN testing, since being ok developer's machine is enough
-    test_that("read.ctd.sbe() handles 'seconds' as a unit of sampling time", {
+if (file.exists(f)) { # not run on CRAN since local_data are not in package
+    test_that("read.ctd.sbe() with no S or C; expect error", {
+        expect_warning(
+            expect_error(
+                expect_warning(
+                    d <- read.ctd(f),
+                    "file has temperature in IPTS\\-68"
+                ),
+                "no salinity or conductivity in file"
+            ),
+            "suspicious startTime 107-05-10 16:11:52 changed to 2007-05-10 16:11:52"
+        )
+    })
+}
+
+f <- "local_data/ctd/Alpha130-07.bin.cnv"
+if (file.exists(f)) { # not run on CRAN since local_data are not in package
+    test_that("read.ctd.sbe() with no S or C; expect warning", {
         expect_warning(
             expect_warning(
                 expect_warning(
-                    d <- read.ctd(f),
-                    "this CNV file has temperature in the IPTS-68"
+                    d <- read.ctd(f, requireSalinity = FALSE),
+                    "file has temperature in IPTS\\-68"
                 ),
-                "cannot find salinity or conductivity in .cnv file"
+                "no salinity or conductivity in file"
             ),
             "suspicious startTime 107-05-10 16:11:52 changed to 2007-05-10 16:11:52"
         )

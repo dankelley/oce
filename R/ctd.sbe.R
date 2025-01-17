@@ -663,42 +663,39 @@ cnvName2oceName <- function(h, columns = NULL, debug = getOption("oceDebug")) {
 #'
 #' @template encodingTemplate
 #'
-#' @param rename optional logical value indicating whether to
-#' rename variables from the values in the file to the oce
-#' convention, using [cnvName2oceName()] for the translation.
-#' This is done by default, but setting `rename=FALSE` can
-#' be helpful if there is a wish to control the renaming,
-#' either using a built-in dictionary or using a dictionary
-#' set up by the user.  See Examples 1 and 2.
-#' if there is a desire to control renaming using [rename()].
+#' @param rename optional logical value indicating whether to rename variables
+#' from the values in the file to the oce convention, using [cnvName2oceName()]
+#' for the translation. This is done by default, but setting `rename=FALSE` can
+#' be helpful if there is a wish to control the renaming, either using a
+#' built-in dictionary or using a dictionary set up by the user.  See Examples 1
+#' and 2. if there is a desire to control renaming using [rename()].
 #'
-#' @param btl a logical value, with `TRUE` indicating that this is a `.BTL` file and `FALSE`
-#' (the default) indicating a `.CNV` file.  Note that if `btl` is `TRUE`, the data column
-#' names are taken directly from the file (without e.g. translating to `"Sal00"`
-#' to `"salinity"`.  Also, the "avg" and "sdev" columns are blended together, with
-#' all the latter named as in the file, but with `"_sdev"` appended.
+#' @param requireSalinity logical value indicating what to do if the dataset
+#' lacks both salinity and conductivity. If `requireSalinity` is TRUE (the
+#' default) then an error results in this situation; otherwise, a warning is
+#' issued.
 #'
-# @param humanDateFormat optional character string specifying the format for dates
-# in the human-entered header line that starts with "`** Date:`". See the
-# \dQuote{A note on hand-entered headers} section for the reason for this parameter.
-# If supplied, then `humanDateFormat` is supplied as the `format` argument to
-# [as.POSIXct()], which is supplied with the information on this date line.
-#'
-#' @author Dan Kelley and Clark Richards
+#' @param btl a logical value, with `TRUE` indicating that this is a `.BTL` file
+#' and `FALSE` (the default) indicating a `.CNV` file.  Note that if `btl` is
+#' `TRUE`, the data column names are taken directly from the file (without e.g.
+#' translating to `"Sal00"` to `"salinity"`.  Also, the "avg" and "sdev" columns
+#' are blended together, with all the latter named as in the file, but with
+#' `"_sdev"` appended.
 #'
 #' @details
-#' This function reads files stored in Seabird `.cnv` format.
-#' Note that these files can contain multiple sensors for a given field. For example,
-#' the file might contain a column named `t090C` for one
-#' temperature sensor and `t190C` for a second. The first will be denoted
-#' `temperature` in the `data` slot of the return value, and the second
-#' will be denoted `temperature1`. This means that the first sensor
-#' will be used in any future processing that accesses `temperature`. This
-#' is for convenience of processing, and it does not pose a limitation, because the
-#' data from the second sensor are also available as e.g. `x[["temperature1"]]`,
-#' where `x` is the name of the returned value.  For the details of the
-#' mapping from `.cnv` names to `ctd` names, see [cnvName2oceName()].
 #'
+#' This function reads files stored in Seabird `.cnv` format. Note that these
+#' files can contain multiple sensors for a given field. For example, the file
+#' might contain a column named `t090C` for one temperature sensor and `t190C`
+#' for a second. The first will be denoted `temperature` in the `data` slot of
+#' the return value, and the second will be denoted `temperature1`. This means
+#' that the first sensor will be used in any future processing that accesses
+#' `temperature`. This is for convenience of processing, and it does not pose a
+#' limitation, because the data from the second sensor are also available as
+#' e.g. `x[["temperature1"]]`, where `x` is the name of the returned value.  For
+#' the details of the mapping from `.cnv` names to `ctd` names, see
+#' [cnvName2oceName()].
+
 #' The names of the elements in the `data` slot of the returned value depend on
 #' the file type, as signalled by the `btl` argument.  For the default case of `.cnv` files,
 #' the original data names as stored in `file` are stored within the `metadata`
@@ -859,11 +856,14 @@ cnvName2oceName <- function(h, columns = NULL, debug = getOption("oceDebug")) {
 #' `SBEDataProcessing_7.26.4.pdf` and had release date 12/08/2017,
 #' and this was the reference version used in coding `oce`.
 #'
+#' @author Dan Kelley and Clark Richards
+#'
 #' @family functions that read ctd data
 read.ctd.sbe <- function(
     file, columns = NULL, station = NULL, missingValue,
     deploymentType = "unknown", btl = FALSE, monitor = FALSE,
     encoding = "latin1", rename = TRUE,
+    requireSalinity = TRUE,
     debug = getOption("oceDebug"), processingLog, ...) {
     if (missing(file)) {
         stop("must supply 'file'")
@@ -1397,10 +1397,14 @@ read.ctd.sbe <- function(
                 )
                 warning("created salinity from temperature, conductivity and pressure", immediate. = TRUE)
             } else {
+                # message("rename=", rename)
+                # message("requireSalinity=", requireSalinity)
                 if (rename) {
-                    warning("cannot find salinity or conductivity in .cnv file; try using columns argument if the file actually contains these items",
-                        immediate. = TRUE
-                    )
+                    if (requireSalinity) {
+                        stop("no salinity or conductivity in file; use 'columns' if either is present with an unrecognized names")
+                    } else {
+                        warning("no salinity or conductivity in file; use 'columns' if either is present with an unrecognized names, or set requireSalinity=FALSE and insert values later with oceSetData()", immediate. = TRUE)
+                    }
                 }
             }
         }
@@ -1436,8 +1440,9 @@ read.ctd.sbe <- function(
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep = "", collapse = ""))
     if (("temperature" %in% names(res@metadata$units)) && res@metadata$units$temperature$scale == "IPTS-68") {
         warning(
-            "this CNV file has temperature in the IPTS-68 scale, and this is stored in object, but note ",
-            " that [[\"temperature\"]] and the sw* functions convert the numbers to ITS-90 values"
+            "file has temperature in IPTS-68 so this is stored as-is, ",
+            "but note that [[\"temperature\"]] and sw* functions ",
+            "autoconvert to ITS-90 to match modern conventions"
         )
     }
     # Note: previously, at this spot, there was code to switch from the IPTS-68 scale

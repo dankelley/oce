@@ -137,7 +137,7 @@ if (1 == length(list.files(path = ".", pattern = "local_data"))) {
         expect_warning(
             expect_warning(
                 d1 <- read.oce("local_data/ctd/ctd.cnv"),
-                "this CNV file has temperature in the IPTS-68 scale"
+                "file has temperature in IPTS\\-68"
             ),
             "suspicious startTime 1903-10-15 11:38:38 changed to 2003-10-15 11:38:38"
         )
@@ -147,7 +147,7 @@ if (1 == length(list.files(path = ".", pattern = "local_data"))) {
                     d2 <- read.oce("local_data/ctd/ctd_with_psi.cnv"),
                     "created 'pressure' from 'pressurePSI'"
                 ),
-                "this CNV file has temperature in the IPTS-68 scale"
+                "file has temperature in IPTS\\-68"
             ),
             "suspicious startTime 1903-10-15 11:38:38 changed to 2003-10-15 11:38:38"
         )
