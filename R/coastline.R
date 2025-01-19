@@ -130,18 +130,16 @@ setMethod(
 #' Subsets a coastline object according to limiting values for longitude
 #' and latitude.
 #'
-#' As illustrated in the \dQuote{Examples}, `subset` must be an
-#' expression that indicates limits on `latitude` and
-#' `longitude`. The individual elements are provided in R notation,
-#' not mathematical notation (i.e. `30<latitude<60` would not work).
-#' Ampersands must be used to combine the limits.  The simplest way
-#' to understand this is to copy the example directly, and then modify
-#' the stated limits. Note that `>` comparison is not permitted,
-#' and that `<` is converted to `<=` in the calculation.
-#' Similarly, `&&` is converted to `&`. Spaces in the
-#' expression are ignored. For convenience, `longitude` and
-#' and `latitude` may be abbreviated as `lon` and `lat`,
-#' as in the \dQuote{Examples}.
+#' As illustrated in the \dQuote{Examples}, `subset` must be an expression that
+#' indicates limits on both `latitude` and `longitude`. The individual elements
+#' are provided in R notation, not mathematical notation, i.e. `30<latitude<60`
+#' is not permitted and ought to be written `30 < latitude & latitude < 60`. The
+#' simplest way to understand this is to copy the example directly, and then
+#' modify the stated limits. Note that `>` comparison is not permitted, and that
+#' `<` is converted to `<=` in the calculation. Similarly, `&&` is converted to
+#' `&`. Spaces in the expression are ignored. For convenience, `longitude` and
+#' and `latitude` may be abbreviated as `lon` and `lat`, as in the
+#' \dQuote{Examples}.
 #'
 #' @param x a [coastline-class] object.
 #'
@@ -187,6 +185,7 @@ setMethod(
         if (is.null(debug)) {
             debug <- 0
         }
+        oceDebug(debug, "subset,coastline-method(..., ", s0, ") START\n", unindent = 1, sep = "")
         # \"s0\" is a character string that we decompose to find W, E, S
         # and N.  This is done in small steps because that might help in
         # locating any bugs that might crop up. Note that the elements
@@ -195,7 +194,6 @@ setMethod(
         # conversion of && to & and <= to <) for the pattern matching
         # to work simply.
         s0 <- deparse(substitute(expr = subset, env = environment()), width.cutoff = 500)
-        oceDebug(debug, "subset,coastline-method(..., ", s0, ") START\n", unindent = 1, sep = "")
         if (length(grep(">", s0))) {
             stop("the \"subset\" may not contain the character \">\"")
         }

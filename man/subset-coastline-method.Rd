@@ -27,18 +27,16 @@ Subsets a coastline object according to limiting values for longitude
 and latitude.
 }
 \details{
-As illustrated in the \dQuote{Examples}, \code{subset} must be an
-expression that indicates limits on \code{latitude} and
-\code{longitude}. The individual elements are provided in R notation,
-not mathematical notation (i.e. \verb{30<latitude<60} would not work).
-Ampersands must be used to combine the limits.  The simplest way
-to understand this is to copy the example directly, and then modify
-the stated limits. Note that \code{>} comparison is not permitted,
-and that \code{<} is converted to \code{<=} in the calculation.
-Similarly, \code{&&} is converted to \code{&}. Spaces in the
-expression are ignored. For convenience, \code{longitude} and
-and \code{latitude} may be abbreviated as \code{lon} and \code{lat},
-as in the \dQuote{Examples}.
+As illustrated in the \dQuote{Examples}, \code{subset} must be an expression that
+indicates limits on both \code{latitude} and \code{longitude}. The individual elements
+are provided in R notation, not mathematical notation, i.e. \verb{30<latitude<60}
+is not permitted and ought to be written \code{30 < latitude & latitude < 60}. The
+simplest way to understand this is to copy the example directly, and then
+modify the stated limits. Note that \code{>} comparison is not permitted, and that
+\code{<} is converted to \code{<=} in the calculation. Similarly, \code{&&} is converted to
+\code{&}. Spaces in the expression are ignored. For convenience, \code{longitude} and
+and \code{latitude} may be abbreviated as \code{lon} and \code{lat}, as in the
+\dQuote{Examples}.
 }
 \examples{
 library(oce)

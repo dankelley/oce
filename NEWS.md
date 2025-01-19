@@ -16,6 +16,7 @@
 * Change `download.amsr()` to handle realtime data files (issue #2231).
 * Change `imagep()` to handle `decimate` as set in `~/.Rprofile` (issue #2263).
 * Change `magneticField()` to handle the latest (generation 14) IGRF formulation (issue #2274).
+* Change `mapScalebar()` to handle `x="top"` (issue #2283).
 * Change `mapPlot()` to handle `las` as a parameter (issue #1707).
 * Change `oce.plot.ts()` to handle `grid` better (issue #2267).
 * Change `oce.plot.ts()` to handle `simplify` better (issue #2277).

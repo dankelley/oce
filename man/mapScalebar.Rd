@@ -10,13 +10,15 @@ mapScalebar(
   length,
   lwd = 1.5 * par("lwd"),
   cex = par("cex"),
-  col = "black"
+  col = "black",
+  debug = getOption("oceDebug")
 )
 }
 \arguments{
-\item{x, y}{position of the scalebar.  Eventually this may be similar to
-the corresponding arguments in \code{\link[=legend]{legend()}}, but at the moment
-\code{y} must be \code{NULL} and \code{x} must be \code{"topleft"} or \code{"topright"}.}
+\item{x, y}{position of the scalebar.  Eventually these two items may be
+handled similarly to the corresponding arguments in \code{\link[=legend]{legend()}}, but at the
+moment \code{y} must be \code{NULL} and \code{x} must be \code{"top"}, \code{"topleft"} or
+\code{"topright"}.}
 
 \item{length}{the distance to indicate, in kilometres.  If not provided, a
 reasonable choice is made, based on the existing plot.}
@@ -26,17 +28,28 @@ reasonable choice is made, based on the existing plot.}
 \item{cex}{character expansion factor for the scalebar text.}
 
 \item{col}{color of the scalebar.}
+
+\item{debug}{an integer specifying whether debugging information is
+to be printed during the processing. This is a general parameter that
+is used by many \code{oce} functions. Generally, setting \code{debug=0}
+turns off the printing, while higher values suggest that more information
+be printed. If one function calls another, it usually reduces the value of
+\code{debug} first, so that a user can often obtain deeper debugging
+by specifying higher \code{debug} values.}
 }
 \description{
-Draw a scalebar on a map created by \code{\link[=mapPlot]{mapPlot()}} or otherwise.
+Draw a scalebar on a map created by \code{\link[=mapPlot]{mapPlot()}} or \code{\link[=plot,coastline-method]{plot,coastline-method()}}.
+For plots made otherwise, see \sQuote{Details}.
 }
 \details{
-The scale is appropriate to the centre of the plot, and will become
-increasingly inaccurate away from that spot, with the error depending on
-the projection and the fraction of the earth that is shown.
+It is also possible to use this with any plot, but the results will
+only make sense if the aspect ratio is set properly so that an item that is
+circular in nature is (very closely) circular on the plot. This aspect ratio
+condition is met by both \code{\link[=mapPlot]{mapPlot()}} and \code{\link[=plot,coastline-method]{plot,coastline-method()}}.
 
-Until December 2020, it was required that the map had been drawn by \code{\link[=mapPlot]{mapPlot()}},
-but now it can be any diagram showing longitude and latitude in degrees.
+The scale is appropriate to the centre of the plot, and will become
+increasingly inaccurate away from that spot, with the error depending on the
+projection and the fraction of the earth that is shown.
 }
 \examples{
 \donttest{
@@ -51,10 +64,9 @@ mapPlot(coastlineWorld,
 mapScalebar()
 }
 
+
 }
 \seealso{
-A map must first have been created with \code{\link[=mapPlot]{mapPlot()}}.
-
 Other functions related to maps: 
 \code{\link{formatPosition}()},
 \code{\link{lonlat2map}()},
