@@ -4412,9 +4412,12 @@ knownProj4 <- c(
 #' because otherwise, if a new projection is called for, it will ruin any
 #' additions to the existing plot.
 #'
-#' @param longitude a numeric vector containing decimal longitudes, or a list
-#' containing items named `longitude` and `latitude`, in which case
-#' the indicated values are used, and next argument is ignored.
+#' @param longitude one of three choices: (1) a numeric vector containing
+#' decimal longitudes, (2) a list containing items named `longitude` and
+#' `latitude`, or (3) a [coastline-class] object, e.g. as created with
+#' [as.coastline()] or [read.coastline()]. In the second two cases, the values
+#' of longitude and latitude are inferred from the first argument, and any
+#' supplied value of `latitude` (next parameter) is ignored.
 #'
 #' @param latitude a numeric vector containing decimal latitude (ignored if
 #' `longitude` is a list, as described above).
@@ -4450,6 +4453,9 @@ lonlat2map <- function(longitude, latitude, projection = "", debug = getOption("
     if (is.list(longitude)) {
         latitude <- longitude$latitude
         longitude <- longitude$longitude
+    } else if (inherits(longitude, "coastline")) {
+        latitude <- longitude[["latitude"]]
+        longitude <- longitude[["longitude"]]
     }
     if (missing(latitude)) {
         stop("must supply latitude")

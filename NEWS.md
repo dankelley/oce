@@ -15,6 +15,7 @@
 * Change `concatenate()` to handle lists properly (issue #2278).
 * Change `download.amsr()` to handle realtime data files (issue #2231).
 * Change `imagep()` to handle `decimate` as set in `~/.Rprofile` (issue #2263).
+* Change `lonlat2map()` to handle a [coastline-class] object as first parameter (issue #2284).
 * Change `magneticField()` to handle the latest (generation 14) IGRF formulation (issue #2274).
 * Change `mapScalebar()` to handle `x="top"` (issue #2283).
 * Change `mapPlot()` to handle `las` as a parameter (issue #1707).
