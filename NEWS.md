@@ -18,6 +18,7 @@
 * Change `lonlat2map()` to handle a [coastline-class] object as first parameter (issue #2284).
 * Change `magneticField()` to handle the latest (generation 14) IGRF formulation (issue #2274).
 * Change `mapScalebar()` to handle `x="top"` (issue #2283).
+* Change `mapScalebar()` to handle `length` under 1km (issue #2287).
 * Change `mapPlot()` to handle `las` as a parameter (issue #1707).
 * Change `oce.plot.ts()` to handle `grid` better (issue #2267).
 * Change `oce.plot.ts()` to handle `simplify` better (issue #2277).

@@ -3040,7 +3040,11 @@ mapScalebar <- function(
     lines(rep(xBar + 1.5 * cinx + frac, 2), yBar - ciny + c(-ciny, ciny) / 3,
         col = col, lwd = lwd
     )
-    label <- sprintf("%.0f km", length)
+    label <- if (length < 1) { # represent down to 1m, if value is under 100m
+        sprintf("%g m", 1000*length)
+    } else {
+        sprintf("%g km", length)
+    }
     # 1753 text(xBar+cinx, yBar-2.2*ciny, pos=4, adj=0, offset=0, label, cex=cex, col=2)#col)
     x <- xBar + 1.5 * cinx + frac / 2
     y <- yBar - 1.7 * ciny
