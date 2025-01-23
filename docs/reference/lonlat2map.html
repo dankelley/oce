@@ -70,9 +70,12 @@ additions to the existing plot.</p>
 
 
 <dl><dt id="arg-longitude">longitude<a class="anchor" aria-label="anchor" href="#arg-longitude"></a></dt>
-<dd><p>a numeric vector containing decimal longitudes, or a list
-containing items named <code>longitude</code> and <code>latitude</code>, in which case
-the indicated values are used, and next argument is ignored.</p></dd>
+<dd><p>one of three choices: (1) a numeric vector containing
+decimal longitudes, (2) a list containing items named <code>longitude</code> and
+<code>latitude</code>, or (3) a <a href="coastline-class.html">coastline</a> object, e.g. as created with
+<code><a href="as.coastline.html">as.coastline()</a></code> or <code><a href="read.coastline.html">read.coastline()</a></code>. In the second two cases, the values
+of longitude and latitude are inferred from the first argument, and any
+supplied value of <code>latitude</code> (next parameter) is ignored.</p></dd>
 
 
 <dt id="arg-latitude">latitude<a class="anchor" aria-label="anchor" href="#arg-latitude"></a></dt>

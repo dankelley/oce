@@ -14,6 +14,7 @@ read.ctd.sbe(
   monitor = FALSE,
   encoding = "latin1",
   rename = TRUE,
+  requireSalinity = TRUE,
   debug = getOption("oceDebug"),
   processingLog,
   ...
@@ -67,11 +68,12 @@ the device is installed on a fixed mooring, \code{"thermosalinograph"} (or
 near-surface properties, or \code{"towyo"} if the device is repeatedly
 lowered and raised.}
 
-\item{btl}{a logical value, with \code{TRUE} indicating that this is a \code{.BTL} file and \code{FALSE}
-(the default) indicating a \code{.CNV} file.  Note that if \code{btl} is \code{TRUE}, the data column
-names are taken directly from the file (without e.g. translating to \code{"Sal00"}
-to \code{"salinity"}.  Also, the "avg" and "sdev" columns are blended together, with
-all the latter named as in the file, but with \code{"_sdev"} appended.}
+\item{btl}{a logical value, with \code{TRUE} indicating that this is a \code{.BTL} file
+and \code{FALSE} (the default) indicating a \code{.CNV} file.  Note that if \code{btl} is
+\code{TRUE}, the data column names are taken directly from the file (without e.g.
+translating to \code{"Sal00"} to \code{"salinity"}.  Also, the "avg" and "sdev" columns
+are blended together, with all the latter named as in the file, but with
+\code{"_sdev"} appended.}
 
 \item{monitor}{boolean, set to \code{TRUE} to provide an indication of
 progress.  This is useful if \code{filename} is a wildcard.}
@@ -81,14 +83,17 @@ this data file, if it is textual.  The default value for most functions is
 \code{"latin1"}, which seems to be suitable for files containing text written in
 English and French.}
 
-\item{rename}{optional logical value indicating whether to
-rename variables from the values in the file to the oce
-convention, using \code{\link[=cnvName2oceName]{cnvName2oceName()}} for the translation.
-This is done by default, but setting \code{rename=FALSE} can
-be helpful if there is a wish to control the renaming,
-either using a built-in dictionary or using a dictionary
-set up by the user.  See Examples 1 and 2.
-if there is a desire to control renaming using \code{\link[=rename]{rename()}}.}
+\item{rename}{optional logical value indicating whether to rename variables
+from the values in the file to the oce convention, using \code{\link[=cnvName2oceName]{cnvName2oceName()}}
+for the translation. This is done by default, but setting \code{rename=FALSE} can
+be helpful if there is a wish to control the renaming, either using a
+built-in dictionary or using a dictionary set up by the user.  See Examples 1
+and 2. if there is a desire to control renaming using \code{\link[=rename]{rename()}}.}
+
+\item{requireSalinity}{logical value indicating what to do if the dataset
+lacks both salinity and conductivity. If \code{requireSalinity} is TRUE (the
+default) then an error results in this situation; otherwise, a warning is
+issued.}
 
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
@@ -109,18 +114,17 @@ This function returns a \linkS4class{ctd} object.
 Read a ctd File in Seabird Format
 }
 \details{
-This function reads files stored in Seabird \code{.cnv} format.
-Note that these files can contain multiple sensors for a given field. For example,
-the file might contain a column named \code{t090C} for one
-temperature sensor and \code{t190C} for a second. The first will be denoted
-\code{temperature} in the \code{data} slot of the return value, and the second
-will be denoted \code{temperature1}. This means that the first sensor
-will be used in any future processing that accesses \code{temperature}. This
-is for convenience of processing, and it does not pose a limitation, because the
-data from the second sensor are also available as e.g. \code{x[["temperature1"]]},
-where \code{x} is the name of the returned value.  For the details of the
-mapping from \code{.cnv} names to \code{ctd} names, see \code{\link[=cnvName2oceName]{cnvName2oceName()}}.
-
+This function reads files stored in Seabird \code{.cnv} format. Note that these
+files can contain multiple sensors for a given field. For example, the file
+might contain a column named \code{t090C} for one temperature sensor and \code{t190C}
+for a second. The first will be denoted \code{temperature} in the \code{data} slot of
+the return value, and the second will be denoted \code{temperature1}. This means
+that the first sensor will be used in any future processing that accesses
+\code{temperature}. This is for convenience of processing, and it does not pose a
+limitation, because the data from the second sensor are also available as
+e.g. \code{x[["temperature1"]]}, where \code{x} is the name of the returned value.  For
+the details of the mapping from \code{.cnv} names to \code{ctd} names, see
+\code{\link[=cnvName2oceName]{cnvName2oceName()}}.
 The names of the elements in the \code{data} slot of the returned value depend on
 the file type, as signalled by the \code{btl} argument.  For the default case of \code{.cnv} files,
 the original data names as stored in \code{file} are stored within the \code{metadata}

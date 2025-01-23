@@ -84,18 +84,16 @@ polygon involved in the final result.</p></dd>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>As illustrated in the “Examples”, <code>subset</code> must be an
-expression that indicates limits on <code>latitude</code> and
-<code>longitude</code>. The individual elements are provided in R notation,
-not mathematical notation (i.e. <code>30&lt;latitude&lt;60</code> would not work).
-Ampersands must be used to combine the limits.  The simplest way
-to understand this is to copy the example directly, and then modify
-the stated limits. Note that <code>&gt;</code> comparison is not permitted,
-and that <code>&lt;</code> is converted to <code>&lt;=</code> in the calculation.
-Similarly, <code>&amp;&amp;</code> is converted to <code>&amp;</code>. Spaces in the
-expression are ignored. For convenience, <code>longitude</code> and
-and <code>latitude</code> may be abbreviated as <code>lon</code> and <code>lat</code>,
-as in the “Examples”.</p>
+    <p>As illustrated in the “Examples”, <code>subset</code> must be an expression that
+indicates limits on both <code>latitude</code> and <code>longitude</code>. The individual elements
+are provided in R notation, not mathematical notation, i.e. <code>30&lt;latitude&lt;60</code>
+is not permitted and ought to be written <code>30 &lt; latitude &amp; latitude &lt; 60</code>. The
+simplest way to understand this is to copy the example directly, and then
+modify the stated limits. Note that <code>&gt;</code> comparison is not permitted, and that
+<code>&lt;</code> is converted to <code>&lt;=</code> in the calculation. Similarly, <code>&amp;&amp;</code> is converted to
+<code>&amp;</code>. Spaces in the expression are ignored. For convenience, <code>longitude</code> and
+and <code>latitude</code> may be abbreviated as <code>lon</code> and <code>lat</code>, as in the
+“Examples”.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>

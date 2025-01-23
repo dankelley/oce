@@ -2913,27 +2913,37 @@ mapGrid <- function(
 
 #' Add a Scalebar to a Map
 #'
-#' Draw a scalebar on a map created by [mapPlot()] or otherwise.
+#' Draw a scalebar on a map created by [mapPlot()] or [plot,coastline-method()].
+#' For plots made otherwise, see \sQuote{Details}.
+#'
+#' It is also possible to use this with any plot, but the results will
+#' only make sense if the aspect ratio is set properly so that an item that is
+#' circular in nature is (very closely) circular on the plot. This aspect ratio
+#' condition is met by both [mapPlot()] and [plot,coastline-method()].
 #'
 #' The scale is appropriate to the centre of the plot, and will become
-#' increasingly inaccurate away from that spot, with the error depending on
-#' the projection and the fraction of the earth that is shown.
+#' increasingly inaccurate away from that spot, with the error depending on the
+#' projection and the fraction of the earth that is shown.
 #'
-#' Until December 2020, it was required that the map had been drawn by [mapPlot()],
-#' but now it can be any diagram showing longitude and latitude in degrees.
+## Until December 2020, it was required that the map had been drawn by
+## [mapPlot()], but now it can be any diagram showing longitude and latitude in
+## degrees.
 #'
-#' @param x,y position of the scalebar.  Eventually this may be similar to
-#'     the corresponding arguments in [legend()], but at the moment
-#'     `y` must be `NULL` and `x` must be `"topleft"` or `"topright"`.
+#' @param x,y position of the scalebar.  Eventually these two items may be
+#' handled similarly to the corresponding arguments in [legend()], but at the
+#' moment `y` must be `NULL` and `x` must be `"top"`, `"topleft"` or
+#' `"topright"`.
 #'
 #' @param length the distance to indicate, in kilometres.  If not provided, a
-#'     reasonable choice is made, based on the existing plot.
+#' reasonable choice is made, based on the existing plot.
 #'
 #' @param lwd line width of the scalebar.
 #'
 #' @param col color of the scalebar.
 #'
 #' @param cex character expansion factor for the scalebar text.
+#'
+#' @template debugTemplate
 #'
 #' @examples
 #' \donttest{
@@ -2948,22 +2958,25 @@ mapGrid <- function(
 #' mapScalebar()
 #' }
 #'
-#' @seealso A map must first have been created with [mapPlot()].
+## @seealso A map must first have been created with [mapPlot()].
 #'
 #' @family functions related to maps
 #'
 #' @author Dan Kelley
 mapScalebar <- function(
-    x, y = NULL, length,
-    lwd = 1.5 * par("lwd"), cex = par("cex"),
-    col = "black") {
+    x, y = NULL, length, lwd = 1.5 * par("lwd"), cex = par("cex"),
+    col = "black",
+    debug = getOption("oceDebug")) {
+    oceDebug(debug, "mapScale(...) START\n", sep = "", unindent = 1)
     if (!is.null(y)) {
         stop("y must be NULL in this (early) version of mapScalebar()\n")
     }
     if (missing(x)) {
         x <- "topleft"
-    } else if (is.na(pmatch(x, c("topleft", "topright")))) {
-        stop("x must be \"topleft\" or \"topright\", but it is \"", x, "\"\n")
+    } else if (!is.character(x)) {
+        stop("'x' must be a character value") # FIXME: relax this eventually, perhaps
+    } else if (!x %in% c("top", "topleft", "topright")) {
+        stop("x must be \"top\", \"topleft\" or \"topright\", but it is \"", x, "\"\n")
     }
     projection <- .Projection()$type
     usr <- par("usr")
@@ -2973,32 +2986,44 @@ mapScalebar <- function(
     dusr <- 0.01 * (usr[2] - usr[1]) # 1 percent of device width
     x1 <- x0 + dusr
     y1 <- y0
+    oceDebug(debug, vectorShow(x0))
+    oceDebug(debug, vectorShow(x1))
+    # comppute dkm, done differently for plots made by mapPlot() or otherwise
     if (projection != "none") {
-        # This means the plot was created by mapPlot
         ll0 <- map2lonlat(x0, y0)
         ll1 <- map2lonlat(x1, y1)
         dkm <- geodDist(ll0$longitude, ll0$latitude, ll1$longitude, ll1$latitude)
     } else {
-        # This means the plot was not created by mapPlot
         dkm <- geodDist(x0, y0, x1, y1)
     }
+    oceDebug(debug, vectorShow(dkm))
     kmPerUsr <- dkm / dusr
+    oceDebug(debug, vectorShow(kmPerUsr))
     # message("kmPerUsr: ", kmPerUsr)
     if (missing(length)) {
         # corner to corner distance
         ccd <- kmPerUsr * sqrt((usr[2] - usr[1])^2 + (usr[4] - usr[3])^2)
         length <- diff(pretty(c(0, ccd), n = 12)[1:2])
     }
+    oceDebug(debug, vectorShow(length))
     frac <- length / kmPerUsr
+    oceDebug(debug, vectorShow(frac))
     cin <- par("cin")[1]
     cinx <- xinch(cin)
+    oceDebug(debug, vectorShow(cinx))
     ciny <- yinch(cin)
+    oceDebug(debug, vectorShow(ciny))
     # FIXME: when get more options for x, revisit next few lines
-    xBar <- usr[1] + cinx / 2
-    if (is.character(x) && x == "topright") {
+    if (is.character(x) && x == "topleft") {
+        xBar <- usr[1] + 0.5 * cinx
+    } else if (is.character(x) && x == "topright") {
         xBar <- usr[2] - frac - 3.5 * cinx
+    } else if (is.character(x) && x == "top") {
+        xBar <- 0.5 * (usr[1] + usr[2] - 3 * cinx - frac)
     }
+    oceDebug(debug, vectorShow(xBar))
     yBar <- usr[4] - ciny / 2
+    oceDebug(debug, vectorShow(yBar))
     # Draw white-out underlay box with a border, since otherwise
     # it's hard to see a scalebar on a complex map.
     llBox <- list(x = xBar, y = yBar - 3 * ciny)
@@ -3017,12 +3042,15 @@ mapScalebar <- function(
     )
     label <- sprintf("%.0f km", length)
     # 1753 text(xBar+cinx, yBar-2.2*ciny, pos=4, adj=0, offset=0, label, cex=cex, col=2)#col)
+    x <- xBar + 1.5 * cinx + frac / 2
+    y <- yBar - 1.7 * ciny
+    oceDebug(debug, "placing text at x=", x, ", y=", y, "\n")
     text(
-        x = xBar + 1.5 * cinx + frac / 2,
-        y = yBar - 1.7 * ciny,
+        x, y,
         labels = label,
         pos = 1, adj = 0, offset = 0, cex = cex, col = col
     )
+    oceDebug(debug, "END mapScale(...)\n", sep = "", unindent = 1)
 }
 
 
@@ -4384,9 +4412,12 @@ knownProj4 <- c(
 #' because otherwise, if a new projection is called for, it will ruin any
 #' additions to the existing plot.
 #'
-#' @param longitude a numeric vector containing decimal longitudes, or a list
-#' containing items named `longitude` and `latitude`, in which case
-#' the indicated values are used, and next argument is ignored.
+#' @param longitude one of three choices: (1) a numeric vector containing
+#' decimal longitudes, (2) a list containing items named `longitude` and
+#' `latitude`, or (3) a [coastline-class] object, e.g. as created with
+#' [as.coastline()] or [read.coastline()]. In the second two cases, the values
+#' of longitude and latitude are inferred from the first argument, and any
+#' supplied value of `latitude` (next parameter) is ignored.
 #'
 #' @param latitude a numeric vector containing decimal latitude (ignored if
 #' `longitude` is a list, as described above).
@@ -4422,6 +4453,9 @@ lonlat2map <- function(longitude, latitude, projection = "", debug = getOption("
     if (is.list(longitude)) {
         latitude <- longitude$latitude
         longitude <- longitude$longitude
+    } else if (inherits(longitude, "coastline")) {
+        latitude <- longitude[["latitude"]]
+        longitude <- longitude[["longitude"]]
     }
     if (missing(latitude)) {
         stop("must supply latitude")

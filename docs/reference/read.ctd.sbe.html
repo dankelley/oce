@@ -60,6 +60,7 @@
 <span>  monitor <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  encoding <span class="op">=</span> <span class="st">"latin1"</span>,</span>
 <span>  rename <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  requireSalinity <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  debug <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceDebug"</span><span class="op">)</span>,</span>
 <span>  <span class="va">processingLog</span>,</span>
 <span>  <span class="va">...</span></span>
@@ -125,11 +126,12 @@ lowered and raised.</p></dd>
 
 
 <dt id="arg-btl">btl<a class="anchor" aria-label="anchor" href="#arg-btl"></a></dt>
-<dd><p>a logical value, with <code>TRUE</code> indicating that this is a <code>.BTL</code> file and <code>FALSE</code>
-(the default) indicating a <code>.CNV</code> file.  Note that if <code>btl</code> is <code>TRUE</code>, the data column
-names are taken directly from the file (without e.g. translating to <code>"Sal00"</code>
-to <code>"salinity"</code>.  Also, the "avg" and "sdev" columns are blended together, with
-all the latter named as in the file, but with <code>"_sdev"</code> appended.</p></dd>
+<dd><p>a logical value, with <code>TRUE</code> indicating that this is a <code>.BTL</code> file
+and <code>FALSE</code> (the default) indicating a <code>.CNV</code> file.  Note that if <code>btl</code> is
+<code>TRUE</code>, the data column names are taken directly from the file (without e.g.
+translating to <code>"Sal00"</code> to <code>"salinity"</code>.  Also, the "avg" and "sdev" columns
+are blended together, with all the latter named as in the file, but with
+<code>"_sdev"</code> appended.</p></dd>
 
 
 <dt id="arg-monitor">monitor<a class="anchor" aria-label="anchor" href="#arg-monitor"></a></dt>
@@ -145,14 +147,19 @@ English and French.</p></dd>
 
 
 <dt id="arg-rename">rename<a class="anchor" aria-label="anchor" href="#arg-rename"></a></dt>
-<dd><p>optional logical value indicating whether to
-rename variables from the values in the file to the oce
-convention, using <code><a href="cnvName2oceName.html">cnvName2oceName()</a></code> for the translation.
-This is done by default, but setting <code>rename=FALSE</code> can
-be helpful if there is a wish to control the renaming,
-either using a built-in dictionary or using a dictionary
-set up by the user.  See Examples 1 and 2.
-if there is a desire to control renaming using <code><a href="rename.html">rename()</a></code>.</p></dd>
+<dd><p>optional logical value indicating whether to rename variables
+from the values in the file to the oce convention, using <code><a href="cnvName2oceName.html">cnvName2oceName()</a></code>
+for the translation. This is done by default, but setting <code>rename=FALSE</code> can
+be helpful if there is a wish to control the renaming, either using a
+built-in dictionary or using a dictionary set up by the user.  See Examples 1
+and 2. if there is a desire to control renaming using <code><a href="rename.html">rename()</a></code>.</p></dd>
+
+
+<dt id="arg-requiresalinity">requireSalinity<a class="anchor" aria-label="anchor" href="#arg-requiresalinity"></a></dt>
+<dd><p>logical value indicating what to do if the dataset
+lacks both salinity and conductivity. If <code>requireSalinity</code> is TRUE (the
+default) then an error results in this situation; otherwise, a warning is
+issued.</p></dd>
 
 
 <dt id="arg-debug">debug<a class="anchor" aria-label="anchor" href="#arg-debug"></a></dt>
@@ -179,18 +186,18 @@ better for normal calls by a user.</p></dd>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>This function reads files stored in Seabird <code>.cnv</code> format.
-Note that these files can contain multiple sensors for a given field. For example,
-the file might contain a column named <code>t090C</code> for one
-temperature sensor and <code>t190C</code> for a second. The first will be denoted
-<code>temperature</code> in the <code>data</code> slot of the return value, and the second
-will be denoted <code>temperature1</code>. This means that the first sensor
-will be used in any future processing that accesses <code>temperature</code>. This
-is for convenience of processing, and it does not pose a limitation, because the
-data from the second sensor are also available as e.g. <code>x[["temperature1"]]</code>,
-where <code>x</code> is the name of the returned value.  For the details of the
-mapping from <code>.cnv</code> names to <code>ctd</code> names, see <code><a href="cnvName2oceName.html">cnvName2oceName()</a></code>.</p>
-<p>The names of the elements in the <code>data</code> slot of the returned value depend on
+    <p>This function reads files stored in Seabird <code>.cnv</code> format. Note that these
+files can contain multiple sensors for a given field. For example, the file
+might contain a column named <code>t090C</code> for one temperature sensor and <code>t190C</code>
+for a second. The first will be denoted <code>temperature</code> in the <code>data</code> slot of
+the return value, and the second will be denoted <code>temperature1</code>. This means
+that the first sensor will be used in any future processing that accesses
+<code>temperature</code>. This is for convenience of processing, and it does not pose a
+limitation, because the data from the second sensor are also available as
+e.g. <code>x[["temperature1"]]</code>, where <code>x</code> is the name of the returned value.  For
+the details of the mapping from <code>.cnv</code> names to <code>ctd</code> names, see
+<code><a href="cnvName2oceName.html">cnvName2oceName()</a></code>.
+The names of the elements in the <code>data</code> slot of the returned value depend on
 the file type, as signalled by the <code>btl</code> argument.  For the default case of <code>.cnv</code> files,
 the original data names as stored in <code>file</code> are stored within the <code>metadata</code>
 slot as <code>dataNamesOriginal</code>, and are displayed with <code>summary</code> alongside the
@@ -390,7 +397,7 @@ and this was the reference version used in coding <code>oce</code>.</p></li>
 <span class="r-in"><span><span class="va">f</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"ctd.cnv.gz"</span>, package <span class="op">=</span> <span class="st">"oce"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">d1</span> <span class="op">&lt;-</span> <span class="fu"><a href="read.ctd.html">read.ctd</a></span><span class="op">(</span><span class="va">f</span><span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>suspicious startTime 1903-10-15 11:38:38 changed to 2003-10-15 11:38:38; see 'start_time' in file header</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>this CNV file has temperature in the IPTS-68 scale, and this is stored in object, but note  that [["temperature"]] and the sw* functions convert the numbers to ITS-90 values</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>file has temperature in IPTS-68 so this is stored as-is, but note that [["temperature"]] and sw* functions autoconvert to ITS-90 to match modern conventions</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Example 2: handle variable renaming after reading</span></span></span>
 <span class="r-in"><span><span class="va">d2</span> <span class="op">&lt;-</span> <span class="fu"><a href="read.ctd.html">read.ctd</a></span><span class="op">(</span><span class="va">f</span>, rename <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="rename.html">rename</a></span><span class="op">(</span><span class="st">"sbe"</span><span class="op">)</span></span></span>

@@ -218,11 +218,15 @@ renameInternal <- function(names, dictionary = "ioos.csv", debug = 0) {
 #'         "%s/%s/%s/%s/CTD_BCD%s667_%03d_1_DN.ODF.nc",
 #'         server, program, subprogram, year, year, cast
 #'     )
-#'     curl::curl_download(url, file)
-#'     d <- read.netcdf(file)
-#'     summary(d)
-#'     dd <- rename(d, "ioos")
-#'     summary(dd)
+#'     t <- try(curl::curl_download(url, file), silent = TRUE)
+#'     if (!inherits(t, "try-error")) {
+#'         d <- read.netcdf(file)
+#'         summary(d)
+#'         dd <- rename(d, "ioos")
+#'         summary(dd)
+#'     } else {
+#'         message("Cannot connect to ", url)
+#'     }
 #'     unlink(file)
 #' }
 #'

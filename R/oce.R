@@ -1144,7 +1144,7 @@ oce.grid <- function(xat, yat, col = "lightgray", lty = "dotted", lwd = par("lwd
 #' # Flip the y axis
 #' oce.plot.ts(t, y, flipy = TRUE)
 oce.plot.ts <- function(
-    x, y, type = "l", xlim, ylim, log = "", logStyle = "r", flipy = FALSE, xlab, ylab,
+    x, y, type = "l", xlim, ylim, log = "", logStyle = "r", flipy = FALSE, xlab = "", ylab,
     drawTimeRange, simplify = 2560, fill = FALSE, col = par("col"), pch = par("pch"),
     cex = par("cex"), cex.axis = par("cex.axis"), cex.lab = par("cex.lab"), cex.main = par("cex.main"),
     xaxs = par("xaxs"), yaxs = par("yaxs"),
@@ -1162,9 +1162,6 @@ oce.plot.ts <- function(
     }
     if (!inherits(x, "POSIXt")) {
         x <- as.POSIXct(x)
-    }
-    if (missing(xlab)) {
-        xlab <- ""
     }
     if (missing(ylab)) {
         ylab <- deparse(substitute(expr = y, env = environment()))
@@ -1382,6 +1379,7 @@ oce.plot.ts <- function(
                 type = type, col = col, cex = cex, cex.axis = cex.axis, cex.lab = cex.lab, pch = pch, log = log, ...
             )
             # mtext(paste("TEST: xlab at mgp[1]", xlab), side=1, cex=cex.lab*par("cex"), line=mgp[1])
+            mtext(xlab, side = 1, cex = cex.lab * par("cex"), line = mgp[1])
             mtext(ylab, side = 2, cex = cex.lab * par("cex"), line = mgp[1])
         }
         xat <- NULL
