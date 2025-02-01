@@ -13,37 +13,37 @@ read.xbt.noaa2(
 )
 }
 \arguments{
-\item{file}{character value naming a file, or a file connection, containing the data.}
+\item{file}{character value naming a file, or a file connection,
+containing the data, with each line corresponding to an XBT
+profile.}
 
 \item{debug}{a flag that turns on debugging.  The value indicates the depth
 within the call stack to which debugging applies.}
 
-\item{missingValue}{numerical value that is to be interpreted as \code{NA}}
+\item{missingValue}{ignored.}
 
 \item{encoding}{a character value that indicates the encoding to be used for
 this data file, if it is textual.  The default value for most functions is
 \code{"latin1"}, which seems to be suitable for files containing text written in
 English and French.}
 
-\item{processingLog}{if provided, the action item to be stored in the log.  This
-parameter is typically only provided for internal calls; the default that it
-provides is better for normal calls by a user.}
+\item{processingLog}{ignored.}
 }
 \value{
 A list containing \linkS4class{xbt} objects, one per line in \code{file}.
 }
 \description{
-This file format, described at Reference 1, is used in NOAA archives, e.g.
-the one at Reference 2. Note that, of the 4 subtypes that may
-be indicated in the first 2 characters, only type \code{X } is handled. (FIXME?)
-}
-\details{
-A sample file has the following as its first 3 lines.
-
-\if{html}{\out{<div class="sourceCode">}}\preformatted{X 74335 N107715 W1197207110302131  446870001311075 3  11          +0016716B020104                12    01510   51490   81290  121050  17 710  18 650  22 610  25 520  30 490  48 430  88 400 136 380
-X 74329 N107715 W1197207110412131  446870002311075 3  11          +0016616B020104                11    01460   51420   81120  10 610  13 540  14 500  20 460  26 390  59 390 180 400 187 390
-X 74323 N107715 W1197207110427131  446870003311075 3  11          +0016616B020104                10    01590   41500   81250  12 580  15 490  20 410  82 400 121 400 166 400 194 400
-}\if{html}{\out{</div>}}
+This is preliminary function that might be changed through
+the month of February 2025.  Note that, at present, this
+function returns a list of \linkS4class{xbt} objects, as opposed
+to a single \linkS4class{xbt} object. This is because the data
+format holds one profile per line.  Also, please note that
+the documentation used to frame the function (Reference 1)
+does not accurately describe test files (Reference 2), owing
+to a change of year format from the documented two-character
+form to a more modern 4-character form.  Other aspects of
+the documented format are also at odds with the data (see
+issue 2289 on the github site for oce).
 }
 \references{
 \enumerate{
