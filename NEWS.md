@@ -31,6 +31,7 @@
 * Change `read.netcdf()` docs to show how to handle flags (issue #2236).
 * Change `read.netcdf()` to give a way to rename data (issue #2235).
 * Change `read.netcdf()` to handle units better.
+* Add `read.xbt.noaa2()` to handle UBT format (issue #2289).
 * Change `subset,amsr-method()` to handle `"pass"` parameter.
 * Change `subset,ctd-method()` to handle items of unexpected length (issue #2250).
 * Change `tidem()` to stop if there are any non-finite time values (issue #2269).

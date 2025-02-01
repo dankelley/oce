@@ -35,6 +35,7 @@ Other things related to xbt data:
 \code{\link{plot,xbt-method}},
 \code{\link{read.xbt}()},
 \code{\link{read.xbt.noaa1}()},
+\code{\link{read.xbt.noaa2}()},
 \code{\link{summary,xbt-method}},
 \code{\link{xbt}},
 \code{\link{xbt-class}},
