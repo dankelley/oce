@@ -4,26 +4,24 @@ data("xbt")
 
 # See https://github.com/dankelley/oce/issues/2289#issuecomment-2628986610
 test_that("read.xbt.noaa2() works", {
-    if (1 == length(list.files(path = ".", pattern = "local_data"))) {
-        expect_silent(xbts <- read.xbt.noaa2("local_data/xbt/noaa2"))
-        # this file holds 2 xbt profiles
-        expect_equal(2L, length(xbts))
-        xbt1 <- xbts[[1]]
-        expect_equal(12L, length(xbt1[["pressure"]]))
-        expect_equal(
-            xbt1[["depth"]],
-            c(0, 5, 8, 12, 17, 18, 22, 25, 30, 48, 88, 136)
-        )
-        expect_equal(xbt1[["temperature"]], c(15.1, 14.9, 12.9, 10.5, 7.1, 6.5, 6.1, 5.2, 4.9, 4.3, 4, 3.8))
-        expect_equal(xbt1[["longitude"]], -77.25)
-        expect_equal(xbt1[["latitude"]], 43.5833333333)
-        expect_equal(xbt1[["time"]], as.POSIXct("1972-07-11 03:02:00", tz = "UTC"))
-        # don't bother checking everying in the second; just knowing that
-        # the time is right ought to be enough to verify that we are handling
-        # the lines in the data file correctly
-        xbt2 <- xbts[[2]]
-        expect_equal(xbt2[["time"]], as.POSIXct("1972-07-11 04:12:00", tz = "UTC"))
-    }
+    expect_silent(xbts <- read.xbt.noaa2(system.file("extdata", "xbt_noaa2", package = "oce")))
+    # this file holds 2 xbt profiles
+    expect_equal(2L, length(xbts))
+    xbt1 <- xbts[[1]]
+    expect_equal(12L, length(xbt1[["pressure"]]))
+    expect_equal(
+        xbt1[["depth"]],
+        c(0, 5, 8, 12, 17, 18, 22, 25, 30, 48, 88, 136)
+    )
+    expect_equal(xbt1[["temperature"]], c(15.1, 14.9, 12.9, 10.5, 7.1, 6.5, 6.1, 5.2, 4.9, 4.3, 4, 3.8))
+    expect_equal(xbt1[["longitude"]], -77.25)
+    expect_equal(xbt1[["latitude"]], 43.5833333333)
+    expect_equal(xbt1[["time"]], as.POSIXct("1972-07-11 03:02:00", tz = "UTC"))
+    # Don't bother checking everything in the second profile; just knowing that
+    # the time is right ought to be enough to verify that we are handling
+    # the lines in the data file correctly
+    xbt2 <- xbts[[2]]
+    expect_equal(xbt2[["time"]], as.POSIXct("1972-07-11 04:12:00", tz = "UTC"))
 })
 
 test_that("as.xbt() works", {

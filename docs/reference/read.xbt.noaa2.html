@@ -150,6 +150,52 @@ English and French.</p></dd>
     <p>Dan Kelley</p>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Plot the 2 profiles in a built-in data file</span></span></span>
+<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/">oce</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">xbts</span> <span class="op">&lt;-</span> <span class="fu">read.xbt.noaa2</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"xbt_noaa2"</span>, package <span class="op">=</span> <span class="st">"oce"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="kw">for</span> <span class="op">(</span><span class="va">xbt</span> <span class="kw">in</span> <span class="va">xbts</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">xbt</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">xbt</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> xbt summary</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> -----------</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> * Longitude:          -77.25</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> * Latitude:           43.5833333333333</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> * Time:               1972-07-11 03:02:00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> * Data Overview</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                 Min. Mean   Max.   Dim. NAs</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     depth       0    34.083 136    12   0  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     temperature 3.8  7.9417 15.1   12   0  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     pressure    0    34.369 137.16 12   0  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> * Processing Log</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2025-02-02 10:49:50 UTC: `create 'xbt' object`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> xbt summary</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> -----------</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> * Longitude:          -77.25</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> * Latitude:           43.4833333333333</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> * Time:               1972-07-11 04:12:00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> * Data Overview</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                 Min. Mean   Max.   Dim. NAs</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     depth       0    47.455 187    11   0  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     temperature 3.9  6.9818 14.6   11   0  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     pressure    0    47.859 188.62 11   0  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> * Processing Log</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2025-02-02 10:49:50 UTC: `create 'xbt' object`</span>
+<span class="r-plt img"><img src="read.xbt.noaa2-1.png" alt="" width="700" height="700"></span>
+<span class="r-in"><span></span></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 

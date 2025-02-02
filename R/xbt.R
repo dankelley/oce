@@ -907,6 +907,16 @@ read.xbt.noaa2.internal <- function(line, debug = 0) {
 #'
 #' @family things related to xbt data
 #'
+#' @examples
+#' # Plot the 2 profiles in a built-in data file
+#' library(oce)
+#' xbts <- read.xbt.noaa2(system.file("extdata", "xbt_noaa2", package = "oce"))
+#' par(mfrow = c(1, 2))
+#' for (xbt in xbts) {
+#'     summary(xbt)
+#'     plot(xbt)
+#' }
+#'
 #' @references
 #' 1. https://www.ncei.noaa.gov/data/oceans/nodc/formats/UBT_Universal_Bathythermograph.html
 #' 2. https://data.noaa.gov/onestop/collections/details/22c9b8d0-c32b-4824-815b-04ce80078d10

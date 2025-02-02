@@ -45,6 +45,17 @@ form to a more modern 4-character form.  Other aspects of
 the documented format are also at odds with the data (see
 issue 2289 on the github site for oce).
 }
+\examples{
+# Plot the 2 profiles in a built-in data file
+library(oce)
+xbts <- read.xbt.noaa2(system.file("extdata", "xbt_noaa2", package = "oce"))
+par(mfrow = c(1, 2))
+for (xbt in xbts) {
+    summary(xbt)
+    plot(xbt)
+}
+
+}
 \references{
 \enumerate{
 \item https://www.ncei.noaa.gov/data/oceans/nodc/formats/UBT_Universal_Bathythermograph.html
