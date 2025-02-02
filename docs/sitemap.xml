@@ -5,6 +5,7 @@
 <url><loc>https://dankelley.github.io/oce/ISSUE_TEMPLATE.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/LICENSE-text.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/README_developers.html</loc></url>
+<url><loc>https://dankelley.github.io/oce/SECURITY.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/articles/A_oce.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/articles/B_ctd.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/articles/C_adp.html</loc></url>
@@ -405,6 +406,7 @@
 <url><loc>https://dankelley.github.io/oce/reference/read.xbt.edf2.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/read.xbt.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/read.xbt.noaa1.html</loc></url>
+<url><loc>https://dankelley.github.io/oce/reference/read.xbt.noaa2.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/rename.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/rescale.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/resizableLabel.html</loc></url>

@@ -190,11 +190,15 @@ version was named <code>SBEDataProcessing_7.26.4.pdf</code> and had release date
 <span class="r-in"><span>        <span class="st">"%s/%s/%s/%s/CTD_BCD%s667_%03d_1_DN.ODF.nc"</span>,</span></span>
 <span class="r-in"><span>        <span class="va">server</span>, <span class="va">program</span>, <span class="va">subprogram</span>, <span class="va">year</span>, <span class="va">year</span>, <span class="va">cast</span></span></span>
 <span class="r-in"><span>    <span class="op">)</span></span></span>
-<span class="r-in"><span>    <span class="fu">curl</span><span class="fu">::</span><span class="fu"><a href="https://jeroen.r-universe.dev/curl/reference/curl_download.html" class="external-link">curl_download</a></span><span class="op">(</span><span class="va">url</span>, <span class="va">file</span><span class="op">)</span></span></span>
-<span class="r-in"><span>    <span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="read.netcdf.html">read.netcdf</a></span><span class="op">(</span><span class="va">file</span><span class="op">)</span></span></span>
-<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">d</span><span class="op">)</span></span></span>
-<span class="r-in"><span>    <span class="va">dd</span> <span class="op">&lt;-</span> <span class="fu">rename</span><span class="op">(</span><span class="va">d</span>, <span class="st">"ioos"</span><span class="op">)</span></span></span>
-<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">dd</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="va">t</span> <span class="op">&lt;-</span> <span class="kw"><a href="https://rdrr.io/r/base/try.html" class="external-link">try</a></span><span class="op">(</span><span class="fu">curl</span><span class="fu">::</span><span class="fu"><a href="https://jeroen.r-universe.dev/curl/reference/curl_download.html" class="external-link">curl_download</a></span><span class="op">(</span><span class="va">url</span>, <span class="va">file</span><span class="op">)</span>, silent <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">inherits</a></span><span class="op">(</span><span class="va">t</span>, <span class="st">"try-error"</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>        <span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="read.netcdf.html">read.netcdf</a></span><span class="op">(</span><span class="va">file</span><span class="op">)</span></span></span>
+<span class="r-in"><span>        <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">d</span><span class="op">)</span></span></span>
+<span class="r-in"><span>        <span class="va">dd</span> <span class="op">&lt;-</span> <span class="fu">rename</span><span class="op">(</span><span class="va">d</span>, <span class="st">"ioos"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>        <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">dd</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>        <span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">message</a></span><span class="op">(</span><span class="st">"Cannot connect to "</span>, <span class="va">url</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="op">}</span></span></span>
 <span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/base/unlink.html" class="external-link">unlink</a></span><span class="op">(</span><span class="va">file</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Time: 2023-01-05 13:14:45</span>
@@ -210,7 +214,7 @@ version was named <code>SBEDataProcessing_7.26.4.pdf</code> and had release date
 <span class="r-out co"><span class="r-pr">#&gt;</span>     TEMPP901 [°C, ITS-90]     5.6177              7.5868              7.8938              141  0   "TEMPP901"        </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     TEMPPR01 [°C, ITS-90]     5.6177              7.5868              7.8938              141  0   "TEMPPR01"        </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     QTEMP_01                  1                   1                   1                   141  0   "QTEMP_01"        </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     CNDCST01 [S/m]            2.8712              3.2301              3.2974              141  0   "CNDCST01"        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     CNDCST01 [S/m]            2.8711              3.2306              3.2974              141  0   "CNDCST01"        </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     QCNDC_01                  1                   1                   1                   141  0   "QCNDC_01"        </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     OXYOCPVL01 [V]            0.816               2.2953              3.07                141  0   "OXYOCPVL01"      </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     QOXYV_01                  1                   1                   1                   141  0   "QOXYV_01"        </span>
@@ -220,14 +224,14 @@ version was named <code>SBEDataProcessing_7.26.4.pdf</code> and had release date
 <span class="r-out co"><span class="r-pr">#&gt;</span>     QPHPH_01                  1                   1                   1                   141  0   "QPHPH_01"        </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     IRRDUV01 [μEinstein/s/m²] 0.00025             3.1998              69.881              141  5   "IRRDUV01"        </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     QPSAR_01                  1                   1.2837              9                   141  0   "QPSAR_01"        </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     PSALST01 [PSS-78]         29.012              31.173              31.624              141  0   "PSALST01"        </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     PSLTZZ01 [PSS-78]         29.012              31.173              31.624              141  0   "PSLTZZ01"        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     PSALST01 [PSS-78]         29.011              31.178              31.624              141  0   "PSALST01"        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     PSLTZZ01 [PSS-78]         29.011              31.178              31.624              141  0   "PSLTZZ01"        </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     QPSAL_01                  1                   1                   1                   141  0   "QPSAL_01"        </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     POTMCV01 [°C, ITS-90]     5.6177              7.5835              7.888               141  0   "POTMCV01"        </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     QPOTM_01                  1                   1                   1                   141  0   "QPOTM_01"        </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     SIGTEQ01 [kg/m³]          22.852              24.325              24.644              141  0   "SIGTEQ01"        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     SIGTEQ01 [kg/m³]          22.866              24.329              24.644              141  0   "SIGTEQ01"        </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     QSIGP_01                  1                   1                   1                   141  0   "QSIGP_01"        </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     DOXYZZ01 [ml/l]           0.7969              4.5755              7.178               141  0   "DOXYZZ01"        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     DOXYZZ01 [ml/l]           0.7969              4.5753              7.178               141  0   "DOXYZZ01"        </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     QDOXY_01                  1                   1                   1                   141  0   "QDOXY_01"        </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     RecPerBin                 11                  18.27               110                 141  0   "RecPerBin"       </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     QCNTR_02                  1                   1                   1                   141  0   "QCNTR_02"        </span>
@@ -238,8 +242,8 @@ version was named <code>SBEDataProcessing_7.26.4.pdf</code> and had release date
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Processing Log</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2025-01-20 15:03:45 UTC: `Create oce object`</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2025-01-20 15:03:45 UTC: `read.netcdf("/var/folders/8b/l4h64m1j22v5pb7vj049ff140000gn/T//RtmpBGNcCY/file8e9a59c68144.nc")`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2025-02-02 10:49:51 UTC: `Create oce object`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2025-02-02 10:49:51 UTC: `read.netcdf("/var/folders/8b/l4h64m1j22v5pb7vj049ff140000gn/T//Rtmpmnlk9x/filec68b45da821b.nc")`</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Time: 2023-01-05 13:14:45</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Data Overview</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -250,16 +254,16 @@ version was named <code>SBEDataProcessing_7.26.4.pdf</code> and had release date
 <span class="r-out co"><span class="r-pr">#&gt;</span>     temperature [°C, ITS-90]  5.6177              7.5868              7.8938              141  0   "TEMPS901"        </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     temperature2 [°C, ITS-90] 5.6177              7.5868              7.8938              141  0   "TEMPP901"        </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     temperature3 [°C, ITS-90] 5.6177              7.5868              7.8938              141  0   "TEMPPR01"        </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     conductivity [S/m]        2.8712              3.2301              3.2974              141  0   "CNDCST01"        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     conductivity [S/m]        2.8711              3.2306              3.2974              141  0   "CNDCST01"        </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     oxygenVoltage [V]         0.816               2.2953              3.07                141  0   "OXYOCPVL01"      </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     chlorophyllA [mg/m³]      1.1592              1.6785              4.3245              141  0   "CPHLPR01"        </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     pH                        8.187               8.281               8.784               141  0   "PHXXZZ01"        </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     PAR [μEinstein/s/m²]      0.00025             3.1998              69.881              141  5   "IRRDUV01"        </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     salinity [PSS-78]         29.012              31.173              31.624              141  0   "PSALST01"        </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     salinity2 [PSS-78]        29.012              31.173              31.624              141  0   "PSLTZZ01"        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     salinity [PSS-78]         29.011              31.178              31.624              141  0   "PSALST01"        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     salinity2 [PSS-78]        29.011              31.178              31.624              141  0   "PSLTZZ01"        </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     theta [°C, ITS-90]        5.6177              7.5835              7.888               141  0   "POTMCV01"        </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     sigmaTheta [kg/m³]        22.852              24.325              24.644              141  0   "SIGTEQ01"        </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     oxygen [ml/l]             0.7969              4.5755              7.178               141  0   "DOXYZZ01"        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     sigmaTheta [kg/m³]        22.866              24.329              24.644              141  0   "SIGTEQ01"        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     oxygen [ml/l]             0.7969              4.5753              7.178               141  0   "DOXYZZ01"        </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     recordsPerBin             11                  18.27               110                 141  0   "RecPerBin"       </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     quality                   0                   0                   0                   141  0   "QCFF_01"         </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     time                      2023-01-05 13:14:45 2023-01-05 13:14:45 2023-01-05 13:14:45 1    0   "time"            </span>
@@ -283,9 +287,9 @@ version was named <code>SBEDataProcessing_7.26.4.pdf</code> and had release date
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Processing Log</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2025-01-20 15:03:45 UTC: `Create oce object`</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2025-01-20 15:03:45 UTC: `read.netcdf("/var/folders/8b/l4h64m1j22v5pb7vj049ff140000gn/T//RtmpBGNcCY/file8e9a59c68144.nc")`</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2025-01-20 15:03:45 UTC: `rename(..., "/private/var/folders/8b/l4h64m1j22v5pb7vj049ff140000gn/T/RtmphGWLmC/temp_libpath8ac731ca74ce/oce/extdata/dictionary_ioos.csv")`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2025-02-02 10:49:51 UTC: `Create oce object`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2025-02-02 10:49:51 UTC: `read.netcdf("/var/folders/8b/l4h64m1j22v5pb7vj049ff140000gn/T//Rtmpmnlk9x/filec68b45da821b.nc")`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2025-02-02 10:49:51 UTC: `rename(..., "/private/var/folders/8b/l4h64m1j22v5pb7vj049ff140000gn/T/RtmpC4FjC1/temp_libpathb78a4ca9aa5b/oce/extdata/dictionary_ioos.csv")`</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

@@ -35,7 +35,9 @@ angleShift <- function(angle) {
 # Change some projection names, and fix problem with ortho (which lacks full inverse coverage
 # unless a spherical earth is used).
 repairProjection <- function(projection, longlatProj, debug = getOption("oceDebug")) {
-    oceDebug(debug, "repairProjection(projection=\"", projection, "\", longlatProj=\"", longlatProj, "\") START\n", sep = "", unindent = 1)
+    oceDebug(debug, "repairProjection() START\n", sep = "", unindent = 1)
+    oceDebug(debug, "    given projection  \"", projection, "\"\n", sep = "")
+    oceDebug(debug, "    given longlatProj \"", longlatProj, "\"\n", sep = "")
     if (grepl("latlon( |$)", projection)) {
         warning("converting old name 'latlon' to new name 'latlong'\n")
         projection <- gsub("latlon", "latlong", projection)
@@ -47,24 +49,25 @@ repairProjection <- function(projection, longlatProj, debug = getOption("oceDebu
     if (packageVersion("sf") >= "1.0.0") {
         if (grepl("ortho", projection)) {
             oceDebug(debug, "Handling sf version >= 1.0.0 with +proj=ortho: change to spherical earth\n")
-            if (!grepl("+f=", projection)) {
-                oceDebug(debug, "+f= not present in proj, so adding it\n")
+            if (!grepl("\\+f[ ]*=", projection)) {
+                oceDebug(debug, "  +f= not present in projection, so adding it\n")
                 projection <- paste(projection, "+f=0")
-                longlatProj <- paste(longlatProj, "+f=0")
-                oceDebug(debug, "  new projection= \"", projection, "\"\n")
-                oceDebug(debug, "  new longlatProj=\"", longlatProj, "\"\n")
+                oceDebug(debug, "    new projection: \"", projection, "\"\n")
             }
-            if (grepl("+a=", projection)) {
-                a <- gsub("^(.*)+a=([^ ])(.*)$", "\\2", projection)
-                longlatProj <- paste0(longlatProj, " +a=", a)
-                oceDebug(debug, "proj had +a, so inserting that in longlatProj\n")
-                oceDebug(debug, "  new longlatProj=\"", longlatProj, "\"\n")
-            } else {
-                oceDebug(debug, "+a= not present in proj, so adding it\n")
+            if (!grepl("\\+f[ ]*=", longlatProj)) {
+                oceDebug(debug, "  +f= not present in longlatProj, so adding it\n")
+                longlatProj <- paste(longlatProj, "+f=0")
+                oceDebug(debug, "    new longlatProj: \"", longlatProj, "\"\n")
+            }
+            if (!grepl("\\+a[ ]*=", projection)) {
+                oceDebug(debug, "  +a= not present in projection, so adding it\n")
                 projection <- paste(projection, "+a=6371")
+                oceDebug(debug, "    new projection: \"", projection, "\"\n")
+            }
+            if (!grepl("\\+a[ ]*=", longlatProj)) {
+                oceDebug(debug, "  +a= not present in longlatProj, so adding it\n")
                 longlatProj <- paste(longlatProj, "+a=6371")
-                oceDebug(debug, "  new projection= \"", projection, "\"\n")
-                oceDebug(debug, "  new longlatProj=\"", longlatProj, "\"\n")
+                oceDebug(debug, "    new longlatProj: \"", longlatProj, "\"\n")
             }
         }
     }
@@ -2027,16 +2030,18 @@ mapPlot <- function(
     projection = "+proj=moll", tissot = FALSE, trim = TRUE,
     debug = getOption("oceDebug"), ...) {
     debug <- max(0, min(debug, 3))
-    oceDebug(debug, "mapPlot(longitude, latitude,",
+    oceDebug(debug, "mapPlot(...,",
         argShow(longitudelim),
         argShow(latitudelim),
         argShow(type),
         if (inherits(projection, "crs")) {
-            paste("projection=sf::st_crs(\"", projection$input, "\"),", sep = "")
-        } else if (!missing(projection)) paste("projection=", projection, "\",", sep = ""),
+            paste0("projection=\"sf::st_crs(\"", projection$input, "\"),")
+        } else if (!missing(projection)) {
+            paste0("projection=\"", projection, "\",")
+        },
         argShow(grid),
         argShow(geographical),
-        ", ...) START\n",
+        "...) START\n",
         sep = "", unindent = 1
     )
     dots <- list(...)
@@ -2074,7 +2079,7 @@ mapPlot <- function(
         if (is.na(tmp)) {
             oceDebug(debug, "original projection\n      '", projection, "'\n  not converted, owing to an error with sf::st_crs()\n", sep = "")
         } else {
-            oceDebug(debug, "used sf::st_crs() to convert projection to \"", tmp, "\"\n", sep = "")
+            oceDebug(debug, "sf::st_crs() set projection to\n    \"", tmp, "\"\n", sep = "")
             projection <- tmp
         }
     }
@@ -3040,7 +3045,11 @@ mapScalebar <- function(
     lines(rep(xBar + 1.5 * cinx + frac, 2), yBar - ciny + c(-ciny, ciny) / 3,
         col = col, lwd = lwd
     )
-    label <- sprintf("%.0f km", length)
+    label <- if (length < 1) { # represent down to 1m, if value is under 100m
+        sprintf("%g m", 1000 * length)
+    } else {
+        sprintf("%g km", length)
+    }
     # 1753 text(xBar+cinx, yBar-2.2*ciny, pos=4, adj=0, offset=0, label, cex=cex, col=2)#col)
     x <- xBar + 1.5 * cinx + frac / 2
     y <- yBar - 1.7 * ciny
