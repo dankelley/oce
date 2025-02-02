@@ -2045,6 +2045,21 @@ mapPlot <- function(
         sep = "", unindent = 1
     )
     dots <- list(...)
+    dotsnames <- names(dots)
+    if (!missing(longitudelim) && !identical(order(longitudelim), 1:2)) {
+        warning("reordering longitudelim\n")
+        longitudelim <- sort(longitudelim)
+    }
+    if (!missing(latitudelim) && !identical(order(latitudelim), 1:2)) {
+        warning("reordering latitudelim\n")
+        latitudelim <- sort(latitudelim)
+    }
+    if ("xlim" %in% dotsnames && !identical(order(dots$xlim), 1:2)) {
+        stop("xlim elements are not in order.  (Advice: use longitudelim instead of xlim.)")
+    }
+    if ("ylim" %in% dotsnames && !identical(order(dots$ylim), 1:2)) {
+        stop("ylim elements are not in order.  (Advice: use latitudelim instead of ylim.)")
+    }
     if (1 == length(grid)) {
         grid <- rep(grid, 2)
     }
@@ -2348,6 +2363,7 @@ mapPlot <- function(
         # world map in mollweide projection, the bounding points will be "in
         # space", so we must check for this when we calculate the span.
         usr <- par("usr")
+        oceDebug(debug, vectorShow(usr))
         # xll <- usr[1]
         # yll <- usr[3]
         # xur <- usr[2]
