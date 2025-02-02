@@ -2027,16 +2027,18 @@ mapPlot <- function(
     projection = "+proj=moll", tissot = FALSE, trim = TRUE,
     debug = getOption("oceDebug"), ...) {
     debug <- max(0, min(debug, 3))
-    oceDebug(debug, "mapPlot(longitude, latitude,",
+    oceDebug(debug, "mapPlot(...,",
         argShow(longitudelim),
         argShow(latitudelim),
         argShow(type),
         if (inherits(projection, "crs")) {
-            paste("projection=sf::st_crs(\"", projection$input, "\"),", sep = "")
-        } else if (!missing(projection)) paste("projection=", projection, "\",", sep = ""),
+            paste0("projection=\"sf::st_crs(\"", projection$input, "\"),")
+        } else if (!missing(projection)) {
+            paste0("projection=\"", projection, "\",")
+        },
         argShow(grid),
         argShow(geographical),
-        ", ...) START\n",
+        "...) START\n",
         sep = "", unindent = 1
     )
     dots <- list(...)
