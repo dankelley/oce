@@ -918,12 +918,12 @@ read.rsk <- function(
         # Get time stamp. Note the trick of making it floating-point
         # to avoid the problem that R lacks 64 bit integers.
         fieldsAll <- DBI::dbListFields(con, "data")
-        cat(vectorShow(fieldsAll, n = -1))
-        cat("FIXME: rsk.R:903 mark 'a'\n")
+        #issue2291> cat(vectorShow(fieldsAll, n = -1))
+        #issue2291> cat("FIXME: rsk.R:903 mark 'a'\n")
         fields <- fieldsAll[!grepl("tstamp", fieldsAll)]
-        cat(vectorShow(fields, n = -1))
+        #issue2291> cat(vectorShow(fields, n = -1))
         channelIDs <- as.integer(gsub("channel", "", fields))
-        cat(vectorShow(channelIDs, n = -1))
+        #issue2291> cat(vectorShow(channelIDs, n = -1))
         sql_fields <- if (packageVersion("RSQLite") < "2.0") "1.0*tstamp AS tstamp" else "tstamp"
         sql_fields <- paste(c(sql_fields, fields), collapse = ",")
         sql_fields <- paste("SELECT", sql_fields, "FROM data")
@@ -1033,11 +1033,11 @@ read.rsk <- function(
         if (!retainDerived) {
             channelsTableKeep <- channelsTableKeep & channelsTable$isMeasured == 1
         }
-        cat("next is channelsTable (original)\n")
-        print(channelsTable)
+        #issue2291> cat("next is channelsTable (original)\n")
+        #issue2291> print(channelsTable)
         channelsTable <- channelsTable[channelsTableKeep, ]
-        cat("next is channelsTable (trimmed)\n")
-        print(channelsTable)
+        #issue2291> cat("next is channelsTable (trimmed)\n")
+        #issue2291> print(channelsTable)
         # NOTE: some longnames have UTF-8 characters, and/or
         # spaces. Should coerce to ascii with no spaces, or at least
         # recognize fields and rename (e.g. `dissolved O2` should
@@ -1046,17 +1046,17 @@ read.rsk <- function(
         Encoding(names) <- "latin1"
         names <- iconv(names, "latin1", "ASCII", sub = "")
         names[names == "dissolvedo"] <- "oxygen" # fix a weird name
-        cat(vectorShow(names, n = -1))
+        #issue2291> cat(vectorShow(names, n = -1))
         names <- gsub(" (.)", "\\U\\1", names, perl = TRUE)
-        cat(vectorShow(names, n = -1))
-        cat("next is head(data)\n")
-        print(head(data))
-        cat("next is units\n")
+        #issue2291> cat(vectorShow(names, n = -1))
+        #issue2291> cat("next is head(data)\n")
+        #issue2291> print(head(data))
+        #issue2291> cat("next is units\n")
         unitsRsk <- channelsTable$units
-        cat(vectorShow(unitsRsk, n = -1))
+        #issue2291> cat(vectorShow(unitsRsk, n = -1))
         dataNamesOriginal <- c("-", channelsTable$shortName)
-        cat("next is dataNamesOriginal\n")
-        print(dataNamesOriginal)
+        #issue2291> cat("next is dataNamesOriginal\n")
+        #issue2291> print(dataNamesOriginal)
         # 1491> message("below is dataNamesOriginal: (at start)");print(dataNamesOriginal)
         # [issue 1483] print(cbind(channelsTable,isMeasured))
         #<> # FIXME: I don't think this is right 2024-02-03 (DEK)
@@ -1072,8 +1072,8 @@ read.rsk <- function(
             }
         }
         names(data) <- names
-        cat("next is head(data) after assigning named\n")
-        print(head(data))
+        #issue2291> cat("next is head(data) after assigning named\n")
+        #issue2291> print(head(data))
         data <- as.list(data)
         instruments <- RSQLite::dbReadTable(con, "instruments")
         serialNumber <- instruments$serialID
@@ -1082,10 +1082,10 @@ read.rsk <- function(
         sampleInterval <- schedules$samplingPeriod / 1000 # stored as milliseconds in rsk
         RSQLite::dbDisconnect(con)
         res@data$time <- time
-        cat("L1066 res@data:\n")
-        print(str(res@data))
+        #issue2291> cat("L1066 res@data:\n")
+        #issue2291> print(str(res@data))
         res@metadata$dataNamesOriginal <- dataNamesOriginal
-        cat("DAN L1069 inserting data; names= ", paste(names, collapse = ","), "\n")
+        #issue2291> cat("DAN L1069 inserting data; names= ", paste(names, collapse = ","), "\n")
         for (iname in seq_along(names)) {
             res@data[[names[iname]]] <- data[[names[iname]]]
             res@metadata$units[[names[iname]]] <- unitFromStringRsk(unitsRsk[iname])
@@ -1273,8 +1273,8 @@ read.rsk <- function(
         for (iChannel in 1:numberOfChannels) {
             channelsSub[[iChannel]] <- channels[[iChannel]][keep]
         }
-        cat("FIXME DAN rsk.R:1231 'c' next is channels\n")
-        print(channels)
+        #issue2291> cat("FIXME DAN rsk.R:1231 'c' next is channels\n")
+        #issue2291> print(channels)
         names(channelsSub) <- channelNames
         res <- as.rsk(time,
             columns = channelsSub,
