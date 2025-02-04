@@ -15,6 +15,7 @@ read.rsk(
   tzOffsetLocation,
   patm = FALSE,
   allTables = TRUE,
+  retainDerived = TRUE,
   processingLog,
   debug = getOption("oceDebug")
 )
@@ -68,6 +69,10 @@ for RBR instruments that record absolute pressure; see \dQuote{Details}.}
 all the non-empty tables in the database (pruned of \code{blob} columns) in the
 \code{metadata} slot of the returned object. This may be useful for detailed
 analysis.}
+
+\item{retainDerived}{logical value, TRUE by default, indicating whether to
+save derived quantities such as sea pressure, salinity, etc. Until version
+1.8-4, these derived quantities were not retained.}
 
 \item{processingLog}{if provided, the action item to be stored in the log.
 This is typically only provided for internal calls; the default that it provides

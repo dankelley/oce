@@ -31,6 +31,7 @@
 * Change `read.netcdf()` docs to show how to handle flags (issue #2236).
 * Change `read.netcdf()` to give a way to rename data (issue #2235).
 * Change `read.netcdf()` to handle units better.
+* Change `read.rsk()` to handle a new file (issue #2291).
 * Add `read.xbt.noaa2()` to handle UBT format (issue #2289).
 * Change `subset,amsr-method()` to handle `"pass"` parameter.
 * Change `subset,ctd-method()` to handle items of unexpected length (issue #2250).

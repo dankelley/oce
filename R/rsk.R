@@ -5,13 +5,13 @@
 #' This class stores Ruskin data, from RBR (see reference 1).
 #'
 #' A [rsk-class] object may be read with [read.rsk()] or created with
-#' [as.rsk()], but the former method is much preferred because it
-#' retains the entirety of the information in the file.
-#' Plots can be made with [plot,rsk-method()], while
-#' [summary,rsk-method()] produces statistical summaries and `show`
-#' produces overviews.   If atmospheric pressure has not been removed from the
-#' data, [rskPatm()] may provide guidance as to its value,
-#' but this is no equal to record-keeping at sea.
+#' [as.rsk()], but the former method is much preferred because it retains the
+#' entirety of the information in the file. Plots can be made with
+#' [plot,rsk-method()], while [summary,rsk-method()] produces statistical
+#' summaries and `show` produces overviews.   If atmospheric pressure has not
+#' been removed from the data, [rskPatm()] may provide guidance as to its value,
+#' but this is no equal to using relevant observations or re-analysis
+#' values.
 #'
 #' @templateVar class rsk
 #'
@@ -114,8 +114,12 @@ setMethod(
         m <- object@metadata
         mnames <- names(m)
         cat("rsk summary\n-----------\n", ...)
+        if ("dbInfo" %in% names(m)) {
+            dbInfo <- m$dbInfo
+            cat("* Database:      version ", dbInfo$version, ", type \"", dbInfo$type, "\"\n", ..., sep = "")
+        }
         cat("* Instrument:    model ", m$model,
-            " serial number ", m$serialNumber, "\n",
+            ", serial number ", m$serialNumber, "\n",
             sep = ""
         )
         if ("pressureAtmospheric" %in% mnames) {
@@ -310,6 +314,14 @@ unitFromStringRsk <- function(s) {
         # 2022-06-28 else if (grepl("\\xc2\\xb5Mol/m\\xc2\\xb2/s", s)) # micr Mol/m^2/s
     } else if (grepl("\u03bcMol/m\u00b2/s", s)) {
         list(unit = expression(mu * mol / m^2 / s), scale = "")
+    } else if (grepl("^m$", s)) {
+        list(unit = expression(m), scale = "")
+    } else if (grepl("^m/s$", s)) {
+        list(unit = expression(m / s), scale = "")
+    } else if (grepl("^PSU", s)) {
+        list(unit = expression(), scale = "PSU")
+    } else if (grepl("^\u00B5S/cm$", s)) { # 'micro' sign, not Greek mu
+        list(unit = expression(mu * S / cm), scale = "")
     } else if (is.na(s)) {
         list(unit = expression(), scale = "?")
     } else {
@@ -697,6 +709,10 @@ setMethod(
 #' `metadata` slot of the returned object. This may be useful for detailed
 #' analysis.
 #'
+#' @param retainDerived logical value, TRUE by default, indicating whether to
+#' save derived quantities such as sea pressure, salinity, etc. Until version
+#' 1.8-4, these derived quantities were not retained.
+#'
 #' @param processingLog if provided, the action item to be stored in the log.
 #' This is typically only provided for internal calls; the default that it provides
 #' is better for normal calls by a user.
@@ -728,7 +744,9 @@ setMethod(
 read.rsk <- function(
     file, from = 1, to, by = 1, type, encoding = NA,
     tz = getOption("oceTz", default = "UTC"), tzOffsetLocation,
-    patm = FALSE, allTables = TRUE, processingLog, debug = getOption("oceDebug")) {
+    patm = FALSE, allTables = TRUE,
+    retainDerived = TRUE,
+    processingLog, debug = getOption("oceDebug")) {
     if (missing(file)) {
         stop("must supply 'file'")
     }
@@ -783,7 +801,7 @@ read.rsk <- function(
     measurementStart <- measurementEnd <- measurementDeltat <- NULL
     pressureAtmospheric <- NA
     res <- new("rsk", filename = filename)
-    if (!missing(type) && type == "rsk") {
+    if (!missing(type) && type == "rsk") { # handle Ruskin files (sqlite3 files with names ending in .rsk)
         if (!requireNamespace("RSQLite", quietly = TRUE)) {
             stop("must install.packages(\"RSQLite\") to read rsk data")
         }
@@ -794,7 +812,7 @@ read.rsk <- function(
         # Advanced users might want to see what tables are in this file.
         tableNames <- RSQLite::dbListTables(con)
         oceDebug(
-            debug, "This file had the following tables: ",
+            debug, "Found the following data tables: ",
             paste(sort(tableNames), collapse = ", "), "\n"
         )
         if (allTables) {
@@ -892,17 +910,20 @@ read.rsk <- function(
             pressureAtmospheric <- 10.1325
         }
         # message("NEW: pressureAtmospheric:", pressureAtmospheric)
-        oceDebug(debug, "after studying the RSK file, now have pressureAtmospheric=", pressureAtmospheric, "\n")
+
         # From notes in comments above, it seems necessary to order by
         # timestamp (tstamp). Ordering does not seem to be an option for
         # dbReadTable(), so we use dbFetch().
         #
         # Get time stamp. Note the trick of making it floating-point
         # to avoid the problem that R lacks 64 bit integers.
-        fields <- DBI::dbListFields(con, "data")
-        message("FIXME: rsk.R:903 mark 'a'")
-        fields <- fields[!grepl("tstamp", fields)]
+        fieldsAll <- DBI::dbListFields(con, "data")
+        cat(vectorShow(fieldsAll, n = -1))
+        cat("FIXME: rsk.R:903 mark 'a'\n")
+        fields <- fieldsAll[!grepl("tstamp", fieldsAll)]
         cat(vectorShow(fields, n = -1))
+        channelIDs <- as.integer(gsub("channel", "", fields))
+        cat(vectorShow(channelIDs, n = -1))
         sql_fields <- if (packageVersion("RSQLite") < "2.0") "1.0*tstamp AS tstamp" else "tstamp"
         sql_fields <- paste(c(sql_fields, fields), collapse = ",")
         sql_fields <- paste("SELECT", sql_fields, "FROM data")
@@ -994,49 +1015,53 @@ read.rsk <- function(
         # Need to check if there is a datasetID column (for rskVersion >= 1.12.2)
         # If so, for now just extract it from the data matrix
         hasDatasetID <- sum(grep("datasetID", names(data))) > 0
+        oceDebug(debug, "hasDatasetID=", hasDatasetID, "\n")
         if (hasDatasetID) {
             datasetID <- data[, grep("datasetID", names(data))]
             data <- data[, -grep("datasetID", names(data)), drop = FALSE]
         }
         data <- data[, -1L, drop = FALSE] # drop the corrupted time column
         # Get column names from the 'channels' table.
-        names <- tolower(RSQLite::dbReadTable(con, "channels")$longName)
-        channelsTMP <- RSQLite::dbReadTable(con, "channels")
-        message("FIXME DAN rsk.R:1005 'd'")
-        TMP <- as.integer(gsub("channel", "", fields))
-        cat(vectorShow(TMP, n = -1))
-        cat(vectorShow(as.integer(gsub("channel", "", fields)), n = -1))
-        cat(vectorShow(channelsTMP$channelID, n = -1))
-        cat(vectorShow(channelsTMP$longName, n = -1))
-        keepTMP <- channelsTMP$channelID %in% TMP
-        print(channelsTMP[keepTMP, ])
-        print(head(data))
-        DAN<-data
-        names(DAN) <- channelsTMP$longNamePlainText[keepTMP]
-        print(channelsTMP[keepTMP, c("shortName", "longNamePlainText")])
-        print(head(DAN))
-        plot(DAN[, "Temperature"], -DAN[, "Sea pressure"])
-        # FIXME: some longnames have UTF-8 characters, and/or
+        channelsTable <- RSQLite::dbReadTable(con, "channels")
+        # Subset channelsTable to only things that are in the data and,
+        # possibly also subsetting for whether data are derived, depending
+        # on the value of the retainDerived parameter (added for 1.8-4).
+        channelsTableKeep <- sapply(
+            seq_len(nrow(channelsTable)),
+            \(i) channelsTable[i, "channelID"] %in% channelIDs
+        )
+        if (!retainDerived) {
+            channelsTableKeep <- channelsTableKeep & channelsTable$isMeasured == 1
+        }
+        cat("next is channelsTable (original)\n")
+        print(channelsTable)
+        channelsTable <- channelsTable[channelsTableKeep, ]
+        cat("next is channelsTable (trimmed)\n")
+        print(channelsTable)
+        # NOTE: some longnames have UTF-8 characters, and/or
         # spaces. Should coerce to ascii with no spaces, or at least
         # recognize fields and rename (e.g. `dissolved O2` should
         # just be `oxygen`)
-        names <- gsub(" ", "", names, fixed = TRUE) # remove spaces
+        names <- tolower(channelsTable$longName)
         Encoding(names) <- "latin1"
         names <- iconv(names, "latin1", "ASCII", sub = "")
-        # if dissolvedo is a name call it oxygen
-        names[which(match(names, "dissolvedo") == 1)] <- "oxygen"
-        channelsTable <- RSQLite::dbReadTable(con, "channels")
-        if ("isMeasured" %in% names(channelsTable)) {
-            isMeasured <- channelsTable$isMeasured == 1
-        } else {
-            isMeasured <- channelsTable$isDerived == 0
-            # warning("old Ruskin file detected; if problems arise, update file with Ruskin software")
-        }
-        dataNamesOriginal <- c("-", channelsTable$shortName[isMeasured])
+        names[names == "dissolvedo"] <- "oxygen" # fix a weird name
+        cat(vectorShow(names, n = -1))
+        names <- gsub(" (.)", "\\U\\1", names, perl = TRUE)
+        cat(vectorShow(names, n = -1))
+        cat("next is head(data)\n")
+        print(head(data))
+        cat("next is units\n")
+        unitsRsk <- channelsTable$units
+        cat(vectorShow(unitsRsk, n = -1))
+        dataNamesOriginal <- c("-", channelsTable$shortName)
+        cat("next is dataNamesOriginal\n")
+        print(dataNamesOriginal)
         # 1491> message("below is dataNamesOriginal: (at start)");print(dataNamesOriginal)
         # [issue 1483] print(cbind(channelsTable,isMeasured))
-        names <- names[isMeasured] # only take names of things that are in the data table
-        unitsRsk <- channelsTable$units[isMeasured]
+        #<> # FIXME: I don't think this is right 2024-02-03 (DEK)
+        #<> names <- names[isMeasured] # only take names of things that are in the data table
+        #<> unitsRsk <- channelsTable$units[isMeasured]
         # Check for duplicated names, and append digits to make unique
         if (sum(duplicated(names)) > 0) {
             for (n in names) {
@@ -1047,6 +1072,8 @@ read.rsk <- function(
             }
         }
         names(data) <- names
+        cat("next is head(data) after assigning named\n")
+        print(head(data))
         data <- as.list(data)
         instruments <- RSQLite::dbReadTable(con, "instruments")
         serialNumber <- instruments$serialID
@@ -1055,8 +1082,10 @@ read.rsk <- function(
         sampleInterval <- schedules$samplingPeriod / 1000 # stored as milliseconds in rsk
         RSQLite::dbDisconnect(con)
         res@data$time <- time
+        cat("L1066 res@data:\n")
+        print(str(res@data))
         res@metadata$dataNamesOriginal <- dataNamesOriginal
-        message("DAN L1059 inserting data")
+        cat("DAN L1069 inserting data; names= ", paste(names, collapse = ","), "\n")
         for (iname in seq_along(names)) {
             res@data[[names[iname]]] <- data[[names[iname]]]
             res@metadata$units[[names[iname]]] <- unitFromStringRsk(unitsRsk[iname])
@@ -1165,7 +1194,7 @@ read.rsk <- function(
         res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep = "", collapse = ""))
         oceDebug(debug, "END read.rsk()\n", sep = "", unindent = 1)
         return(res)
-    } else if (!(missing(type)) && type == "txt") {
+    } else if (!(missing(type)) && type == "txt") { # Handle text files
         oceDebug("RBR txt format\n")
         oceDebug(debug, "Format is Rtext Ruskin txt export", "\n")
         # FIXME: reading a  lot if there are lots of "Events". Is there a better way to do this?
@@ -1199,7 +1228,7 @@ read.rsk <- function(
             channels[[iChannel]] <- d[, iChannel + 2]
         }
         names(channels) <- channelNames
-        message("FIXME DAN rsk.R:1186 'b'")
+        cat("FIXME DAN rsk.R:1186 'b' next is channels\n")
         print(channels)
         # Now do subsetting
         if (inherits(from, "POSIXt") || inherits(from, "character")) {
@@ -1244,7 +1273,7 @@ read.rsk <- function(
         for (iChannel in 1:numberOfChannels) {
             channelsSub[[iChannel]] <- channels[[iChannel]][keep]
         }
-        message("FIXME DAN rsk.R:1231 'c'")
+        cat("FIXME DAN rsk.R:1231 'c' next is channels\n")
         print(channels)
         names(channelsSub) <- channelNames
         res <- as.rsk(time,
@@ -1492,6 +1521,7 @@ rskToc <- function(dir, from, to, debug = getOption("oceDebug")) {
     if (length(tbl.files) < 1) {
         stop("could not locate a .TBL file in direcory ", dir)
     }
+    oceDebug(debug, "rskToc() START\n", unindent = 1)
     tref <- as.POSIXct("2010-01-01", tz = "UTC") # arbitrary time, to make integers
     file.code <- NULL
     startTime <- NULL
@@ -1534,5 +1564,6 @@ rskToc <- function(dir, from, to, debug = getOption("oceDebug")) {
         startTime <- startTime[ok]
         oceDebug(debug, "taking into account the times, ended up with", length(file.code), "files\n")
     }
+    oceDebug(debug, "END rskToc()\n", unindent = 1)
     list(filename = filename, startTime = startTime)
 }
