@@ -64,6 +64,7 @@ object of class <code>rsk</code>.</p>
 <span>  <span class="va">tzOffsetLocation</span>,</span>
 <span>  patm <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  allTables <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  retainDerived <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  <span class="va">processingLog</span>,</span>
 <span>  debug <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"oceDebug"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -140,6 +141,12 @@ for RBR instruments that record absolute pressure; see “Details”.</p></dd>
 all the non-empty tables in the database (pruned of <code>blob</code> columns) in the
 <code>metadata</code> slot of the returned object. This may be useful for detailed
 analysis.</p></dd>
+
+
+<dt id="arg-retainderived">retainDerived<a class="anchor" aria-label="anchor" href="#arg-retainderived"></a></dt>
+<dd><p>logical value, TRUE by default, indicating whether to
+save derived quantities such as sea pressure, salinity, etc. Until version
+1.8-4, these derived quantities were not retained.</p></dd>
 
 
 <dt id="arg-processinglog">processingLog<a class="anchor" aria-label="anchor" href="#arg-processinglog"></a></dt>
