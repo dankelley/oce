@@ -1608,6 +1608,7 @@ read.argo <- function(file, encoding = NA, debug = getOption("oceDebug"), proces
             list(unit = expression(degree * W), scale = "")
         }
     }
+    # Note: for issue 2293, we may change the dimensionality of mtime later
     if (maybeLC("MTIME", lc) %in% varNames) {
         res@data$mtime <- ncdf4::ncvar_get(file, maybeLC("MTIME", lc))
         res@metadata$dataNamesOriginal$mtime <- "MTIME"
@@ -1741,6 +1742,7 @@ read.argo <- function(file, encoding = NA, debug = getOption("oceDebug"), proces
             res@metadata$units$pressureAdjustedError <- list(unit = expression(dbar), scale = "")
         }
     }
+
     # Fix up names of flags. This became required with changes made to argoNames2oceNames() in Dec 17-18, 2016. Arguably, I
     # should find out why the change occurred, but fixing the names now is just as easy, and might be clearer to the reader.
     names(res@metadata$flags) <- gsub("QC$", "", names(res@metadata$flags))
@@ -1888,6 +1890,12 @@ read.argo <- function(file, encoding = NA, debug = getOption("oceDebug"), proces
             }
             res@metadata[[ocename]] <- value
         }
+    }
+    # For issue 2293, fix up the dimension of mtime
+    #message("DAN 1746")
+    if (is.matrix(res@data$pressure)) {
+        #message("DAN 1747")
+        dim(res@data$mtime) <- dim(res@data$pressure)
     }
     # Record a log item
     res@processingLog <- processingLogAppend(res@processingLog, paste("read.argo(file=\"", filename, "\")", sep = ""))
