@@ -1892,9 +1892,8 @@ read.argo <- function(file, encoding = NA, debug = getOption("oceDebug"), proces
         }
     }
     # For issue 2293, fix up the dimension of mtime
-    #message("DAN 1746")
-    if (is.matrix(res@data$pressure)) {
-        #message("DAN 1747")
+    if ("mtime" %in% names(res@data) && is.matrix(res@data$pressure)) {
+        oceDebug(debug, "reforming dimensionality of @data$mtime (for issue 2293)\n")
         dim(res@data$mtime) <- dim(res@data$pressure)
     }
     # Record a log item
