@@ -51,14 +51,22 @@ as the authors fix bugs or add features that are motivated by day-to-day usage.
 This is the branch favoured by users who need new features or who would wish to
 contribute to Oce development.
 
-The easy way to install the `"develop"` branch is to execute the following
-commands in R.
+To install a `develop` version that is usually under a week old, try using
+
+    install.packages("oce", repos = c("https://dankelley.r-universe.dev", "https://cloud.r-project.org"))
+
+which does not require that you have compilers for C++, Fortran, etc. on your
+system.  However, if you have those things, you can also try building straight
+from the github source using
 
     remotes::install_github("dankelley/oce", ref="develop")
 
-and most readers should also install Ocedata, with
+
+Note that most readers should also install Ocedata, with
 
     remotes::install_github("dankelley/ocedata", ref="main")
+
+which does not require compilers for C++, Fortran, etc.
 
 ## Evolution of oce
 
