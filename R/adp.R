@@ -4474,14 +4474,13 @@ adpConvertRawToNumeric <- function(object = NULL, variables = NULL, debug = getO
 #' contain bottom ranges. Commonly, [handleFlags()] would then be used to remove
 #' such data.
 #'
-#' If the object's `oceCoordinate` is `"beam"`, this works by using
-#' [smooth.spline()] on the time-dependent bottom ranges, beam-by-beam. If
-#' `oceCoordinate` is `"enu"`, `"xyz"`, or `"other"`, a [smooth.spline()] is
-#' used on a time-dependent bottom range averaged across all the beams. The `df`
-#' value of the present function is passed to [smooth.spline()], as a way to
-#' control smoothness.  Once this is done, data within distance of \eqn{1-trim}
-#' multiplied by the bottom range are flagged as being bad.  The default value
-#' of `trim` is 0.15, which is close to the value (0.134) of
+#' If the object's `oceCoordinate` is `"beam"`, this works by smoothing the
+#' time-dependent bottom ranges (as controlled by the `smoother` and perhaps the
+#' `df` parameters), beam-by-beam. If `oceCoordinate` is `"enu"`, `"xyz"`, or
+#' `"other"`, smoothing is done based on a time-dependent bottom range averaged
+#' across all the beams.  Once this is done, data within distance of
+#' \eqn{1-trim} multiplied by the bottom range are flagged as being bad.  The
+#' default value of `trim` is 0.15, which is close to the value (0.134) of
 #' \eqn{1-cos(angle*pi/180)}, with angle=30 as the beam angle in degrees.
 #'
 #' @param x an [adp-class] object containing bottom ranges.
@@ -4491,6 +4490,14 @@ adpConvertRawToNumeric <- function(object = NULL, variables = NULL, debug = getO
 #' fields that have the same dimensionality as `v` in the `data` slot.
 #'
 #' @param df the degrees of freedom to use during the smoothing spline operation.
+#'
+#' @param smoother a function used to smooth the boundary distance.  If
+#' this is not given, then [smooth.spline()] is called with `df` set equal
+#' to the value of `df` given by the user.  If it is NULL, then no smoothing
+#' is done. If it is a function that takes 2 arguments and returns
+#' a vector of values, then that is used.  For example, a user might set
+#' `smoother=function(x, y) smooth.spline(x,y,nknots=length(x)/5)$y`
+#' to use a smoothing spline with the indicated number of knots.
 #'
 #' @param trim a scale factor for boundary trimming (see \dQuote{Details}).
 #'
@@ -4508,7 +4515,7 @@ adpConvertRawToNumeric <- function(object = NULL, variables = NULL, debug = getO
 #' @family things related to adp data
 #'
 #' @export
-adpFlagPastBoundary <- function(x = NULL, fields = NULL, df = 20, trim = 0.15, good = 1, bad = 4, debug = getOption("oceDebug")) {
+adpFlagPastBoundary <- function(x = NULL, fields = NULL, df = 20, smoother, trim = 0.15, good = 1, bad = 4, debug = getOption("oceDebug")) {
     oceDebug(debug, "adpFlagPastBoundary() START\n", sep = "", unindent = 1)
     if (!inherits(x, "adp")) {
         stop("x must be an adp object")
@@ -4518,6 +4525,18 @@ adpFlagPastBoundary <- function(x = NULL, fields = NULL, df = 20, trim = 0.15, g
     }
     if (is.null(x[["oceCoordinate"]])) {
         stop("this object does not have an oceCoordinate; you may set it using oceSetMetadata()")
+    }
+    if (missing(smoother)) { # default: smoothing spline with df=10
+        smoother <- function(x, y) {
+            smooth.spline(x, y, df = df)$y
+        }
+    } else if (is.null(smoother)) { # NULL: no smoothing
+        smoother <- function(x, y) {
+            y
+        }
+    }
+    if (!is.function(smoother)) {
+        stop("'smoother' must be a function")
     }
     dimNeeded <- dim(x[["v"]])
     if (is.null(fields)) {
@@ -4540,8 +4559,8 @@ adpFlagPastBoundary <- function(x = NULL, fields = NULL, df = 20, trim = 0.15, g
             ok <- is.finite(br)
             X <- timeSeconds[ok]
             y <- br[ok]
-            s <- smooth.spline(X, y, df = df)
-            boundary <- predict(s, timeSeconds)$y
+            #s <- smooth.spline(X, y, df = df)
+            boundary <- smoother(s, timeSeconds) # predict(s, timeSeconds)$y
             for (itime in seq_along(x[["time"]])) {
                 jbad <- x[["distance"]] > (1.0 - trim) * boundary[itime]
                 mask[itime, jbad, kbeam] <- bad
@@ -4554,8 +4573,9 @@ adpFlagPastBoundary <- function(x = NULL, fields = NULL, df = 20, trim = 0.15, g
         timeSeconds <- as.numeric(x[["time"]])
         X <- timeSeconds[ok]
         y <- brVector[ok]
-        s <- smooth.spline(X, y, df = df)
-        boundary <- predict(s, timeSeconds)$y
+        #s <- smooth.spline(X, y, df = df)
+        #boundary <- predict(s, timeSeconds)$y
+        s <- smoother(X, y)
         for (itime in seq_along(x[["time"]])) {
             jbad <- x[["distance"]] > (1.0 - trim) * boundary[itime]
             mask[itime, jbad, ] <- bad

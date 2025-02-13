@@ -8,6 +8,7 @@ adpFlagPastBoundary(
   x = NULL,
   fields = NULL,
   df = 20,
+  smoother,
   trim = 0.15,
   good = 1,
   bad = 4,
@@ -22,6 +23,14 @@ If NULL (the default) then \code{\link[=adpFlagPastBoundary]{adpFlagPastBoundary
 fields that have the same dimensionality as \code{v} in the \code{data} slot.}
 
 \item{df}{the degrees of freedom to use during the smoothing spline operation.}
+
+\item{smoother}{a function used to smooth the boundary distance.  If
+this is not given, then \code{\link[=smooth.spline]{smooth.spline()}} is called with \code{df} set equal
+to the value of \code{df} given by the user.  If it is NULL, then no smoothing
+is done. If it is a function that takes 2 arguments and returns
+a vector of values, then that is used.  For example, a user might set
+\code{smoother=function(x, y) smooth.spline(x,y,nknots=length(x)/5)$y}
+to use a smoothing spline with the indicated number of knots.}
 
 \item{trim}{a scale factor for boundary trimming (see \dQuote{Details}).}
 
@@ -49,14 +58,13 @@ contain bottom ranges. Commonly, \code{\link[=handleFlags]{handleFlags()}} would
 such data.
 }
 \details{
-If the object's \code{oceCoordinate} is \code{"beam"}, this works by using
-\code{\link[=smooth.spline]{smooth.spline()}} on the time-dependent bottom ranges, beam-by-beam. If
-\code{oceCoordinate} is \code{"enu"}, \code{"xyz"}, or \code{"other"}, a \code{\link[=smooth.spline]{smooth.spline()}} is
-used on a time-dependent bottom range averaged across all the beams. The \code{df}
-value of the present function is passed to \code{\link[=smooth.spline]{smooth.spline()}}, as a way to
-control smoothness.  Once this is done, data within distance of \eqn{1-trim}
-multiplied by the bottom range are flagged as being bad.  The default value
-of \code{trim} is 0.15, which is close to the value (0.134) of
+If the object's \code{oceCoordinate} is \code{"beam"}, this works by smoothing the
+time-dependent bottom ranges (as controlled by the \code{smoother} and perhaps the
+\code{df} parameters), beam-by-beam. If \code{oceCoordinate} is \code{"enu"}, \code{"xyz"}, or
+\code{"other"}, smoothing is done based on a time-dependent bottom range averaged
+across all the beams.  Once this is done, data within distance of
+\eqn{1-trim} multiplied by the bottom range are flagged as being bad.  The
+default value of \code{trim} is 0.15, which is close to the value (0.134) of
 \eqn{1-cos(angle*pi/180)}, with angle=30 as the beam angle in degrees.
 }
 \seealso{
