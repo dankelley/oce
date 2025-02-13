@@ -4536,7 +4536,7 @@ adpFlagPastBoundary <- function(x = NULL, fields = NULL, df = 20, smoother, trim
         }
     }
     if (!is.function(smoother)) {
-        stop("'smoother' must be a function")
+        stop("'smoother' must be a function, NULL, or not provided")
     }
     dimNeeded <- dim(x[["v"]])
     if (is.null(fields)) {
