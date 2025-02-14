@@ -29,6 +29,13 @@ provided to the present function are the object itself,
 the index number of the desired profile, and the debug
 value.
 }
+\details{
+The resultant \linkS4class{ctd} object has a constructed station name, made by
+taking the filename stored within \code{argo} and appending an underscore
+character, followed by the profile number.  For example, if the filename for
+\code{argo} is \code{D6902967_001.nc} and if the \code{profile} parameter is 1, then the
+station number will be \code{D6902967_001_1}.
+}
 \examples{
 # Read a built-in Argo dataset and convert to a CTD object
 # for plotting.

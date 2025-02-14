@@ -9,6 +9,12 @@
 #' the index number of the desired profile, and the debug
 #' value.
 #'
+#' The resultant [ctd-class] object has a constructed station name, made by
+#' taking the filename stored within `argo` and appending an underscore
+#' character, followed by the profile number.  For example, if the filename for
+#' `argo` is `D6902967_001.nc` and if the `profile` parameter is 1, then the
+#' station number will be `D6902967_001_1`.
+#'
 #' @param argo an [argo-class] object.
 #'
 #' @param profile an integer specifying the profile to pick within the argo
@@ -177,6 +183,10 @@ argo2ctd <- function(argo, profile = NULL, debug = getOption("oceDebug")) {
                 warning("argo@metadata$", mname, " not copied (unknown type)\n")
             }
         }
+        res@metadata$station <- paste0(gsub(
+            ".*/(.*).nc", "\\1",
+            argo[["filename"]]
+        ), "_", profile)
     } # extracting argo@metadata
     res@processingLog <- argo@processingLog
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep = "", collapse = ""))

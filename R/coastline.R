@@ -661,7 +661,7 @@ setMethod(
                 projection = projection,
                 debug = debug - 1, ...
             )
-            oceDebug(debug, "END plot.coastline()\n", unindent = 1)
+            oceDebug(debug, "END plot.coastline() at line 664\n", unindent = 1)
             return(invisible())
         } else {
             geographical <- round(geographical)
@@ -893,7 +893,7 @@ setMethod(
                 }
             }
             oceDebug(debug, vectorShow(par("usr")))
-            oceDebug(debug, "END plot.coastline()\n", unindent = 1)
+            oceDebug(debug, "END plot.coastline() at line 896\n", unindent = 1)
             invisible()
         }
     }

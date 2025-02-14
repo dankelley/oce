@@ -205,7 +205,7 @@ as.ctd <- function(
     }
     # An argo-class object. FIXME: document that other parameters are skipped
     if (salinityGiven && inherits(salinity, "argo")) {
-        oceDebug(debug, "first parameter is 'argo-class', so it is converted with as.ctd.argo()\n", sep = "")
+        oceDebug(debug, "first parameter is 'argo-class', so it is converted with argo2ctd()\n", sep = "")
         res <- argo2ctd(argo = salinity, profile = profile, debug = debug - 1)
         oceDebug(debug, "END as.ctd() with argo object as first parameter\n", sep = "", unindent = 1)
         return(res)
