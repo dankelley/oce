@@ -66,6 +66,7 @@ such data.</p>
 <span>  x <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  fields <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  df <span class="op">=</span> <span class="fl">20</span>,</span>
+<span>  <span class="va">smoother</span>,</span>
 <span>  trim <span class="op">=</span> <span class="fl">0.15</span>,</span>
 <span>  good <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  bad <span class="op">=</span> <span class="fl">4</span>,</span>
@@ -89,6 +90,16 @@ fields that have the same dimensionality as <code>v</code> in the <code>data</co
 
 <dt id="arg-df">df<a class="anchor" aria-label="anchor" href="#arg-df"></a></dt>
 <dd><p>the degrees of freedom to use during the smoothing spline operation.</p></dd>
+
+
+<dt id="arg-smoother">smoother<a class="anchor" aria-label="anchor" href="#arg-smoother"></a></dt>
+<dd><p>a function used to smooth the boundary distance.  If
+this is not given, then <code><a href="https://rdrr.io/r/stats/smooth.spline.html" class="external-link">smooth.spline()</a></code> is called with <code>df</code> set equal
+to the value of <code>df</code> given by the user.  If it is NULL, then no smoothing
+is done. If it is a function that takes 2 arguments and returns
+a vector of values, then that is used.  For example, a user might set
+<code>smoother=function(x, y) smooth.spline(x,y,nknots=length(x)/5)$y</code>
+to use a smoothing spline with the indicated number of knots.</p></dd>
 
 
 <dt id="arg-trim">trim<a class="anchor" aria-label="anchor" href="#arg-trim"></a></dt>
@@ -120,14 +131,13 @@ adjusted in the specified fields if data are beyond the water column boundary.</
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>If the object's <code>oceCoordinate</code> is <code>"beam"</code>, this works by using
-<code><a href="https://rdrr.io/r/stats/smooth.spline.html" class="external-link">smooth.spline()</a></code> on the time-dependent bottom ranges, beam-by-beam. If
-<code>oceCoordinate</code> is <code>"enu"</code>, <code>"xyz"</code>, or <code>"other"</code>, a <code><a href="https://rdrr.io/r/stats/smooth.spline.html" class="external-link">smooth.spline()</a></code> is
-used on a time-dependent bottom range averaged across all the beams. The <code>df</code>
-value of the present function is passed to <code><a href="https://rdrr.io/r/stats/smooth.spline.html" class="external-link">smooth.spline()</a></code>, as a way to
-control smoothness.  Once this is done, data within distance of \(1-trim\)
-multiplied by the bottom range are flagged as being bad.  The default value
-of <code>trim</code> is 0.15, which is close to the value (0.134) of
+    <p>If the object's <code>oceCoordinate</code> is <code>"beam"</code>, this works by smoothing the
+time-dependent bottom ranges (as controlled by the <code>smoother</code> and perhaps the
+<code>df</code> parameters), beam-by-beam. If <code>oceCoordinate</code> is <code>"enu"</code>, <code>"xyz"</code>, or
+<code>"other"</code>, smoothing is done based on a time-dependent bottom range averaged
+across all the beams.  Once this is done, data within distance of
+\(1-trim\) multiplied by the bottom range are flagged as being bad.  The
+default value of <code>trim</code> is 0.15, which is close to the value (0.134) of
 \(1-cos(angle*pi/180)\), with angle=30 as the beam angle in degrees.</p>
     </div>
     <div class="section level2">

@@ -78,10 +78,13 @@
 <h2 id="installing-oce">Installing oce<a class="anchor" aria-label="anchor" href="#installing-oce"></a>
 </h2>
 <p>Stable versions of oce are available from CRAN, and may be installed from within R, in the same way as other packages. However, the CRAN version is only updated a few times a year (pursuant to policy), so many users install the <code>"develop"</code> branch instead. This branch may be updated several times per day, as the authors fix bugs or add features that are motivated by day-to-day usage. This is the branch favoured by users who need new features or who would wish to contribute to Oce development.</p>
-<p>The easy way to install the <code>"develop"</code> branch is to execute the following commands in R.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">"dankelley/oce"</span>, <span class="at">ref=</span><span class="st">"develop"</span>)</span></code></pre></div>
-<p>and most readers should also install Ocedata, with</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">"dankelley/ocedata"</span>, <span class="at">ref=</span><span class="st">"main"</span>)</span></code></pre></div>
+<p>To install a <code>develop</code> version that is usually under a week old, try using</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"oce"</span>, <span class="at">repos =</span> <span class="fu">c</span>(<span class="st">"https://dankelley.r-universe.dev"</span>, <span class="st">"https://cloud.r-project.org"</span>))</span></code></pre></div>
+<p>which does not require that you have compilers for C++, Fortran, etc. on your system. However, if you have those things, you can also try building straight from the github source using</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">"dankelley/oce"</span>, <span class="at">ref=</span><span class="st">"develop"</span>)</span></code></pre></div>
+<p>Note that most readers should also install Ocedata, with</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">"dankelley/ocedata"</span>, <span class="at">ref=</span><span class="st">"main"</span>)</span></code></pre></div>
+<p>which does not require compilers for C++, Fortran, etc.</p>
 </div>
 <div class="section level2">
 <h2 id="evolution-of-oce">Evolution of oce<a class="anchor" aria-label="anchor" href="#evolution-of-oce"></a>
@@ -94,9 +97,9 @@
 <div class="section level3">
 <h3 id="ctd">CTD<a class="anchor" aria-label="anchor" href="#ctd"></a>
 </h3>
-<div class="sourceCode" id="cb3"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">library</span>(oce)</span>
-<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="fu">data</span>(ctd)</span>
-<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="fu">plot</span>(ctd, <span class="at">which=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">5</span>), <span class="at">type=</span><span class="st">"l"</span>, <span class="at">span=</span><span class="dv">150</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">library</span>(oce)</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="fu">data</span>(ctd)</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="fu">plot</span>(ctd, <span class="at">which=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">5</span>), <span class="at">type=</span><span class="st">"l"</span>, <span class="at">span=</span><span class="dv">150</span>)</span></code></pre></div>
 <div class="float">
 <img src="https://raw.githubusercontent.com/dankelley/oce/develop/oce-demo-1.png" alt="Sample CTD plot."><div class="figcaption">Sample CTD plot.</div>
 </div>
@@ -104,9 +107,9 @@
 <div class="section level3">
 <h3 id="acoustic-doppler-profiler">Acoustic Doppler profiler<a class="anchor" aria-label="anchor" href="#acoustic-doppler-profiler"></a>
 </h3>
-<div class="sourceCode" id="cb4"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">library</span>(oce)</span>
-<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="fu">data</span>(adp)</span>
-<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="fu">plot</span>(adp)</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">library</span>(oce)</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="fu">data</span>(adp)</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a><span class="fu">plot</span>(adp)</span></code></pre></div>
 <div class="float">
 <img src="https://raw.githubusercontent.com/dankelley/oce/develop/oce-demo-2.png" alt="Sample adp plot."><div class="figcaption">Sample adp plot.</div>
 </div>
@@ -114,12 +117,12 @@
 <div class="section level3">
 <h3 id="sealevel-and-tides">Sealevel and tides<a class="anchor" aria-label="anchor" href="#sealevel-and-tides"></a>
 </h3>
-<div class="sourceCode" id="cb5"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">library</span>(oce)</span>
-<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="fu">data</span>(sealevel)</span>
-<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>m <span class="ot">&lt;-</span> <span class="fu">tidem</span>(sealevel)</span>
-<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">1</span>))</span>
-<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a><span class="fu">plot</span>(sealevel, <span class="at">which=</span><span class="dv">1</span>)</span>
-<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a><span class="fu">plot</span>(m)</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="fu">library</span>(oce)</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="fu">data</span>(sealevel)</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>m <span class="ot">&lt;-</span> <span class="fu">tidem</span>(sealevel)</span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">1</span>))</span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="fu">plot</span>(sealevel, <span class="at">which=</span><span class="dv">1</span>)</span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a><span class="fu">plot</span>(m)</span></code></pre></div>
 <div class="float">
 <img src="https://raw.githubusercontent.com/dankelley/oce/develop/oce-demo-3.png" alt="Sample sealevel plot."><div class="figcaption">Sample sealevel plot.</div>
 </div>
@@ -127,9 +130,9 @@
 <div class="section level3">
 <h3 id="echosounder">Echosounder<a class="anchor" aria-label="anchor" href="#echosounder"></a>
 </h3>
-<div class="sourceCode" id="cb6"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="fu">library</span>(oce)</span>
-<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="fu">data</span>(echosounder)</span>
-<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="fu">plot</span>(echosounder, <span class="at">which=</span><span class="dv">2</span>, <span class="at">drawTimeRange=</span><span class="cn">TRUE</span>, <span class="at">drawBottom=</span><span class="cn">TRUE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">library</span>(oce)</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="fu">data</span>(echosounder)</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a><span class="fu">plot</span>(echosounder, <span class="at">which=</span><span class="dv">2</span>, <span class="at">drawTimeRange=</span><span class="cn">TRUE</span>, <span class="at">drawBottom=</span><span class="cn">TRUE</span>)</span></code></pre></div>
 <div class="float">
 <img src="https://raw.githubusercontent.com/dankelley/oce/develop/oce-demo-4.png" alt="Sample echosounder plot."><div class="figcaption">Sample echosounder plot.</div>
 </div>
@@ -137,12 +140,12 @@
 <div class="section level3">
 <h3 id="map">Map<a class="anchor" aria-label="anchor" href="#map"></a>
 </h3>
-<div class="sourceCode" id="cb7"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">library</span>(oce)</span>
-<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mar=</span><span class="fu">rep</span>(<span class="fl">0.5</span>, <span class="dv">4</span>))</span>
-<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a><span class="fu">data</span>(endeavour, <span class="at">package=</span><span class="st">"ocedata"</span>)</span>
-<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a><span class="fu">data</span>(coastlineWorld, <span class="at">package=</span><span class="st">"oce"</span>)</span>
-<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a><span class="fu">mapPlot</span>(coastlineWorld, <span class="at">col=</span><span class="st">"gray"</span>)</span>
-<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a><span class="fu">mapPoints</span>(endeavour<span class="sc">$</span>longitude, endeavour<span class="sc">$</span>latitude, <span class="at">pch=</span><span class="dv">20</span>, <span class="at">col=</span><span class="st">"red"</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="fu">library</span>(oce)</span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mar=</span><span class="fu">rep</span>(<span class="fl">0.5</span>, <span class="dv">4</span>))</span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a><span class="fu">data</span>(endeavour, <span class="at">package=</span><span class="st">"ocedata"</span>)</span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a><span class="fu">data</span>(coastlineWorld, <span class="at">package=</span><span class="st">"oce"</span>)</span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a><span class="fu">mapPlot</span>(coastlineWorld, <span class="at">col=</span><span class="st">"gray"</span>)</span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a><span class="fu">mapPoints</span>(endeavour<span class="sc">$</span>longitude, endeavour<span class="sc">$</span>latitude, <span class="at">pch=</span><span class="dv">20</span>, <span class="at">col=</span><span class="st">"red"</span>)</span></code></pre></div>
 <div class="float">
 <img src="https://raw.githubusercontent.com/dankelley/oce/develop/oce-demo-5.png" alt="Sample map plot."><div class="figcaption">Sample map plot.</div>
 </div>
@@ -150,10 +153,10 @@
 <div class="section level3">
 <h3 id="landsat-image">Landsat image<a class="anchor" aria-label="anchor" href="#landsat-image"></a>
 </h3>
-<div class="sourceCode" id="cb8"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="fu">library</span>(ocedata)</span>
-<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a><span class="fu">library</span>(oce)</span>
-<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a><span class="fu">data</span>(landsat)</span>
-<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a><span class="fu">plot</span>(landsat)</span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="fu">library</span>(ocedata)</span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a><span class="fu">library</span>(oce)</span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a><span class="fu">data</span>(landsat)</span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a><span class="fu">plot</span>(landsat)</span></code></pre></div>
 <div class="float">
 <img src="https://raw.githubusercontent.com/dankelley/oce/develop/oce-demo-6.png" alt="Sample landsat image plot."><div class="figcaption">Sample landsat image plot.</div>
 </div>
