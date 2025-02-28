@@ -4145,6 +4145,8 @@ plotTS <- function(
     # this point called salinity and y, and also bg, col, cex, and pch.
     # See https://github.com/dankelley/oce/issues/1730
     canPlot <- is.finite(salinity) & is.finite(y)
+    #print(table(is.finite(salinity)))
+    #print(table(is.finite(y)))
     if (length(col) == length(y)) {
         col <- col[canPlot]
     }
@@ -4163,11 +4165,11 @@ plotTS <- function(
     salinity <- salinity[canPlot]
     y <- y[canPlot]
     if (!any(is.finite(salinity))) {
-        warning("no valid salinity data")
+        warning("plotTS() found no valid salinity data")
         return(invisible(list(xat = NULL, yat = NULL)))
     }
     if (!any(is.finite(y))) {
-        warning("no valid temperature data")
+        warning("plotTS() found no valid temperature data")
         return(invisible(list(xat = NULL, yat = NULL)))
     }
     if (missing(Slim)) {
@@ -5865,7 +5867,7 @@ plotProfile <- function(
         salinity <- if (eos == "gsw") swAbsoluteSalinity(x) else x[["salinity"]]
         temperature <- if (eos == "gsw") swConservativeTemperature(x) else x[["temperature"]]
         if (!any(is.finite(salinity))) {
-            warning("no valid salinity data")
+            warning("no valid salinity data for xtype=\"salinity+temperature\"")
             return(invisible(NULL))
         }
         if (!any(is.finite(temperature))) {

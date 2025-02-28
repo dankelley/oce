@@ -484,10 +484,13 @@ setMethod(
         # message("DAN AllClass [[ method: 1 i=", i)
         metadataNames <- sort(names(x@metadata))
         dataNames <- sort(names(x@data))
-        # dots <- list(...)
-        # debug <- if ("debug" %in% names(dots)) dots$debug else 0
+        # Below was my idea for propagating 'debug' here, but it 
+        # does not work. I don't want to change the signature from the
+        # lowest-level definition by adding a 'debug' argument.
+        #<> dots <- list(...)
+        #<> debug <- if ("debug" %in% names(dots)) dots$debug else 0
         debug <- 0 # for whole file FIXME: how to transmit debug from higher-level [[ code?
-        # oceDebug(debug, "in lowest-level [[ method\n")
+        oceDebug(debug, "in lowest-level [[ method with i=\"", i, "\"\n", sep = "")
         # message("AllClass.R:497")
         # browser()
         if (i == "?") {
@@ -1794,8 +1797,10 @@ setMethod("concatenate",
         oceDebug(debug, "list concatenate() START\n", sep = "", unindent = 1)
         classes <- sapply(object, class)
         if (!all(classes == classes[1])) {
-            stop("All elements of the list must have the same class, but they are: \"",
-                 paste(classes, collapse="\", \""), "\"")
+            stop(
+                "All elements of the list must have the same class, but they are: \"",
+                paste(classes, collapse = "\", \""), "\""
+            )
         }
         debugOld <- getOption("oceDebug")
         options(oceDebug = debug - 1) # this passes debug-1 to the generic
