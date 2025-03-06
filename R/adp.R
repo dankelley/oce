@@ -4575,7 +4575,7 @@ adpFlagPastBoundary <- function(x = NULL, fields = NULL, df = 20, smoother, trim
         y <- brVector[ok]
         #s <- smooth.spline(X, y, df = df)
         #boundary <- predict(s, timeSeconds)$y
-        s <- smoother(X, y)
+        boundary <- smoother(X, y)
         for (itime in seq_along(x[["time"]])) {
             jbad <- x[["distance"]] > (1.0 - trim) * boundary[itime]
             mask[itime, jbad, ] <- bad
