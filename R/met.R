@@ -1181,7 +1181,8 @@ read.met.csv2 <- function(
     )
     knownFlagNames <- names(knownFlags)
     for (iflag in seq_along(knownFlags)) {
-        res@metadata$flags[[knownFlagNames[iflag]]] <- res@data[[knownFlags[[iflag]]]]
+        tmp <- res@data[[knownFlags[[iflag]]]]
+        res@metadata$flags[[knownFlagNames[iflag]]] <- ifelse(is.na(tmp), "", tmp)
         res@data[[knownFlags[[iflag]]]] <- NULL
     }
     res@data <- res@data[order(names(res@data))]
