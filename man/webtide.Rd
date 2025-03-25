@@ -105,7 +105,7 @@ purview.
 }
 \details{
 There are two methods of using this function. \emph{Case 1:} \code{action="map"}. In
-this case, if \code{plot} is \code{FALSE}, a list is returned, containing all the
+this case, if \code{plot} is \code{FALSE}, a data frame is returned, containing all the
 \code{node}s in the selected database, along with all the \code{latitude}s and
 \code{longitude}s. This value is also returned (silently) if \code{plot} is true, but
 in that case, a plot is drawn to indicate the node locations. If \code{latitude}
@@ -119,8 +119,9 @@ return value.
 \emph{Case 2:} \code{action="predict"}. If \code{plot} is \code{FALSE}, then a list is returned,
 indicating \code{time}, predicted \code{elevation}, velocity components \code{u} and \code{v},
 \code{node} number, the name of the \code{basedir}, and the \code{region}. If \code{plot} is
-\code{TRUE}, this list is returned silently, and time-series plots are drawn for
-elevation, u, and v.
+\code{TRUE}, this list is returned silently, and either a map or a set of three
+time-series plots (for u, v and water level) is plotted.  (In the
+second case, users may wish to call \code{par(mfrow=c(3,1))} first.)
 }
 \section{Caution}{
 

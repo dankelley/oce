@@ -8,7 +8,7 @@
 #' purview.
 #'
 #' There are two methods of using this function. *Case 1:* `action="map"`. In
-#' this case, if `plot` is `FALSE`, a list is returned, containing all the
+#' this case, if `plot` is `FALSE`, a data frame is returned, containing all the
 #' `node`s in the selected database, along with all the `latitude`s and
 #' `longitude`s. This value is also returned (silently) if `plot` is true, but
 #' in that case, a plot is drawn to indicate the node locations. If `latitude`
@@ -22,8 +22,9 @@
 #' *Case 2:* `action="predict"`. If `plot` is `FALSE`, then a list is returned,
 #' indicating `time`, predicted `elevation`, velocity components `u` and `v`,
 #' `node` number, the name of the `basedir`, and the `region`. If `plot` is
-#' `TRUE`, this list is returned silently, and time-series plots are drawn for
-#' elevation, u, and v.
+#' `TRUE`, this list is returned silently, and either a map or a set of three
+#' time-series plots (for u, v and water level) is plotted.  (In the
+#' second case, users may wish to call `par(mfrow=c(3,1))` first.)
 #'
 #' @param action An indication of the action, either `action="map"` to
 #' draw a map or `action="predict"` to get a prediction; see
@@ -150,7 +151,7 @@ webtide <- function(
     if (action == "map") {
         if (plot) {
             asp <- 1 / cos(rpd * mean(range(triangles$latitude, na.rm = TRUE)))
-            par(mfrow = c(1, 1), mar = c(3, 3, 2, 1), mgp = c(2, 0.7, 0))
+            par(mar = c(3, 3, 2, 1), mgp = c(2, 0.7, 0))
             plot(triangles$longitude, triangles$latitude,
                 pch = pch, cex = cex, col = nodecol, lwd = 1 / 8,
                 asp = asp, xlab = "", ylab = "", ...
@@ -288,7 +289,6 @@ webtide <- function(
             )
         }
         if (plot) {
-            par(mfrow = c(3, 1))
             oce.plot.ts(time, elevation,
                 type = "l", xlab = "", ylab = resizableLabel("elevation"),
                 main = sprintf("node %.0f %.3fN %.3fE", node, latitude, longitude),
