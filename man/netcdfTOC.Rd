@@ -39,18 +39,10 @@ attributes.
 }
 \examples{
 library(oce)
-# Saving to a temporary file for CRAN testing; in practice,
-# it's more likely that the user will retain this file, or already
-# have a target file on the local system.
-if (requireNamespace("ncdf4") &&
-    requireNamespace("jsonlite") &&
-    requireNamespace("curl")) {
-    urlroot <- "ftp://ftp.ifremer.fr/ifremer/argo/dac/bodc/6900388/profiles/"
-    remotefile <- "D6900388_001.nc"
-    localfile <- tempfile(fileext = ".nc")
-    curl::curl_download(paste0(urlroot, remotefile), localfile)
-    netcdfTOC(localfile)
-    unlink(localfile)
+# Use an Argo file that comes with the package.
+if (requireNamespace("ncdf4") && requireNamespace("jsonlite")) {
+    file <- system.file("extdata/D4902337_219.nc", package = "oce")
+    netcdfTOC(file)
 }
 
 }
