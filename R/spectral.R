@@ -164,7 +164,18 @@ pwelch <- function(
     gave.nfft <- !missing(nfft)
     gave.noverlap <- !missing(noverlap)
     gave.spec <- !missing(spec)
-    oceDebug(debug, "pwelch(x, ", argShow(window), argShow(nfft), argShow(noverlap), argShow(fs), "...) START\n", sep = "", unindent = 1)
+    oceDebug(debug, "pwelch(x,",
+        argShow(window),
+        argShow(noverlap),
+        argShow(nfft),
+        argShow(fs),
+        argShow(demean),
+        argShow(detrend),
+        argShow(plot),
+        "...) START\n",
+        sep = "", unindent = 1
+    )
+
     if (is.ts(x)) {
         if (missing(fs)) {
             fs <- frequency(x)
@@ -225,8 +236,10 @@ pwelch <- function(
     if (missing(noverlap)) {
         noverlap <- floor(window.len / 2)
     }
-    step <- floor(window.len - noverlap + 1)
-    oceDebug(debug, "using window.len=", window.len, "  step=", step, "  noverlap=", noverlap, "  nx=", nx, "\n", sep = "")
+    # step <- floor(window.len - noverlap + 1)
+    step <- floor(window.len - noverlap)
+    oceDebug(debug, "length(x) = ", nx, "\n")
+    oceDebug(debug, "using window.len = ", window.len, ", step = ", step, ", noverlap = ", noverlap, "\n")
     if (step < 1) {
         stop("overlap cannot exceed segment length")
     }
@@ -235,10 +248,18 @@ pwelch <- function(
     psd <- NULL
     nrow <- 0
     start <- 1
+    oceDebug(debug, if (gave.spec) {
+        "computing subspectra with user-supplied 'spec' function\n"
+    } else {
+        "computing subspectra with spectrum(), i.e. the default\n"
+    })
     if (gave.spec) {
+        # user gave spec
         end <- nfft
         while (TRUE) {
-            oceDebug(debug, "  calculating subspectrum using user-supplied 'spec', at indices ", start, "to", end, "\n")
+            oceDebug(
+                debug, "  computing subspectrum at indices ", start, ":", end, " (of 1:", nx, ")\n"
+            )
             xx <- ts(x[start:end], frequency = fs)
             s <- spec(xx, ...) # note the ...
             if (nrow == 0) {
@@ -247,12 +268,17 @@ pwelch <- function(
             psd <- c(psd, s$spec)
             start <- start + step
             end <- end + step
-            nrow <- nrow + 1
+            nrow <- nrow + 1L
             if (end > nx) {
+                # show a message if last interval did not get to data end
+                if (start != nx + 1L) {
+                    oceDebug(debug, "  ending subspectrum loop early, because ending index (", end, ") > nx (", nx, ")\n")
+                }
                 break
             }
         }
     } else {
+        # user did not give spec
         end <- window.len
         args <- list(...)
         names.args <- names(args)
@@ -262,8 +288,11 @@ pwelch <- function(
         args$plot <- plot
         args$demean <- demean
         args$detrend <- detrend
+        oceDebug(debug, "will call spectrum with ", vectorShow(args))
         while (TRUE) {
-            oceDebug(debug, "  calculating subspectrum using spectrum(), at indices ", start, "to", end, "\n")
+            oceDebug(
+                debug, "  computing subspectrum at indices ", start, ":", end, " (of 1:", nx, ")\n"
+            )
             xx <- ts(window * x[start:end], frequency = fs)
             args$x <- xx # before issue 242, wrapped RHS in as.vector()
             s <- do.call(spectrum, args = args)
@@ -273,22 +302,33 @@ pwelch <- function(
             psd <- c(psd, s$spec)
             start <- start + step
             end <- end + step
-            nrow <- nrow + 1
+            nrow <- nrow + 1L
             if (end > nx) {
+                # show a message if last interval did not get to data end
+                if (start != nx + 1L) {
+                    oceDebug(debug, "  ending subspectrum loop early, because ending index (", end, ") > nx (", nx, ")\n")
+                }
                 break
             }
         }
     }
     nrow <- max(1, nrow)
     psd <- matrix(psd, nrow = nrow, byrow = TRUE) / normalization
-    oceDebug(debug, "resultant spectrum is averaged across a matrix of dimension", paste(dim(psd), collapse = "x"), "\n")
+    if (debug == 99L) {
+        oceDebug(debug, "TEMPORARILY exporting list DEBUG for debugging\n")
+        DEBUG <<- list(freq=freq, psd = psd)
+    }
+    oceDebug(debug, "averaging across ", nrow(psd), " subspectra\n")
     res <- list(
         freq = freq, spec = apply(psd, 2, mean),
         method = "Welch", series = deparse(substitute(expr = x, env = environment())),
         df = s$df * (nx / length(window)),
         bandwidth = s$bandwidth, # FIXME: wrong formulae
+        bandwidthGuess = nrow(psd) * s$bandwidth,
         demean = FALSE, detrend = TRUE
     )
+    oceDebug(debug, "setting bandwidth = ", res$bandwidth, "\n")
+    oceDebug(debug, "setting bandwidthGuess = ", res$bandwidthGuess, " (DEBUGGING 2025-03-16)\n")
     class(res) <- "spec"
     if (plot) {
         plot(res, ...)
