@@ -646,8 +646,8 @@ setMethod(
         # ? } else {
         # ?     invisible(callNextMethod()) # summary
         # ? }
-        showMetadataItem(object, "north", "North:         ")
-        showMetadataItem(object, "declination", "Declination:   ")
+        showMetadataItem(object, "north",       "North:             ")
+        showMetadataItem(object, "declination", "Declination:       ")
         invisible(callNextMethod()) # summary
     }
 )
