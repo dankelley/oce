@@ -271,13 +271,13 @@ setMethod(
                     # browser()
                     # colnames(threes) <- c(colnames(threes), "OriginalName")
                 }
-                for (row in seq_len(nrow(threes))) {
-                    if (inherits(object@data[[row]], "POSIXt")) {
-                        threes[[row, 1L]] <- numberAsPOSIXct(threes[[row, 1L]])
-                        threes[[row, 2L]] <- numberAsPOSIXct(threes[[row, 2L]])
-                        threes[[row, 3L]] <- numberAsPOSIXct(threes[[row, 3L]])
-                    }
-                }
+                # <2304> for (row in seq_len(nrow(threes))) {
+                # <2304>     if (inherits(object@data[[row]], "POSIXt")) {
+                # <2304>         threes[[row, 1L]] <- numberAsPOSIXct(threes[[row, 1L]])
+                # <2304>         threes[[row, 2L]] <- numberAsPOSIXct(threes[[row, 2L]])
+                # <2304>         threes[[row, 3L]] <- numberAsPOSIXct(threes[[row, 3L]])
+                # <2304>     }
+                # <2304> }
                 owidth <- options("width")
                 options(width = 500) # make super-wide to avoid line breaks
                 print(threes, digits = 5)
