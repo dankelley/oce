@@ -888,6 +888,10 @@ read.adp.ad2cp <- function(
     if (sum(keep) < length(keep)) {
         oceDebug(debug, "retaining ", sum(keep), " records, or ", round(100 * sum(keep) / length(keep), 4), "% of file\n")
         keep2 <- which(keep)
+        if (debug > 0) {
+            message("DAN-FIXME issue 2303")
+            browser() # DAN-FIXME DAN-FIXME DAN-FIXME DAN-FIXME
+        }
         keep3 <- keep2[seq(from = from, to = min(to, length(keep2)), by = by)]
         N <- length(keep3)
         d$index <- d$index[keep3]
