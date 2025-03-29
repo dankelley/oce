@@ -63,7 +63,8 @@ adpAd2cpFileTrim <- function(infile, n = 100L, outfile, debug = getOption("oceDe
 }
 
 # private function
-ad2cpDefaultDataItem <- function(x, j = NULL, order = c(
+ad2cpDefaultDataItem <- function(x, j = NULL,
+                                 order = c(
                                      "burst", "average",
                                      "bottomTrack", "interleavedBurst", "burstAltimeterRaw",
                                      "DVLBottomTrack", "DVLWaterTrack", "echosounder", "echosounderRaw",
@@ -795,14 +796,14 @@ read.adp.ad2cp <- function(
     # message("FIXME saving activeConfiguration to activeConfiguration.rda");save(activeConfiguration,file="activeConfiguration.rda")
     if (!planGiven) {
         u <- unique(activeConfiguration)
-        #if (isTRUE(getOption("oceDebugAD2CP", FALSE))) { # FIXME: DAN, DELETE_THIS
+        # if (isTRUE(getOption("oceDebugAD2CP", FALSE))) { # FIXME: DAN, DELETE_THIS
         #    message("exporting DAN because oceDebugAD2CP option is TRUE")
         #    DAN <- list(
         #        activeConfiguration = activeConfiguration,
         #        id = d$id
         #    )
         #    assign("DAN", DAN, env = .GlobalEnv)
-        #}
+        # }
         nu <- length(u)
         if (nu == 1) {
             plan <- activeConfiguration[1]
@@ -850,12 +851,12 @@ read.adp.ad2cp <- function(
     ), tz = "UTC")
     dataSetStart <- idText[textBlockIsConfig]
     dataSetEnd <- c(diff(dataSetStart), length(d$id))
-    #oceDebug(debug, vectorShow(dataSetStart))
-    #oceDebug(debug, vectorShow(dataSetEnd))
+    # oceDebug(debug, vectorShow(dataSetStart))
+    # oceDebug(debug, vectorShow(dataSetEnd))
     if (TOC) {
         rval <- data.frame()
         for (thedataset in seq_len(numberOfDataSets)) {
-            for (theplan in c(0L, 1L)) { #seq_len(nplans) - 1L) {
+            for (theplan in c(0L, 1L)) { # seq_len(nplans) - 1L) {
                 lookDataset <- seq(dataSetStart[thedataset], dataSetEnd[thedataset])
                 lookPlan <- activeConfiguration[lookDataset] == theplan
                 t <- table(d$id[lookPlan])
