@@ -65,8 +65,9 @@ location.}
 \item{TOC}{a logical value.  If this is FALSE (the default) then
 the other parameters of the function are used to select data from
 the indicated \code{filename}, and an \linkS4class{adp} object is returned.
-However, if \code{TOC} is TRUE, then the number of datasets held within
-the file is returned.}
+However, if \code{TOC} is TRUE, then a dataframe detailing the number
+of entries in each of the datasets stored within the file is
+returned.}
 
 \item{debug}{an integer value indicating the level of debugging.  Set to 1 to
 get a moderate amount of debugging information, from the R code only, to 2 to
@@ -130,6 +131,20 @@ of the three columns in this table.\tabular{rrr}{
    \code{0x1f} \tab 31 \tab \code{averageAltimeter} \cr
    \code{0x23} \tab 35 \tab \code{echosounderRaw} \cr
    \code{0xa0} \tab 160 \tab \code{text} \cr
+}
+
+
+Note that the \code{text} case returns a text string that lists the instrument
+settings that were used in creating the file.
+
+The following appear in the Nortek documentation, but are not yet handled by
+oce.  If any of them get handled in a future version of oce, then the
+corresponding lines will be moved to the preceeding table.\tabular{rrr}{
+   code (raw) \tab code (integer) \tab oce name (maybe) \cr
+   ---------- \tab -------------- \tab ----------------- \cr
+   \code{0x24} \tab 36 \tab \code{echosounderRawTx} \cr
+   \code{0x30} \tab 42 \tab \code{waves} \cr
+   `0xc0 \tab 48 \tab \code{format8} \cr
 }
 }
 \section{Sample of Usage}{

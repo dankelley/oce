@@ -409,7 +409,7 @@ if (file.exists(f2)) {
             toc <- read.oce(f2, TOC = TRUE),
             "setting plan=0"
         )
-        expect_equal(N, toc[[1]]$Count[1])
+        expect_equal(N, toc$count[1])
         # Note: using read.adp() to ensure that it also works
         expect_warning(
             expect_warning(

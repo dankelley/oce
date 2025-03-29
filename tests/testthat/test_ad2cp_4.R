@@ -17,34 +17,39 @@ if (file.exists(file)) {
             "setting plan="
         )
         # We know the file length from another tool
-        expect_equal(length(toc), 7L)
-        # We insist on certain names, as a change-limiter.  The numbers were
-        # checked by Clark Richards.  I'm only testing two items here.
+        # We insist on certain names, as a change-limiter.
         expect_equal(
-            toc[[1]],
-            structure(
-                list(
-                    ID.hex = c("0x16", "0xa0"),
-                    ID.dec = c(22L, 160L),
-                    dataType = c("average", "text"),
-                    Count = c(54L, 2L)
-                ),
-                class = "data.frame",
-                row.names = c(NA, -2L)
-            )
-        )
-        expect_equal(
-            toc[[4]],
-            structure(
-                list(
-                    ID.hex = c("0x16", "0x17", "0xa0"),
-                    ID.dec = c(22L, 23L, 160L),
-                    dataType = c("average", "bottomTrack", "text"),
-                    Count = c(260L, 259L, 1L)
-                ),
-                class = "data.frame",
-                row.names = c(NA, -3L)
-            )
+            toc,
+            structure(list(dataset = c(
+                1L, 1L, 1L, 1L, 1L, 2L, 2L, 2L, 3L,
+                3L, 3L, 3L, 3L, 4L, 4L, 4L, 5L, 5L, 5L, 5L, 5L, 6L, 6L, 6L, 6L,
+                6L, 7L, 7L, 7L
+            ), plan = c(
+                0L, 0L, 0L, 1L, 1L, 0L, 0L, 0L, 0L,
+                0L, 0L, 1L, 1L, 0L, 0L, 0L, 0L, 0L, 0L, 1L, 1L, 0L, 0L, 0L, 1L,
+                1L, 0L, 0L, 0L
+            ), IDhex = c(
+                "0x16", "0x17", "0xa0", "0x16", "0xa0",
+                "0x16", "0x17", "0xa0", "0x16", "0x17", "0xa0", "0x16", "0x17",
+                "0x16", "0x17", "0xa0", "0x16", "0x17", "0xa0", "0x16", "0x17",
+                "0x16", "0x17", "0xa0", "0x16", "0x17", "0x16", "0x17", "0xa0"
+            ), IDdec = c(
+                22L, 23L, 160L, 22L, 160L, 22L, 23L, 160L, 22L,
+                23L, 160L, 22L, 23L, 22L, 23L, 160L, 22L, 23L, 160L, 22L, 23L,
+                22L, 23L, 160L, 22L, 23L, 22L, 23L, 160L
+            ), dataType = c(
+                "average",
+                "bottomTrack", "text", "average", "text", "average", "bottomTrack",
+                "text", "average", "bottomTrack", "text", "average", "bottomTrack",
+                "average", "bottomTrack", "text", "average", "bottomTrack", "text",
+                "average", "bottomTrack", "average", "bottomTrack", "text", "average",
+                "bottomTrack", "average", "bottomTrack", "text"
+            ), count = c(
+                736L,
+                392L, 14L, 19L, 1L, 755L, 392L, 15L, 749L, 378L, 15L, 6L, 14L,
+                755L, 392L, 15L, 752L, 390L, 15L, 3L, 2L, 753L, 390L, 15L, 2L,
+                2L, 755L, 392L, 15L
+            )), row.names = c(NA, -29L), class = "data.frame")
         )
     })
 

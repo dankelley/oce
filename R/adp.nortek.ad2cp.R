@@ -318,6 +318,20 @@ ad2cpCodeToName <- function(code = NULL, prefix = TRUE) {
 #' |     `0x23` |             35 |    `echosounderRaw` |
 #' |     `0xa0` |            160 |              `text` |
 #'
+#' Note that the `text` case returns a text string that lists the instrument
+#' settings that were used in creating the file.
+#'
+#' The following appear in the Nortek documentation, but are not yet handled by
+#' oce.  If any of them get handled in a future version of oce, then the
+#' corresponding lines will be moved to the preceeding table.
+#'
+#' | code (raw) | code (integer) |    oce name (maybe) |
+#' |      ----: |          ----: |               ----: |
+#' | ---------- | -------------- |   ----------------- |
+#' |     `0x24` |             36 |  `echosounderRawTx` |
+#' |     `0x30` |             42 |             `waves` |
+#' |     `0xc0  |             48 |           `format8` |
+#'
 # The coding is based mainly on descriptions in various versions of a Nortek
 # manual (see \dQuote{References}). However, there are some gaps and
 # contradictions in these manuals, owing partly to evolution of the data
@@ -431,8 +445,9 @@ ad2cpCodeToName <- function(code = NULL, prefix = TRUE) {
 #' @param TOC a logical value.  If this is FALSE (the default) then
 #' the other parameters of the function are used to select data from
 #' the indicated `filename`, and an [adp-class] object is returned.
-#' However, if `TOC` is TRUE, then the number of datasets held within
-#' the file is returned.
+#' However, if `TOC` is TRUE, then a dataframe detailing the number
+#' of entries in each of the datasets stored within the file is
+#' returned.
 #'
 #' @param debug an integer value indicating the level of debugging.  Set to 1 to
 #' get a moderate amount of debugging information, from the R code only, to 2 to
@@ -520,7 +535,10 @@ read.adp.ad2cp <- function(
         "DVLWaterTrack" = 0x1d,
         "altimeter" = 0x1e,
         "averageAltimeter" = 0x1f,
-        "echosounderRaw" = 0x23
+        "echosounderRaw" = 0x23,
+        "echosounderRawTx" = 0x24, # not handled
+        "waveData" = 0x30, # not handled
+        "format8" = 0xC0
     )
     dataTypeOrig <- dataType
     if (!is.null(dataType)) {
@@ -529,12 +547,12 @@ read.adp.ad2cp <- function(
             stop("length of dataType (", length(dataType), ") must not exceed 1")
         }
         if (is.character(dataType)) {
-            if (!identical(dataType, "TOC")) {
+            if (!identical(dataType, "text")) {
                 if (dataType %in% names(dataTypeChoices)) {
                     dataType <- dataTypeChoices[[dataType]]
                 } else {
                     stop(
-                        "dataType=\"", dataType, "\" not understood; try one of: \"",
+                        "dataType=\"", dataType, "\" not handled; try one of: \"",
                         paste(names(dataTypeChoices), collapse = "\", \""), "\""
                     )
                 }
@@ -777,6 +795,14 @@ read.adp.ad2cp <- function(
     # message("FIXME saving activeConfiguration to activeConfiguration.rda");save(activeConfiguration,file="activeConfiguration.rda")
     if (!planGiven) {
         u <- unique(activeConfiguration)
+        #if (isTRUE(getOption("oceDebugAD2CP", FALSE))) { # FIXME: DAN, DELETE_THIS
+        #    message("exporting DAN because oceDebugAD2CP option is TRUE")
+        #    DAN <- list(
+        #        activeConfiguration = activeConfiguration,
+        #        id = d$id
+        #    )
+        #    assign("DAN", DAN, env = .GlobalEnv)
+        #}
         nu <- length(u)
         if (nu == 1) {
             plan <- activeConfiguration[1]
@@ -796,7 +822,7 @@ read.adp.ad2cp <- function(
     # Find text blocks, some of which are configuration headers. This code has
     # altered substantially over time, as I've come to learn more about the data
     # format, and studied some sample files.  Be on the lookout for old variable
-    # names that don't quite make sense anymore.
+    # names that don't make sense anymore.
     #- header <- NULL
     idText <- which(d$id == 0xa0) # text chunk
     oceDebug(debug, vectorShow(idText))
@@ -807,6 +833,9 @@ read.adp.ad2cp <- function(
     # Find configuration (AKA header) blocks, as opposed to other strings.
     textBlockIsConfig <- sapply(textBlocks, function(b) grepl("^GETCLOCKSTR,TIME=", b[[1]]))
     configText <- textBlocks[textBlockIsConfig]
+    if (identical("text", dataType) || identical(dataType, 0xa0)) { # text (header)
+        return(configText[[1]]) # FIXME: what if there are multiple datasets?
+    }
     numberOfDataSets <- length(configText)
     oceDebug(debug, "This file has ", pluralize(numberOfDataSets, "data set"), "\n")
     # nolint start object_usage_linter
@@ -821,32 +850,35 @@ read.adp.ad2cp <- function(
     ), tz = "UTC")
     dataSetStart <- idText[textBlockIsConfig]
     dataSetEnd <- c(diff(dataSetStart), length(d$id))
-    oceDebug(debug, vectorShow(dataSetStart))
-    oceDebug(debug, vectorShow(dataSetEnd))
+    #oceDebug(debug, vectorShow(dataSetStart))
+    #oceDebug(debug, vectorShow(dataSetEnd))
     if (TOC) {
-        rval <- list()
-        for (ds in seq_len(numberOfDataSets)) {
-            #<2053>#See https://github.com/dankelley/oce/issues/2053
-            #<2053>cat("dataSet ", ds, ", starting at ", format(dataSetTime[ds]), " ", tz, ", contains\n", sep="")
-            look <- seq(dataSetStart[ds], dataSetEnd[ds])
-            t <- table(d$id[look])
-            names <- names(t)
-            tv <- as.vector(t)
-            #<2043>for (i in seq_along(names)) {
-            #<2043>    cat("    ", pluralize(tv[i], "record"), " with dataType ", names[i],
-            #<2043>        " (\"", ad2cpCodeToName(names[i], prefix=FALSE), "\")\n", sep="")
-            #<2043>}
-            rval[[paste("dataSet", ds, "at", format(dataSetTime[ds]))]] <-
-                data.frame(
-                    `ID hex` = paste0("0x", as.raw(as.integer(names))),
-                    `ID dec` = as.integer(names),
-                    `dataType` = ad2cpCodeToName(names, prefix = FALSE),
-                    Count = tv
-                )
+        rval <- data.frame()
+        for (thedataset in seq_len(numberOfDataSets)) {
+            for (theplan in c(0L, 1L)) { #seq_len(nplans) - 1L) {
+                lookDataset <- seq(dataSetStart[thedataset], dataSetEnd[thedataset])
+                lookPlan <- activeConfiguration[lookDataset] == theplan
+                t <- table(d$id[lookPlan])
+                name <- names(t)
+                count <- as.vector(t)
+                # Don't try to fill in if no data.
+                if (length(name) > 0) {
+                    rval <- rbind(
+                        rval,
+                        data.frame(
+                            dataset = thedataset,
+                            plan = theplan,
+                            IDhex = paste0("0x", as.raw(as.integer(name))),
+                            IDdec = as.integer(name),
+                            dataType = ad2cpCodeToName(name, prefix = FALSE),
+                            count = count
+                        )
+                    )
+                }
+            }
         }
         return(rval)
-    }
-    # We have handled the TOC case.
+    } # TOC
     oceDebug(debug, "this is not a TOC call\n")
     if (dataSet > numberOfDataSets) {
         stop(
@@ -884,13 +916,12 @@ read.adp.ad2cp <- function(
     }
     keep <- planKeep & dataSetKeep & dataTypeKeep
     #-print(table(keep))
-    #-message("DANNY");browser()
     if (sum(keep) < length(keep)) {
         oceDebug(debug, "retaining ", sum(keep), " records, or ", round(100 * sum(keep) / length(keep), 4), "% of file\n")
         keep2 <- which(keep)
-        if (debug > 0) {
-            message("DAN-FIXME issue 2303")
-            browser() # DAN-FIXME DAN-FIXME DAN-FIXME DAN-FIXME
+        if (sum(keep2) == 0) {
+            warning("no \"", originalParameters$dataType, "\" data in file")
+            return(NULL)
         }
         keep3 <- keep2[seq(from = from, to = min(to, length(keep2)), by = by)]
         N <- length(keep3)
@@ -972,7 +1003,7 @@ read.adp.ad2cp <- function(
                             sep = ""
                         )
                         warning("In read.adp.adp2cp() : id ", ad2cpCodeToName(id), " column ", column,
-                            " has inconsistencies in ", numberDifferent, " of the ", nrow(config), " rows\n",
+                            " has inconsistencies in ", numberDifferent, " of the ", nrow(config), " rows (please inform developers)",
                             sep = "", call. = FALSE
                         )
                     }
@@ -1173,7 +1204,10 @@ read.adp.ad2cp <- function(
     # 0x1E - Altimeter Record.
     # 0x1F - Avg Altimeter Raw Record.
     # 0x23 - echosounder-raw (undocumented)
+    # 0x24 - echosounder-raw TX (not handled yet)
+    # 0x30 - waves (not handled yet)
     # 0xA0 - String Data Record, eg. GPS NMEA data, comment from the FWRITE command.
+    # 0xC0 - "Nortek Data Format 8 Record" (not handled yet)
     # Set up pointers to records matching these keys.
     #-message("DAN 1");browser()
     p <- list(
@@ -1186,8 +1220,12 @@ read.adp.ad2cp <- function(
         echosounder = which(d$id == 0x1c),
         DVLWaterTrack = which(d$id == 0x1d),
         altimeter = which(d$id == 0x1e),
+        averageAltimeter = which(d$id == 0x1f),
         echosounderRaw = which(d$id == 0x23),
-        averageAltimeter = which(d$id == 0x1f)
+        echosounderRawTx = which(d$id == 0x24), # not handled yet
+        waves = which(d$id == 0x30), # not handled yet
+        text = which(d$id == 0xa0),
+        format8 = which(d$id == 0xc0) # not handled yet
     )
 
     # x Try to retrieved a named item from the data buffer.
@@ -2034,7 +2072,7 @@ read.adp.ad2cp <- function(
     # Nortek (2017 p 48) "6.1.2 Burst/Average Data Record Definition (DF3)"
     if (0x15 == dataType) { # 0x15=burst
         if (length(p$burst) < 1L) {
-            stop("no dataType=", dataTypeOrig, " (burst) in file")
+            return(NULL)
         }
         data <- readProfile(id = as.raw(dataType), debug = debug)
         oceDebug(debug, "dataType=", dataType, "(burst): move some things from data to metadata\n")
@@ -2250,7 +2288,8 @@ read.adp.ad2cp <- function(
     #<FIXME>     data$echosounderRaw <- readEchosounderRaw(id=as.raw(0x23), debug=debug)
     if (0x23 == dataType) { # 0x23=echosounderRaw
         if (length(p$echosounder) < 1L) {
-            stop("no dataType=", dataTypeOrig, " (echosounderRaw) in file")
+            warning("no \"", originalParameters$dataType, "\" data in file")
+            return(NULL)
         }
         data <- readEchosounderRaw(id = dataType, debug = debug)
         # 2022-08-26: I asked Nortek how to compute distance for echosounderRaw, and
@@ -2317,6 +2356,15 @@ read.adp.ad2cp <- function(
             }
             data[name] <- NULL
         }
+    }
+    if (0x24 == dataType) { # 0x24=echosounderRawTx
+        stop("dataType echosounderRawTx (0x24) is not handled yet")
+    }
+    if (0x30 == dataType) { # 0x30waves
+        stop("dataType waves (0x30) is not handled yet")
+    }
+    if (0xc0 == dataType) { # 0xc0=format8
+        stop("dataType waves (0x30) is not handled yet")
     }
 
     # Use header as the final word, if it contradicts what we inferred above.
