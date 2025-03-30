@@ -14,15 +14,20 @@ IntegerVector do_gappy_index(IntegerVector starts, IntegerVector offset, Integer
     long int n = nstarts * length[0];
     long int k = 0;
     IntegerVector res(n);
+    //Rprintf("In do_gappy_index(): nstarts=%ld, offset[0]=%d, length[0]=%d, n=%ld\n", nstarts, offset[0], length[0], n);
     if (nstarts > 0) {
       long int minspan = 100 * nstarts * length[0]; // start large
+      //Rprintf("initial minspan = %ld\n", minspan);
       for (long int i = 1; i < nstarts; i++) {
         long int span = starts[i] - starts[i-1];
-        if (span < minspan)
+        if (span < minspan) {
           minspan = span;
+          //Rprintf("  set new minspan = %ld\n", minspan);
+        }
       }
-      if (length[0] > minspan)
+      if (length[0] > minspan) {
         ::Rf_error("'length' %d exceeds minimum span between 'starts' elements (%ld)", length[0], minspan);
+      }
     }
     for (long int i = 0; i < nstarts; i++) {
       long int off = offset[0];

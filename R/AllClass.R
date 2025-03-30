@@ -85,6 +85,7 @@ setMethod(
     definition = function(object, ...) {
         metadataNames <- names(object@metadata)
         dataNames <- names(object@data)
+        dataNamesOriginal <- dataNames
         isTime <- grepl("^time$", dataNames) # OLD: more permissive name, but that breaks on some data
         if (any(isTime)) {
             time <- object@data[[which(isTime)[1]]]
@@ -124,42 +125,44 @@ setMethod(
         ndata <- length(object@data) # skip 'time' later, if it exists (issue 2198)
         threes <- NULL
         if (ndata > 0) {
-            if (is.ad2cp(object)) {
-                # FIXME: this needs rewriting, but is it worth it?
-                threes <- matrix(nrow = 3, ncol = 3)
-                # FIXME get burst and average separately
-                i <- 1
-                dataNames <- NULL
-                if ("v" %in% names(object@data)) {
-                    threes[i, ] <- threenum(object[["v"]])
-                    i <- i + 1
-                    dataNames <- c(dataNames, "v")
-                }
-                if ("a" %in% names(object@data)) {
-                    threes[i, ] <- threenum(object[["a"]])
-                    i <- i + 1
-                    dataNames <- c(dataNames, "a")
-                }
-                if ("q" %in% names(object@data)) {
-                    threes[i, ] <- threenum(object[["q"]])
-                    i <- i + 1
-                    dataNames <- c(dataNames, "q")
-                }
-                # message(vectorShow(dataNames)) # https://github.com/dankelley/oce/issues/2087
-            } else { # not ad2cd object
-                threes <- matrix(nrow = ndata, ncol = 3)
-                for (i in seq_len(ndata)) {
-                    # 2023-06-19 wrap in try() because one of the R-CMD check machines does
-                    # not allow.  It says that the is.finite() is being applied to a list,
-                    # which it clearly is not, so I don't understand the
-                    # problem. Even so, using try() shouldn't hurt anything, and
-                    # I don't like seeing a red "failed" box on the homepage.
-                    ok <- try(any(is.finite(object@data[[i]])), silent = TRUE)
-                    if (!inherits(ok, "try-error") && ok) {
-                        threes[i, ] <- as.numeric(threenum(object@data[[i]]))
-                    }
+            #<> if (FALSE && is.ad2cp(object)) {
+            #<>     oceDebug(debug, "summary() of an ad2cp object\n")
+            #<>     # FIXME: this needs rewriting, but is it worth it?
+            #<>     threes <- matrix(nrow = 3, ncol = 3)
+            #<>     # FIXME get burst and average separately
+            #<>     i <- 1
+            #<>     dataNames <- NULL
+            #<>     if ("v" %in% names(object@data)) {
+            #<>         threes[i, ] <- threenum(object[["v"]])
+            #<>         i <- i + 1
+            #<>         dataNames <- c(dataNames, "v")
+            #<>     }
+            #<>     if ("a" %in% names(object@data)) {
+            #<>         threes[i, ] <- threenum(object[["a"]])
+            #<>         i <- i + 1
+            #<>         dataNames <- c(dataNames, "a")
+            #<>     }
+            #<>     if ("q" %in% names(object@data)) {
+            #<>         threes[i, ] <- threenum(object[["q"]])
+            #<>         i <- i + 1
+            #<>         dataNames <- c(dataNames, "q")
+            #<>     }
+            #<>     if ("samples" %in% names(object@data)) {
+            #<>         threes[i, ] <- threenum(object[["q"]])
+            #<>         i <- i + 1
+            #<>         dataNames <- c(dataNames, "samples")
+            #<>     }
+            #<> } else { # not ad2cd object
+            threes <- matrix(nrow = ndata, ncol = 3)
+            for (i in seq_len(ndata)) {
+                # Use try() to avoid problems if the item is a list.
+                ok <- try(any(is.finite(object@data[[i]])), silent = TRUE)
+                if (!inherits(ok, "try-error") && ok) {
+                    threes[i, ] <- as.numeric(threenum(object@data[[i]]))
                 }
             }
+            #<> dataNames <- dataNamesTMP
+            #<> }
             # rownames(threes) <- paste("   ", dataNames[!isTime])
             units <- if ("units" %in% metadataNames) object@metadata$units else NULL
             # paste the scale after the unit
@@ -208,6 +211,7 @@ setMethod(
                 #<>     rownames(threes) <- paste("    ", dataLabel(dataNames, units), sep="")
                 #<> }
                 # deleteLater <- grep("^time", dataNames) # we show time outside 3s block
+                # browser()
                 rownames(threes) <- paste("    ", dataLabel(dataNames, units), sep = "")
                 # . message("threes step 2:");print(threes)
                 threes <- cbind(
@@ -484,7 +488,7 @@ setMethod(
         # message("DAN AllClass [[ method: 1 i=", i)
         metadataNames <- sort(names(x@metadata))
         dataNames <- sort(names(x@data))
-        # Below was my idea for propagating 'debug' here, but it 
+        # Below was my idea for propagating 'debug' here, but it
         # does not work. I don't want to change the signature from the
         # lowest-level definition by adding a 'debug' argument.
         #<> dots <- list(...)

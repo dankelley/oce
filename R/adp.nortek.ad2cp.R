@@ -1536,11 +1536,13 @@ read.adp.ad2cp <- function(
         rval
     } # readBurstAltimeterRaw
 
-    # See Nortek 2022 (draft preview mid-Aug 2022) section 2.4
+
     readEchosounderRaw <- function(id, debug = getOption("oceDebug")) # uses global 'd'
     {
+        # See page 96 of Nortek AS. “Signature Integration 55|250|500|1000kHz (2024.1),” 2024.
+        # https://support.nortekgroup.com/hc/en-us/articles/360029513952-Integrators-Guide-Signature.
         type <- gsub(".*=", "", ad2cpCodeToName(id))
-        oceDebug(debug, "readEchosounderRaw(id=0x", id, ") i.e. type=", type, " START\n")
+        oceDebug(debug, "readEchosounderRaw(id=0x", id, ") [type=", type, "] START\n")
         look <- which(d$id == id)
         oceDebug(debug, vectorShow(look))
         lookIndex <- d$index[look]
@@ -1557,21 +1559,28 @@ read.adp.ad2cp <- function(
         rval <- list()
         # nolint end object_useage_linter
         offsetOfData <- as.integer(d$buf[d$index[look[1]] + 2L])
-        # oceDebug(debug, vectorShow(offsetOfData, showNewline=FALSE),
+        oceDebug(debug, "offsetOfData=", offsetOfData, "\n")
         #    " (expect 240 for local_data/ad2cp/ad2cp_01.ad2cp)\n")
         # nolint start object_useage_linter
+        oceDebug(debug, "lookIndex[1]=", lookIndex[1], "\n")
         serialNumber <- readBin(d$buf[17 + 0:3 + lookIndex[1]], "integer", size = 4L)
+        oceDebug(debug, "serialNumber=", serialNumber, "\n")
         # nolint end object_useage_linter
         # oceDebug(debug, vectorShow(serialNumber, showNewline=FALSE),
         #    " (expect 101135 for local_data/ad2cp/ad2cp_01.ad2cp)\n")
         numberOfSamples <- readBin(buf[21 + 0:3 + lookIndex[1]], "integer", size = 4L)
+        oceDebug(debug, "numberOfSamples=", numberOfSamples, "\n")
         # oceDebug(debug, vectorShow(numberOfSamples, showNewline=FALSE),
         #    " (expect 1974 for local_data/ad2cp/ad2cp_01.ad2cp)\n")
         # startSampleIndex is the echosounderRaw index at which
         # distance from sensor equals blanking distance.
         startSampleIndex <- readBin(buf[25 + 0:3 + lookIndex[1]], "integer", size = 4L)
+        oceDebug(debug, "startSampleIndex=", startSampleIndex, "\n")
         samplingRate <- readBin(buf[29 + 0:3 + lookIndex[1]], "numeric", size = 4L, endian = "little")
-        iv <- gappyIndex(lookIndex, offsetOfData + 1L, 2L * 4L * numberOfSamples)
+        oceDebug(debug, "samplingRate=", samplingRate, "\n")
+        oceDebug(debug, "about to call gappyIndex(lookIndex,", offsetOfData + 1, ",", 2L * 4L * numberOfSamples, ")\n")
+        #<old> iv <- gappyIndex(lookIndex, offsetOfData + 1L, 2L * 4L * numberOfSamples)
+        iv <- gappyIndex(lookIndex, offsetOfData + 1L, 4L * numberOfSamples)
         NP <- length(lookIndex)
         # Extract in simple steps to enable checking.  The format is inferred
         # from an email thread in and around 2022-08-23, in lieu of up-to-date
@@ -1585,11 +1594,16 @@ read.adp.ad2cp <- function(
         tmp <- as.numeric(tmp) / 2^31
         # . message(vectorShow(tmp))
         ntmp <- length(tmp)
-        odd <- seq(1L, ntmp, by = 2)
-        even <- seq(2L, ntmp, by = 2)
+        odd <- seq(1L, by = 2, length.out = ntmp)
+        even <- seq(2L, by = 2, length.out = ntmp)
         real <- tmp[odd]
         imaginary <- tmp[even]
-        samples <- t(matrix(complex(real = real, imaginary = imaginary), byrow = FALSE, ncol = NP))
+        oceDebug(debug, "about to construct a complex matrix to hold echosounderRaw data\n")
+        oceDebug(debug, "length(odd)=", length(odd), ", length(even)=", length(even), "; ncol=", NP, "\n")
+        #samples <- t(matrix(complex(real = real, imaginary = imaginary), byrow = FALSE, ncol = NP))
+        samplesRe <- t(matrix(real, byrow = FALSE, ncol = NP))
+        samplesIm <- t(matrix(imaginary, byrow = FALSE, ncol = NP))
+        oceDebug(debug, "construction succeded\n")
         # FIXME: add distance,time as for echosounder
         # The below shows that we *cannot* use the cellSize (it is zero for a
         # test file).
@@ -1615,7 +1629,8 @@ read.adp.ad2cp <- function(
             numberOfSamples = numberOfSamples,
             samplingRate = samplingRate,
             startSampleIndex = startSampleIndex,
-            samples = samples
+            samplesRe = samplesRe,
+            samplesIm = samplesIm
         )
     } # readEchosounderRaw
 
@@ -1638,6 +1653,7 @@ read.adp.ad2cp <- function(
         # message("burstOrAverage: offsetOfData=", vectorShow(as.integer(d$buf[d$index[look[1]] + 2L])))
         oceDebug(debug, vectorShow(look))
         configuration0 <- configuration[look[1], ]
+        oceDebug(debug, vectorShow(configuration0))
         velocityIncluded <- configuration0[6]
         amplitudeIncluded <- configuration0[7]
         correlationIncluded <- configuration0[8]
@@ -1646,7 +1662,7 @@ read.adp.ad2cp <- function(
         altimeterRawIncluded <- configuration0[10]
         # nolint end object_useage_linter
         ASTIncluded <- configuration0[11]
-        echosounderIncluded <- configuration0[12]
+        echosounderIncluded <- configuration0[12] # FIXME: does this mean echosounderRaw is also included?
         AHRSIncluded <- configuration0[13]
         percentGoodIncluded <- configuration0[14]
         stdDevIncluded <- configuration0[15]
@@ -2297,37 +2313,76 @@ read.adp.ad2cp <- function(
             return(NULL)
         }
         data <- readEchosounderRaw(id = dataType, debug = debug)
-        # 2022-08-26: I asked Nortek how to compute distance for echosounderRaw, and
-        # the answer involves the blankingDistance.  But, in my sample file at
-        # tests/testthat/local_data/ad2cp/ad2cp_01.ad2cp, the blankingDistance for
-        # echosounderRaw is 0, and so I'm guessing (pending more information from
-        # Nortek) that the idea is to use the blankingDistance in the (now possibly updated)
-        # ... honestly, this is a mess and I am not 100% sure what to do, lacking
-        # confidence until Nortek updates their documentation.  One thing, though:
-        # the code below is based on the old model for ad2cp object structure, in
-        # which we stored both 'echosounder' and 'echosounderRaw', but in the new
-        # model we do not do that.  I am simply skipping this for now 2022-10-08
-        # but printing a message.
+        # 2022-08-26: I asked Nortek how to compute distance for echosounderRaw,
+        # and the answer involves the blankingDistance.  But, in my sample file
+        # at tests/testthat/local_data/ad2cp/ad2cp_01.ad2cp, the
+        # blankingDistance for echosounderRaw is 0, and so I'm guessing (pending
+        # more information from Nortek) that the idea is to use the
+        # blankingDistance in the (now possibly updated) documentation ... but
+        # honestly, this is a mess and I am not 100% sure what to do, lacking
+        # confidence until Nortek updates their documentation.  One thing,
+        # though: the code below is based on the old model for ad2cp object
+        # structure, in which we stored both 'echosounder' and 'echosounderRaw',
+        # but in the new model we do not do that.  I am simply skipping this for
+        # now 2022-10-08 but printing a message.
         #
         # Compute cellSize using a formula inferred from an email by
         # Nortek's Ragnar Ekker on 2022-09-01.
         #
-        # 1. Should we use the integer `startSampleIndex` that is in the
-        # file, or should we compute it using the formula provided by
-        # Ragnar?  The former is an integer value that is 16 in a sample
-        # file, and if that's typical then rounding might be expected to
-        # give about 3% error in the results for `cellSize` and thus
-        # `distance`.
-
+        # Some issues:
+        #
+        # 1. Should we use the integer `startSampleIndex` that is in the file,
+        #    or should we compute it using the formula provided by Ragnar?  The
+        #    former is an integer value that is 16 in a sample file, and if
+        #    that's typical then rounding might be expected to give about 3%
+        #    error in the results for `cellSize` and thus `distance`.
+        #
         # 2. What `soundSpeed` should be used?  It varies from profile to
-        # profile. But, perhaps we should use a constant value, if that's
-        # what was used in some computations that led to the data creation.
-        # The graph above uses the integer value. If the calculated
-        # `startSampleIndex` were used instead, the peak would shift from
-        # 282m to 270m=
-        # `r round(with(d@data$echosounderRaw,cellSize2*282/cellSize))` m.
-        XMIT1 <- 1e-3 * ad2cpHeaderValue(header, "GETECHO", "XMIT1", plan = plan)
-        BD <- ad2cpHeaderValue(header, "GETECHO", "BD", plan = plan)
+        #    profile. But, perhaps we should use a constant value, if that's
+        #    what was used in some computations that led to the data creation.
+        #    The graph above uses the integer value. If the calculated
+        #    `startSampleIndex` were used instead, the peak would shift from
+        #    282m to 270m.
+        #
+        # 3. In a test file for issue 2303, the header has an item for GETECHO1,
+        #    but none for GETECHO.  That file has echosounderRaw in plan 0, and
+        #    echosounder in plan 1, so I was surprised by this. Anyway, in the
+        #    below, I'm trying a search for the actual plan value, and if that
+        #    fails, I will try a search for the other possible plan value.
+        otherPlan <- if (plan == 0) 1 else 0
+        XMIT1 <- 1e-3 * ad2cpHeaderValue(header, key = "GETECHO", item = "XMIT1", plan = plan)
+        XMIT1other <- 1e-3 * ad2cpHeaderValue(header, key = "GETECHO", item = "XMIT1", plan = otherPlan)
+        if (is.null(XMIT1)) {
+            XMIT1 <- XMIT1other
+            oceDebug(debug, "using XMIT1other for XMIT1\n")
+        }
+        BD <- ad2cpHeaderValue(header, key = "GETECHO", item = "BD", plan = plan)
+        BDother <- ad2cpHeaderValue(header, key = "GETECHO", item = "BD", plan = otherPlan)
+        if (is.null(BD)) {
+            BD <- XMIT1other
+            oceDebug(debug, "using BDother for BD\n")
+        }
+        res@metadata$blankingDistance <- BD
+        # numberOfCells
+        NC <- ad2cpHeaderValue(header, key = "GETECHO", item = "NC", plan = plan)
+        NCother <- ad2cpHeaderValue(header, key = "GETECHO", item = "NC", plan = otherPlan)
+        if (is.null(NC)) {
+            NC <- NCother
+            oceDebug(debug, "using NCother for NC\n")
+        }
+        res@metadata$numberOfCells <- NC
+        # cellSize
+        BINSIZE <- ad2cpHeaderValue(header, key = "GETECHO", item = "BINSIZE", plan = plan)
+        BINSIZEother <- ad2cpHeaderValue(header, key = "GETECHO", item = "BINSIZE", plan = otherPlan)
+        if (is.null(BINSIZE)) {
+            BINSIZE <- BINSIZEother
+            oceDebug(debug, "using BINSIZEother for BINSIZE\n")
+        }
+        res@metadata$cellSize <- BINSIZE
+
+        oceDebug(debug, "XMIT1=", XMIT1, ", BD=", BD, " (note: plan=", plan, ")\n")
+        oceDebug(debug, "XMIT1other=", XMIT1other, ", BDother=", BDother, " (note: plan=", otherPlan, ")\n")
+        res@metadata$blankingDistance <- BD
         if (is.null(XMIT1) || is.null(BD)) {
             warning("cannot infer distance for echosounderRaw record; set to 1, 2, which is almost certainly very wrong")
             data$distance <- seq_len(data$numberOfSamples)
@@ -2342,8 +2397,9 @@ read.adp.ad2cp <- function(
             data$distance <- seq(0, by = data$cellSize, length.out = data$numberOfSamples)
             oceDebug(
                 debug, "read.adp.ad2cp() : computing echosounderRaw$distance based ",
-                " on my interpretation of an email sent by RE/Nortek on 2022-09-01"
+                " on my interpretation of an email sent by RE/Nortek on 2022-09-01\n"
             )
+            oceDebug(debug, vectorShow(data$distance))
             # the above contradicts an email sent by EB/Nortek on 2022-08-28 but
             # I am told that this earlier one was erroneous.
         }
@@ -2377,7 +2433,7 @@ read.adp.ad2cp <- function(
         if (0x1c == dataType) { # 0x1c=echosounder
             # BOOKMARK-blankingDistance-2 (see also BOOKMARK-blankingDistance-1, above)
             oceDebug(debug, "trying to read 'echosounder' record (ID 0x1c)\n")
-            BD <- ad2cpHeaderValue(header, "GETECHO", "BD", plan = plan)
+            BD <- ad2cpHeaderValue(header, key = "GETECHO", item = "BD", plan = plan)
             if (res@metadata$blankingDistance != BD) {
                 warning("In read.adp.ad2cp() : inferred echosounder$blankingDistance (", res@metadata$blankingDistance,
                     "m) does not match the header GETECHO value (", BD,
@@ -2390,7 +2446,12 @@ read.adp.ad2cp <- function(
     }
     # FIXME: I bet some other types should not be getting distance defined.
     if (!(dataType %in% c("bottomTrack"))) {
-        data$distance <- res@metadata$blankingDistance + seq(1, by = res@metadata$cellSize, length.out = res@metadata$numberOfCells)
+        oceDebug(debug, "about to compute distance from blankingDistance=",
+                 res@metadata$blankinDistance, ", cellSize=",
+                 res@metadata$cellSize, ", and numberOfCells=",
+                 res@metadata$numberOfCells, "\n")
+        data$distance <- res@metadata$blankingDistance +
+            seq(1, by = res@metadata$cellSize, length.out = res@metadata$numberOfCells)
     }
     # 2022-08-29 BOOKMARK-blankingDistance-03
     # I am informed by Nortek that the blankingDistance is always 1e-3 for
