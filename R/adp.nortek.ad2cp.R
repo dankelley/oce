@@ -87,21 +87,21 @@ ad2cpDefaultDataItem <- function(x, j = NULL,
 #'
 #' @param x an [adp-class] object that holds AD2CP data.
 #'
-#' @param key Character value that identifies a particular line in the file
+#' @param key character value that identifies a particular line in the file
 #' header.
 #'
-#' @param item Character value indicating the name of the item sought.
+#' @param item character value indicating the name of the item sought.
 #'
-#' @param numeric Logical value indicating whether to convert the return value
+#' @param numeric logical value indicating whether to convert the return value
 #' from a string to a numerical value.
 #'
-#' @param default Optional value to be used if the item is not found in the
+#' @param default optional value to be used if the item is not found in the
 #' header, or if the header is `NULL` (as in the case of a split-up file
 #' that lacks the initial header information)
 #'
-#' @return String or number interpreted from the `x[["text"]]`, or `NULL`,
-#' if the desired item is not found there, or if `x` is not of the required
-#' class and variety.
+#' @return `ad2cpHeaderValue` returns a character value or number interpreted
+#' from the output from `x[["text"]]`, or `NULL`, if the desired item is not
+#' found there, or if `x` is not of the required class and variety.
 #'
 #' @section Sample of Usage:
 #' \preformatted{
@@ -125,7 +125,7 @@ ad2cpDefaultDataItem <- function(x, j = NULL,
 #' @family things related to ad2cp data
 #'
 #' @author Dan Kelley
-ad2cpHeaderValue <- function(x, key, item, numeric = TRUE, default) {
+ad2cpHeaderValue <- function(x, key, item, numeric = TRUE, default, plan = 0) {
     if (missing(x)) {
         stop("must provide x")
     }
@@ -150,6 +150,10 @@ ad2cpHeaderValue <- function(x, key, item, numeric = TRUE, default) {
     }
     if (is.null(header)) {
         return(if (missing(default)) NULL else default)
+    }
+    # Must modify key if plan is not 0
+    if (plan > 0) {
+        key <- paste0(key, plan)
     }
     key2 <- paste("^", key, ",", sep = "")
     hline <- header[grep(key2, header)]
@@ -2288,7 +2292,7 @@ read.adp.ad2cp <- function(
     #<FIXME> if ("echosounderRaw" %in% which && length(p$echosounderRaw) > 0) # 0x23
     #<FIXME>     data$echosounderRaw <- readEchosounderRaw(id=as.raw(0x23), debug=debug)
     if (0x23 == dataType) { # 0x23=echosounderRaw
-        if (length(p$echosounder) < 1L) {
+        if (length(p$echosounderRaw) < 1L) {
             warning("no \"", originalParameters$dataType, "\" data in file")
             return(NULL)
         }
@@ -2322,8 +2326,8 @@ read.adp.ad2cp <- function(
         # `startSampleIndex` were used instead, the peak would shift from
         # 282m to 270m=
         # `r round(with(d@data$echosounderRaw,cellSize2*282/cellSize))` m.
-        XMIT1 <- 1e-3 * ad2cpHeaderValue(header, "GETECHO", "XMIT1")
-        BD <- ad2cpHeaderValue(header, "GETECHO", "BD")
+        XMIT1 <- 1e-3 * ad2cpHeaderValue(header, "GETECHO", "XMIT1", plan = plan)
+        BD <- ad2cpHeaderValue(header, "GETECHO", "BD", plan = plan)
         if (is.null(XMIT1) || is.null(BD)) {
             warning("cannot infer distance for echosounderRaw record; set to 1, 2, which is almost certainly very wrong")
             data$distance <- seq_len(data$numberOfSamples)
@@ -2372,7 +2376,8 @@ read.adp.ad2cp <- function(
     if (!is.null(header)) {
         if (0x1c == dataType) { # 0x1c=echosounder
             # BOOKMARK-blankingDistance-2 (see also BOOKMARK-blankingDistance-1, above)
-            BD <- ad2cpHeaderValue(header, "GETECHO", "BD")
+            oceDebug(debug, "trying to read 'echosounder' record (ID 0x1c)\n")
+            BD <- ad2cpHeaderValue(header, "GETECHO", "BD", plan = plan)
             if (res@metadata$blankingDistance != BD) {
                 warning("In read.adp.ad2cp() : inferred echosounder$blankingDistance (", res@metadata$blankingDistance,
                     "m) does not match the header GETECHO value (", BD,
@@ -2419,8 +2424,8 @@ read.adp.ad2cp <- function(
     #-    warning("defaulting 'type' to '", type, "', since no header was found in the file, and the 'type' argument was not provided")
     #-}
     res@metadata$type <- type
-    res@metadata$declination <- ad2cpHeaderValue(x = header, key = "GETUSER", item = "DECL", default = NA)
-    res@metadata$frequency <- ad2cpHeaderValue(x = header, key = "BEAMCFGLIST,BEAM=1", item = "FREQ", default = NA)
+    res@metadata$declination <- ad2cpHeaderValue(x = header, key = "GETUSER", item = "DECL", default = NA, plan = plan)
+    res@metadata$frequency <- ad2cpHeaderValue(x = header, key = "BEAMCFGLIST,BEAM=1", item = "FREQ", default = NA, plan = plan)
     res@metadata$beamAngle <- switch(type,
         "Signature1000" = 25,
         "Signature500" = 25,
