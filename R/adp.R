@@ -477,6 +477,15 @@ setMethod(
         if ("fileType" %in% mnames) {
             cat(paste("* File type:         ", object@metadata$fileType, "\n", sep = ""), ...)
         }
+        if ("dataset" %in% mnames) {
+            cat(paste("* Dataset:           ", object@metadata$dataset, "\n", sep = ""), ...)
+        }
+        if ("plan" %in% mnames) {
+            cat(paste("* Plan:              ", object@metadata$plan, "\n", sep = ""), ...)
+        }
+        if ("fileType" %in% mnames) {
+            cat(paste("* Data type:         ", object@metadata$dataType, "\n", sep = ""), ...)
+        }
         if ("firmwareVersion" %in% mnames) {
             cat(paste("* Firmware:          ", object@metadata$firmwareVersion, "\n", sep = ""), ...)
         }

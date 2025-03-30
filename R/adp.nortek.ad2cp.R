@@ -99,6 +99,9 @@ ad2cpDefaultDataItem <- function(x, j = NULL,
 #' header, or if the header is `NULL` (as in the case of a split-up file
 #' that lacks the initial header information)
 #'
+#' @param plan integer specifying the plan, with the same
+#' meaning as for [read.adp.ad2cp()].
+#'
 #' @return `ad2cpHeaderValue` returns a character value or number interpreted
 #' from the output from `x[["text"]]`, or `NULL`, if the desired item is not
 #' found there, or if `x` is not of the required class and variety.
@@ -2476,14 +2479,12 @@ read.adp.ad2cp <- function(
     res@metadata$orientation <- orientation
     res@metadata$manufacturer <- "nortek"
     res@metadata$fileType <- "AD2CP"
+    res@metadata$plan <- plan
+    res@metadata$dataSet <- dataSet
+    res@metadata$dataType <- ad2cpCodeToName(dataType)
     res@metadata$serialNumber <- serialNumber
     res@metadata$header <- header
     res@metadata$orientation <- orientation
-    #- Warn if we had to guess the type
-    #-if (!typeGiven) {
-    #-    type <- "Signature1000"
-    #-    warning("defaulting 'type' to '", type, "', since no header was found in the file, and the 'type' argument was not provided")
-    #-}
     res@metadata$type <- type
     res@metadata$declination <- ad2cpHeaderValue(x = header, key = "GETUSER", item = "DECL", default = NA, plan = plan)
     res@metadata$frequency <- ad2cpHeaderValue(x = header, key = "BEAMCFGLIST,BEAM=1", item = "FREQ", default = NA, plan = plan)
@@ -2505,7 +2506,6 @@ read.adp.ad2cp <- function(
         res@metadata$oceCoordinate <- NULL
         res@metadata$orientation <- NULL
     }
-    res@metadata$dataType <- dataType
     # Insert data
     res@data <- data
     # Insert processingLog

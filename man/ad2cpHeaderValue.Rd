@@ -20,6 +20,9 @@ from a string to a numerical value.}
 \item{default}{optional value to be used if the item is not found in the
 header, or if the header is \code{NULL} (as in the case of a split-up file
 that lacks the initial header information)}
+
+\item{plan}{integer specifying the plan, with the same
+meaning as for \code{\link[=read.adp.ad2cp]{read.adp.ad2cp()}}.}
 }
 \value{
 \code{ad2cpHeaderValue} returns a character value or number interpreted
