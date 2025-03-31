@@ -171,9 +171,13 @@ ad2cpHeaderValue <- function(x, key, item, numeric = TRUE, default, plan = 0) {
     }
     res <- gsub(paste("^.*", item, "=([^,]*).*$", sep = ""), "\\1", hline)
     if (nchar(res)) {
+        #message("ad2cpHeaderValue(key='", key, "', item='", item, "' case 1")
         res <- if (numeric) as.numeric(res) else gsub("\"", "", res)
+        #message(" ... res='", res, "'")
     } else {
+        #message("ad2cpHeaderValue(key='", key, "', item='", item, "' case 2")
         res <- if (missing(default)) NULL else default
+        #message(" ... res='", res, "'")
     }
     res
 }
@@ -1572,7 +1576,7 @@ read.adp.ad2cp <- function(
         # oceDebug(debug, vectorShow(serialNumber, showNewline=FALSE),
         #    " (expect 101135 for local_data/ad2cp/ad2cp_01.ad2cp)\n")
         numberOfSamples <- readBin(buf[21 + 0:3 + lookIndex[1]], "integer", size = 4L)
-        oceDebug(debug, "numberOfSamples=", numberOfSamples, "\n")
+        oceDebug(debug, "!!! numberOfSamples=", numberOfSamples, "\n")
         # oceDebug(debug, vectorShow(numberOfSamples, showNewline=FALSE),
         #    " (expect 1974 for local_data/ad2cp/ad2cp_01.ad2cp)\n")
         # startSampleIndex is the echosounderRaw index at which
@@ -1603,7 +1607,7 @@ read.adp.ad2cp <- function(
         imaginary <- tmp[even]
         oceDebug(debug, "about to construct a complex matrix to hold echosounderRaw data\n")
         oceDebug(debug, "length(odd)=", length(odd), ", length(even)=", length(even), "; ncol=", NP, "\n")
-        #samples <- t(matrix(complex(real = real, imaginary = imaginary), byrow = FALSE, ncol = NP))
+        # samples <- t(matrix(complex(real = real, imaginary = imaginary), byrow = FALSE, ncol = NP))
         samplesRe <- t(matrix(real, byrow = FALSE, ncol = NP))
         samplesIm <- t(matrix(imaginary, byrow = FALSE, ncol = NP))
         oceDebug(debug, "construction succeded\n")
@@ -2316,6 +2320,8 @@ read.adp.ad2cp <- function(
             return(NULL)
         }
         data <- readEchosounderRaw(id = dataType, debug = debug)
+        message("next is data for echosounderRaw:")
+        message(str(data))
         # 2022-08-26: I asked Nortek how to compute distance for echosounderRaw,
         # and the answer involves the blankingDistance.  But, in my sample file
         # at tests/testthat/local_data/ad2cp/ad2cp_01.ad2cp, the
@@ -2355,38 +2361,38 @@ read.adp.ad2cp <- function(
         otherPlan <- if (plan == 0) 1 else 0
         XMIT1 <- 1e-3 * ad2cpHeaderValue(header, key = "GETECHO", item = "XMIT1", plan = plan)
         XMIT1other <- 1e-3 * ad2cpHeaderValue(header, key = "GETECHO", item = "XMIT1", plan = otherPlan)
-        if (is.null(XMIT1)) {
+        if (!length(XMIT1)) {
             XMIT1 <- XMIT1other
             oceDebug(debug, "using XMIT1other for XMIT1\n")
         }
+        oceDebug(debug, vectorShow(XMIT1))
         BD <- ad2cpHeaderValue(header, key = "GETECHO", item = "BD", plan = plan)
         BDother <- ad2cpHeaderValue(header, key = "GETECHO", item = "BD", plan = otherPlan)
-        if (is.null(BD)) {
-            BD <- XMIT1other
+        if (!length(BD)) {
+            BD <- BDother
             oceDebug(debug, "using BDother for BD\n")
         }
         res@metadata$blankingDistance <- BD
-        # numberOfCells
-        NC <- ad2cpHeaderValue(header, key = "GETECHO", item = "NC", plan = plan)
-        NCother <- ad2cpHeaderValue(header, key = "GETECHO", item = "NC", plan = otherPlan)
-        if (is.null(NC)) {
-            NC <- NCother
-            oceDebug(debug, "using NCother for NC\n")
+        oceDebug(debug, vectorShow(res@metadata$blankingDistance))
+        # Note that we do not use numberOfCells from the GETECHO line
+        # FIXME that item also has NRAWSAMP2 ... what's that?
+        NRAWSAMP1 <- ad2cpHeaderValue(header, key = "READECHO", item = "NRAWSAMP1", plan = plan)
+        NRAWSAMP1other <- ad2cpHeaderValue(header, key = "READECHO", item = "NRAWSAMP1", plan = otherPlan)
+        if (!length(NRAWSAMP1)) {
+            NRAWSAMP1 <- NRAWSAMP1other
+            oceDebug(debug, "using NRAWSAMP1other for NRAWSAMP1\n")
         }
-        res@metadata$numberOfCells <- NC
+        oceDebug(debug, vectorShow(NRAWSAMP1))
+        res@metadata$numberOfCells <- NRAWSAMP1
         # cellSize
         BINSIZE <- ad2cpHeaderValue(header, key = "GETECHO", item = "BINSIZE", plan = plan)
         BINSIZEother <- ad2cpHeaderValue(header, key = "GETECHO", item = "BINSIZE", plan = otherPlan)
-        if (is.null(BINSIZE)) {
+        if (!length(BINSIZE)) {
             BINSIZE <- BINSIZEother
             oceDebug(debug, "using BINSIZEother for BINSIZE\n")
         }
         res@metadata$cellSize <- BINSIZE
-
-        oceDebug(debug, "XMIT1=", XMIT1, ", BD=", BD, " (note: plan=", plan, ")\n")
-        oceDebug(debug, "XMIT1other=", XMIT1other, ", BDother=", BDother, " (note: plan=", otherPlan, ")\n")
-        res@metadata$blankingDistance <- BD
-        if (is.null(XMIT1) || is.null(BD)) {
+        if (!length(XMIT1) || !length(BD)) {
             warning("cannot infer distance for echosounderRaw record; set to 1, 2, which is almost certainly very wrong")
             data$distance <- seq_len(data$numberOfSamples)
         } else {
@@ -2397,39 +2403,43 @@ read.adp.ad2cp <- function(
             # it, rather than using the rounded value in the dataset.
             data$cellSize <- L / startSampleIndex
             # data$cellSize <- L / data$startSampleIndex
-            data$distance <- seq(0, by = data$cellSize, length.out = data$numberOfSamples)
+            data$distance <- seq(0, by = res@metadata$cellSize, length.out = data$numberOfSamples)
             oceDebug(
-                debug, "read.adp.ad2cp() : computing echosounderRaw$distance based ",
-                " on my interpretation of an email sent by RE/Nortek on 2022-09-01\n"
+                debug, "computing echosounderRaw$distance based ",
+                "on my interpretation of an email sent by RE/Nortek on 2022-09-01\n"
             )
-            oceDebug(debug, vectorShow(data$distance))
             # the above contradicts an email sent by EB/Nortek on 2022-08-28 but
             # I am told that this earlier one was erroneous.
         }
+        oceDebug(debug, vectorShow(data$distance))
         oceDebug(debug, "move some (echosounderRaw) things from data to metadata\n")
         for (name in c(
-            "blankingDistance", "cellSize", "configuration", "datasetDescription",
-            "frequency", "numberOfBeams", "numberOfCells", "numberOfSamples", "orientation",
-            "samplingRate", "startSampleIndex"
+            "blankingDistance", "cellSize", "configuration",
+            "datasetDescription", "frequency",
+            "numberOfBeams", "numberOfCells", "numberOfSamples",
+            "orientation", "samplingRate", "startSampleIndex"
         )) { # not same as above
             if (name %in% names(data)) {
                 oceDebug(debug, "moving ", name, " from data to metadata\n")
                 res@metadata[name] <- data[name]
             } else {
-                oceDebug(debug, "  deleting ", name, " from data, without moving to metadata\n")
+                oceDebug(debug, "deleting ", name, " from data, without moving to metadata\n")
             }
             data[name] <- NULL
         }
-    }
+    } # 0x23=echosounderRaw
+
     if (0x24 == dataType) { # 0x24=echosounderRawTx
         stop("dataType echosounderRawTx (0x24) is not handled yet")
-    }
-    if (0x30 == dataType) { # 0x30waves
+    } # 0x24=echosounderRawTX
+
+    if (0x30 == dataType) { # 0x30=waves
         stop("dataType waves (0x30) is not handled yet")
-    }
+    } # 0x30=waves (not handled)
+
     if (0xc0 == dataType) { # 0xc0=format8
-        stop("dataType waves (0x30) is not handled yet")
-    }
+        stop("dataType waves (0x30) is not yet")
+    } # 0xc0=format8 (not handled)
 
     # Use header as the final word, if it contradicts what we inferred above.
     if (!is.null(header)) {
@@ -2438,9 +2448,9 @@ read.adp.ad2cp <- function(
             oceDebug(debug, "trying to read 'echosounder' record (ID 0x1c)\n")
             BD <- ad2cpHeaderValue(header, key = "GETECHO", item = "BD", plan = plan)
             if (res@metadata$blankingDistance != BD) {
-                warning("In read.adp.ad2cp() : inferred echosounder$blankingDistance (", res@metadata$blankingDistance,
-                    "m) does not match the header GETECHO value (", BD,
-                    "m); the latter value was used\n",
+                warning("In read.adp.ad2cp() : inferred echosounder$blankingDistance [", res@metadata$blankingDistance,
+                    "m] does not match the header GETECHO value [", BD,
+                    "m]; the latter value was used\n",
                     call. = FALSE
                 )
                 res@metadata$blankingDistance <- BD
@@ -2448,11 +2458,15 @@ read.adp.ad2cp <- function(
         }
     }
     # FIXME: I bet some other types should not be getting distance defined.
-    if (!(dataType %in% c("bottomTrack"))) {
-        oceDebug(debug, "about to compute distance from blankingDistance=",
-                 res@metadata$blankinDistance, ", cellSize=",
-                 res@metadata$cellSize, ", and numberOfCells=",
-                 res@metadata$numberOfCells, "\n")
+    message(vectorShow(dataType))
+    message(vectorShow(res@metadata$distance))
+    if (!length(res@metadata$distance)) {
+        oceDebug(
+            debug, "about to compute distance from blankingDistance=",
+            res@metadata$blankinDistance, ", cellSize=",
+            res@metadata$cellSize, ", and numberOfCells=",
+            res@metadata$numberOfCells, "\n"
+        )
         data$distance <- res@metadata$blankingDistance +
             seq(1, by = res@metadata$cellSize, length.out = res@metadata$numberOfCells)
     }
@@ -2505,6 +2519,7 @@ read.adp.ad2cp <- function(
         res@metadata$units$v <- NULL
         res@metadata$oceCoordinate <- NULL
         res@metadata$orientation <- NULL
+        res@metadata$beamAngle <- NULL
     }
     # Insert data
     res@data <- data
