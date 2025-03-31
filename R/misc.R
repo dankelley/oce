@@ -2123,7 +2123,7 @@ vectorShow <- function(v, msg = "", postscript = "", digits = 5L, n = 2L, showNA
     }
     res <- msg
     if (nv == 0) {
-        res <- paste(res, "(empty vector)")
+        res <- paste0(res, "(empty vector)")
     } else {
         if (n < 0 || nv <= 2 * n) {
             showAll <- TRUE
