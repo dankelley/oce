@@ -1481,7 +1481,7 @@ tidem <- function(
     oceDebug(debug, "before trimming constituents for Rayleigh condition, name[1:", length(name), "]=", paste(name, collapse = " "), sep = "", "\n")
     if (length(dropTerm) > 0) {
         # Bookmark 1A (see also 1B: link up variables)
-        message("Note: the tidal record is too short to fit for constituents: ", paste(name[dropTerm], collapse = ", "))
+        warning("tidal record too short to fit constituents: ", paste(name[dropTerm], collapse = ", "))
         indices <- indices[-dropTerm]
         name <- name[-dropTerm]
         freq <- freq[-dropTerm]
