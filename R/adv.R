@@ -91,7 +91,7 @@ setMethod(
         .Object@metadata$filename <- if (missing(filename)) "" else filename
         .Object@processingLog$time <- presentTime()
         .Object@processingLog$value <- "create 'adv' object"
-        return(.Object)
+        .Object
     }
 )
 
@@ -209,11 +209,11 @@ setMethod(
             ))
         }
         if (i == "u1") {
-            return(x@data$v[, 1])
+            x@data$v[, 1]
         } else if (i == "u2") {
-            return(x@data$v[, 2])
+            x@data$v[, 2]
         } else if (i == "u3") {
-            return(x@data$v[, 3])
+            x@data$v[, 3]
         } else if (i == "a") {
             if (!missing(j) && j == "numeric") {
                 res <- x@data$a
@@ -223,7 +223,7 @@ setMethod(
             } else {
                 res <- x@data$a
             }
-            return(res)
+            res
         } else if (i == "q") {
             if (!missing(j) && j == "numeric") {
                 res <- x@data$q
@@ -233,7 +233,7 @@ setMethod(
             } else {
                 res <- x@data$q
             }
-            return(res)
+            res
         } else if (i %in% c("heading", "pitch", "roll")) {
             if (haveSlow) {
                 # offset the time so approx doesn't yield all NAs

@@ -33,7 +33,7 @@ setMethod(
         .Object <- callNextMethod(.Object, ...)
         .Object@processingLog$time <- presentTime()
         .Object@processingLog$value <- "create 'windrose' object"
-        return(.Object)
+        .Object
     }
 )
 

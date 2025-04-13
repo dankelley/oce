@@ -531,7 +531,7 @@ setMethod(
         # .Object@metadata$waterDepth <- NA
         .Object@processingLog$time <- presentTime()
         .Object@processingLog$value <- "create 'ctd' object"
-        return(.Object)
+        .Object
     }
 )
 
