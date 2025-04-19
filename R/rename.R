@@ -185,7 +185,7 @@ renameInternal <- function(names, dictionary = "ioos.csv", debug = 0) {
 #' action of `rename()`.
 #'
 #' @param dictionary either a string or a data frame.  If a string, then it is
-#' either the name of a built-in vocabulary, either `ioos` or `sbe`
+#' either the name of a built-in vocabulary (either `"ioos"` or `"sbe"`)
 #' or the name of a CSV file that defines a dictionary in a four-column
 #' format as described in \sQuote{Details}. If it is a data frame, then
 #' it must hold four columns that follow the same pattern as in the CSV
@@ -252,7 +252,7 @@ renameInternal <- function(names, dictionary = "ioos.csv", debug = 0) {
 #'    12/08/2017; this was the reference version used in coding `oce`.
 #'
 #' @author Dan Kelley
-rename <- function(x, dictionary = "ioos.csv", debug = 0) {
+rename <- function(x, dictionary = "ioos", debug = 0) {
     oceDebug(debug, "rename(..., dictionary=",
         if (is.data.frame(dictionary)) {
             "[data frame]"
