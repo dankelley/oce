@@ -389,7 +389,7 @@ Computers and Geosciences, 28, 929-937.</p>
 <span class="r-in"><span><span class="co"># also used in T_TIDE (Pawlowicz, 2002).</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">sealevelTuktoyaktuk</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">tide</span> <span class="op">&lt;-</span> <span class="fu">tidem</span><span class="op">(</span><span class="va">sealevelTuktoyaktuk</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Note: the tidal record is too short to fit for constituents: SA, SSA, MSM, MF, SIG1, RHO1, TAU1, BET1, CHI1, PI1, P1, S1, PSI1, PHI1, THE1, SO1, OQ2, 2N2, NU2, GAM2, H1, H2, MKS2, LDA2, T2, R2, K2, MSN2, SO3, MK4, SK4, 2MK6, MSK6</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>tidal record too short to fit constituents: SA, SSA, MSM, MF, SIG1, RHO1, TAU1, BET1, CHI1, PI1, P1, S1, PSI1, PHI1, THE1, SO1, OQ2, 2N2, NU2, GAM2, H1, H2, MKS2, LDA2, T2, R2, K2, MSN2, SO3, MK4, SK4, 2MK6, MSK6</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">tide</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> tidem summary</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> -------------</span>
@@ -440,8 +440,8 @@ Computers and Geosciences, 28, 929-937.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Processing Log</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2025-03-07 18:46:06 UTC: `create 'tidem' object`</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2025-03-07 18:46:06 UTC: `tidem(t = sealevelTuktoyaktuk)`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2025-04-19 15:30:49 UTC: `create 'tidem' object`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2025-04-19 15:30:49 UTC: `tidem(t = sealevelTuktoyaktuk)`</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># AIC analysis</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/stats/extractAIC.html" class="external-link">extractAIC</a></span><span class="op">(</span><span class="va">tide</span><span class="op">[[</span><span class="st">"model"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></span>
@@ -455,7 +455,7 @@ Computers and Geosciences, 28, 929-937.</p>
 <span class="r-in"><span><span class="va">eta</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">sin</a></span><span class="op">(</span><span class="va">M2</span> <span class="op">*</span> <span class="va">t</span> <span class="op">*</span> <span class="fl">2</span> <span class="op">*</span> <span class="va">pi</span> <span class="op">/</span> <span class="fl">3600</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">sl</span> <span class="op">&lt;-</span> <span class="fu"><a href="as.sealevel.html">as.sealevel</a></span><span class="op">(</span><span class="va">eta</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">m</span> <span class="op">&lt;-</span> <span class="fu">tidem</span><span class="op">(</span><span class="va">sl</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Note: the tidal record is too short to fit for constituents: SA, SSA, MSM, MM, MSF, MF, ALP1, 2Q1, SIG1, Q1, RHO1, O1, TAU1, BET1, NO1, CHI1, PI1, P1, S1, PSI1, PHI1, THE1, J1, SO1, OO1, UPS1, OQ2, EPS2, 2N2, MU2, N2, NU2, GAM2, H1, H2, MKS2, LDA2, L2, T2, S2, R2, K2, MSN2, ETA2, MO3, SO3, MK3, SK3, MN4, SN4, MS4, MK4, S4, SK4, 2MN6, 2MS6, 2MK6, 2SM6, MSK6</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>tidal record too short to fit constituents: SA, SSA, MSM, MM, MSF, MF, ALP1, 2Q1, SIG1, Q1, RHO1, O1, TAU1, BET1, NO1, CHI1, PI1, P1, S1, PSI1, PHI1, THE1, J1, SO1, OO1, UPS1, OQ2, EPS2, 2N2, MU2, N2, NU2, GAM2, H1, H2, MKS2, LDA2, L2, T2, S2, R2, K2, MSN2, ETA2, MO3, SO3, MK3, SK3, MN4, SN4, MS4, MK4, S4, SK4, 2MN6, 2MS6, 2MK6, 2SM6, MSK6</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">m</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> tidem summary</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> -------------</span>
@@ -480,8 +480,8 @@ Computers and Geosciences, 28, 929-937.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Processing Log</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2025-03-07 18:46:06 UTC: `create 'tidem' object`</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2025-03-07 18:46:06 UTC: `tidem(t = sl)`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2025-04-19 15:30:50 UTC: `create 'tidem' object`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2025-04-19 15:30:50 UTC: `tidem(t = sl)`</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
