@@ -139,7 +139,7 @@ settings that were used in creating the file.
 
 The following appear in the Nortek documentation, but are not yet handled by
 oce.  If any of them get handled in a future version of oce, then the
-corresponding lines will be moved to the preceeding table.\tabular{rrr}{
+corresponding lines will be moved to the preceding table.\tabular{rrr}{
    code (raw) \tab code (integer) \tab oce name (maybe) \cr
    ---------- \tab -------------- \tab ----------------- \cr
    \code{0x24} \tab 36 \tab \code{echosounderRawTx} \cr
