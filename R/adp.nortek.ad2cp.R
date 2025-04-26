@@ -171,13 +171,13 @@ ad2cpHeaderValue <- function(x, key, item, numeric = TRUE, default, plan = 0) {
     }
     res <- gsub(paste("^.*", item, "=([^,]*).*$", sep = ""), "\\1", hline)
     if (nchar(res)) {
-        #message("ad2cpHeaderValue(key='", key, "', item='", item, "' case 1")
+        # message("ad2cpHeaderValue(key='", key, "', item='", item, "' case 1")
         res <- if (numeric) as.numeric(res) else gsub("\"", "", res)
-        #message(" ... res='", res, "'")
+        # message(" ... res='", res, "'")
     } else {
-        #message("ad2cpHeaderValue(key='", key, "', item='", item, "' case 2")
+        # message("ad2cpHeaderValue(key='", key, "', item='", item, "' case 2")
         res <- if (missing(default)) NULL else default
-        #message(" ... res='", res, "'")
+        # message(" ... res='", res, "'")
     }
     res
 }
@@ -260,6 +260,7 @@ ad2cpCodeToName <- function(code = NULL, prefix = TRUE) {
         altimeter = as.raw(0x1e),
         averageAltimeter = as.raw(0x1f),
         echosounderRaw = as.raw(0x23),
+        echosounderRawTx = as.raw(0x24),
         text = as.raw(0xa0)
     )
     if (is.null(code)) {
@@ -311,38 +312,37 @@ ad2cpCodeToName <- function(code = NULL, prefix = TRUE) {
 #' from within the AD2CP file or other files, in the normal R manner.
 #'
 #' The permitted values for `dataType` are shown in the table below;
-#' the `dataType` argument of [read.adp.ad2cp()] may be chosen from any
-#' of the three columns in this table.
+#' the `dataType` argument of [read.adp.ad2cp()] may be given
+#' as listed in any of the first 3 columns of this table.
 #'
-#' | code (raw) | code (integer) |            oce name |
-#' |      ----: |          ----: |               ----: |
-#' | ---------- | -------------- |   ----------------- |
-#' |     `0x15` |             21 |             `burst` |
-#' |     `0x16` |             22 |           `average` |
-#' |     `0x17` |             23 |       `bottomTrack` |
-#' |     `0x18` |             24 |  `interleavedBurst` |
-#' |     `0x1a` |             26 | `burstAltimeterRaw` |
-#' |     `0x1b` |             27 |    `DVLBottomTrack` |
-#' |     `0x1c` |             28 |       `echosounder` |
-#' |     `0x1d` |             29 |     `DVLWaterTrack` |
-#' |     `0x1e` |             30 |         `altimeter` |
-#' |     `0x1f` |             31 |  `averageAltimeter` |
-#' |     `0x23` |             35 |    `echosounderRaw` |
-#' |     `0xa0` |            160 |              `text` |
+#' | code (raw) | code (integer) |            oce name |  notes |
+#' |      ----: |          ----: |               ----: |  ----: |
+#' | ---------- | -------------- |  ------------------ | ------ |
+#' |     `0x15` |             21 |             `burst` |      - |
+#' |     `0x16` |             22 |           `average` |      - |
+#' |     `0x17` |             23 |       `bottomTrack` |      - |
+#' |     `0x18` |             24 |  `interleavedBurst` |      - |
+#' |     `0x1a` |             26 | `burstAltimeterRaw` |      - |
+#' |     `0x1b` |             27 |    `DVLBottomTrack` |      - |
+#' |     `0x1c` |             28 |       `echosounder` |      - |
+#' |     `0x1d` |             29 |     `DVLWaterTrack` |      - |
+#' |     `0x1e` |             30 |         `altimeter` |      - |
+#' |     `0x1f` |             31 |  `averageAltimeter` |      - |
+#' |     `0x23` |             35 |    `echosounderRaw` |      - |
+#' |     `0x24` |             35 |  `echosounderRawTx` |      1 |
+#' |     `0x30` |             42 |             `waves` |      - |
+#' |     `0xa0` |            160 |              `text` |      2 |
+#' |     `0xc0  |             48 |           `format8` |      3 |
 #'
-#' Note that the `text` case returns a text string that lists the instrument
-#' settings that were used in creating the file.
+#' Note 1: Code 0x24 (`echosounderRawTx`) has some coding done, but
+#' it is untested, as the developers lack a data file exemplar.
 #'
-#' The following appear in the Nortek documentation, but are not yet handled by
-#' oce.  If any of them get handled in a future version of oce, then the
-#' corresponding lines will be moved to the preceding table.
+#' Note 2: Code 0xa0 (`text`) holds a text string that defines
+#' the settings used in creating the file.  This can be quite
+#' helpful in debugging and analysis.
 #'
-#' | code (raw) | code (integer) |    oce name (maybe) |
-#' |      ----: |          ----: |               ----: |
-#' | ---------- | -------------- |   ----------------- |
-#' |     `0x24` |             36 |  `echosounderRawTx` |
-#' |     `0x30` |             42 |             `waves` |
-#' |     `0xc0  |             48 |           `format8` |
+#' Note 3: Code 0xc0 (`format8`) is not handled, and trying to read
+#' this yields an error indicating this fact.
 #'
 # The coding is based mainly on descriptions in various versions of a Nortek
 # manual (see \dQuote{References}). However, there are some gaps and
@@ -486,6 +486,9 @@ ad2cpCodeToName <- function(code = NULL, prefix = TRUE) {
 #' @author Dan Kelley
 #'
 #' @references
+#'
+#' Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz (2024.1),} 2024.
+#' <https://support.nortekgroup.com/hc/en-us/articles/360029513952-Integrators-Guide-Signature>.
 #'
 #' Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz.} Nortek AS,
 #' 2017.
@@ -2410,16 +2413,20 @@ read.adp.ad2cp <- function(
             data[name] <- NULL
         }
     }
-    #<FIXME> if ("echosounderRaw" %in% which && length(p$echosounderRaw) > 0) # 0x23
-    #<FIXME>     data$echosounderRaw <- readEchosounderRaw(id=as.raw(0x23), debug=debug)
-    if (0x23 == dataType) { # 0x23=echosounderRaw
-        if (length(p$echosounderRaw) < 1L) {
-            warning("no \"", originalParameters$dataType, "\" data in file")
-            return(NULL)
+    # Manual p88 suggests that 0x23 and 0x24 have the same format
+    if (0x23 == dataType || 0x24 == dataType) { # 0x23=echosounderRaw; 0x24=echosounderRawTx
+        if (dataType == 0x23) {
+            if (length(p$echosounderRaw) < 1L) {
+                warning("no \"", originalParameters$dataType, "\" data in file")
+                return(NULL)
+            }
+        } else if (dataType == 0x24) {
+            if (length(p$echosounderRawTx) < 1L) {
+                warning("no \"", originalParameters$dataType, "\" data in file")
+                return(NULL)
+            }
         }
         data <- readEchosounderRaw(id = dataType, debug = debug)
-        message("next is data for echosounderRaw:")
-        message(str(data))
         # 2022-08-26: I asked Nortek how to compute distance for echosounderRaw,
         # and the answer involves the blankingDistance.  But, in my sample file
         # at tests/testthat/local_data/ad2cp/ad2cp_01.ad2cp, the
@@ -2525,134 +2532,15 @@ read.adp.ad2cp <- function(
             }
             data[name] <- NULL
         }
-    } # 0x23=echosounderRaw
+    } # 0x23=echosounderRaw and 0x24=echosounderRawTx
 
-    # 0x24=echosounderRawTx (page 88 and 96 et seq. in manual)
-    if (0x24 == dataType) { # 0x24=echosounderRawTx
-        message("FIXME DAN 1 (0x24=echosounderRawTx)")
-        #stop("dataType echosounderRawTx (0x24) is not handled yet")
-        if (length(p$echosounderRawTX) < 1L) {
-            warning("no \"", originalParameters$dataType, "\" data in file")
-            return(NULL)
-        }
-        message("FIXME DAN 2 (0x24=echosounderRawTx)")
-        data <- readEchosounderRawTX(id = dataType, debug = debug)
-        message("FIXME DAN 3 (0x24=echosounderRawTx) next is data for echosounderRawTX:")
-        message(str(data))
-        stop("FIXME DAN 4: code something for 0x24 (but need sample file first)")
-        # 2022-08-26: I asked Nortek how to compute distance for echosounderRaw,
-        # and the answer involves the blankingDistance.  But, in my sample file
-        # at tests/testthat/local_data/ad2cp/ad2cp_01.ad2cp, the
-        # blankingDistance for echosounderRaw is 0, and so I'm guessing (pending
-        # more information from Nortek) that the idea is to use the
-        # blankingDistance in the (now possibly updated) documentation ... but
-        # honestly, this is a mess and I am not 100% sure what to do, lacking
-        # confidence until Nortek updates their documentation.  One thing,
-        # though: the code below is based on the old model for ad2cp object
-        # structure, in which we stored both 'echosounder' and 'echosounderRaw',
-        # but in the new model we do not do that.  I am simply skipping this for
-        # now 2022-10-08 but printing a message.
-        #
-        # Compute cellSize using a formula inferred from an email by
-        # Nortek's Ragnar Ekker on 2022-09-01.
-        #
-        # Some issues:
-        #
-        # 1. Should we use the integer `startSampleIndex` that is in the file,
-        #    or should we compute it using the formula provided by Ragnar?  The
-        #    former is an integer value that is 16 in a sample file, and if
-        #    that's typical then rounding might be expected to give about 3%
-        #    error in the results for `cellSize` and thus `distance`.
-        #
-        # 2. What `soundSpeed` should be used?  It varies from profile to
-        #    profile. But, perhaps we should use a constant value, if that's
-        #    what was used in some computations that led to the data creation.
-        #    The graph above uses the integer value. If the calculated
-        #    `startSampleIndex` were used instead, the peak would shift from
-        #    282m to 270m.
-        #
-        # 3. In a test file for issue 2303, the header has an item for GETECHO1,
-        #    but none for GETECHO.  That file has echosounderRaw in plan 0, and
-        #    echosounder in plan 1, so I was surprised by this. Anyway, in the
-        #    below, I'm trying a search for the actual plan value, and if that
-        #    fails, I will try a search for the other possible plan value.
-        otherPlan <- if (plan == 0) 1 else 0
-        XMIT1 <- 1e-3 * ad2cpHeaderValue(header, key = "GETECHO", item = "XMIT1", plan = plan)
-        XMIT1other <- 1e-3 * ad2cpHeaderValue(header, key = "GETECHO", item = "XMIT1", plan = otherPlan)
-        if (!length(XMIT1)) {
-            XMIT1 <- XMIT1other
-            oceDebug(debug, "using XMIT1other for XMIT1\n")
-        }
-        oceDebug(debug, vectorShow(XMIT1))
-        BD <- ad2cpHeaderValue(header, key = "GETECHO", item = "BD", plan = plan)
-        BDother <- ad2cpHeaderValue(header, key = "GETECHO", item = "BD", plan = otherPlan)
-        if (!length(BD)) {
-            BD <- BDother
-            oceDebug(debug, "using BDother for BD\n")
-        }
-        res@metadata$blankingDistance <- BD
-        oceDebug(debug, vectorShow(res@metadata$blankingDistance))
-        # Note that we do not use numberOfCells from the GETECHO line
-        # FIXME that item also has NRAWSAMP2 ... what's that?
-        NRAWSAMP1 <- ad2cpHeaderValue(header, key = "READECHO", item = "NRAWSAMP1", plan = plan)
-        NRAWSAMP1other <- ad2cpHeaderValue(header, key = "READECHO", item = "NRAWSAMP1", plan = otherPlan)
-        if (!length(NRAWSAMP1)) {
-            NRAWSAMP1 <- NRAWSAMP1other
-            oceDebug(debug, "using NRAWSAMP1other for NRAWSAMP1\n")
-        }
-        oceDebug(debug, vectorShow(NRAWSAMP1))
-        res@metadata$numberOfCells <- NRAWSAMP1
-        # cellSize
-        BINSIZE <- ad2cpHeaderValue(header, key = "GETECHO", item = "BINSIZE", plan = plan)
-        BINSIZEother <- ad2cpHeaderValue(header, key = "GETECHO", item = "BINSIZE", plan = otherPlan)
-        if (!length(BINSIZE)) {
-            BINSIZE <- BINSIZEother
-            oceDebug(debug, "using BINSIZEother for BINSIZE\n")
-        }
-        res@metadata$cellSize <- BINSIZE
-        if (!length(XMIT1) || !length(BD)) {
-            warning("cannot infer distance for echosounderRaw record; set to 1, 2, which is almost certainly very wrong")
-            data$distance <- seq_len(data$numberOfSamples)
-        } else {
-            L <- 0.5 * XMIT1 * soundSpeed[1] + BD
-            samplingRate <- data$samplingRate
-            startSampleIndex <- (XMIT1 + 2 * BD / soundSpeed[1]) * samplingRate
-            # FIXME: which cellSize to use?  I think Ragnar suggested computing
-            # it, rather than using the rounded value in the dataset.
-            data$cellSize <- L / startSampleIndex
-            # data$cellSize <- L / data$startSampleIndex
-            data$distance <- seq(0, by = res@metadata$cellSize, length.out = data$numberOfSamples)
-            oceDebug(
-                debug, "computing echosounderRaw$distance based ",
-                "on my interpretation of an email sent by RE/Nortek on 2022-09-01\n"
-            )
-            # the above contradicts an email sent by EB/Nortek on 2022-08-28 but
-            # I am told that this earlier one was erroneous.
-        }
-        oceDebug(debug, vectorShow(data$distance))
-        oceDebug(debug, "move some (echosounderRaw) things from data to metadata\n")
-        for (name in c(
-            "blankingDistance", "cellSize", "configuration",
-            "datasetDescription", "frequency",
-            "numberOfBeams", "numberOfCells", "numberOfSamples",
-            "orientation", "samplingRate", "startSampleIndex"
-        )) { # not same as above
-            if (name %in% names(data)) {
-                oceDebug(debug, "moving ", name, " from data to metadata\n")
-                res@metadata[name] <- data[name]
-            } else {
-                oceDebug(debug, "deleting ", name, " from data, without moving to metadata\n")
-            }
-            data[name] <- NULL
-        }} # 0x24=echosounderRawTX
-
-    if (0x30 == dataType) { # 0x30=waves
+    if (0x30 == dataType) { # 0x30=waves not handled yet
         stop("dataType waves (0x30) is not handled yet")
-    } # 0x30=waves (not handled)
+    } # 0x30=waves (not handled yet)
 
-    if (0xc0 == dataType) { # 0xc0=format8
-        stop("dataType waves (0x30) is not yet")
-    } # 0xc0=format8 (not handled)
+    if (0xc0 == dataType) { # 0xc0=format8 not handled yet
+        stop("dataType format8 (0x30) is not handled yet")
+    } # 0xc0=format8 (not handled yet)
 
     # Use header as the final word, if it contradicts what we inferred above.
     if (!is.null(header)) {

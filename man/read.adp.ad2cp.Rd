@@ -115,37 +115,37 @@ keep track of the resultant object, perhaps to combine it with other objects
 from within the AD2CP file or other files, in the normal R manner.
 
 The permitted values for \code{dataType} are shown in the table below;
-the \code{dataType} argument of \code{\link[=read.adp.ad2cp]{read.adp.ad2cp()}} may be chosen from any
-of the three columns in this table.\tabular{rrr}{
-   code (raw) \tab code (integer) \tab oce name \cr
-   ---------- \tab -------------- \tab ----------------- \cr
-   \code{0x15} \tab 21 \tab \code{burst} \cr
-   \code{0x16} \tab 22 \tab \code{average} \cr
-   \code{0x17} \tab 23 \tab \code{bottomTrack} \cr
-   \code{0x18} \tab 24 \tab \code{interleavedBurst} \cr
-   \code{0x1a} \tab 26 \tab \code{burstAltimeterRaw} \cr
-   \code{0x1b} \tab 27 \tab \code{DVLBottomTrack} \cr
-   \code{0x1c} \tab 28 \tab \code{echosounder} \cr
-   \code{0x1d} \tab 29 \tab \code{DVLWaterTrack} \cr
-   \code{0x1e} \tab 30 \tab \code{altimeter} \cr
-   \code{0x1f} \tab 31 \tab \code{averageAltimeter} \cr
-   \code{0x23} \tab 35 \tab \code{echosounderRaw} \cr
-   \code{0xa0} \tab 160 \tab \code{text} \cr
+the \code{dataType} argument of \code{\link[=read.adp.ad2cp]{read.adp.ad2cp()}} may be given
+as listed in any of the first 3 columns of this table.\tabular{rrrr}{
+   code (raw) \tab code (integer) \tab oce name \tab notes \cr
+   ---------- \tab -------------- \tab ------------------ \tab ------ \cr
+   \code{0x15} \tab 21 \tab \code{burst} \tab - \cr
+   \code{0x16} \tab 22 \tab \code{average} \tab - \cr
+   \code{0x17} \tab 23 \tab \code{bottomTrack} \tab - \cr
+   \code{0x18} \tab 24 \tab \code{interleavedBurst} \tab - \cr
+   \code{0x1a} \tab 26 \tab \code{burstAltimeterRaw} \tab - \cr
+   \code{0x1b} \tab 27 \tab \code{DVLBottomTrack} \tab - \cr
+   \code{0x1c} \tab 28 \tab \code{echosounder} \tab - \cr
+   \code{0x1d} \tab 29 \tab \code{DVLWaterTrack} \tab - \cr
+   \code{0x1e} \tab 30 \tab \code{altimeter} \tab - \cr
+   \code{0x1f} \tab 31 \tab \code{averageAltimeter} \tab - \cr
+   \code{0x23} \tab 35 \tab \code{echosounderRaw} \tab - \cr
+   \code{0x24} \tab 35 \tab \code{echosounderRawTx} \tab 1 \cr
+   \code{0x30} \tab 42 \tab \code{waves} \tab - \cr
+   \code{0xa0} \tab 160 \tab \code{text} \tab 2 \cr
+   `0xc0 \tab 48 \tab \code{format8} \tab 3 \cr
 }
 
 
-Note that the \code{text} case returns a text string that lists the instrument
-settings that were used in creating the file.
+Note 1: Code 0x24 (\code{echosounderRawTx}) has some coding done, but
+it is untested, as the developers lack a data file exemplar.
 
-The following appear in the Nortek documentation, but are not yet handled by
-oce.  If any of them get handled in a future version of oce, then the
-corresponding lines will be moved to the preceding table.\tabular{rrr}{
-   code (raw) \tab code (integer) \tab oce name (maybe) \cr
-   ---------- \tab -------------- \tab ----------------- \cr
-   \code{0x24} \tab 36 \tab \code{echosounderRawTx} \cr
-   \code{0x30} \tab 42 \tab \code{waves} \cr
-   `0xc0 \tab 48 \tab \code{format8} \cr
-}
+Note 2: Code 0xa0 (\code{text}) holds a text string that defines
+the settings used in creating the file.  This can be quite
+helpful in debugging and analysis.
+
+Note 3: Code 0xc0 (\code{format8}) is not handled, and trying to read
+this yields an error indicating this fact.
 }
 \section{Sample of Usage}{
 
@@ -198,6 +198,9 @@ if (file.exists(file)) {
 
 }
 \references{
+Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz (2024.1),} 2024.
+\url{https://support.nortekgroup.com/hc/en-us/articles/360029513952-Integrators-Guide-Signature}.
+
 Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz.} Nortek AS,
 2017.
 
