@@ -529,15 +529,14 @@ read.adp.ad2cp <- function(
     if (!is.logical(TOC)) {
         stop("'TOC' must be a logical value, but it is ", TOC)
     }
-    dots <- list(...)
-    if ("toc" %in% names(dots)) {
-        stop("'toc' is not a parameter; did you mean 'TOC'?")
-    }
-    if ("datatype" %in% names(dots)) {
-        stop("'datatype' is not a parameter; did you mean 'dataType'?")
-    }
-    if ("dataset" %in% names(dots)) {
-        stop("'dataset' is not a parameter; did you mean 'dataset'?")
+    # Catch some spelling errors that I've made, myself!
+    dotsNames <- names(list(...))
+    expectedNames <- c("dataSet", "dataType", "TOC")
+    for (e in expectedNames) {
+        le <- tolower(e)
+        if (le %in% dotsNames) {
+            stop(paste0("'", le, "' is not a parameter; did you mean '", e, "'?"))
+        }
     }
     dataSet <- as.integer(dataSet)
     if (dataSet < 1L) {
