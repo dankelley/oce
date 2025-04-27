@@ -527,7 +527,17 @@ read.adp.ad2cp <- function(
     orientation, distance, monitor, despike, # ignored; warning issued if provided
     ...) {
     if (!is.logical(TOC)) {
-        stop("TOC must be a logical value, but it is ", TOC)
+        stop("'TOC' must be a logical value, but it is ", TOC)
+    }
+    dots <- list(...)
+    if ("toc" %in% names(dots)) {
+        stop("'toc' is not a parameter; did you mean 'TOC'?")
+    }
+    if ("datatype" %in% names(dots)) {
+        stop("'datatype' is not a parameter; did you mean 'dataType'?")
+    }
+    if ("dataset" %in% names(dots)) {
+        stop("'dataset' is not a parameter; did you mean 'dataset'?")
     }
     dataSet <- as.integer(dataSet)
     if (dataSet < 1L) {
