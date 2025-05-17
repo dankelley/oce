@@ -775,7 +775,7 @@ setMethod(
             ))
         }
         if (i == "distance") {
-            return(x@data$distance)
+            x@data$distance
         } else if (i %in% c(
             "originalCoordinate", "oceCoordinate",
             "cellSize", "blankingDistance", "orientation",
@@ -930,7 +930,7 @@ setValidity(
                     return(FALSE)
                 }
             }
-            return(TRUE)
+            TRUE
         }
     }
 )

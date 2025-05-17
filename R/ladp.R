@@ -48,7 +48,7 @@ setMethod(
         }
         .Object@processingLog$time <- presentTime()
         .Object@processingLog$value <- "create 'ladp' object"
-        return(.Object)
+        .Object
     }
 )
 

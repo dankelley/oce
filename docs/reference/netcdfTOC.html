@@ -102,19 +102,50 @@ attributes.</p>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/">oce</a></span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="co"># Saving to a temporary file for CRAN testing; in practice,</span></span></span>
-<span class="r-in"><span><span class="co"># it's more likely that the user will retain this file, or already</span></span></span>
-<span class="r-in"><span><span class="co"># have a target file on the local system.</span></span></span>
-<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"ncdf4"</span><span class="op">)</span> <span class="op">&amp;&amp;</span></span></span>
-<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"jsonlite"</span><span class="op">)</span> <span class="op">&amp;&amp;</span></span></span>
-<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"curl"</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span>    <span class="va">urlroot</span> <span class="op">&lt;-</span> <span class="st">"ftp://ftp.ifremer.fr/ifremer/argo/dac/bodc/6900388/profiles/"</span></span></span>
-<span class="r-in"><span>    <span class="va">remotefile</span> <span class="op">&lt;-</span> <span class="st">"D6900388_001.nc"</span></span></span>
-<span class="r-in"><span>    <span class="va">localfile</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".nc"</span><span class="op">)</span></span></span>
-<span class="r-in"><span>    <span class="fu">curl</span><span class="fu">::</span><span class="fu"><a href="https://jeroen.r-universe.dev/curl/reference/curl_download.html" class="external-link">curl_download</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">urlroot</span>, <span class="va">remotefile</span><span class="op">)</span>, <span class="va">localfile</span><span class="op">)</span></span></span>
-<span class="r-in"><span>    <span class="fu">netcdfTOC</span><span class="op">(</span><span class="va">localfile</span><span class="op">)</span></span></span>
-<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/base/unlink.html" class="external-link">unlink</a></span><span class="op">(</span><span class="va">localfile</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># Use an Argo file that comes with the package.</span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"ncdf4"</span><span class="op">)</span> <span class="op">&amp;&amp;</span> <span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"jsonlite"</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>    <span class="va">file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata/D4902337_219.nc"</span>, package <span class="op">=</span> <span class="st">"oce"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="fu">netcdfTOC</span><span class="op">(</span><span class="va">file</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $variables</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [1] "DATA_TYPE"                    "FORMAT_VERSION"              </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [3] "HANDBOOK_VERSION"             "REFERENCE_DATE_TIME"         </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [5] "DATE_CREATION"                "DATE_UPDATE"                 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [7] "PLATFORM_NUMBER"              "PROJECT_NAME"                </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [9] "PI_NAME"                      "STATION_PARAMETERS"          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [11] "CYCLE_NUMBER"                 "DIRECTION"                   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [13] "DATA_CENTRE"                  "DC_REFERENCE"                </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [15] "DATA_STATE_INDICATOR"         "DATA_MODE"                   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [17] "PLATFORM_TYPE"                "FLOAT_SERIAL_NO"             </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [19] "FIRMWARE_VERSION"             "WMO_INST_TYPE"               </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [21] "JULD"                         "JULD_QC"                     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [23] "JULD_LOCATION"                "LATITUDE"                    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [25] "LONGITUDE"                    "POSITION_QC"                 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [27] "POSITIONING_SYSTEM"           "VERTICAL_SAMPLING_SCHEME"    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [29] "CONFIG_MISSION_NUMBER"        "PROFILE_PRES_QC"             </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [31] "PROFILE_TEMP_QC"              "PROFILE_PSAL_QC"             </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [33] "PRES"                         "PRES_QC"                     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [35] "PRES_ADJUSTED"                "PRES_ADJUSTED_QC"            </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [37] "PRES_ADJUSTED_ERROR"          "TEMP"                        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [39] "TEMP_QC"                      "TEMP_ADJUSTED"               </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [41] "TEMP_ADJUSTED_QC"             "TEMP_ADJUSTED_ERROR"         </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [43] "PSAL"                         "PSAL_QC"                     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [45] "PSAL_ADJUSTED"                "PSAL_ADJUSTED_QC"            </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [47] "PSAL_ADJUSTED_ERROR"          "PARAMETER"                   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [49] "SCIENTIFIC_CALIB_EQUATION"    "SCIENTIFIC_CALIB_COEFFICIENT"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [51] "SCIENTIFIC_CALIB_COMMENT"     "SCIENTIFIC_CALIB_DATE"       </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [53] "HISTORY_INSTITUTION"          "HISTORY_STEP"                </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [55] "HISTORY_SOFTWARE"             "HISTORY_SOFTWARE_RELEASE"    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [57] "HISTORY_REFERENCE"            "HISTORY_DATE"                </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [59] "HISTORY_ACTION"               "HISTORY_PARAMETER"           </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [61] "HISTORY_START_PRES"           "HISTORY_STOP_PRES"           </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [63] "HISTORY_PREVIOUS_VALUE"       "HISTORY_QCTEST"              </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $dimensions</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [1] "DATE_TIME" "STRING256" "STRING64"  "STRING32"  "STRING16"  "STRING8"  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [7] "STRING4"   "STRING2"   "N_PROF"    "N_PARAM"   "N_LEVELS"  "N_CALIB"  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [13] "N_HISTORY"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

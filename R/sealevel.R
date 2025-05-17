@@ -122,7 +122,7 @@ setMethod(
         }
         .Object@processingLog$time <- presentTime()
         .Object@processingLog$value <- "create 'sealevel' object"
-        return(.Object)
+        .Object
     }
 )
 
@@ -281,9 +281,9 @@ setValidity(
         }
         if (var(lengths) != 0) {
             cat("lengths of data elements are unequal\n")
-            return(FALSE)
+            FALSE
         } else {
-            return(TRUE)
+            TRUE
         }
     }
 )

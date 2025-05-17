@@ -24,7 +24,7 @@ setMethod(
         } else {
             paste("create '", subclass, "' object")
         }
-        return(.Object)
+        .Object
     }
 )
 

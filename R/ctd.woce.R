@@ -240,7 +240,7 @@ woceUnit2oceUnit <- function(woceUnit) {
     if (woceUnit == "%") {
         return(list(unit = expression(percent), scale = ""))
     }
-    return(list(unit = expression(), scale = ""))
+    list(unit = expression(), scale = "")
 }
 
 

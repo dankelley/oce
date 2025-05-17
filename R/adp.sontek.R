@@ -158,28 +158,28 @@ read.adp.sontek <- function(
             "side"
         )
         oceDebug(debug, "orientation=", orientation, "\n")
-        compass.installed <- switch(as.integer(buf[32]) + 1,
-            FALSE,
-            TRUE
-        ) # nolint (variable not used)
-        recorder.installed <- switch(as.integer(buf[33]) + 1,
-            FALSE,
-            TRUE
-        ) # nolint (variable not used)
-        temp.installed <- switch(as.integer(buf[34]) + 1,
-            FALSE,
-            TRUE
-        ) # nolint (variable not used)
-        press.installed <- switch(as.integer(buf[35]) + 1,
-            FALSE,
-            TRUE
-        ) # nolint (variable not used)
+        #(unused) compass.installed <- switch(as.integer(buf[32]) + 1,
+        #(unused)     FALSE,
+        #(unused)     TRUE
+        #(unused) )
+        #(unused) recorder.installed <- switch(as.integer(buf[33]) + 1,
+        #(unused)     FALSE,
+        #(unused)     TRUE
+        #(unused) )
+        #(unused) temp.installed <- switch(as.integer(buf[34]) + 1,
+        #(unused)     FALSE,
+        #(unused)     TRUE
+        #(unused) )
+        #(unused) press.installed <- switch(as.integer(buf[35]) + 1,
+        #(unused)     FALSE,
+        #(unused)     TRUE
+        #(unused) )
         # 36 = spare
         # 37 int[16], so I guess 2-byte ints, signed?
     } else {
         cpuSoftwareVerNum <- dspSoftwareVerNum <- boardRev <- "?"
         adp.type <- nbeams <- slant.angle <- orientation <- "?"
-        compass.installed <- recorder.installed <- temp.installed <- press.installed <- "?"
+        #(unused) compass.installed <- recorder.installed <- temp.installed <- press.installed <- "?"
     }
     # profileStart <- .Call("match2bytes", buf, parameters$profile.byte1, parameters$profile.byte2, FALSE)
     # profileStart <- .Call("ldc_sontek_adp", buf, 0, 0, 0, 1, -1) # no ctd, no gps, no bottom-track; pcadp; all data

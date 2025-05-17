@@ -3193,6 +3193,7 @@ GMTOffsetFromTz <- function(tz) {
     if (tz == "Z") {
         return(0)
     } # Zulu Time Zone  Military                 UTC
+    0
 }
 
 
@@ -4440,7 +4441,7 @@ matchBytes <- function(input, b1, ...) {
             message("IMPORTANT: matchBytes/match2bytes problem -- please report at github.com/dankelley/oce/issues")
             warning("IMPORTANT: matchBytes/match2bytes problem -- please report at github.com/dankelley/oce/issues")
         }
-        return(rval)
+        rval
     } else if (lb == 3) {
         rval <- .Call("match3bytes_old", as.raw(input), as.raw(b1), as.raw(dots[[1]]), as.raw(dots[[2]]))
         rvalNew <- match3bytes(as.raw(input), as.raw(b1), as.raw(dots[[1]]), as.raw(dots[[2]]))
@@ -4449,7 +4450,7 @@ matchBytes <- function(input, b1, ...) {
             message("IMPORTANT: matchbytes/match3bytes problem -- please report at github.com/dankelley/oce/issues")
             warning("IMPORTANT: matchbytes/match3bytes problem -- please report at github.com/dankelley/oce/issues")
         }
-        return(rval)
+        rval
     } else {
         stop("must provide 2 or 3 bytes, but gave ", lb, " bytes")
     }
@@ -4584,7 +4585,7 @@ secondsToCtime <- function(sec) {
     sec <- sec - 3600 * hour
     min <- floor(sec / 60)
     sec <- sec - 60 * min
-    return(sprintf("%02d:%02d:%02d", hour, min, sec))
+    sprintf("%02d:%02d:%02d", hour, min, sec)
 }
 
 

@@ -4,7 +4,7 @@
 \alias{rename}
 \title{Rename variables according to a specified dictionary}
 \usage{
-rename(x, dictionary = "ioos.csv", debug = 0)
+rename(x, dictionary = "ioos", debug = 0)
 }
 \arguments{
 \item{x}{either an \linkS4class{oce} object, the elements of which will
@@ -14,7 +14,7 @@ to append dictionary elements of their own, thus customizing the
 action of \code{rename()}.}
 
 \item{dictionary}{either a string or a data frame.  If a string, then it is
-either the name of a built-in vocabulary, either \code{ioos} or \code{sbe}
+either the name of a built-in vocabulary (either \code{"ioos"} or \code{"sbe"})
 or the name of a CSV file that defines a dictionary in a four-column
 format as described in \sQuote{Details}. If it is a data frame, then
 it must hold four columns that follow the same pattern as in the CSV

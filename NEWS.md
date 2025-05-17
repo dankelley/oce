@@ -35,6 +35,7 @@
 * Change `read.netcdf()` to handle units better.
 * Change `read.rsk()` to handle a new file (issue #2291).
 * Add `read.xbt.noaa2()` to handle UBT format (issue #2289).
+* Change `rename()` to default to a built-in IOOS dictionary (issue #2311).
 * Change `subset,amsr-method()` to handle `"pass"` parameter.
 * Change `subset,ctd-method()` to handle items of unexpected length (issue #2250).
 * Change `tidem()` to stop if there are any non-finite time values (issue #2269).
