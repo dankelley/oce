@@ -317,7 +317,7 @@ ad2cpCodeToName <- function(code = NULL, prefix = TRUE) {
 #'
 #' | code (raw) | code (integer) |            oce name |  notes |
 #' |      ----: |          ----: |               ----: |  ----: |
-#' | ---------- | -------------- |  ------------------ | ------ |
+#' | ---------- | -------------- | ------------------- | ------ |
 #' |     `0x15` |             21 |             `burst` |      - |
 #' |     `0x16` |             22 |           `average` |      - |
 #' |     `0x17` |             23 |       `bottomTrack` |      - |
@@ -329,20 +329,33 @@ ad2cpCodeToName <- function(code = NULL, prefix = TRUE) {
 #' |     `0x1e` |             30 |         `altimeter` |      - |
 #' |     `0x1f` |             31 |  `averageAltimeter` |      - |
 #' |     `0x23` |             35 |    `echosounderRaw` |      - |
-#' |     `0x24` |             35 |  `echosounderRawTx` |      1 |
-#' |     `0x30` |             42 |             `waves` |      - |
-#' |     `0xa0` |            160 |              `text` |      2 |
-#' |     `0xc0  |             48 |           `format8` |      3 |
+#' |     `0x24` |             36 |  `echosounderRawTx` |      1 |
+#' |     `0x30` |             48 |             `waves` |      2 |
+#' |     `0xa0` |            160 |              `text` |      3 |
+#' |     `0xc0  |            192 |           `format8` |      4 |
+#' |     `0xc8  |            200 |          `vector 2` |      5 |
 #'
 #' Note 1: Code 0x24 (`echosounderRawTx`) has some coding done, but
-#' it is untested, as the developers lack a data file exemplar.
+#' it is untested, as the developers lack a data file exemplar. For
+#' now, this data type is read as though it were 0x23, which is
+#' likely to produce poor results or cause errors in processing.
 #'
-#' Note 2: Code 0xa0 (`text`) holds a text string that defines
+#' Note 2: Code 0x30 (`waves`) is recognized but not handled
+#' yet.
+#'
+#' Note 3: Code 0xa0 (`text`) holds a text string that defines
 #' the settings used in creating the file.  This can be quite
 #' helpful in debugging and analysis.
 #'
-#' Note 3: Code 0xc0 (`format8`) is not handled, and trying to read
-#' this yields an error indicating this fact.
+#' Note 4: Code 0xc0 (`format8`) is not handled, and trying to read
+#' this yields an error indicating this fact.  This code was listed,
+#' without further documentation in Nortek (2024) manual.  However,
+#' it is not listed in Nortek (2025). Accordingly, it is not handled
+#' by read.adp.ad2cp`.
+#'
+#' Note 5: Code 0xc8 (`vector 2`) is listed in Nortek (2025) but that
+#' document provides no information on the format. Accordingly, it is
+#' not handled by read.adp.ad2cp`.
 #'
 # The coding is based mainly on descriptions in various versions of a Nortek
 # manual (see \dQuote{References}). However, there are some gaps and
@@ -486,6 +499,9 @@ ad2cpCodeToName <- function(code = NULL, prefix = TRUE) {
 #' @author Dan Kelley
 #'
 #' @references
+#'
+#' Nortek AS. “Integrator’s Guide: Signature.” Nortek AS, April 30, 2025.
+#' <https://support.nortekgroup.com/hc/en-us/article_attachments/19830760385436>.
 #'
 #' Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz (2024.1),} 2024.
 #' <https://support.nortekgroup.com/hc/en-us/articles/360029513952-Integrators-Guide-Signature>.
