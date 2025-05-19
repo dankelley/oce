@@ -27,14 +27,11 @@ if (file.exists(file)) {
     })
 
     test_that("toc works", {
-        expect_message(
+        expect_warning(
             expect_warning(
-                expect_warning(
-                    toc <- read.oce(file, TOC = TRUE), "early EOF in chunk"
-                ),
-                "setting blankingDistance"
+                toc <- read.oce(file, TOC = TRUE), "early EOF in chunk"
             ),
-            "setting plan=0"
+            "setting blankingDistance"
         )
         expect_equal(
             toc,

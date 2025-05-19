@@ -12,10 +12,7 @@ file <- "local_data/ad2cp/multi_dataset.ad2cp"
 if (file.exists(file)) {
     skip_on_cran()
     test_that("file contains 7 data sets", {
-        expect_message(
-            toc <- read.oce(file, TOC = TRUE),
-            "setting plan="
-        )
+        expect_silent(toc <- read.oce(file, TOC = TRUE))
         # We know the file length from another tool
         # We insist on certain names, as a change-limiter.
         expect_equal(

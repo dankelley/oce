@@ -833,16 +833,8 @@ read.adp.ad2cp <- function(
     # TEST message("table(activeConfiguration):")
     # TEST print(table(activeConfiguration))
     # message("FIXME saving activeConfiguration to activeConfiguration.rda");save(activeConfiguration,file="activeConfiguration.rda")
-    if (!planGiven) {
+    if (!planGiven && !TOC) {
         u <- unique(activeConfiguration)
-        # if (isTRUE(getOption("oceDebugAD2CP", FALSE))) { # FIXME: DAN, DELETE_THIS
-        #    message("exporting DAN because oceDebugAD2CP option is TRUE")
-        #    DAN <- list(
-        #        activeConfiguration = activeConfiguration,
-        #        id = d$id
-        #    )
-        #    assign("DAN", DAN, env = .GlobalEnv)
-        # }
         nu <- length(u)
         if (nu == 1) {
             plan <- activeConfiguration[1]
@@ -855,8 +847,6 @@ read.adp.ad2cp <- function(
                 ", the most common value in this file; ",
                 paste(names(acTable), " occurs ", unname(acTable), " time[s]", sep = "", collapse = "; ")
             )
-            # message("A table of plan values is as follows")
-            # print(acTable, file=stderr())
         }
     }
     # Find text blocks, some of which are configuration headers. This code has
@@ -2584,8 +2574,8 @@ read.adp.ad2cp <- function(
         }
     }
     # FIXME: I bet some other types should not be getting distance defined.
-    message(vectorShow(dataType))
-    message(vectorShow(res@metadata$distance))
+    oceDebug(debug, vectorShow(dataType))
+    oceDebug(debug, vectorShow(res@metadata$distance))
     if (!length(res@metadata$distance)) {
         oceDebug(
             debug, "about to compute distance from blankingDistance=",

@@ -405,10 +405,7 @@ if (file.exists(f1)) {
 if (file.exists(f2)) {
     test_that("read.adp() on a private AD2CP file that has only 'burst' data", {
         N <- 99 # known value for subset of a larger file
-        expect_message(
-            toc <- read.oce(f2, TOC = TRUE),
-            "setting plan=0"
-        )
+        expect_silent(toc <- read.oce(f2, TOC = TRUE))
         expect_equal(N, toc$count[1])
         # Note: using read.adp() to ensure that it also works
         expect_warning(
