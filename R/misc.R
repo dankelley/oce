@@ -2093,6 +2093,9 @@ vectorShow <- function(v, msg = "", postscript = "", digits = 5L, n = 2L, showNA
         msg <- paste0(msg, ": ")
         nv <- length(v)
         for (iv in seq_len(nv)) {
+            if (is.numeric(values[[iv]])) {
+                values[[iv]] <- format(values[[iv]], digits = digits)
+            }
             msg <- paste0(msg, names[iv], "=", startEnd(values[[iv]], n))
             if (iv < nv) {
                 msg <- paste0(msg, ", ")
