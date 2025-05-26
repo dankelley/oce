@@ -504,7 +504,8 @@ ad2cpCodeToName <- function(code = NULL, prefix = TRUE) {
 #' <https://support.nortekgroup.com/hc/en-us/article_attachments/19830760385436>.
 #'
 #' Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz (2024.1),} 2024.
-#' <https://support.nortekgroup.com/hc/en-us/articles/360029513952-Integrators-Guide-Signature>.
+#' (This was once at \code{https://support.nortekgroup.com/hc/en-us/articles/360029513952-Integrators-Guide-Signature}
+#' but a test on 2025-05-26 revealed that this link no longer worked.)
 #'
 #' Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz.} Nortek AS,
 #' 2017.
