@@ -24,6 +24,7 @@
 * Change `oce.plot.ts()` to handle `simplify` better (issue #2277).
 * Change `oce.plot.ts()` to handle `xlab` (issue #2285).
 * Change `plot.section()` to handle `eos="gsw"` (issue #2256).
+* Change `read.adp.ad2cp()` to handle TOC, datasets and plans better (issue #2303 and related).
 * Change `read.amsr()` to handle realtime data files (issue #2230).
 * Change `read.ctd.sbe()` to handle files that lack salinity and conductivity (issues #2279 and #2282).
 * Change `read.ctd.sbe()` to handle time-related header elements better (issues #2280 and #2281).

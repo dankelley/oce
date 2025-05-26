@@ -18,7 +18,7 @@ if (file.exists(file)) {
 
     test_that("'dataType' catches errors", {
         expect_error(read.oce(file, dataType = 999), "dataType=999 not understood")
-        expect_error(read.oce(file, dataType = "unknown"), "dataType=\"unknown\" not understood")
+        expect_error(read.oce(file, dataType = "unknown"), "dataType=\"unknown\" not handled")
     })
 
     test_that("missing 'dataType' works", {
@@ -27,29 +27,27 @@ if (file.exists(file)) {
     })
 
     test_that("toc works", {
-        expect_message(
+        expect_warning(
             expect_warning(
-                expect_warning(
-                    toc <- read.oce(file, TOC = TRUE), "early EOF in chunk"
-                ),
-                "setting blankingDistance"
+                toc <- read.oce(file, TOC = TRUE), "early EOF in chunk"
             ),
-            "setting plan=0"
+            "setting blankingDistance"
         )
         expect_equal(
-            toc[[1]],
-            structure(
-                list(
-                    ID.hex = c("0x16", "0x1c", "0x23", "0xa0"),
-                    ID.dec = c(22L, 28L, 35L, 160L),
-                    dataType = c("average", "echosounder", "echosounderRaw", "text"),
-                    Count = c(7L, 2L, 2L, 1L)
-                ),
-                class = "data.frame",
-                row.names = c(NA, -4L)
-            )
+            toc,
+            structure(list(dataset = c(1L, 1L, 1L, 1L), plan = c(
+                0L, 0L,
+                0L, 1L
+            ), IDhex = c("0x16", "0x1c", "0x23", "0xa0"), IDdec = c(
+                22L,
+                28L, 35L, 160L
+            ), dataType = c(
+                "average", "echosounder", "echosounderRaw",
+                "text"
+            ), count = c(7L, 2L, 2L, 1L)), row.names = c(NA, -4L), class = "data.frame")
         )
     })
+
 
     test_that("local_data/ad2cp/ad2cp_01.ad2cp 'average' is okay", {
         expect_message(

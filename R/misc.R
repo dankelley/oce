@@ -1644,6 +1644,8 @@ threenum <- function(x) {
         x <- as.numeric(x)
         dim(x) <- dim
         res <- c(min(x, na.rm = TRUE), mean(x, na.rm = TRUE), max(x, na.rm = TRUE))
+    } else if (is.complex(x)) {
+        res <- c(NA, mean(x, na.rm = TRUE), NA)
     } else if (is.factor(x)) {
         res <- rep(NA, 3)
     } else if (0 < sum(!is.na(x))) {
@@ -2124,7 +2126,7 @@ vectorShow <- function(v, msg = "", postscript = "", digits = 5L, n = 2L, showNA
     }
     res <- msg
     if (nv == 0) {
-        res <- paste(res, "(empty vector)")
+        res <- paste0(res, "(empty vector)")
     } else {
         if (n < 0 || nv <= 2 * n) {
             showAll <- TRUE
