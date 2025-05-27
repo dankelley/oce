@@ -296,17 +296,17 @@ BEGIN_RCPP
 END_RCPP
 }
 // do_ldc_ad2cp_in_file
-List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerVector to, IntegerVector by, IntegerVector DEBUG);
-RcppExport SEXP _oce_do_ldc_ad2cp_in_file(SEXP filenameSEXP, SEXP fromSEXP, SEXP toSEXP, SEXP bySEXP, SEXP DEBUGSEXP) {
+List do_ldc_ad2cp_in_file(CharacterVector filename, NumericVector from, NumericVector to, NumericVector by, IntegerVector debug);
+RcppExport SEXP _oce_do_ldc_ad2cp_in_file(SEXP filenameSEXP, SEXP fromSEXP, SEXP toSEXP, SEXP bySEXP, SEXP debugSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< CharacterVector >::type filename(filenameSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type from(fromSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type to(toSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type by(bySEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type DEBUG(DEBUGSEXP);
-    rcpp_result_gen = Rcpp::wrap(do_ldc_ad2cp_in_file(filename, from, to, by, DEBUG));
+    Rcpp::traits::input_parameter< NumericVector >::type from(fromSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type to(toSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type by(bySEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type debug(debugSEXP);
+    rcpp_result_gen = Rcpp::wrap(do_ldc_ad2cp_in_file(filename, from, to, by, debug));
     return rcpp_result_gen;
 END_RCPP
 }
