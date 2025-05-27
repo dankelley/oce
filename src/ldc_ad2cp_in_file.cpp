@@ -176,7 +176,7 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, NumericVector from,
   //   Rprintf("DAN size of 'int' %lu\n", sizeof(int));                     // 4
   //   Rprintf("DAN size of 'long int' %lu\n", sizeof(long int));           // 8
   //   Rprintf("DAN size of 'long long int' %lu\n", sizeof(long long int)); // 8
-  debug = (Debug < 0 ? 0 : Debug);
+  Debug = (Debug < 0 ? 0 : Debug);
   std::string fn = Rcpp::as<std::string>(filename(0));
   FILE *fp = fopen(fn.c_str(), "rb");
   if (!fp)

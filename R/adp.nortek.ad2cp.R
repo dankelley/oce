@@ -739,11 +739,11 @@ read.adp.ad2cp <- function(
     res <- new("adp")
     # FIXME: THIS IS WRONG: we should be focussing on d focussed by focusIndex.
     firstData <- which(d$id != 0xa0)[1] # first non-text chunk
-    oceDebug(1+debug, vectorShow(firstData))
+    oceDebug(debug, vectorShow(firstData))
     serialNumber <- readBin(d$buf[d$index[firstData] + 5:8], "integer", size = 4, endian = "little")
-    oceDebug(1+debug, vectorShow(serialNumber))
+    oceDebug(debug, vectorShow(serialNumber))
     # Create pointers for accessing 1-byte, 2-byte, and 4-byte chunks
-    oceDebug(1+debug, "focussing on ", length(d$index), " data records\n")
+    oceDebug(debug, "focussing on ", length(d$index), " data records\n")
     # .pointer2 <- as.vector(t(cbind(pointer1, 1 + pointer1))) # rbind() would be fine, too.
     # .pointer4 <- as.vector(t(cbind(pointer1, 1 + pointer1, 2 + pointer1, 3 + pointer1)))
     # Below indicates that gappyIndex() is about 6 times faster on a small file
@@ -762,8 +762,8 @@ read.adp.ad2cp <- function(
     # .if (!all.equal(pointer4, pointer4NEW))
     # .    warning("DEVELOPER NOTE: pointer4NEW != pointer4 at spot 1")
     pointer1 <- d$index
-    plot(pointer1, type = "l")
-    message("FIXME DANDANDAN see plot made near adp.nortek.ad2cp.R:L766")
+    #plot(pointer1, type = "l")
+    #message("FIXME DANDANDAN see plot made near adp.nortek.ad2cp.R:L766")
     pointer2 <- gappyIndex(d$index, 0, 2)
     pointer4 <- gappyIndex(d$index, 0, 4)
     # {{{

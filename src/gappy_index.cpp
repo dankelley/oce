@@ -20,8 +20,8 @@ NumericVector do_gappy_index(NumericVector starts, NumericVector offset,
   // n=%ld\n", nstarts, Offset, Length, n);
   if (nstarts > 0) { // note that we start large
     long int minspan = 100 * nstarts * Length;
-    Rprintf("initial minspan = %ld (n = %ld; nstarts = %ld)\n", minspan, n,
-            nstarts);
+    // Rprintf("initial minspan = %ld (n = %ld; nstarts = %ld)\n", minspan, n,
+    //        nstarts);
     for (long int i = 1; i < nstarts; i++) {
       long int span = starts[i] - starts[i - 1];
       if (span < minspan) {
