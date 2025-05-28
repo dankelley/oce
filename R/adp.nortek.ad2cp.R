@@ -2749,14 +2749,16 @@ beamToXyzAdpAD2CP <- function(x, debug = getOption("oceDebug")) {
 
 #' Convert adp Object of AD2CP type From XYZ to ENU Coordinates
 #'
-#' This function is in active development,
-#' and both the methodology and user interface may change
-#' without notice. Only developers (or invitees) should be trying to
-#' use this function.
+#' This function is in active development, and both the methodology and user
+#' interface may change without notice. Only developers (or invitees) should be
+#' trying to use this function. See the Nortek documents listed in
+#' \sQuote{Referencess} for more on coordinate transformation.
 #'
-#' @param x an [adp-class] object created by [read.adp.ad2cp()].
+#' @param x an [adp-class] object created by [read.adp.ad2cp()].  It
+#' must be in xyz coordinates.
 #'
-#' @param declination IGNORED at present, but will be used at some later time.
+#' @param declination IGNORED at present, but may be used at some later time.
+#'
 #' @template debugTemplate
 #'
 #' @return An object with `data$v[,,1:3]` altered appropriately, and
@@ -2764,15 +2766,15 @@ beamToXyzAdpAD2CP <- function(x, debug = getOption("oceDebug")) {
 #'
 #' @author Dan Kelley
 #'
-#' @section Limitations:
-#' This only works if the instrument orientation is `"AHRS"`, and even
-#' that is not tested yet. Plus, as noted, the declination is ignored.
-#'
 #' @references
 #' 1. Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz.} Nortek AS, 2017.
 #'
 #' 2. Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz.} Nortek AS, 2018.
 #' https://www.nortekgroup.com/assets/software/N3015-007-Integrators-Guide-AD2CP_1018.pdf.
+#'
+#' 3. Nortek AS. “How Is a Coordinate Transformation Done?” Nortek Support Center,
+#' April 3, 2025.
+#' https://support.nortekgroup.com/hc/en-us/articles/360029820971-How-is-a-coordinate-transformation-done.
 #'
 #' @family things related to adp data
 xyzToEnuAdpAD2CP <- function(x, declination = 0, debug = getOption("oceDebug")) {
@@ -2806,24 +2808,66 @@ xyzToEnuAdpAD2CP <- function(x, declination = 0, debug = getOption("oceDebug")) 
     #    stop("no known orientation for '", item, "' in the object data slot")
     # }
     nc <- dim(v)[2]
-    AHRS <- x@data$AHRS
-    if (is.null(AHRS)) {
-        stop("this ad2cp object lacks a coordinate-change matrix \"AHRS\"")
+    # message("FYI the metadata contain: c(\"", paste(sort(names(x@metadata)), collapse = "\", \""), "\")")
+    # message("FYI the data contain: c(\"", paste(sort(names(x@data)), collapse = "\", \""), "\")")
+    if ("AHRS" %in% names(x@data)) {
+        AHRS <- x@data$AHRS
+        oceDebug(debug, "case 1: use AHRS to convert velocity to ENU\n")
+        M <- if (is.matrix(AHRS)) AHRS else AHRS$rotationMatrix
+        if (length(dim(M)) != 3L) {
+            stop("the rotation matrix does not have 3 dimensions (it has ", length(dim(M)), " dimensions)")
+        }
+        # we need the times=nc part to use this for each cell
+        e <- v[, , 1] * rep(M[, 1, 1], times = nc) + v[, , 2] * rep(M[, 1, 2], times = nc) + v[, , 3] * rep(M[, 1, 3], times = nc)
+        n <- v[, , 1] * rep(M[, 2, 1], times = nc) + v[, , 2] * rep(M[, 2, 2], times = nc) + v[, , 3] * rep(M[, 2, 3], times = nc)
+        u <- v[, , 1] * rep(M[, 3, 1], times = nc) + v[, , 2] * rep(M[, 3, 3], times = nc) + v[, , 3] * rep(M[, 3, 3], times = nc)
+        # FIXME: perhaps use the declination now, rotating e and n.  But first, we will need to know
+        # what declination was used by the instrument, in its creation of AHRS.
+        res@data$v[, , 1] <- e
+        res@data$v[, , 2] <- n
+        res@data$v[, , 3] <- u
+    } else if (3L == sum(c("heading", "pitch", "roll") %in% names(x@data))) {
+        oceDebug(debug, "case 2: use (heading,pitch,roll) to convert velocity to ENU\n")
+        radPerDegree <- atan2(1.0, 1.0) / 45.0
+        # see eq 4, 5, 6 and 7 in ref 3
+        heading <- radPerDegree * (x@data$heading - 90)
+        pitch <- radPerDegree * x@data$pitch
+        roll <- radPerDegree * x@data$roll
+        N <- length(heading)
+        Sh <- sin(heading)
+        Ch <- cos(heading)
+        Sp <- sin(pitch)
+        Cp <- cos(pitch)
+        Sr <- sin(roll)
+        Cr <- cos(roll)
+        Rz <- array(0.0, dim = c(N, 3L, 3L))
+        Rz[, 1, 1:2] <- c(Ch, -Sh)
+        Rz[, 2, 1:2] <- c(Sh, Ch)
+        Rz[, 3, 3] <- 1.0
+        Ry <- array(0.0, dim = c(N, 3L, 3L))
+        Ry[, 1, c(1, 3)] <- c(Cp, Sp)
+        Ry[, 2, 1] <- 1.0
+        Ry[, 3, c(1, 3)] <- c(-Sp, Cp)
+        Rx <- array(0.0, dim = c(N, 3L, 3L))
+        Rx[, 1, 1] <- 1.0
+        Rx[, 2, c(2, 3)] <- c(Cr, -Sr)
+        Rx[, 3, c(2, 3)] <- c(Sr, Cr)
+        # fill up matrix, one sample at a time (likely there is a fancier way)
+        M <- array(0.0, dim = c(N, 3L, 3L))
+        # message(
+        #    "N=", N, ", nc=", nc, ", dim(M)=", paste(dim(M), collapse = ","),
+        #    ", dim(v)=", paste(dim(res@data$v), collapse = ",")
+        # )
+        for (i in seq_len(N)) {
+            M[i, , ] <- Rz[i, , ] %*% Ry[i, , ] %*% Rx[i, , ]
+        }
+        res@data$v[, , 1] <- v[, , 1] * rep(M[, 1, 1], times = nc) + v[, , 2] * rep(M[, 1, 2], times = nc) + v[, , 3] * rep(M[, 1, 3], times = nc)
+        res@data$v[, , 2] <- v[, , 1] * rep(M[, 2, 1], times = nc) + v[, , 2] * rep(M[, 2, 2], times = nc) + v[, , 3] * rep(M[, 2, 3], times = nc)
+        res@data$v[, , 3] <- v[, , 1] * rep(M[, 3, 1], times = nc) + v[, , 2] * rep(M[, 3, 2], times = nc) + v[, , 3] * rep(M[, 3, 3], times = nc)
+        # warning("conversion to ENU not tested yet, for ad2cp with no AHRS information")
+    } else {
+        stop("cannot transform to ENU coordinates because AHRS is missing and (heading,pitch,roll) are also missing")
     }
-    oceDebug(debug, "step 2: extracted x@data$AHRS\n")
-    M <- if (is.matrix(AHRS)) AHRS else AHRS$rotationMatrix
-    if (length(dim(M)) != 3L) {
-        stop("dim(M) should be of length 3, but it is ", length(dim(M)))
-    }
-    oceDebug(debug, "step 3: rotate x@data$v\n")
-    e <- v[, , 1] * rep(M[, 1, 1], times = nc) + v[, , 2] * rep(M[, 1, 2], times = nc) + v[, , 3] * rep(M[, 1, 3], times = nc)
-    n <- v[, , 1] * rep(M[, 2, 1], times = nc) + v[, , 2] * rep(M[, 2, 2], times = nc) + v[, , 3] * rep(M[, 2, 3], times = nc)
-    u <- v[, , 1] * rep(M[, 3, 1], times = nc) + v[, , 2] * rep(M[, 2, 3], times = nc) + v[, , 3] * rep(M[, 3, 3], times = nc)
-    # FIXME: perhaps use the declination now, rotating e and n.  But first, we will need to know
-    # what declination was used by the instrument, in its creation of AHRS.
-    res@data$v[, , 1] <- e
-    res@data$v[, , 2] <- n
-    res@data$v[, , 3] <- u
     res@metadata$oceCoordinate <- "enu"
     res@processingLog <- processingLogAppend(
         res@processingLog,
