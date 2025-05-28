@@ -730,7 +730,7 @@ read.adp.ad2cp <- function(
     # Note that we read the *whole* file; from, to and by are used later, for
     # the particular plan,dataSet,dataType value that is the focus here.  We use
     # from, to and by in a few lines, when focusIndex is defined.
-    nav <- do_ldc_ad2cp_in_file(filename, from = 1L, to = 1e9, by = 1L, DEBUG = debug - 1L)
+    nav <- do_ldc_ad2cp_in_file(filename, from = 1L, to = 1e9, by = 1L, debug = debug - 1L)
     d <- list(buf = buf, index = nav$index, headerLength = nav$headerLength, dataLength = nav$dataLength, id = nav$id)
     oceDebug(debug, vectorShow(length(d$index)))
     N <- length(d$index)
@@ -739,7 +739,9 @@ read.adp.ad2cp <- function(
     res <- new("adp")
     # FIXME: THIS IS WRONG: we should be focussing on d focussed by focusIndex.
     firstData <- which(d$id != 0xa0)[1] # first non-text chunk
+    oceDebug(debug, vectorShow(firstData))
     serialNumber <- readBin(d$buf[d$index[firstData] + 5:8], "integer", size = 4, endian = "little")
+    oceDebug(debug, vectorShow(serialNumber))
     # Create pointers for accessing 1-byte, 2-byte, and 4-byte chunks
     oceDebug(debug, "focussing on ", length(d$index), " data records\n")
     # .pointer2 <- as.vector(t(cbind(pointer1, 1 + pointer1))) # rbind() would be fine, too.
@@ -760,6 +762,8 @@ read.adp.ad2cp <- function(
     # .if (!all.equal(pointer4, pointer4NEW))
     # .    warning("DEVELOPER NOTE: pointer4NEW != pointer4 at spot 1")
     pointer1 <- d$index
+    #plot(pointer1, type = "l")
+    #message("FIXME DANDANDAN see plot made near adp.nortek.ad2cp.R:L766")
     pointer2 <- gappyIndex(d$index, 0, 2)
     pointer4 <- gappyIndex(d$index, 0, 4)
     # {{{
