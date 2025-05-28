@@ -762,8 +762,8 @@ read.adp.ad2cp <- function(
     # .if (!all.equal(pointer4, pointer4NEW))
     # .    warning("DEVELOPER NOTE: pointer4NEW != pointer4 at spot 1")
     pointer1 <- d$index
-    #plot(pointer1, type = "l")
-    #message("FIXME DANDANDAN see plot made near adp.nortek.ad2cp.R:L766")
+    # plot(pointer1, type = "l")
+    # message("FIXME DANDANDAN see plot made near adp.nortek.ad2cp.R:L766")
     pointer2 <- gappyIndex(d$index, 0, 2)
     pointer4 <- gappyIndex(d$index, 0, 4)
     # {{{
@@ -2656,5 +2656,183 @@ read.adp.ad2cp <- function(
     )
     res@processingLog <- processingLogItem(processingLog)
     oceDebug(debug, "END read.adp.ad2cp()\n", unindent = 1)
+    res
+}
+
+#' Convert From Beam to XYZ Coordinates (AD2CP adp Data)
+#'
+#' This looks at all the items in the `data` slot of `x`, to
+#' see if they contain an array named `v` that holds velocity.
+#' If that velocity has 4 components, and if `oceCoordinate` for
+#' the item is `"beam"`, then
+#' along-beam velocity components \eqn{B_1}{B1}
+#' \eqn{B_2}{B1}, \eqn{B_3}{B3}, and \eqn{B_4}{B4}
+#' are converted to instrument-oriented Cartesian velocity components \eqn{u}{u}
+#' \eqn{v}{v} and \eqn{w}{w}
+#' using the convex-geometry formulae from section 5.5 of reference 1,
+#' viz.
+#' \eqn{u=ca(B_1-B_2)}{u=a*(B1-B2)}, \eqn{v=ca(B_4-B_3)}{v=a*(B4-B3)},
+#' \eqn{w=-b(B_1+B_2+B_3+B_4)}{w=-b*(B1+B2+B3+B4)}. In addition to these,
+#' an estimate of the
+#' error in velocity is computed as
+#' \eqn{e=d(B_1+B_2-B_3-B_4)}{e=d*(B1+B2-B3-B4)}.
+#' The geometrical factors in these formulae are:
+#' \eqn{a=1/(2\sin\theta)}{a=1/(2*sin(theta))}
+#' where \eqn{\theta}{theta} is the angle the beams make to the axial direction
+#' (which is available as `x[["beamAngle"]]`),
+#' \eqn{b=1/(4\cos\theta)}{b=1/(4*cos(theta))}, and
+#' \eqn{d=a/\sqrt{2}}{d=a/sqrt(2)}.
+#'
+#' @param x an [adp-class] object.
+#'
+#' @template debugTemplate
+#'
+#' @references
+#' 1. Teledyne RD Instruments.
+#' \dQuote{ADCP Coordinate Transformation: Formulas and Calculations,}
+#' January 2010. P/N 951-6079-00.
+#
+#' @family things related to adp data
+beamToXyzAdpAD2CP <- function(x, debug = getOption("oceDebug")) {
+    debug <- if (debug > 0) 1 else 0
+    oceDebug(debug, "beamToXyzAdpAD2CP(x, debug=", debug, ") START\n", sep = "", unindent = 1)
+    if (!inherits(x, "adp")) {
+        stop("method is only for objects of class \"adp\"")
+    }
+    if (!is.ad2cp(x)) {
+        stop("method is only for AD2CP objects")
+    }
+    if (!is.ad2cp(x)) {
+        stop("only 4-beam AD2CP data are handled")
+    }
+    if (!"v" %in% names(x@data)) {
+        stop("cannot change to xyz coordinates because there is no \"v\" in this ad2cp object")
+    }
+    if (!identical(4L, x@metadata$numberOfBeams)) {
+        stop("cannot change to xyz coordinates because the number of beams is not 4")
+    }
+    beamAngle <- x@metadata$beamAngle
+    if (is.null(beamAngle)) {
+        stop("cannot look up beamAngle")
+    }
+    res <- x
+    v <- res@data$v
+    # Possibly speed things up by reducing need to index 4 times.
+    v1 <- v[, , 1]
+    v2 <- v[, , 2]
+    v3 <- v[, , 3]
+    v4 <- v[, , 4]
+    rm(v) # perhaps help by reducing memory pressure a bit
+    theta <- beamAngle * atan2(1.0, 1.0) / 45.0
+    TMc <- 1.0 # for convex (diverging) beam setup; use -1 for concave
+    TMa <- 1.0 / (2.0 * sin(theta))
+    TMb <- 1.0 / (4.0 * cos(theta))
+    TMd <- TMa / sqrt(2)
+    tm <- rbind(
+        c(TMc * TMa, -TMc * TMa, 0.0, 0.0),
+        c(0.0, 0.0, -TMc * TMa, TMc * TMa),
+        c(TMb, TMb, TMb, TMb),
+        c(TMd, TMd, -TMd, -TMd)
+    )
+    res@data$v[, , 1] <- tm[1, 1] * v1 + tm[1, 2] * v2 + tm[1, 3] * v3 + tm[1, 4] * v4
+    res@data$v[, , 2] <- tm[2, 1] * v1 + tm[2, 2] * v2 + tm[2, 3] * v3 + tm[2, 4] * v4
+    res@data$v[, , 3] <- tm[3, 1] * v1 + tm[3, 2] * v2 + tm[3, 3] * v3 + tm[3, 4] * v4
+    res@data$v[, , 4] <- tm[4, 1] * v1 + tm[4, 2] * v2 + tm[4, 3] * v3 + tm[4, 4] * v4
+    res@metadata$oceCoordinate <- "xyz"
+    oceDebug(debug, "  converted from 'beam' to 'xyz'\n")
+    res@processingLog <- processingLogAppend(
+        res@processingLog, paste("beamToXyzAdpAD2CP(x", ", debug=", debug, ")", sep = "")
+    )
+    oceDebug(debug, "END beamToXyzAdpAD2CP()\n", unindent = 1)
+    res
+}
+
+#' Convert adp Object of AD2CP type From XYZ to ENU Coordinates
+#'
+#' This function is in active development,
+#' and both the methodology and user interface may change
+#' without notice. Only developers (or invitees) should be trying to
+#' use this function.
+#'
+#' @param x an [adp-class] object created by [read.adp.ad2cp()].
+#'
+#' @param declination IGNORED at present, but will be used at some later time.
+#' @template debugTemplate
+#'
+#' @return An object with `data$v[,,1:3]` altered appropriately, and
+#' `x[["oceCoordinate"]]` changed from `xyz` to `enu`.
+#'
+#' @author Dan Kelley
+#'
+#' @section Limitations:
+#' This only works if the instrument orientation is `"AHRS"`, and even
+#' that is not tested yet. Plus, as noted, the declination is ignored.
+#'
+#' @references
+#' 1. Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz.} Nortek AS, 2017.
+#'
+#' 2. Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz.} Nortek AS, 2018.
+#' https://www.nortekgroup.com/assets/software/N3015-007-Integrators-Guide-AD2CP_1018.pdf.
+#'
+#' @family things related to adp data
+xyzToEnuAdpAD2CP <- function(x, declination = 0, debug = getOption("oceDebug")) {
+    debug <- if (debug > 0) 1 else 0
+    oceDebug(debug, "xyzToEnuAdpAD2CP(x, declination=", declination, ", debug=", debug, ") START\n", sep = "", unindent = 1)
+    if (!inherits(x, "adp")) {
+        stop("this function only works for objects of class '", "adp", "'")
+    }
+    if (!is.ad2cp(x)) {
+        stop("this function only works for adp objects created by read.adp.ad2cp()")
+    }
+    if (0 != declination) { # FIXME: use the declination
+        stop("nonzero declination is not handled yet; please contact the author if you need this")
+    }
+    if (!"v" %in% names(x@data)) {
+        stop("this ad2cp object lacks a \"v\" entry in its data slot")
+    }
+    numberOfBeams <- x@metadata$numberOfBeams
+    if (!identical(4L, numberOfBeams)) {
+        stop("this ad2cp object has ", numberOfBeams, ", but 4 are required")
+    }
+    if (x@metadata$oceCoordinate != "xyz") {
+        stop("this ad2cp object is not in xyz coordinates")
+    }
+    res <- x
+    v <- res@data$v
+    oceDebug(debug, "step 1: extracted x@data$v\n")
+    orientation <- x@metadata$orientation
+    # FIXME: think about orientation
+    # if (is.null(orientation)) {
+    #    stop("no known orientation for '", item, "' in the object data slot")
+    # }
+    nc <- dim(v)[2]
+    AHRS <- x@data$AHRS
+    if (is.null(AHRS)) {
+        stop("this ad2cp object lacks a coordinate-change matrix \"AHRS\"")
+    }
+    oceDebug(debug, "step 2: extracted x@data$AHRS\n")
+    M <- if (is.matrix(AHRS)) AHRS else AHRS$rotationMatrix
+    if (length(dim(M)) != 3L) {
+        stop("dim(M) should be of length 3, but it is ", length(dim(M)))
+    }
+    oceDebug(debug, "step 3: rotate x@data$v\n")
+    e <- v[, , 1] * rep(M[, 1, 1], times = nc) + v[, , 2] * rep(M[, 1, 2], times = nc) + v[, , 3] * rep(M[, 1, 3], times = nc)
+    n <- v[, , 1] * rep(M[, 2, 1], times = nc) + v[, , 2] * rep(M[, 2, 2], times = nc) + v[, , 3] * rep(M[, 2, 3], times = nc)
+    u <- v[, , 1] * rep(M[, 3, 1], times = nc) + v[, , 2] * rep(M[, 2, 3], times = nc) + v[, , 3] * rep(M[, 3, 3], times = nc)
+    # FIXME: perhaps use the declination now, rotating e and n.  But first, we will need to know
+    # what declination was used by the instrument, in its creation of AHRS.
+    res@data$v[, , 1] <- e
+    res@data$v[, , 2] <- n
+    res@data$v[, , 3] <- u
+    res@metadata$oceCoordinate <- "enu"
+    res@processingLog <- processingLogAppend(
+        res@processingLog,
+        paste("xyzToEnuAdpAD2CP(x",
+            ", declination=", declination,
+            ", debug=", debug, ")",
+            sep = ""
+        )
+    )
+    oceDebug(debug, "END xyzToEnuAdpAD2CP()\n", sep = "", unindent = 1)
     res
 }
