@@ -4,7 +4,7 @@
 \alias{ad2cpHeaderValue}
 \title{Infer an Item From a Nortek AD2CP File Header}
 \usage{
-ad2cpHeaderValue(x, key, item, numeric = TRUE, default, plan = 0)
+ad2cpHeaderValue(x, key, item, numeric = TRUE, default, plan = 0, debug = 0)
 }
 \arguments{
 \item{x}{an \linkS4class{adp} object that holds AD2CP data.}
@@ -23,6 +23,10 @@ that lacks the initial header information)}
 
 \item{plan}{integer specifying the plan, with the same
 meaning as for \code{\link[=read.adp.ad2cp]{read.adp.ad2cp()}}.}
+
+\item{debug}{integer indicating degree of debugging information
+to be printed during processing. The default value of 0 means to
+work quietly.}
 }
 \value{
 \code{ad2cpHeaderValue} returns a character value or number interpreted

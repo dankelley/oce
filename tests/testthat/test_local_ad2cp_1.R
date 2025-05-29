@@ -126,7 +126,7 @@ if (file.exists(f1)) {
         expect_equal(burst[["fileType"]], "AD2CP")
         expect_equal(burst[["serialNumber"]], ad2cpHeaderValue(d1, "ID", "SN"))
         expect_equal(burst[["oceCoordinate"]], "beam")
-        expect_equal(average[["cellSize"]], ad2cpHeaderValue(d1, "GETAVG", "CS"))
+        expect_equal(average[["cellSize"]], ad2cpHeaderValue(d1, "GETAVG", "CS", plan = 0))
         expect_equal(average[["blankingDistance"]], ad2cpHeaderValue(d1, "GETAVG", "BD"))
         expect_equal(average[["oceCoordinate"]], tolower(ad2cpHeaderValue(d1, "GETAVG", "CY", FALSE)))
         expect_equal(burst[["cellSize"]], ad2cpHeaderValue(d1, "GETBURSTHR", "CS"))
@@ -379,7 +379,7 @@ if (file.exists(f1)) {
         # have any ENU from matlab, but rather it is just a test against
         # code changes, with the check values being what the code
         # produced on 2019-01-06.
-        expect_error(d1enu <- toEnu(d1), "does not work with ad2cp files")
+        d1enu <- toEnu(d1)
         # FIXME: add a way to do coordinate transformations
         # later expect_equal(d1enu[["average"]]$v[1:2,1:2,1:4],
         # later     structure(c(-0.0423407864127893, -0.0412083140396359,
@@ -545,11 +545,11 @@ if (file.exists(f3)) {
         # expect_silent(plot(d3, which='a1', zlim=c(0, 255), drawTimeRange=FALSE))
         # expect_silent(plot(d3, which='a2', zlim=c(0, 255), drawTimeRange=FALSE))
         # expect_silent(plot(d3, which='a3', zlim=c(0, 255), drawTimeRange=FALSE))
-        expect_error(bxyz <- beamToXyz(b))
+        xyz <- beamToXyz(b)
         # expect_silent(plot(d3xyz, which=1, zlim=zlim, drawTimeRange=FALSE))
         # expect_silent(plot(d3xyz, which=2, zlim=zlim, drawTimeRange=FALSE))
         # expect_silent(plot(d3xyz, which=3, zlim=zlim/4, drawTimeRange=FALSE))
-        expect_error(benu <- xyzToEnu(b))
+        enu <- xyzToEnu(xyz)
         # expect_silent(plot(d3enu, which=1, zlim=zlim, drawTimeRange=FALSE))
         # expect_silent(plot(d3enu, which=2, zlim=zlim, drawTimeRange=FALSE))
         # expect_silent(plot(d3enu, which=3, zlim=zlim/4, drawTimeRange=FALSE))

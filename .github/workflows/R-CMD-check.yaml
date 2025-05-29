@@ -6,7 +6,7 @@ on:
     branches:
       - main
       - develop
-      - issue2314 # temporary for test 2025-05-27
+      - issue2315 # temporary for testing 2025-05-28
   pull_request:
     branches:
       - main

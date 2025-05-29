@@ -102,6 +102,10 @@ ad2cpDefaultDataItem <- function(x, j = NULL,
 #' @param plan integer specifying the plan, with the same
 #' meaning as for [read.adp.ad2cp()].
 #'
+#' @param debug integer indicating degree of debugging information
+#' to be printed during processing. The default value of 0 means to
+#' work quietly.
+#'
 #' @return `ad2cpHeaderValue` returns a character value or number interpreted
 #' from the output from `x[["text"]]`, or `NULL`, if the desired item is not
 #' found there, or if `x` is not of the required class and variety.
@@ -128,7 +132,7 @@ ad2cpDefaultDataItem <- function(x, j = NULL,
 #' @family things related to ad2cp data
 #'
 #' @author Dan Kelley
-ad2cpHeaderValue <- function(x, key, item, numeric = TRUE, default, plan = 0) {
+ad2cpHeaderValue <- function(x, key, item, numeric = TRUE, default, plan = 0, debug = 0) {
     if (missing(x)) {
         stop("must provide x")
     }
@@ -154,12 +158,17 @@ ad2cpHeaderValue <- function(x, key, item, numeric = TRUE, default, plan = 0) {
     if (is.null(header)) {
         return(if (missing(default)) NULL else default)
     }
+    oceDebug(debug, "ad2cpHeaderValue(..., key=\"", key, "\", item=\"", item, "\") START\n", sep="", unindent = 1)
     # Must modify key if plan is not 0
-    if (plan > 0) {
+     if (plan > 0) {
         key <- paste0(key, plan)
     }
-    key2 <- paste("^", key, ",", sep = "")
+    key2 <- paste0("^", key, ",")
+    oceDebug(debug, vectorShow(key2))
+    #message("DAN 1: key2=", key2)
     hline <- header[grep(key2, header)]
+    #message("DAN 2: next is hline")
+    #print(hline)
     if (length(hline) > 1) {
         stop("header line is not distinct; try using a comma at the end of key")
     }
@@ -169,7 +178,12 @@ ad2cpHeaderValue <- function(x, key, item, numeric = TRUE, default, plan = 0) {
     if (0 == length(grep(item, hline))) {
         return(if (missing(default)) NULL else default)
     }
+    if (length(hline) > 1L) {
+        oceDebug(debug, "using first matching value, of the ", length(hline), " instances that were found (consider setting plan)\n")
+        hline <- hline[1]
+    }
     res <- gsub(paste("^.*", item, "=([^,]*).*$", sep = ""), "\\1", hline)
+    #message("DAN 3: res=", res)
     if (nchar(res)) {
         # message("ad2cpHeaderValue(key='", key, "', item='", item, "' case 1")
         res <- if (numeric) as.numeric(res) else gsub("\"", "", res)
@@ -179,6 +193,7 @@ ad2cpHeaderValue <- function(x, key, item, numeric = TRUE, default, plan = 0) {
         res <- if (missing(default)) NULL else default
         # message(" ... res='", res, "'")
     }
+    oceDebug(debug, "END ad2cpHeaderValue()\n", unindent = 1)
     res
 }
 
@@ -577,9 +592,9 @@ read.adp.ad2cp <- function(
         "altimeter" = 0x1e,
         "averageAltimeter" = 0x1f,
         "echosounderRaw" = 0x23,
-        "echosounderRawTx" = 0x24, # not handled
+        "echosounderRawTx" = 0x24, # maybe handled (the docs are unclear how different from 0x23)
         "waveData" = 0x30, # not handled
-        "format8" = 0xC0
+        "format8" = 0xC0 # not handled
     )
     dataTypeOrig <- dataType
     if (!is.null(dataType)) {
@@ -762,8 +777,8 @@ read.adp.ad2cp <- function(
     # .if (!all.equal(pointer4, pointer4NEW))
     # .    warning("DEVELOPER NOTE: pointer4NEW != pointer4 at spot 1")
     pointer1 <- d$index
-    #plot(pointer1, type = "l")
-    #message("FIXME DANDANDAN see plot made near adp.nortek.ad2cp.R:L766")
+    # plot(pointer1, type = "l")
+    # message("FIXME DANDANDAN see plot made near adp.nortek.ad2cp.R:L766")
     pointer2 <- gappyIndex(d$index, 0, 2)
     pointer4 <- gappyIndex(d$index, 0, 4)
     # {{{
@@ -1484,7 +1499,7 @@ read.adp.ad2cp <- function(
         }
         # oceDebug(debug, "    after handling \"", name, "\", i0v=", i0v, "\n")
         object
-    }
+    } # getItemFromBuf()
 
     readBurstAltimeterRaw <- function(id, debug = getOption("oceDebug")) # uses global 'd' and 'configuration'
     {
@@ -2619,9 +2634,7 @@ read.adp.ad2cp <- function(
     res@metadata$dataType <- ad2cpCodeToName(dataType)
     res@metadata$serialNumber <- serialNumber
     res@metadata$header <- header
-    res@metadata$orientation <- orientation
     res@metadata$type <- type
-    res@metadata$declination <- ad2cpHeaderValue(x = header, key = "GETUSER", item = "DECL", default = NA, plan = plan)
     res@metadata$frequency <- ad2cpHeaderValue(x = header, key = "BEAMCFGLIST,BEAM=1", item = "FREQ", default = NA, plan = plan)
     res@metadata$beamAngle <- switch(type,
         "Signature1000" = 25,
@@ -2641,6 +2654,7 @@ read.adp.ad2cp <- function(
         res@metadata$oceCoordinate <- NULL
         res@metadata$orientation <- NULL
         res@metadata$beamAngle <- NULL
+        oceDebug(debug, "do not save units$v, oceCoordinate, orientation or beamAngle in metadata slot if dataType is 0x1c, 0x1e or 0x23\n")
     }
     # Insert data
     res@data <- data
@@ -2654,7 +2668,231 @@ read.adp.ad2cp <- function(
             sep = ""
         )
     )
+    # Get some things form the text header
+    res@metadata$declination <- ad2cpHeaderValue(x = header, key = "GETUSER", item = "DECL", default = NA, plan = plan)
     res@processingLog <- processingLogItem(processingLog)
     oceDebug(debug, "END read.adp.ad2cp()\n", unindent = 1)
+    res
+} # read.adp.ad2cp
+
+#' Convert From Beam to XYZ Coordinates (AD2CP adp Data)
+#'
+#' This looks at all the items in the `data` slot of `x`, to
+#' see if they contain an array named `v` that holds velocity.
+#' If that velocity has 4 components, and if `oceCoordinate` for
+#' the item is `"beam"`, then
+#' along-beam velocity components \eqn{B_1}{B1}
+#' \eqn{B_2}{B1}, \eqn{B_3}{B3}, and \eqn{B_4}{B4}
+#' are converted to instrument-oriented Cartesian velocity components \eqn{u}{u}
+#' \eqn{v}{v} and \eqn{w}{w}
+#' using the convex-geometry formulae from section 5.5 of reference 1,
+#' viz.
+#' \eqn{u=ca(B_1-B_2)}{u=a*(B1-B2)}, \eqn{v=ca(B_4-B_3)}{v=a*(B4-B3)},
+#' \eqn{w=-b(B_1+B_2+B_3+B_4)}{w=-b*(B1+B2+B3+B4)}. In addition to these,
+#' an estimate of the
+#' error in velocity is computed as
+#' \eqn{e=d(B_1+B_2-B_3-B_4)}{e=d*(B1+B2-B3-B4)}.
+#' The geometrical factors in these formulae are:
+#' \eqn{a=1/(2\sin\theta)}{a=1/(2*sin(theta))}
+#' where \eqn{\theta}{theta} is the angle the beams make to the axial direction
+#' (which is available as `x[["beamAngle"]]`),
+#' \eqn{b=1/(4\cos\theta)}{b=1/(4*cos(theta))}, and
+#' \eqn{d=a/\sqrt{2}}{d=a/sqrt(2)}.
+#'
+#' @param x an [adp-class] object.
+#'
+#' @template debugTemplate
+#'
+#' @references
+#' 1. Teledyne RD Instruments.
+#' \dQuote{ADCP Coordinate Transformation: Formulas and Calculations,}
+#' January 2010. P/N 951-6079-00.
+#
+#' @family things related to adp data
+beamToXyzAdpAD2CP <- function(x, debug = getOption("oceDebug")) {
+    debug <- if (debug > 0) 1 else 0
+    oceDebug(debug, "beamToXyzAdpAD2CP(x, debug=", debug, ") START\n", sep = "", unindent = 1)
+    if (!inherits(x, "adp")) {
+        stop("method is only for objects of class \"adp\"")
+    }
+    if (!is.ad2cp(x)) {
+        stop("method is only for AD2CP objects")
+    }
+    if (!is.ad2cp(x)) {
+        stop("only 4-beam AD2CP data are handled")
+    }
+    if (!"v" %in% names(x@data)) {
+        stop("cannot change to xyz coordinates because there is no \"v\" in this ad2cp object")
+    }
+    if (!identical(4L, x@metadata$numberOfBeams)) {
+        stop("cannot change to xyz coordinates because the number of beams is not 4")
+    }
+    beamAngle <- x@metadata$beamAngle
+    if (is.null(beamAngle)) {
+        stop("cannot look up beamAngle")
+    }
+    res <- x
+    v <- res@data$v
+    # Possibly speed things up by reducing need to index 4 times.
+    v1 <- v[, , 1]
+    v2 <- v[, , 2]
+    v3 <- v[, , 3]
+    v4 <- v[, , 4]
+    rm(v) # perhaps help by reducing memory pressure a bit
+    theta <- beamAngle * atan2(1.0, 1.0) / 45.0
+    TMc <- 1.0 # for convex (diverging) beam setup; use -1 for concave
+    TMa <- 1.0 / (2.0 * sin(theta))
+    TMb <- 1.0 / (4.0 * cos(theta))
+    TMd <- TMa / sqrt(2)
+    tm <- rbind(
+        c(TMc * TMa, -TMc * TMa, 0.0, 0.0),
+        c(0.0, 0.0, -TMc * TMa, TMc * TMa),
+        c(TMb, TMb, TMb, TMb),
+        c(TMd, TMd, -TMd, -TMd)
+    )
+    res@data$v[, , 1] <- tm[1, 1] * v1 + tm[1, 2] * v2 + tm[1, 3] * v3 + tm[1, 4] * v4
+    res@data$v[, , 2] <- tm[2, 1] * v1 + tm[2, 2] * v2 + tm[2, 3] * v3 + tm[2, 4] * v4
+    res@data$v[, , 3] <- tm[3, 1] * v1 + tm[3, 2] * v2 + tm[3, 3] * v3 + tm[3, 4] * v4
+    res@data$v[, , 4] <- tm[4, 1] * v1 + tm[4, 2] * v2 + tm[4, 3] * v3 + tm[4, 4] * v4
+    res@metadata$oceCoordinate <- "xyz"
+    oceDebug(debug, "  converted from 'beam' to 'xyz'\n")
+    res@processingLog <- processingLogAppend(
+        res@processingLog, paste("beamToXyzAdpAD2CP(x", ", debug=", debug, ")", sep = "")
+    )
+    oceDebug(debug, "END beamToXyzAdpAD2CP()\n", unindent = 1)
+    res
+}
+
+#' Convert adp Object of AD2CP type From XYZ to ENU Coordinates
+#'
+#' This function is in active development, and both the methodology and user
+#' interface may change without notice. Only developers (or invitees) should be
+#' trying to use this function. See the Nortek documents listed in
+#' \sQuote{Referencess} for more on coordinate transformation.
+#'
+#' @param x an [adp-class] object created by [read.adp.ad2cp()].  It
+#' must be in xyz coordinates.
+#'
+#' @param declination IGNORED at present, but may be used at some later time.
+#'
+#' @template debugTemplate
+#'
+#' @return An object with `data$v[,,1:3]` altered appropriately, and
+#' `x[["oceCoordinate"]]` changed from `xyz` to `enu`.
+#'
+#' @author Dan Kelley
+#'
+#' @references
+#' 1. Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz.} Nortek AS, 2017.
+#'
+#' 2. Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz.} Nortek AS, 2018.
+#' https://www.nortekgroup.com/assets/software/N3015-007-Integrators-Guide-AD2CP_1018.pdf.
+#'
+#' 3. Nortek AS. “How Is a Coordinate Transformation Done?” Nortek Support Center,
+#' April 3, 2025.
+#' https://support.nortekgroup.com/hc/en-us/articles/360029820971-How-is-a-coordinate-transformation-done.
+#'
+#' @family things related to adp data
+xyzToEnuAdpAD2CP <- function(x, declination = 0, debug = getOption("oceDebug")) {
+    debug <- if (debug > 0) 1 else 0
+    oceDebug(debug, "xyzToEnuAdpAD2CP(x, declination=", declination, ", debug=", debug, ") START\n", sep = "", unindent = 1)
+    if (!inherits(x, "adp")) {
+        stop("this function only works for objects of class '", "adp", "'")
+    }
+    if (!is.ad2cp(x)) {
+        stop("this function only works for adp objects created by read.adp.ad2cp()")
+    }
+    if (0 != declination) { # FIXME: use the declination
+        stop("nonzero declination is not handled yet; please contact the author if you need this")
+    }
+    if (!"v" %in% names(x@data)) {
+        stop("this ad2cp object lacks a \"v\" entry in its data slot")
+    }
+    numberOfBeams <- x@metadata$numberOfBeams
+    if (!identical(4L, numberOfBeams)) {
+        stop("this ad2cp object has ", numberOfBeams, ", but 4 are required")
+    }
+    if (x@metadata$oceCoordinate != "xyz") {
+        stop("this ad2cp object is not in xyz coordinates")
+    }
+    res <- x
+    v <- res@data$v
+    oceDebug(debug, "step 1: extracted x@data$v\n")
+    orientation <- x@metadata$orientation
+    # FIXME: think about orientation
+    # if (is.null(orientation)) {
+    #    stop("no known orientation for '", item, "' in the object data slot")
+    # }
+    nc <- dim(v)[2]
+    # message("FYI the metadata contain: c(\"", paste(sort(names(x@metadata)), collapse = "\", \""), "\")")
+    # message("FYI the data contain: c(\"", paste(sort(names(x@data)), collapse = "\", \""), "\")")
+    if ("AHRS" %in% names(x@data)) {
+        AHRS <- x@data$AHRS
+        oceDebug(debug, "case 1: use AHRS to convert velocity to ENU\n")
+        M <- if (is.matrix(AHRS)) AHRS else AHRS$rotationMatrix
+        if (length(dim(M)) != 3L) {
+            stop("the rotation matrix does not have 3 dimensions (it has ", length(dim(M)), " dimensions)")
+        }
+        # we need the times=nc part to use this for each cell
+        e <- v[, , 1] * rep(M[, 1, 1], times = nc) + v[, , 2] * rep(M[, 1, 2], times = nc) + v[, , 3] * rep(M[, 1, 3], times = nc)
+        n <- v[, , 1] * rep(M[, 2, 1], times = nc) + v[, , 2] * rep(M[, 2, 2], times = nc) + v[, , 3] * rep(M[, 2, 3], times = nc)
+        u <- v[, , 1] * rep(M[, 3, 1], times = nc) + v[, , 2] * rep(M[, 3, 3], times = nc) + v[, , 3] * rep(M[, 3, 3], times = nc)
+        # FIXME: perhaps use the declination now, rotating e and n.  But first, we will need to know
+        # what declination was used by the instrument, in its creation of AHRS.
+        res@data$v[, , 1] <- e
+        res@data$v[, , 2] <- n
+        res@data$v[, , 3] <- u
+    } else if (3L == sum(c("heading", "pitch", "roll") %in% names(x@data))) {
+        oceDebug(debug, "case 2: use (heading,pitch,roll) to convert velocity to ENU\n")
+        radPerDegree <- atan2(1.0, 1.0) / 45.0
+        # see eq 4, 5, 6 and 7 in ref 3
+        heading <- radPerDegree * (x@data$heading - 90)
+        pitch <- radPerDegree * x@data$pitch
+        roll <- radPerDegree * x@data$roll
+        N <- length(heading)
+        Sh <- sin(heading)
+        Ch <- cos(heading)
+        Sp <- sin(pitch)
+        Cp <- cos(pitch)
+        Sr <- sin(roll)
+        Cr <- cos(roll)
+        Rz <- array(0.0, dim = c(N, 3L, 3L))
+        Rz[, 1, 1:2] <- c(Ch, -Sh)
+        Rz[, 2, 1:2] <- c(Sh, Ch)
+        Rz[, 3, 3] <- 1.0
+        Ry <- array(0.0, dim = c(N, 3L, 3L))
+        Ry[, 1, c(1, 3)] <- c(Cp, Sp)
+        Ry[, 2, 1] <- 1.0
+        Ry[, 3, c(1, 3)] <- c(-Sp, Cp)
+        Rx <- array(0.0, dim = c(N, 3L, 3L))
+        Rx[, 1, 1] <- 1.0
+        Rx[, 2, c(2, 3)] <- c(Cr, -Sr)
+        Rx[, 3, c(2, 3)] <- c(Sr, Cr)
+        # fill up matrix, one sample at a time (likely there is a fancier way)
+        M <- array(0.0, dim = c(N, 3L, 3L))
+        # message(
+        #    "N=", N, ", nc=", nc, ", dim(M)=", paste(dim(M), collapse = ","),
+        #    ", dim(v)=", paste(dim(res@data$v), collapse = ",")
+        # )
+        for (i in seq_len(N)) {
+            M[i, , ] <- Rz[i, , ] %*% Ry[i, , ] %*% Rx[i, , ]
+        }
+        res@data$v[, , 1] <- v[, , 1] * rep(M[, 1, 1], times = nc) + v[, , 2] * rep(M[, 1, 2], times = nc) + v[, , 3] * rep(M[, 1, 3], times = nc)
+        res@data$v[, , 2] <- v[, , 1] * rep(M[, 2, 1], times = nc) + v[, , 2] * rep(M[, 2, 2], times = nc) + v[, , 3] * rep(M[, 2, 3], times = nc)
+        res@data$v[, , 3] <- v[, , 1] * rep(M[, 3, 1], times = nc) + v[, , 2] * rep(M[, 3, 2], times = nc) + v[, , 3] * rep(M[, 3, 3], times = nc)
+        # warning("conversion to ENU not tested yet, for ad2cp with no AHRS information")
+    } else {
+        stop("cannot transform to ENU coordinates because AHRS is missing and (heading,pitch,roll) are also missing")
+    }
+    res@metadata$oceCoordinate <- "enu"
+    res@processingLog <- processingLogAppend(
+        res@processingLog,
+        paste("xyzToEnuAdpAD2CP(x",
+            ", declination=", declination,
+            ", debug=", debug, ")",
+            sep = ""
+        )
+    )
+    oceDebug(debug, "END xyzToEnuAdpAD2CP()\n", sep = "", unindent = 1)
     res
 }
