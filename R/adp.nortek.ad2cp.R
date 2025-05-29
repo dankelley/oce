@@ -102,6 +102,10 @@ ad2cpDefaultDataItem <- function(x, j = NULL,
 #' @param plan integer specifying the plan, with the same
 #' meaning as for [read.adp.ad2cp()].
 #'
+#' @param debug integer indicating degree of debugging information
+#' to be printed during processing. The default value of 0 means to
+#' work quietly.
+#'
 #' @return `ad2cpHeaderValue` returns a character value or number interpreted
 #' from the output from `x[["text"]]`, or `NULL`, if the desired item is not
 #' found there, or if `x` is not of the required class and variety.
@@ -128,7 +132,7 @@ ad2cpDefaultDataItem <- function(x, j = NULL,
 #' @family things related to ad2cp data
 #'
 #' @author Dan Kelley
-ad2cpHeaderValue <- function(x, key, item, numeric = TRUE, default, plan = 0) {
+ad2cpHeaderValue <- function(x, key, item, numeric = TRUE, default, plan = 0, debug = 0) {
     if (missing(x)) {
         stop("must provide x")
     }
@@ -154,12 +158,17 @@ ad2cpHeaderValue <- function(x, key, item, numeric = TRUE, default, plan = 0) {
     if (is.null(header)) {
         return(if (missing(default)) NULL else default)
     }
+    oceDebug(debug, "ad2cpHeaderValue(..., key=\"", key, "\", item=\"", item, "\") START\n", sep="", unindent = 1)
     # Must modify key if plan is not 0
-    if (plan > 0) {
+     if (plan > 0) {
         key <- paste0(key, plan)
     }
-    key2 <- paste("^", key, ",", sep = "")
+    key2 <- paste0("^", key, ",")
+    oceDebug(debug, vectorShow(key2))
+    #message("DAN 1: key2=", key2)
     hline <- header[grep(key2, header)]
+    #message("DAN 2: next is hline")
+    #print(hline)
     if (length(hline) > 1) {
         stop("header line is not distinct; try using a comma at the end of key")
     }
@@ -169,7 +178,12 @@ ad2cpHeaderValue <- function(x, key, item, numeric = TRUE, default, plan = 0) {
     if (0 == length(grep(item, hline))) {
         return(if (missing(default)) NULL else default)
     }
+    if (length(hline) > 1L) {
+        oceDebug(debug, "using first matching value, of the ", length(hline), " instances that were found (consider setting plan)\n")
+        hline <- hline[1]
+    }
     res <- gsub(paste("^.*", item, "=([^,]*).*$", sep = ""), "\\1", hline)
+    #message("DAN 3: res=", res)
     if (nchar(res)) {
         # message("ad2cpHeaderValue(key='", key, "', item='", item, "' case 1")
         res <- if (numeric) as.numeric(res) else gsub("\"", "", res)
@@ -179,6 +193,7 @@ ad2cpHeaderValue <- function(x, key, item, numeric = TRUE, default, plan = 0) {
         res <- if (missing(default)) NULL else default
         # message(" ... res='", res, "'")
     }
+    oceDebug(debug, "END ad2cpHeaderValue()\n", unindent = 1)
     res
 }
 
@@ -577,9 +592,9 @@ read.adp.ad2cp <- function(
         "altimeter" = 0x1e,
         "averageAltimeter" = 0x1f,
         "echosounderRaw" = 0x23,
-        "echosounderRawTx" = 0x24, # not handled
+        "echosounderRawTx" = 0x24, # maybe handled (the docs are unclear how different from 0x23)
         "waveData" = 0x30, # not handled
-        "format8" = 0xC0
+        "format8" = 0xC0 # not handled
     )
     dataTypeOrig <- dataType
     if (!is.null(dataType)) {
@@ -1484,7 +1499,7 @@ read.adp.ad2cp <- function(
         }
         # oceDebug(debug, "    after handling \"", name, "\", i0v=", i0v, "\n")
         object
-    }
+    } # getItemFromBuf()
 
     readBurstAltimeterRaw <- function(id, debug = getOption("oceDebug")) # uses global 'd' and 'configuration'
     {
@@ -2619,9 +2634,7 @@ read.adp.ad2cp <- function(
     res@metadata$dataType <- ad2cpCodeToName(dataType)
     res@metadata$serialNumber <- serialNumber
     res@metadata$header <- header
-    res@metadata$orientation <- orientation
     res@metadata$type <- type
-    res@metadata$declination <- ad2cpHeaderValue(x = header, key = "GETUSER", item = "DECL", default = NA, plan = plan)
     res@metadata$frequency <- ad2cpHeaderValue(x = header, key = "BEAMCFGLIST,BEAM=1", item = "FREQ", default = NA, plan = plan)
     res@metadata$beamAngle <- switch(type,
         "Signature1000" = 25,
@@ -2641,6 +2654,7 @@ read.adp.ad2cp <- function(
         res@metadata$oceCoordinate <- NULL
         res@metadata$orientation <- NULL
         res@metadata$beamAngle <- NULL
+        oceDebug(debug, "do not save units$v, oceCoordinate, orientation or beamAngle in metadata slot if dataType is 0x1c, 0x1e or 0x23\n")
     }
     # Insert data
     res@data <- data
@@ -2654,10 +2668,12 @@ read.adp.ad2cp <- function(
             sep = ""
         )
     )
+    # Get some things form the text header
+    res@metadata$declination <- ad2cpHeaderValue(x = header, key = "GETUSER", item = "DECL", default = NA, plan = plan)
     res@processingLog <- processingLogItem(processingLog)
     oceDebug(debug, "END read.adp.ad2cp()\n", unindent = 1)
     res
-}
+} # read.adp.ad2cp
 
 #' Convert From Beam to XYZ Coordinates (AD2CP adp Data)
 #'

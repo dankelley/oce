@@ -126,7 +126,7 @@ if (file.exists(f1)) {
         expect_equal(burst[["fileType"]], "AD2CP")
         expect_equal(burst[["serialNumber"]], ad2cpHeaderValue(d1, "ID", "SN"))
         expect_equal(burst[["oceCoordinate"]], "beam")
-        expect_equal(average[["cellSize"]], ad2cpHeaderValue(d1, "GETAVG", "CS"))
+        expect_equal(average[["cellSize"]], ad2cpHeaderValue(d1, "GETAVG", "CS", plan = 0))
         expect_equal(average[["blankingDistance"]], ad2cpHeaderValue(d1, "GETAVG", "BD"))
         expect_equal(average[["oceCoordinate"]], tolower(ad2cpHeaderValue(d1, "GETAVG", "CY", FALSE)))
         expect_equal(burst[["cellSize"]], ad2cpHeaderValue(d1, "GETBURSTHR", "CS"))
