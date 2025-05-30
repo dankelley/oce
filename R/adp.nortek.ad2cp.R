@@ -1363,31 +1363,29 @@ read.adp.ad2cp <- function(
             # and Nortek 2017 p51 bottom states that it is a float value.
             oceDebug(debug, "   altimeter starts at i0v=", i0v, "\n")
             iv <- gappyIndex(i, i0v, 4L)
-            object$altimeter <- list()
-            object$altimeter$distance <- readBin(buf[iv], "numeric", size = 4L, n = NP, endian = "little", signed = TRUE)
+            object$altimeterDistance <- readBin(buf[iv], "numeric", size = 4L, n = NP, endian = "little", signed = TRUE)
             # message(vectorShow(object$altimeterDistance))
             i0v <<- i0v + 4L
             iv <- gappyIndex(i, i0v, 2L)
-            object$altimeter$quality <- readBin(buf[iv], "integer", size = 2L, n = NP, endian = "little", signed = FALSE)
+            object$altimeterQuality <- readBin(buf[iv], "integer", size = 2L, n = NP, endian = "little", signed = FALSE)
             i0v <<- i0v + 2L
             iv <- gappyIndex(i, i0v, 2L)
-            object$altimeter$status <- readBin(buf[iv], "integer", size = 2L, n = NP, endian = "little", signed = FALSE)
+            object$altimeterStatus <- readBin(buf[iv], "integer", size = 2L, n = NP, endian = "little", signed = FALSE)
             i0v <<- i0v + 2L
         } else if (name == "AST") {
             oceDebug(debug, "   AST starts at i0v=", i0v, "\n")
             iv <- gappyIndex(i, i0v, 4L)
-            object$AST <- list()
-            object$AST$distance <- readBin(buf[iv], "numeric", size = 4L, n = NP, endian = "little")
+            object$ASTDistance <- readBin(buf[iv], "numeric", size = 4L, n = NP, endian = "little")
             # message(vectorShow(object$ASTDistance))
             i0v <<- i0v + 4L
             iv <- gappyIndex(i, i0v, 2L)
-            object$AST$quality <- readBin(buf[iv], "integer", size = 2L, n = NP, endian = "little", signed = FALSE)
+            object$ASTQuality <- readBin(buf[iv], "integer", size = 2L, n = NP, endian = "little", signed = FALSE)
             i0v <<- i0v + 2L
             iv <- gappyIndex(i, i0v, 2L)
-            object$AST$offset <- readBin(buf[iv], "integer", size = 2L, n = NP, endian = "little", signed = TRUE)
+            object$ASTOffset <- readBin(buf[iv], "integer", size = 2L, n = NP, endian = "little", signed = TRUE)
             i0v <<- i0v + 2L
             iv <- gappyIndex(i, i0v, 4L)
-            object$AST$pressure <- readBin(buf[iv], "numeric", size = 4L, n = NP, endian = "little")
+            object$ASTPressure <- readBin(buf[iv], "numeric", size = 4L, n = NP, endian = "little")
             # message(vectorShow(object$ASTPressure))
             i0v <<- i0v + 4L
             # The 2017 manual states there are 8 more bytes, named 'spare', and
@@ -1397,7 +1395,6 @@ read.adp.ad2cp <- function(
         } else if (name == "altimeterRaw") {
             oceDebug(debug, "   altimeterRaw starts at i0v=", i0v, "\n")
             # sampling characteristics
-            object$altimeterRaw <- list()
             iv <- gappyIndex(i, i0v, 4L)
             NS <- readBin(buf[iv], "integer", size = 4L, n = NP, endian = "little") # no. samples (tmp var)
             dNS <- diff(range(NS))
@@ -1405,21 +1402,21 @@ read.adp.ad2cp <- function(
                 stop("altimeterRawNumberOfSamples not all equal.  Range is ", dNS[1], " to ", dNS[2])
             }
             NS <- NS[1]
-            object$altimeterRaw$numberOfSamples <- NS
-            object$altimeterRaw$blankingDistance <- object$blankingDistance
+            object$altimeterRawNumberOfSamples <- NS
+            object$altimeterRawBlankingDistance <- object$blankingDistance
             i0v <<- i0v + 4L # skip the 4 bytes we just read
             iv <- gappyIndex(i, i0v, 2L)
-            object$altimeterRaw$sampleDistance <- 1e-4 * readBin(buf[iv], "integer", size = 2L, n = 1, endian = "little", signed = FALSE)
+            object$altimeterRawSampleDistance <- 1e-4 * readBin(buf[iv], "integer", size = 2L, n = 1, endian = "little", signed = FALSE)
             # data
-            object$altimeterRaw$time <- object$time
+            object$altimeterRawTime <- object$time
             i0v <<- i0v + 2L
             iv <- gappyIndex(i, i0v, 2L * NS)
             tmp <- readBin(buf[iv], "integer", size = 2L, endian = "little", n = NP * NS)
-            object$altimeterRaw$samples <- matrix(tmp, nrow = NP, ncol = NS, byrow = FALSE)
+            object$altimeterRawSamples <- matrix(tmp, nrow = NP, ncol = NS, byrow = FALSE)
             i0v <<- i0v + 2L * NS
             # Constructed vector of altimeterRaw sample distances.
-            object$altimeterRaw$distance <-
-                object$blankingDistance + object$altimeterRaw$sampleDistance * seq_len(object$altimeterRaw$numberOfSamples)
+            object$altimeterRawDistance <-
+                object$blankingDistance + object$altimeterRawSampleDistance * seq_len(object$altimeterRawNumberOfSamples)
         } else if (name == "echosounder") {
             # Nortek (2017 p52): each profile has NC*16 bits
             oceDebug(debug, "   echosounder starts at i[1]=", i[1], ", i0v=", i0v, " (NC=", NC, ", NP=", NP, ")\n")
@@ -1432,42 +1429,37 @@ read.adp.ad2cp <- function(
         } else if (name == "AHRS") {
             oceDebug(debug, "   AHRS starts at i0v=", i0v, "\n")
             # AHRSRotationMatrix
-            object$AHRS <- list(
-                rotationMatrix = NULL,
-                quaternions = list(w = NULL, x = NULL, y = NULL, z = NULL),
-                gyro = list(x = NULL, y = NULL, z = NULL)
-            )
-            object$AHRS$rotationMatrix <- array(double(), dim = c(NP, 3L, 3L))
+            object$AHRSRotationMatrix <- array(double(), dim = c(NP, 3L, 3L))
             iv <- gappyIndex(i, i0v, 9L * 4L)
             tmp <- readBin(buf[iv], "numeric", size = 4L, endian = "little", n = NP * 9L)
             for (ip in 1:NP) {
                 look <- seq(1L + (ip - 1L) * 9L, length.out = 9L)
                 # read by row, given docs say M11, then M12, then M13, etc.
-                object$AHRS$rotationMatrix[ip, , ] <- matrix(tmp[look], ncol = 3, byrow = TRUE) # note byrow
+                object$AHRSRotationMatrix[ip, , ] <- matrix(tmp[look], ncol = 3, byrow = TRUE) # note byrow
             }
             i0v <<- i0v + 9L * 4L
             # AHSR$quaternions$w, $x, $y and $z
             iv <- gappyIndex(i, i0v, 4L)
-            object$AHRS$quaternions$w <- readBin(buf[iv], "numeric", size = 4L, endian = "little", n = NP)
+            object$AHRSQuaternionsW <- readBin(buf[iv], "numeric", size = 4L, endian = "little", n = NP)
             i0v <<- i0v + 4L
             iv <- gappyIndex(i, i0v, 4L)
-            object$AHRS$quaternions$x <- readBin(buf[iv], "numeric", size = 4L, endian = "little", n = NP)
+            object$AHRSQuaternionsX <- readBin(buf[iv], "numeric", size = 4L, endian = "little", n = NP)
             i0v <<- i0v + 4L
             iv <- gappyIndex(i, i0v, 4L)
-            object$AHRS$quaternions$y <- readBin(buf[iv], "numeric", size = 4L, endian = "little", n = NP)
+            object$AHRSQuaternionsY <- readBin(buf[iv], "numeric", size = 4L, endian = "little", n = NP)
             i0v <<- i0v + 4L
             iv <- gappyIndex(i, i0v, 4L)
-            object$AHRS$quaternions$z <- readBin(buf[iv], "numeric", size = 4L, endian = "little", n = NP)
+            object$AHRSQuaternionsZ <- readBin(buf[iv], "numeric", size = 4L, endian = "little", n = NP)
             i0v <<- i0v + 4L
             # AHSR$gyro$x, $y, $z
             iv <- gappyIndex(i, i0v, 4L)
-            object$AHRS$gyro$x <- readBin(buf[iv], "numeric", size = 4L, endian = "little", n = NP)
+            object$AHRSGyroX <- readBin(buf[iv], "numeric", size = 4L, endian = "little", n = NP)
             i0v <<- i0v + 4L
             iv <- gappyIndex(i, i0v, 4L)
-            object$AHRS$gyro$y <- readBin(buf[iv], "numeric", size = 4L, endian = "little", n = NP)
+            object$AHRSGyroY <- readBin(buf[iv], "numeric", size = 4L, endian = "little", n = NP)
             i0v <<- i0v + 4L
             iv <- gappyIndex(i, i0v, 4L)
-            object$AHRS$gyro$z <- readBin(buf[iv], "numeric", size = 4L, endian = "little", n = NP)
+            object$AHRSGyroZ <- readBin(buf[iv], "numeric", size = 4L, endian = "little", n = NP)
             i0v <<- i0v + 4L
         } else if (name == "percentgood") {
             # Nortek (2017) page 53: 8 bits, unsigned, appears after AHRS gyro z
