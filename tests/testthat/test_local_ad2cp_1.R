@@ -100,21 +100,23 @@ if (file.exists(f1)) {
         expect_equal(
             names(average[["data"]]),
             c(
-                "nominalCorrelation", "ensemble", "time", "soundSpeed",
-                "temperature", "pressure", "heading", "pitch", "roll",
-                "magnetometer", "accelerometer", "temperatureMagnetometer",
-                "temperatureRTC", "transmitEnergy", "powerLevel", "distance",
-                "v", "a", "q", "AHRS"
+                "nominalCorrelation", "ensemble", "time", "soundSpeed", "temperature",
+                "pressure", "heading", "pitch", "roll", "magnetometer", "accelerometer",
+                "temperatureMagnetometer", "temperatureRTC", "transmitEnergy",
+                "powerLevel", "distance", "v", "a", "q", "AHRSRotationMatrix",
+                "AHRSQuaternionsW", "AHRSQuaternionsX", "AHRSQuaternionsY", "AHRSQuaternionsZ",
+                "AHRSGyroX", "AHRSGyroY", "AHRSGyroZ"
             )
         )
         expect_equal(
             names(burst[["data"]]),
             c(
-                "nominalCorrelation", "ensemble", "time", "soundSpeed",
-                "temperature", "pressure", "heading", "pitch", "roll",
-                "magnetometer", "accelerometer", "temperatureMagnetometer",
-                "temperatureRTC", "transmitEnergy", "powerLevel", "distance",
-                "v", "a", "q", "AHRS"
+                "nominalCorrelation", "ensemble", "time", "soundSpeed", "temperature",
+                "pressure", "heading", "pitch", "roll", "magnetometer", "accelerometer",
+                "temperatureMagnetometer", "temperatureRTC", "transmitEnergy",
+                "powerLevel", "distance", "v", "a", "q", "AHRSRotationMatrix",
+                "AHRSQuaternionsW", "AHRSQuaternionsX", "AHRSQuaternionsY", "AHRSQuaternionsZ",
+                "AHRSGyroX", "AHRSGyroY", "AHRSGyroZ"
             )
         )
         expect_equal(average[["type"]], "Signature1000")
@@ -136,7 +138,7 @@ if (file.exists(f1)) {
         # FIXME: the next tests will fail if we store AHRS as 3D array
         # >> Data.BurstHR_AHRSRotationMatrix(1,:)
         expect_equal(
-            burst[["AHRS"]]$rotationMatrix[1, , ],
+            burst[["AHRSRotationMatrix"]][1, , ],
             matrix(c(
                 0.060653746, -0.37823972, -0.92368418, 0.31505784,
                 -0.87079191, 0.37727141, -0.94709891, -0.31389475,

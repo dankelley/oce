@@ -31,14 +31,14 @@ if (file.exists(file)) {
         )
         ar <- bar[["altimeterRaw"]]
         expect_equal(
-            head(bar[["altimeterRaw"]]$distance, 6),
+            head(bar[["altimeterRawDistance"]], 6),
             c(40.024, 40.048, 40.072, 40.096, 40.12, 40.144)
         )
         expect_equal(
-            tail(bar[["altimeterRaw"]]$distance, 6),
+            tail(bar[["altimeterRawDistance"]], 6),
             c(83.872, 83.896, 83.92, 83.944, 83.968, 83.992)
         )
-        expect_equal(length(bar[["altimeterRaw"]]$distance), 1833L)
+        expect_equal(length(bar[["altimeterRawDistance"]]), 1833L)
     })
 
     test_that("signature 250 average", {
