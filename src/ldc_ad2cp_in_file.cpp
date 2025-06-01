@@ -224,7 +224,7 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, NumericVector from,
     cindex++;
   }
   if (Debug)
-    Rprintf("First SYNC byte (0x%02x hex) at cindex=%ld\n", SYNC, cindex);
+    Rprintf("  first SYNC byte (0x%02x hex) at cindex=%ld\n", SYNC, cindex);
   // The table in [ref 1 sec 6.1, page 80-81] says header pieces are
   // 10 bytes long, so once we get an 0xA5, we'll read 9 more
   // bytes to assemble the header in bytes10.  (We grab all the

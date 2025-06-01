@@ -428,7 +428,7 @@ if (file.exists(f2)) {
                 "temperature", "pressure", "heading", "pitch", "roll",
                 "magnetometer", "accelerometer",
                 "temperatureMagnetometer", "temperatureRTC",
-                "transmitEnergy", "powerLevel", "distance", "v", "a", "q"
+                "transmitEnergy", "powerLevel", "v", "a", "q"
             )
         )
         expect_equal(burst[["fileType"]], "AD2CP")

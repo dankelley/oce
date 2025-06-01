@@ -778,7 +778,6 @@ read.adp.ad2cp <- function(
     # .    warning("DEVELOPER NOTE: pointer4NEW != pointer4 at spot 1")
     pointer1 <- d$index
     # plot(pointer1, type = "l")
-    # message("FIXME DANDANDAN see plot made near adp.nortek.ad2cp.R:L766")
     pointer2 <- gappyIndex(d$index, 0, 2)
     pointer4 <- gappyIndex(d$index, 0, 4)
     # {{{
@@ -1840,8 +1839,11 @@ read.adp.ad2cp <- function(
         NP <- length(i) # number of profiles of this type
         NC <- rval$numberOfCells # number of cells for v,a,q
         NB <- rval$numberOfBeams # number of beams for v,a,q
-        rval$distance <- rval$blankingDistance + rval$cellSize * seq_len(rval$numberOfCells)
         oceDebug(debug, "  NP=", NP, ", NB=", NB, ", NC=", NC, "\n", sep = "")
+        if (NC > 1L) {
+            rval$distance <- rval$blankingDistance + rval$cellSize * seq_len(rval$numberOfCells)
+            oceDebug(debug, "set rval$distance: ", vectorShow(rval$distance, "set rval$distance"))
+        }
         oceDebug(debug, "configuration0=", paste(ifelse(configuration0, "T", "F"), collapse = ", "), "\n")
         if (configuration0[6]) {
             rval <- getItemFromBuf(rval, "v", i = i, type = type, debug = debug)
@@ -1999,6 +2001,7 @@ read.adp.ad2cp <- function(
             oceDebug(debug, "reading bottom-track distance: ", vectorShow(i0v))
             tmp <- readBin(d$buf[iv], "integer", size = 4L, n = NB * NP, endian = "little")
             rval$distance <- 1e-3 * matrix(tmp, ncol = NB, byrow = FALSE)
+            #message("FIXME DAN 2")
             i0v <<- i0v + 4L * NB
         }
         # figure-of-merit [Nortek 2017, Table 6.1.3, pages 60 and 62]
@@ -2127,6 +2130,7 @@ read.adp.ad2cp <- function(
             iv <- gappyIndex(i, i0v, 4L * NB)
             tmp <- readBin(d$buf[iv], "integer", size = 4L, n = NB * NP, endian = "little")
             rval$distance <- 1e-3 * matrix(tmp, ncol = NB, byrow = FALSE)
+            #message("FIXME DAN 3")
             i0v <<- i0v + 4L * NB
         }
         # figure-of-merit [Nortek 2017, Table 6.1.3, pages 60 and 62]
@@ -2195,6 +2199,7 @@ read.adp.ad2cp <- function(
             powerLevel = powerLevel[look]
         )
         rval$distance <- rval$blankingDistance + seq(0, by = rval$cellSize, length.out = rval$numberOfCells)
+        #message("FIXME DAN 4")
         i <- d$index[look] # pointers to "echosounder" chunks in buf
         oceDebug(debug, "in readEchosounder: ", vectorShow(i))
         i0v <<- 1L + offsetOfData[1] # pointer to data (incremented by getItemFromBuf() later).
@@ -2527,6 +2532,7 @@ read.adp.ad2cp <- function(
         if (!length(XMIT1) || !length(BD)) {
             warning("cannot infer distance for echosounderRaw record; set to 1, 2, which is almost certainly very wrong")
             data$distance <- seq_len(data$numberOfSamples)
+            #message("FIXME DAN 5")
         } else {
             L <- 0.5 * XMIT1 * soundSpeed[1] + BD
             samplingRate <- data$samplingRate
@@ -2536,6 +2542,7 @@ read.adp.ad2cp <- function(
             data$cellSize <- L / startSampleIndex
             # data$cellSize <- L / data$startSampleIndex
             data$distance <- seq(0, by = res@metadata$cellSize, length.out = data$numberOfSamples)
+            #message("FIXME DAN 6")
             oceDebug(
                 debug, "computing echosounderRaw$distance based ",
                 "on my interpretation of an email sent by RE/Nortek on 2022-09-01\n"
@@ -2589,14 +2596,16 @@ read.adp.ad2cp <- function(
     oceDebug(debug, vectorShow(dataType))
     oceDebug(debug, vectorShow(res@metadata$distance))
     if (!length(res@metadata$distance)) {
-        oceDebug(
-            debug, "about to compute distance from blankingDistance=",
-            res@metadata$blankinDistance, ", cellSize=",
-            res@metadata$cellSize, ", and numberOfCells=",
-            res@metadata$numberOfCells, "\n"
-        )
-        data$distance <- res@metadata$blankingDistance +
-            seq(1, by = res@metadata$cellSize, length.out = res@metadata$numberOfCells)
+        if (!is.null(res@metadata$numberOfCells) && res@metadata$numberOfCells > 1L) {
+            oceDebug(
+                     debug, "about to compute data$distance from blankingDistance=",
+                     res@metadata$blankingDistance, ", cellSize=",
+                     res@metadata$cellSize, ", and numberOfCells=",
+                     res@metadata$numberOfCells, "\n"
+            )
+            data$distance <- res@metadata$blankingDistance +
+                seq(1L, by = res@metadata$cellSize, length.out = res@metadata$numberOfCells)
+        }
     }
     # 2022-08-29 BOOKMARK-blankingDistance-03
     # I am informed by Nortek that the blankingDistance is always 1e-3 for
