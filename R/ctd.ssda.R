@@ -85,7 +85,7 @@ read.ctd.ssda <- function(
     # Store just the first longitude and latitude in the metadata. The
     # format is that e.g. 1559.9413E means 15.0 degrees + 49.9413 minutes.
     #
-    # Also, as discussed at https://github.com/dankelley/oce/issues/2227, 
+    # Also, as discussed at https://github.com/dankelley/oce/issues/2227,
     # the test (local-only) suite had a problem with R 4.1.1 in the computation
     # of longitude. This was because of a trailing 'E' in the test file.
     # I think for previous versions of R, the as.numeric() call used on

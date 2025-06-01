@@ -6,6 +6,7 @@ on:
     branches:
       - main
       - develop
+      - issue2318 # temporary for testing an issue branch
   pull_request:
     branches:
       - main

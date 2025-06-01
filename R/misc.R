@@ -1644,6 +1644,8 @@ threenum <- function(x) {
         x <- as.numeric(x)
         dim(x) <- dim
         res <- c(min(x, na.rm = TRUE), mean(x, na.rm = TRUE), max(x, na.rm = TRUE))
+    } else if (is.complex(x)) {
+        res <- c(NA, mean(x, na.rm = TRUE), NA)
     } else if (is.factor(x)) {
         res <- rep(NA, 3)
     } else if (0 < sum(!is.na(x))) {
@@ -2093,6 +2095,9 @@ vectorShow <- function(v, msg = "", postscript = "", digits = 5L, n = 2L, showNA
         msg <- paste0(msg, ": ")
         nv <- length(v)
         for (iv in seq_len(nv)) {
+            if (is.numeric(values[[iv]])) {
+                values[[iv]] <- format(values[[iv]], digits = digits)
+            }
             msg <- paste0(msg, names[iv], "=", startEnd(values[[iv]], n))
             if (iv < nv) {
                 msg <- paste0(msg, ", ")
@@ -2121,7 +2126,7 @@ vectorShow <- function(v, msg = "", postscript = "", digits = 5L, n = 2L, showNA
     }
     res <- msg
     if (nv == 0) {
-        res <- paste(res, "(empty vector)")
+        res <- paste0(res, "(empty vector)")
     } else {
         if (n < 0 || nv <= 2 * n) {
             showAll <- TRUE
@@ -3191,6 +3196,7 @@ GMTOffsetFromTz <- function(tz) {
     if (tz == "Z") {
         return(0)
     } # Zulu Time Zone  Military                 UTC
+    0
 }
 
 
@@ -4438,7 +4444,7 @@ matchBytes <- function(input, b1, ...) {
             message("IMPORTANT: matchBytes/match2bytes problem -- please report at github.com/dankelley/oce/issues")
             warning("IMPORTANT: matchBytes/match2bytes problem -- please report at github.com/dankelley/oce/issues")
         }
-        return(rval)
+        rval
     } else if (lb == 3) {
         rval <- .Call("match3bytes_old", as.raw(input), as.raw(b1), as.raw(dots[[1]]), as.raw(dots[[2]]))
         rvalNew <- match3bytes(as.raw(input), as.raw(b1), as.raw(dots[[1]]), as.raw(dots[[2]]))
@@ -4447,7 +4453,7 @@ matchBytes <- function(input, b1, ...) {
             message("IMPORTANT: matchbytes/match3bytes problem -- please report at github.com/dankelley/oce/issues")
             warning("IMPORTANT: matchbytes/match3bytes problem -- please report at github.com/dankelley/oce/issues")
         }
-        return(rval)
+        rval
     } else {
         stop("must provide 2 or 3 bytes, but gave ", lb, " bytes")
     }
@@ -4582,7 +4588,7 @@ secondsToCtime <- function(sec) {
     sec <- sec - 3600 * hour
     min <- floor(sec / 60)
     sec <- sec - 60 * min
-    return(sprintf("%02d:%02d:%02d", hour, min, sec))
+    sprintf("%02d:%02d:%02d", hour, min, sec)
 }
 
 

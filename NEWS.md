@@ -24,6 +24,9 @@
 * Change `oce.plot.ts()` to handle `simplify` better (issue #2277).
 * Change `oce.plot.ts()` to handle `xlab` (issue #2285).
 * Change `plot.section()` to handle `eos="gsw"` (issue #2256).
+* Change `read.adp.ad2cp()` to handle TOC, datasets and plans better (issue #2303 and related).
+* Change `read.adp.ad2cp()` to set `data@distance` only if NC (number of cells) is nonzero (issue #2319)
+* Change `read.adp.ad2cp()` to save elements of AST (etc) individually, not within a list (issue #2318).
 * Change `read.amsr()` to handle realtime data files (issue #2230).
 * Change `read.ctd.sbe()` to handle files that lack salinity and conductivity (issues #2279 and #2282).
 * Change `read.ctd.sbe()` to handle time-related header elements better (issues #2280 and #2281).
@@ -34,9 +37,11 @@
 * Change `read.netcdf()` to handle units better.
 * Change `read.rsk()` to handle a new file (issue #2291).
 * Add `read.xbt.noaa2()` to handle UBT format (issue #2289).
+* Change `rename()` to default to a built-in IOOS dictionary (issue #2311).
 * Change `subset,amsr-method()` to handle `"pass"` parameter.
 * Change `subset,ctd-method()` to handle items of unexpected length (issue #2250).
 * Change `tidem()` to stop if there are any non-finite time values (issue #2269).
+* Change `vectorShow()` to obey "digits" parameter for list arguments (issue #2313).
 
 # oce 1.8.3 (ON CRAN)
 

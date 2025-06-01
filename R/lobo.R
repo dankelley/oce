@@ -65,7 +65,7 @@ setMethod(
         .Object@metadata$filename <- if (missing(filename)) "" else filename
         .Object@processingLog$time <- presentTime()
         .Object@processingLog$value <- "create 'lobo' object"
-        return(.Object)
+        .Object
     }
 )
 

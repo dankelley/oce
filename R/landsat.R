@@ -214,7 +214,7 @@ setMethod(
         }
         .Object@processingLog$time <- presentTime()
         .Object@processingLog$value <- "create 'landsat' object"
-        return(.Object)
+        .Object
     }
 )
 
@@ -556,10 +556,10 @@ setMethod(
             res <- 256L * as.integer(msb) + as.integer(lsb)
             dim(res) <- dim(lsb)
             oceDebug(debug, "END landsat [[\n", unindent = 1)
-            return(res)
+            res
         } else {
             oceDebug(debug, "END landsat [[\n", unindent = 1)
-            return(d)
+            d
         }
     }
 )

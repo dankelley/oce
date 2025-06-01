@@ -1403,7 +1403,11 @@ read.ctd.sbe <- function(
                     if (requireSalinity) {
                         stop("no salinity or conductivity in file; use 'columns' if either is present with an unrecognized names")
                     } else {
-                        warning("no salinity or conductivity in file; use 'columns' if either is present with an unrecognized names, or set requireSalinity=FALSE and insert values later with oceSetData()", immediate. = TRUE)
+                        warning(paste0(
+                            "no salinity or conductivity in file; use 'columns' if either",
+                            " is present with an unrecognized names, or set ",
+                            "requireSalinity=FALSE and insert values later with oceSetData()"
+                        ), immediate. = TRUE)
                     }
                 }
             }
