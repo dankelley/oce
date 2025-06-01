@@ -1,5 +1,5 @@
 pandoc: 3.6.4
-pkgdown: 2.1.1
+pkgdown: 2.1.3
 pkgdown_sha: ~
 articles:
   A_oce: A_oce.html
@@ -10,7 +10,7 @@ articles:
   F_subclassing: F_subclassing.html
   G_altering_defaults: G_altering_defaults.html
   H_tides: H_tides.html
-last_built: 2025-04-19T15:29Z
+last_built: 2025-06-01T16:21Z
 urls:
   reference: https://dankelley.github.io/oce/reference
   article: https://dankelley.github.io/oce/articles
