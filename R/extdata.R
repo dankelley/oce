@@ -1,21 +1,61 @@
-#' Sample ctd File in aml Format
+#' Sample Argo Profile File
+#'
+#' Cycle 219 of the Argo float with ID 4902337, holding
+#' delayed-mode hydrographic data acquired in July 2021,
+#' over the continental slope, approximately 650km east
+#' of Halifax, Nova Scotia, and 300km south of St. Pierre
+#' and Miquelon (near the south coast of Newfoundland).
+#' This file is used in the documentation for [argo2ctd()].
+#'
+#' @name D4902337_219.nc
+#'
+#' @docType data
+#'
+#' @examples
+#' argo <- read.argo(system.file("extdata", "D4902337_219.nc", package = "oce"))
+#' summary(argo)
+#'
+#' @family raw datasets
+#' @family things related to argo data
+NULL
+
+
+#' Sample ctd File in aml Format 1
 #'
 #' This file may be read with [read.ctd.aml()].  It is based
 #' on a file donated by Ashley Stanek, which was shortened to
-#' just 50 points for inclusion in oce, and which had some
+#' just 5 points for inclusion in oce, and which had some
 #' identifying information (serial number, IP address, and WEP
-#' code) zeroed-out.
+#' code) redacted.
 #'
-#' @name ctd_aml.csv.gz
+#' @name ctd_aml_type1.csv.gz
 #'
 #' @docType data
 #'
 #' @encoding UTF-8
 #'
 #' @examples
-#' ctd <- read.ctd.aml(system.file("extdata", "ctd_aml.csv.gz", package="oce"))
-#' summary(ctd)
-#' plot(ctd)
+#' ctd <- read.ctd.aml(system.file("extdata", "ctd_aml_type1.csv.gz", package = "oce"))
+#'
+#' @family raw datasets
+#' @family things related to ctd data
+NULL
+#'
+#' Sample ctd File in aml Format 3
+#'
+#' This file may be read with [read.ctd.aml()].  It is based
+#' on a file created with Sailfish 1.4.8.0 software, as explained
+#' in an oce issue at <https://github.com/dankelley/oce/issues/2247>.
+#' Only the first 5 data points are provided here.
+#'
+#' @name ctd_aml_type3.csv.gz
+#'
+#' @docType data
+#'
+#' @encoding UTF-8
+#'
+#' @examples
+#' ctd <- read.ctd.aml(system.file("extdata", "ctd_aml_type3.csv.gz", package = "oce"))
 #'
 #' @family raw datasets
 #' @family things related to ctd data
@@ -33,7 +73,7 @@ NULL
 #' @encoding UTF-8
 #'
 #' @examples
-#' ctd <- read.ctd(system.file("extdata", "CTD_BCD2014666_008_1_DN.ODF.gz", package="oce"))
+#' ctd <- read.ctd(system.file("extdata", "CTD_BCD2014666_008_1_DN.ODF.gz", package = "oce"))
 #' plot(ctd)
 #'
 #' @family raw datasets
@@ -49,7 +89,7 @@ NULL
 #' @docType data
 #'
 #' @examples
-#' read.oce(system.file("extdata", "adp_rdi.000", package="oce"))
+#' read.oce(system.file("extdata", "adp_rdi.000", package = "oce"))
 #'
 #' @family raw datasets
 #' @family things related to adp data
@@ -65,7 +105,7 @@ NULL
 #' @encoding UTF-8
 #'
 #' @examples
-#' read.oce(system.file("extdata", "ctd.cnv.gz", package="oce"))
+#' read.oce(system.file("extdata", "ctd.cnv.gz", package = "oce"))
 #'
 #' @family raw datasets
 #' @family things related to ctd data
@@ -81,7 +121,7 @@ NULL
 #' @encoding UTF-8
 #'
 #' @examples
-#' read.oce(system.file("extdata", "d200321-001.ctd.gz", package="oce"))
+#' read.oce(system.file("extdata", "d200321-001.ctd.gz", package = "oce"))
 #'
 #' @family raw datasets
 #' @family things related to ctd data
@@ -97,13 +137,13 @@ NULL
 #' @encoding UTF-8
 #'
 #' @examples
-#' read.oce(system.file("extdata", "d201211_0011.cnv.gz", package="oce"))
+#' read.oce(system.file("extdata", "d201211_0011.cnv.gz", package = "oce"))
 #'
 #' @family raw datasets
 #' @family things related to ctd data
 NULL
 
-#' Sample xbt File in .edf Format
+#' Sample xbt File in space-separated .edf Format
 #'
 #' @name xbt.edf
 #'
@@ -112,7 +152,26 @@ NULL
 #' @encoding UTF-8
 #'
 #' @examples
-#' xbt <- read.oce(system.file("extdata", "xbt.edf", package="oce"))
+#' xbt <- read.xbt(system.file("extdata", "xbt.edf", package = "oce"))
+#' summary(xbt)
+#'
+#' @family raw datasets
+#' @family things related to xbt data
+NULL
+
+#' Sample xbt File in tab-separated .edf Format
+#'
+#' @name xbt2.edf
+#'
+#' @docType data
+#'
+#' @encoding UTF-8
+#'
+#' @examples
+#' xbt2 <- read.xbt(system.file("extdata", "xbt2.edf", package = "oce"),
+#'     type = "sippican2"
+#' )
+#' summary(xbt2)
 #'
 #' @family raw datasets
 #' @family things related to xbt data

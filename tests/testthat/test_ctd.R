@@ -1,6 +1,22 @@
 # vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 library(oce)
 
+# https://github.com/dankelley/oce/issues/2250
+test_that("subset handles uncommon-length items", {
+    data(ctd)
+    A <- ctd
+    As <- subset(A, pressure < 5)
+    B <- ctd
+    B@data$longitude <- B@metadata$longitude
+    B@data$latitude <- B@metadata$latitude
+    Bs <- subset(B, pressure < 5)
+    expect_equal(1L, length(Bs@data$longitude))
+    expect_equal(1L, length(Bs@data$latitude))
+    for (name in names(A@data)) {
+        expect_equal(As@data[[name]], Bs@data[[name]])
+    }
+})
+
 # https://github.com/dankelley/oce/issues/1962
 test_that("as.ctd(argo,profile=1L) flattens flags", {
     data(argo)
@@ -240,14 +256,15 @@ test_that("column renaming with a cnv file", {
     expect_warning(
         expect_warning(
             d1 <- read.oce(system.file("extdata", "ctd.cnv.gz", package = "oce")),
-            "this CNV file has temperature in the IPTS\\-68 scale"
+            "file has temperature in IPTS\\-68"
         ),
-        "1950, suggesting"
+        "suspicious startTime 1903-10-15 11:38:38 changed to 2003-10-15 11:38:38"
     )
     expect_equal(
         names(d1[["data"]]),
         c("scan", "timeS", "pressure", "depth", "temperature", "salinity", "flag")
     )
+
     expect_warning(
         expect_warning(
             expect_warning(
@@ -255,17 +272,29 @@ test_that("column renaming with a cnv file", {
                     columns = list(FAKE = list(
                         name = "sal00",
                         unit = list(unit = expression(), scale = "PSS-78")
-                    ))
+                    )), requireSalinity = FALSE
                 ),
-                "this CNV file has temperature in the IPTS\\-68 scale"
+                "no salinity or conductivity in file"
             ),
-            "cannot find salinity or conductivity in .cnv file"
-        ),
-        "1950, suggesting"
+            "suspicious startTime 1903-10-15 11:38:38 changed to 2003-10-15 11:38:38"
+        ), "file has temperature in IPTS\\-68"
     )
     expect_equal(
         names(d2[["data"]]),
         c("scan", "timeS", "pressure", "depth", "temperature", "FAKE", "flag")
+    )
+
+    expect_warning(
+        expect_error(
+            d3 <- read.oce(system.file("extdata", "ctd.cnv.gz", package = "oce"),
+                columns = list(FAKE = list(
+                    name = "sal00",
+                    unit = list(unit = expression(), scale = "PSS-78")
+                ))
+            ),
+            "no salinity or conductivity in file"
+        ),
+        "suspicious startTime 1903-10-15 11:38:38 changed to 2003-10-15 11:38:38"
     )
 })
 
@@ -281,9 +310,9 @@ test_that("Dalhousie-produced cnv file", {
     expect_warning(
         expect_warning(
             d1 <- read.oce(system.file("extdata", "ctd.cnv.gz", package = "oce")),
-            "this CNV file has temperature in the IPTS\\-68 scale"
+            "file has temperature in IPTS\\-68"
         ),
-        "1950, suggesting"
+        "suspicious startTime 1903-10-15 11:38:38 changed to 2003-10-15 11:38:38"
     )
     expect_equal(d1[["temperatureUnit"]]$unit, expression(degree * C))
     # NB. the file holds IPTS-68 but we # store ITS-90 internally
@@ -474,7 +503,7 @@ test_that("original names pair with final names", {
             "scan", "pressure", "depth", "temperature",
             "temperature2", "conductivity", "conductivity2",
             "oxygenRaw", "beamTransmission", "v1", "fluorescence",
-            "v0", "fluorescence2", "v4", "upoly", "par", "spar",
+            "v0", "fluorescence2", "v4", "upoly", "PAR", "spar",
             "altimeter", "oxygen", "salinity", "salinity2",
             "theta", "sigmaTheta", "soundSpeed", "nbin", "flag"
         )
@@ -495,7 +524,7 @@ test_that("original names pair with final names", {
     expect_equal(dno$fluorescence2, "wetCDOM")
     expect_equal(dno$v4, "v4")
     expect_equal(dno$upoly, "upoly0")
-    expect_equal(dno$par, "par")
+    expect_equal(dno$PAR, "par")
     expect_equal(dno$spar, "spar")
     expect_equal(dno$altimeter, "altM")
     expect_equal(dno$oxygen, "sbeox0ML/L")
@@ -615,3 +644,35 @@ test_that("ctdDecimate() handles na.rm", {
     expect_equal(as.vector(table(is.na(CTD2[["temperature"]]))), c(8, 1))
     expect_equal(as.vector(table(is.na(CTD2narm[["temperature"]]))), 9)
 })
+
+f <- "local_data/ctd/Alpha130-07.bin.cnv"
+if (file.exists(f)) { # not run on CRAN since local_data are not in package
+    test_that("read.ctd.sbe() with no S or C; expect error", {
+        expect_warning(
+            expect_error(
+                expect_warning(
+                    d <- read.ctd(f),
+                    "file has temperature in IPTS\\-68"
+                ),
+                "no salinity or conductivity in file"
+            ),
+            "suspicious startTime 107-05-10 16:11:52 changed to 2007-05-10 16:11:52"
+        )
+    })
+}
+
+f <- "local_data/ctd/Alpha130-07.bin.cnv"
+if (file.exists(f)) { # not run on CRAN since local_data are not in package
+    test_that("read.ctd.sbe() with no S or C; expect warning", {
+        expect_warning(
+            expect_warning(
+                expect_warning(
+                    d <- read.ctd(f, requireSalinity = FALSE),
+                    "file has temperature in IPTS\\-68"
+                ),
+                "no salinity or conductivity in file"
+            ),
+            "suspicious startTime 107-05-10 16:11:52 changed to 2007-05-10 16:11:52"
+        )
+    })
+}

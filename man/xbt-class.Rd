@@ -5,10 +5,10 @@
 \alias{xbt-class}
 \title{Class to Store XBT (Expendable Bathythermograph) Data}
 \description{
-This class stores expendable bathythermograph (XBT) data, e.g. from a Sippican
-device.  Reference 1 gives some information on Sippican
-devices, and reference 2 is a useful introduction to the
-modern literature on XBTs in general.
+This class stores expendable bathythermograph (XBT) data, e.g. as read using
+\code{\link[=read.xbt]{read.xbt()}} and related functions. Reference 1 gives some information on
+Sippican devices, and reference 2 is a useful introduction to the modern
+literature on XBTs in general.
 }
 \section{Slots}{
 
@@ -16,7 +16,7 @@ modern literature on XBTs in general.
 \item{\code{data}}{As with all \code{oce} objects, the \code{data} slot
 for \code{xbt} objects is a
 \link{list} containing the main data for the object.
-The key items stored in this slot are \code{depth} (or \code{z}) and \code{temperature}, although some datasets also have \code{soundSpeed}.  Note that \code{depth} and \code{z} are inferred from time in water, using an empirical formula for instrument descent rate, and that \code{soundSpeed} is #' calculated using a fixed  practical salinity of 35. Note that the \code{[[} accessor will compute any of \code{depth}, \code{z} or \code{pressure}, based on whatever is in the data object.  Similarly, \code{soundspeed} will compute sound speed (assuming a practical salinity of 35), if that that item is present in the \code{data} slot.}
+The key items stored in this slot are \code{depth} (or \code{z}) and \code{temperature}, although some datasets also have \code{soundSpeed}.  Note that \code{depth} and \code{z} are inferred from time in water, using an empirical formula for instrument descent rate, and that \code{soundSpeed} is calculated using a fixed  practical salinity of 35. Note that the \code{[[} accessor will compute any of \code{depth}, \code{z} or \code{pressure}, based on whatever is in the data object.  Similarly, \code{soundspeed} will compute sound speed (assuming a practical salinity of 35), if that that item is present in the \code{data} slot.}
 
 \item{\code{metadata}}{As with all \code{oce} objects, the \code{metadata} slot
 for \code{xbt} objects is a \link{list} containing
@@ -91,10 +91,12 @@ Other things related to xbt data:
 \code{\link{plot,xbt-method}},
 \code{\link{read.xbt}()},
 \code{\link{read.xbt.noaa1}()},
+\code{\link{read.xbt.noaa2}()},
 \code{\link{subset,xbt-method}},
 \code{\link{summary,xbt-method}},
 \code{\link{xbt}},
-\code{\link{xbt.edf}}
+\code{\link{xbt.edf}},
+\code{\link{xbt2.edf}}
 
 Other classes provided by oce: 
 \code{\link{adp-class}},

@@ -22,9 +22,8 @@ An object of class corresponding to that of \code{object}.
 Concatenate oce Objects (Generic)
 }
 \seealso{
-Other functions that concatenate oce objects: 
+Other functions for concatenating oce objects: 
 \code{\link{concatenate,adp-method}},
-\code{\link{concatenate,list-method}},
-\code{\link{concatenate,oce-method}}
+\code{\link{concatenate,list-method}}
 }
-\concept{functions that concatenate oce objects}
+\concept{functions for concatenating oce objects}

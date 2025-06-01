@@ -4,22 +4,24 @@
 \alias{oceSetData}
 \title{Set Something in the data Slot of an oce Object}
 \usage{
-oceSetData(object, name, value, unit, originalName, note = "")
+oceSetData(object, name, value, unit, originalName = "-", note = "")
 }
 \arguments{
 \item{object}{an \linkS4class{oce} object.}
 
-\item{name}{String indicating the name of the \code{data} item to be set.}
+\item{name}{the name of the \code{data} item to be set.}
 
-\item{value}{Value for the item.}
+\item{value}{value for the item.}
 
-\item{unit}{An optional indication of the units for the item. This has
+\item{unit}{an optional indication of the units for the item. This has
 three possible forms (see \dQuote{Details}).}
 
-\item{originalName}{Optional character string giving an 'original' name (e.g.
-as stored in the header of a data file).}
+\item{originalName}{character string giving an 'original' name (e.g.
+as stored in the header of a data file). The default, \code{"-"}, is
+taken by \code{summary()} functions to mean that there was no original
+name in \code{object}.}
 
-\item{note}{Either empty (the default), a character string, or \code{NULL},
+\item{note}{either empty (the default), a character string, or \code{NULL},
 to control additions made to the processing log of the return value. If
 \code{note=""} then the an entry is created based on deparsing the function call.
 If \code{note} is a non-empty string, then that string gets added added
@@ -30,9 +32,8 @@ in an overly verbose processing log; in such cases, it might help
 to add a note by e.g. \code{processingLog(a) <- "QC (memo dek-2018-01/31)"}}
 }
 \value{
-An \linkS4class{oce} object, the \code{data} slot of which has
-been altered either by adding a new item or modifying an existing
-item.
+\code{oceSetData} returns an \linkS4class{oce} object, the \code{data} slot of which
+has been altered either by adding a new item or modifying an existing item.
 }
 \description{
 Create a copy of an object in which some element of its

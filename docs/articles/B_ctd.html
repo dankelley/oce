@@ -8,8 +8,8 @@
 <title>2. Analysis of CTD data • oce</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.4.2/css/all.min.css" rel="stylesheet">
-<link href="../deps/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="2. Analysis of CTD data">
 </head>
 <body>
@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">oce</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.8-3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.8-4</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -40,6 +40,7 @@
     <li><a class="dropdown-item" href="../articles/E_flags.html">5. Dealing with data-quality flags</a></li>
     <li><a class="dropdown-item" href="../articles/F_subclassing.html">6. Subclassing oce objects</a></li>
     <li><a class="dropdown-item" href="../articles/G_altering_defaults.html">7. Altering oce Defaults</a></li>
+    <li><a class="dropdown-item" href="../articles/H_tides.html">8. Tidal Analysis</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -66,7 +67,7 @@
                         <h4 data-toc-skip class="author">Dan Kelley (<a href="https://orcid.org/0000-0001-7808-5911" class="external-link uri">https://orcid.org/0000-0001-7808-5911</a>) and Clark
 Richards (<a href="https://orcid.org/0000-0002-7833-206X" class="external-link uri">https://orcid.org/0000-0002-7833-206X</a>)</h4>
             
-            <h4 data-toc-skip class="date">2024-08-14</h4>
+            <h4 data-toc-skip class="date">2025-04-19</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/dankelley/oce/blob/HEAD/vignettes/B_ctd.Rmd" class="external-link"><code>vignettes/B_ctd.Rmd</code></a></small>
       <div class="d-none name"><code>B_ctd.Rmd</code></div>
@@ -103,10 +104,10 @@ summary and plot (Figure 2) are created as follows.</p>
 <span><span class="co">#&gt; CTD Summary</span></span>
 <span><span class="co">#&gt; -----------</span></span>
 <span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; * File:                "/Users/kelley/git/oce/create_data/ctd/ctd.cnv"</span></span>
 <span><span class="co">#&gt; * Instrument:          SBE 25</span></span>
 <span><span class="co">#&gt; * Temp. serial no.:    1140</span></span>
 <span><span class="co">#&gt; * Cond. serial no.:    832</span></span>
-<span><span class="co">#&gt; * File:                "/Users/kelley/git/oce/create_data/ctd/ctd.cnv"</span></span>
 <span><span class="co">#&gt; * Original file:       c:\seasoft3\basin\bed0302.hex</span></span>
 <span><span class="co">#&gt; * Start time:          2003-10-15 15:38:38</span></span>
 <span><span class="co">#&gt; * Sample interval:     1 s</span></span>
@@ -116,14 +117,14 @@ summary and plot (Figure 2) are created as follows.</p>
 <span><span class="co">#&gt; * Mean Location:       44.684N 63.644W</span></span>
 <span><span class="co">#&gt; * Data Overview</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;                                 Min.   Mean   Max. Dim. NAs OriginalName</span></span>
-<span><span class="co">#&gt;     scan                         130    220    310  181   0         scan</span></span>
-<span><span class="co">#&gt;     timeS [s]                    129    219    309  181   0        timeS</span></span>
-<span><span class="co">#&gt;     pressure [dbar]             1.48 22.885 44.141  181   0           pr</span></span>
-<span><span class="co">#&gt;     depth [m]                  1.468 22.698 43.778  181   0         depS</span></span>
-<span><span class="co">#&gt;     temperature [°C, IPTS-68]  2.919 7.5063 14.237  181   0         t068</span></span>
-<span><span class="co">#&gt;     salinity [PSS-78]         29.916 31.219 31.498  181   0        sal00</span></span>
-<span><span class="co">#&gt;     flag                           0      0      0  181   0         flag</span></span>
+<span><span class="co">#&gt;                               Min.   Mean   Max.   Dim. NAs OriginalName</span></span>
+<span><span class="co">#&gt;     scan                      130    220    310    181  0   "scan"      </span></span>
+<span><span class="co">#&gt;     timeS [s]                 129    219    309    181  0   "timeS"     </span></span>
+<span><span class="co">#&gt;     pressure [dbar]           1.48   22.885 44.141 181  0   "pr"        </span></span>
+<span><span class="co">#&gt;     depth [m]                 1.468  22.698 43.778 181  0   "depS"      </span></span>
+<span><span class="co">#&gt;     temperature [°C, IPTS-68] 2.919  7.5063 14.237 181  0   "t068"      </span></span>
+<span><span class="co">#&gt;     salinity [PSS-78]         29.916 31.219 31.498 181  0   "sal00"     </span></span>
+<span><span class="co">#&gt;     flag                      0      0      0      181  0   "flag"      </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; * Processing Log</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -203,13 +204,27 @@ file takes just one line of code:</p>
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="../reference/ctdDecimate.html">ctdDecimate</a></span><span class="op">(</span><span class="fu"><a href="../reference/ctdTrim.html">ctdTrim</a></span><span class="op">(</span><span class="fu"><a href="../reference/read.ctd.html">read.ctd</a></span><span class="op">(</span><span class="st">"stn123.cnv"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
+<h2 id="argo-derived-data">Argo-derived Data<a class="anchor" aria-label="anchor" href="#argo-derived-data"></a>
+</h2>
+<p>The Argo program provides data that have very expansive coverage,
+(see, for example, Figures 1 and 2 of Kelley et al. 2021) and so the
+<code>oce</code> package provides several ways to work with them.
+Sometimes it makes sense to work directly with <code>argo-class</code>
+data (which has generic functions for summaries, plotting, data
+extraction, subsets, etc.), and other times it makes sense to convert to
+<code>ctd-class</code> first. Entries to the two approaches are outlined
+in the documentation for <code><a href="../reference/read.argo.html">read.argo()</a></code> and
+<code><a href="../reference/argo2ctd.html">argo2ctd()</a></code>, respectively; in both cases, there are links to
+related functions that are worth exploring.</p>
+</div>
+<div class="section level2">
 <h2 id="woce-archive-data">WOCE archive data<a class="anchor" aria-label="anchor" href="#woce-archive-data"></a>
 </h2>
 <p>The package has a harder time scanning the headers of data files in
 the WOCE archive format than it does in the Seabird format illustrated
-in the previous examples. This is mainly because front-line researchers
-tend to work in the Seabird format, and partly because the WOCE format
-is odd. For example, the first line of a WOCE file is of the form
+earlier. This is mainly because front-line researchers tend to work in
+the Seabird format, and partly because the WOCE format is odd. For
+example, the first line of a WOCE file is of the form
 <code>CTD,20060609WHPOSIODAM</code> (or <code>BOTTLE,...</code>).
 Scanning the item to the left of the comma is not difficult (although
 there are variants to the two shown, e.g. <code>CTDO</code> sometimes
@@ -220,10 +235,10 @@ the division of the institute (WHPO), the institute itself (SIO), and
 initial of the investigator (DAM). The problem is that no dividers
 separate these items, and that there seem to be no standards for the
 item lengths. Rather than spend a great deal of time coding special
-cases (e.g. scanning to see if the string <code>WHOI</code> occurs in
-the header line), the approach taken with <code>oce</code> is to ignore
-such issues relating to quirky headers, on the assumption that users can
-scan human-written headers with high skill.</p>
+cases (e.g. scanning to see if the string <code>SIO</code> occurs in the
+header line), the approach taken with <code>oce</code> is to ignore such
+issues relating to quirky headers, on the assumption that users can scan
+human-written headers with high skill.</p>
 <p>Quite commonly, CTD profiles taken during a cruise are collected
 together in a sequence of files in a given directory. For a real-world
 example, one might visit the website mentioned in the code provided
@@ -317,6 +332,15 @@ fairly large dataset, so the processing will take up to a minute.)</p>
 <span><span class="op">}</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/grDevices/dev.html" class="external-link">dev.off</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </div>
+<div class="section level2">
+<h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+</h2>
+<ol style="list-style-type: decimal">
+<li>Kelley, Dan E., Jaimie Harbin, and Clark Richards. “argoFloats: An R
+Package for Analyzing Argo Data.” Frontiers in Marine Science 8 (May
+2021). <a href="https://doi.org/10.3389/fmars.2021.635922" class="external-link uri">https://doi.org/10.3389/fmars.2021.635922</a>.)</li>
+</ol>
+</div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
 </div>
@@ -328,7 +352,7 @@ fairly large dataset, so the processing will take up to a minute.)</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
     </footer>

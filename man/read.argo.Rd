@@ -45,7 +45,7 @@ might be helpful to readers seeking to learn more.
 
 \emph{1. Variable renaming.}
 
-The names of several data parameters stored within the netCDF file
+The names of several data parameters stored within the NetCDF file
 are altered to fit the oce context. For example, \code{PRES} becomes \code{pressure},
 matching the name of this variable in other oce data types.
 The original names are reported by \verb{summary,argo-method}, and
@@ -53,10 +53,10 @@ data may be extracted with \verb{[[,argo-method} using those names, so
 the renaming should not be too inconvenient to Argo experts who
 are new to oce.
 
-Argo netcdf files employ a \code{"SNAKE_CASE"} naming scheme (sometimes
+Argo NetCDF files employ a \code{"SNAKE_CASE"} naming scheme (sometimes
 using lower case) that is inconsistent with the \code{"camelCase"} scheme
 used in oce. Since argo objects are just a small part of oce, a decision
-was made to rename argo items. For example, \code{"CYCLE_NUMBER"} in the netcdf file
+was made to rename argo items. For example, \code{"CYCLE_NUMBER"} in the NetCDF file
 becomes \code{"cycleNumber"} in the oce object returned by \code{read.argo}.
 (Note that \verb{[[,argo-method} also accepts \code{"cycle"} for this item.)
 The conversion for objects in the \code{data} slot often also involves
@@ -76,12 +76,12 @@ in reverse may be easier than simply guessing at what names oce has chosen.
 
 \emph{2. Metadata.}
 
-Several of the netCDF global attributes are also renamed before
+Several of the NetCDF global attributes are also renamed before
 placement in the \code{metadata} slot of the return value.  These include
 \code{conventions}, \code{featureType}, \code{history}, \code{institution},
 \code{nParameters}, \code{nProfiles},  \code{references}, \code{source}, \code{title},
 and \code{userManualVersion}.
-These names are derived from those in the netcdf
+These names are derived from those in the NetCDF
 file, and mainly follow the pattern explained in the
 \dQuote{Variable renaming convention} section.
 
@@ -105,14 +105,14 @@ then \code{PRES} (pressure) data are sought in the file, along with
 \code{PRES_ERROR}. The same pattern works for other profile data. The variables
 are stored with names created as explained in the
 \dQuote{Variable renaming convention} section below. Note that
-flags, which are stored variables ending in \code{"_QC"} in the netcdf
+flags, which are stored variables ending in \code{"_QC"} in the NetCDF
 file, are stored in the \code{flags} item within the \code{metadata} slot
 of the returned object; thus, for example,
 \code{PRES_QC} is stored as \code{pressure} in \code{flags}.
 
 \emph{4. How time is handled.}
 
-The netcdf files for profile data store time in an item named \code{juld},
+The NetCDF files for profile data store time in an item named \code{juld},
 which holds the overall profile time, in what the Argo documentation
 calls Julian days, with respect to a reference time that is also stored
 in the file.  Based on this information, a \link{POSIXct} value named \code{time}
@@ -210,10 +210,12 @@ The documentation for the \linkS4class{argo} class explains the structure of arg
 objects, and also outlines the other functions dealing with them.
 
 Other things related to argo data: 
+\code{\link{D4902337_219.nc}},
 \code{\link{[[,argo-method}},
 \code{\link{[[<-,argo-method}},
 \code{\link{argo}},
 \code{\link{argo-class}},
+\code{\link{argo2ctd}()},
 \code{\link{argoGrid}()},
 \code{\link{argoNames2oceNames}()},
 \code{\link{as.argo}()},

@@ -122,10 +122,12 @@ Other functions relating to data-quality flags:
 \code{\link{setFlags,oce-method}}
 
 Other things related to argo data: 
+\code{\link{D4902337_219.nc}},
 \code{\link{[[,argo-method}},
 \code{\link{[[<-,argo-method}},
 \code{\link{argo}},
 \code{\link{argo-class}},
+\code{\link{argo2ctd}()},
 \code{\link{argoGrid}()},
 \code{\link{argoNames2oceNames}()},
 \code{\link{as.argo}()},

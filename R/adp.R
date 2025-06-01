@@ -477,6 +477,15 @@ setMethod(
         if ("fileType" %in% mnames) {
             cat(paste("* File type:         ", object@metadata$fileType, "\n", sep = ""), ...)
         }
+        if ("dataset" %in% mnames) {
+            cat(paste("* Dataset:           ", object@metadata$dataset, "\n", sep = ""), ...)
+        }
+        if ("plan" %in% mnames) {
+            cat(paste("* Plan:              ", object@metadata$plan, "\n", sep = ""), ...)
+        }
+        if ("fileType" %in% mnames) {
+            cat(paste("* Data type:         ", object@metadata$dataType, "\n", sep = ""), ...)
+        }
         if ("firmwareVersion" %in% mnames) {
             cat(paste("* Firmware:          ", object@metadata$firmwareVersion, "\n", sep = ""), ...)
         }
@@ -646,13 +655,14 @@ setMethod(
         # ? } else {
         # ?     invisible(callNextMethod()) # summary
         # ? }
-        showMetadataItem(object, "north", "North:         ")
-        showMetadataItem(object, "declination", "Declination:   ")
+        showMetadataItem(object, "north", "North:             ")
+        showMetadataItem(object, "declination", "Declination:       ")
         invisible(callNextMethod()) # summary
     }
 )
 
 #' Concatenate adp Objects
+#'
 #'
 #' @param object an [adp-class] object.
 #'
@@ -661,6 +671,8 @@ setMethod(
 #' @templateVar class adp
 #'
 #' @template concatenateTemplate
+#'
+#' @family functions for concatenating oce objects
 setMethod(
     f = "concatenate",
     signature = "adp",
@@ -763,7 +775,7 @@ setMethod(
             ))
         }
         if (i == "distance") {
-            return(x@data$distance)
+            x@data$distance
         } else if (i %in% c(
             "originalCoordinate", "oceCoordinate",
             "cellSize", "blankingDistance", "orientation",
@@ -918,7 +930,7 @@ setValidity(
                     return(FALSE)
                 }
             }
-            return(TRUE)
+            TRUE
         }
     }
 )
@@ -1110,7 +1122,8 @@ setMethod(
             if ("v" %in% names(x@metadata$flags)) {
                 vdim <- dim(x@metadata$flags$v)
                 res@metadata$flags$v <- x@metadata$flags$v[, keep, , drop = FALSE]
-                oceDebug(debug, "subsetting flags$v original dim=",
+                oceDebug(
+                    debug, "subsetting flags$v original dim=",
                     paste(vdim, collapse = "x"), "; new dim=",
                     paste(dim(res@metadata$flags$v), collapse = "x"), "\n"
                 )
@@ -3187,11 +3200,15 @@ setMethod(
 #'
 #' @family things related to adp data
 toEnuAdp <- function(x, declination = 0, debug = getOption("oceDebug")) {
-    if (is.ad2cp(x)) {
-        stop("does not work with ad2cp files, which might have several velocity streams")
-    }
     debug <- max(0L, as.integer(min(debug, 3)))
     oceDebug(debug, "toEnuAdp() START\n", unindent = 1)
+    #if (is.ad2cp(x)) {
+    #    if ("v" %in% names(x@data)) {
+    #        message("FIXME: code something for toEnuAdp() on ad2cp data")
+    #    } else {
+    #        stop("this ad2cp object lacks a \"v\" data item")
+    #    }
+    #}
     coord <- x[["oceCoordinate"]]
     if (coord == "beam") {
         x <- xyzToEnuAdp(beamToXyzAdp(x, debug = debug - 1), declination = declination, debug = debug - 1)
@@ -3359,9 +3376,6 @@ beamUnspreadAdp <- function(x, count2db = c(0.45, 0.45, 0.45, 0.45), asMatrix = 
 #'
 #' @family things related to adp data
 beamToXyzAdp <- function(x, debug = getOption("oceDebug")) {
-    if (is.ad2cp(x)) {
-        stop("does not work with ad2cp files, which might have several velocity streams")
-    }
     if (!inherits(x, "adp")) {
         stop("method is only for objects of class \"adp\"")
     }
@@ -3448,136 +3462,6 @@ beamToXyzAdp <- function(x, debug = getOption("oceDebug")) {
     }
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(expr = match.call()), sep = "", collapse = ""))
     oceDebug(debug, "END beamToXyzAdp()\n", unindent = 1)
-    res
-}
-
-#' Convert From Beam to XYZ Coordinates (AD2CP adp Data)
-#'
-#' This looks at all the items in the `data` slot of `x`, to
-#' see if they contain an array named `v` that holds velocity.
-#' If that velocity has 4 components, and if `oceCoordinate` for
-#' the item is `"beam"`, then
-#' along-beam velocity components \eqn{B_1}{B1}
-#' \eqn{B_2}{B1}, \eqn{B_3}{B3}, and \eqn{B_4}{B4}
-#' are converted to instrument-oriented Cartesian velocity components \eqn{u}{u}
-#' \eqn{v}{v} and \eqn{w}{w}
-#' using the convex-geometry formulae from section 5.5 of reference 1,
-#' viz.
-#' \eqn{u=ca(B_1-B_2)}{u=a*(B1-B2)}, \eqn{v=ca(B_4-B_3)}{v=a*(B4-B3)},
-#' \eqn{w=-b(B_1+B_2+B_3+B_4)}{w=-b*(B1+B2+B3+B4)}. In addition to these,
-#' an estimate of the
-#' error in velocity is computed as
-#' \eqn{e=d(B_1+B_2-B_3-B_4)}{e=d*(B1+B2-B3-B4)}.
-#' The geometrical factors in these formulae are:
-#' \eqn{a=1/(2\sin\theta)}{a=1/(2*sin(theta))}
-#' where \eqn{\theta}{theta} is the angle the beams make to the axial direction
-#' (which is available as `x[["beamAngle"]]`),
-#' \eqn{b=1/(4\cos\theta)}{b=1/(4*cos(theta))}, and
-#' \eqn{d=a/\sqrt{2}}{d=a/sqrt(2)}.
-#'
-#' @param x an [adp-class] object.
-#'
-#' @template debugTemplate
-#'
-#' @references
-#' 1. Teledyne RD Instruments.
-#' \dQuote{ADCP Coordinate Transformation: Formulas and Calculations,}
-#' January 2010. P/N 951-6079-00.
-#
-#' @family things related to adp data
-beamToXyzAdpAD2CP <- function(x, debug = getOption("oceDebug")) {
-    debug <- if (debug > 0) 1 else 0
-    oceDebug(debug, "beamToXyzAdpAD2CP(x, debug=", debug, ") START\n", sep = "", unindent = 1)
-    if (!inherits(x, "adp")) {
-        stop("method is only for objects of class \"adp\"")
-    }
-    if (!is.ad2cp(x)) {
-        stop("method is only for AD2CP objects")
-    }
-    if (!is.ad2cp(x)) {
-        stop("only 4-beam AD2CP data are handled")
-    }
-    res <- x
-    for (item in names(x@data)) {
-        oceDebug(debug, "item=\"", item, "\"...\n", sep = "")
-        # Do not try to alter unsuitable items, e.g. the vertical beam, the altimeter, etc.
-        if (is.list(x@data[[item]]) && "v" %in% names(x@data[[item]])) {
-            if (x@data[[item]]$oceCoordinate == "beam") {
-                numberOfBeams <- x@data[[item]]$numberOfBeams
-                oceDebug(debug, "  numberOfBeams=", numberOfBeams, "\n")
-                if (4 == numberOfBeams) {
-                    v <- x@data[[item]]$v
-                    # Possibly speed things up by reducing need to index 4 times.
-                    v1 <- v[, , 1]
-                    v2 <- v[, , 2]
-                    v3 <- v[, , 3]
-                    v4 <- v[, , 4]
-                    rm(v) # perhaps help by reducing memory pressure a bit
-                    beamAngle <- x@metadata$beamAngle
-                    if (is.null(beamAngle)) {
-                        stop("cannot look up beamAngle")
-                    }
-                    theta <- beamAngle * atan2(1, 1) / 45
-                    TMc <- 1 # for convex (diverging) beam setup; use -1 for concave
-                    TMa <- 1 / (2 * sin(theta))
-                    TMb <- 1 / (4 * cos(theta))
-                    TMd <- TMa / sqrt(2)
-                    tm <- rbind(
-                        c(TMc * TMa, -TMc * TMa, 0, 0),
-                        c(0, 0, -TMc * TMa, TMc * TMa),
-                        c(TMb, TMb, TMb, TMb),
-                        c(TMd, TMd, -TMd, -TMd)
-                    )
-                    # TIMING new way:
-                    # TIMING    user  system elapsed
-                    # TIMING  11.661  27.300  89.293
-                    # TIMING old way:
-                    # TIMING    user  system elapsed
-                    # TIMING  15.977  24.182  88.971
-                    # TIMING cat("new way:\n")
-                    # TIMING print(system.time({
-                    # TIMING     v1 <- V[,,1]
-                    # TIMING     v2 <- V[,,2]
-                    # TIMING     v3 <- V[,,3]
-                    # TIMING     v4 <- V[,,4]
-                    # TIMING     res@data[[j]]$v[,,1] <- tm[1,1]*v1 + tm[1,2]*v2 + tm[1,3]*v3 + tm[1,4]*v4
-                    # TIMING     res@data[[j]]$v[,,2] <- tm[2,1]*v1 + tm[2,2]*v2 + tm[2,3]*v3 + tm[2,4]*v4
-                    # TIMING     res@data[[j]]$v[,,3] <- tm[3,1]*v1 + tm[3,2]*v2 + tm[3,3]*v3 + tm[3,4]*v4
-                    # TIMING     res@data[[j]]$v[,,4] <- tm[4,1]*v1 + tm[4,2]*v2 + tm[4,3]*v3 + tm[4,4]*v4
-                    # TIMING     rm(v1, v2, v3, v4)
-                    # TIMING }))
-                    # TIMING cat("old way:\n")
-                    # TIMING print(system.time({
-                    # TIMING     res@data[[j]]$v[,,1] <- tm[1,1]*V[,,1] + tm[1,2]*V[,,2] + tm[1,3]*V[,,3] + tm[1,4]*V[,,4]
-                    # TIMING     res@data[[j]]$v[,,2] <- tm[2,1]*V[,,1] + tm[2,2]*V[,,2] + tm[2,3]*V[,,3] + tm[2,4]*V[,,4]
-                    # TIMING     res@data[[j]]$v[,,3] <- tm[3,1]*V[,,1] + tm[3,2]*V[,,2] + tm[3,3]*V[,,3] + tm[3,4]*V[,,4]
-                    # TIMING     res@data[[j]]$v[,,4] <- tm[4,1]*V[,,1] + tm[4,2]*V[,,2] + tm[4,3]*V[,,3] + tm[4,4]*V[,,4]
-                    # TIMING }))
-                    res@data[[item]]$v[, , 1] <- tm[1, 1] * v1 + tm[1, 2] * v2 + tm[1, 3] * v3 + tm[1, 4] * v4
-                    res@data[[item]]$v[, , 2] <- tm[2, 1] * v1 + tm[2, 2] * v2 + tm[2, 3] * v3 + tm[2, 4] * v4
-                    res@data[[item]]$v[, , 3] <- tm[3, 1] * v1 + tm[3, 2] * v2 + tm[3, 3] * v3 + tm[3, 4] * v4
-                    res@data[[item]]$v[, , 4] <- tm[4, 1] * v1 + tm[4, 2] * v2 + tm[4, 3] * v3 + tm[4, 4] * v4
-                    res@data[[item]]$oceCoordinate <- "xyz"
-                    res@metadata$oceCoordinate <- NULL # remove, just in case it got added by mistake
-                    oceDebug(debug, "  converted from 'beam' to 'xyz'\n")
-                } else {
-                    oceDebug(debug, "  skipping, since not 4 beams\n")
-                }
-            } else {
-                oceDebug(debug, "  skipping, since not in 'beam' coordinate\n")
-            }
-        } else {
-            oceDebug(debug, "  skipping, since not a list\n")
-        }
-    }
-    res@processingLog <- processingLogAppend(
-        res@processingLog,
-        paste("beamToXyzAdpAD2CP(x",
-            ", debug=", debug, ")",
-            sep = ""
-        )
-    )
-    oceDebug(debug, "END beamToXyzAdpAD2CP()\n", unindent = 1)
     res
 }
 
@@ -3677,10 +3561,7 @@ beamToXyzAdpAD2CP <- function(x, debug = getOption("oceDebug")) {
 #'
 #' @family things related to adp data
 xyzToEnuAdp <- function(x, declination = 0, debug = getOption("oceDebug")) {
-    if (is.ad2cp(x)) {
-        stop("does not work with ad2cp files, which might have several velocity streams")
-    }
-    debug <- if (debug > 0) 1 else 0
+    debug <- if (debug > 0) debug else 0
     if (!inherits(x, "adp")) {
         stop("method is only for objects of class '", "adp", "'")
     }
@@ -3697,7 +3578,9 @@ xyzToEnuAdp <- function(x, declination = 0, debug = getOption("oceDebug")) {
     # names are different for this type, so isolating the code makes things clearer
     # and easier to maintain.  (FIXME: consider splitting the RDI and Sontek cases, too.)
     if (is.ad2cp(x)) {
-        return(xyzToEnuAdpAD2CP(x = x, declination = declination, debug = debug))
+        rval <- xyzToEnuAdpAD2CP(x = x, declination = declination, debug = debug - 1)
+        oceDebug(debug, "END xyzToEnuAdp()\n", unindent = 1)
+        return(rval)
     }
     # Now, address non-AD2CP cases.
     manufacturer <- x[["manufacturer"]]
@@ -3900,144 +3783,6 @@ xyzToEnuAdp <- function(x, declination = 0, debug = getOption("oceDebug")) {
     res
 } # xyzToEnuAdp
 
-#' Convert adp Object of AD2CP type From XYZ to ENU Coordinates
-#'
-#' This function is in active development,
-#' and both the methodology and user interface may change
-#' without notice. Only developers (or invitees) should be trying to
-#' use this function.
-#'
-#' @param x an [adp-class] object created by [read.adp.ad2cp()].
-#'
-#' @param declination IGNORED at present, but will be used at some later time.
-#' @template debugTemplate
-#'
-#' @return An object with `data$v[,,1:3]` altered appropriately, and
-#' `x[["oceCoordinate"]]` changed from `xyz` to `enu`.
-#'
-#' @author Dan Kelley
-#'
-#' @section Limitations:
-#' This only works if the instrument orientation is `"AHRS"`, and even
-#' that is not tested yet. Plus, as noted, the declination is ignored.
-#'
-#' @references
-#' 1. Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz.} Nortek AS, 2017.
-#'
-#' 2. Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz.} Nortek AS, 2018.
-#' https://www.nortekgroup.com/assets/software/N3015-007-Integrators-Guide-AD2CP_1018.pdf.
-#'
-#' @family things related to adp data
-xyzToEnuAdpAD2CP <- function(x, declination = 0, debug = getOption("oceDebug")) {
-    if (is.ad2cp(x)) {
-        stop("does not work with ad2cp files, which might have several velocity streams")
-    }
-    debug <- if (debug > 0) 1 else 0
-    oceDebug(debug, "xyzToEnuAdpAD2CP(x, declination=", declination, ", debug=", debug, ") START\n", sep = "", unindent = 1)
-    if (!inherits(x, "adp")) {
-        stop("method is only for objects of class '", "adp", "'")
-    }
-    if (!is.ad2cp(x)) {
-        stop("this function only works for adp objects created by read.adp.ad2cp()")
-    }
-    if (0 != declination) {
-        stop("nonzero declination is not handled yet; please contact the author if you ned this")
-    } # FIXME
-    res <- x
-    # FIXME: deal with other ad2cp orientations. Can (should) we use a methodology
-    # similar to the non-ad2cp, for non-AHRS cases?
-    # FIXME: do a loop like this for beamToXyzAdpAD2CP() also.
-    for (item in names(x@data)) {
-        oceDebug(debug, "handling @data$", item, "\n", sep = "")
-        # Do not try to rotate non-rotatable items, e.g. the vertical beam, the altimeter, etc.
-        if (is.list(x@data[[item]])) {
-            numberOfBeams <- x@data[[item]]$numberOfBeams
-            # message("  numberOfBeams=", numberOfBeams)
-            if (!is.null(numberOfBeams) && numberOfBeams == 4) {
-                orientation <- x@data[[item]]$orientation
-                if (is.null(orientation)) {
-                    stop("no known orientation for '", item, "' in the object data slot")
-                }
-                # FIXME: handle "xup", "xdown", "yup", "ydown", "zup", "zdown"
-                if (orientation[1] != "AHRS") {
-                    stop("only the \"AHRS\" orientation is handled, but \"", item, "\" has orientation \"", orientation[1], "\"")
-                }
-                AHRS <- x@data[[item]]$AHRS
-                # cat(str(AHRS))
-                if (is.null(AHRS)) {
-                    stop("\"", item, "\" within the object data slot does not contain coordinate-change matrix \"AHRS\"")
-                }
-                oceCoordinate <- x@data[[item]]$oceCoordinate
-                if (is.null(oceCoordinate)) {
-                    stop("\"", item, "\" within the object data slot has no \"oceCoordinate\"")
-                }
-                # If the item is already in "enu", we just leave it alone
-                # message("oceCoordinate: \"", oceCoordinate, "\"")
-                if (oceCoordinate == "xyz") {
-                    V <- x@data[[item]]$v
-                    if (is.null(V)) {
-                        stop("\"", item, "\" within the object data slot does not contain velocity \"v\"")
-                    }
-                    nc <- dim(V)[2]
-                    # cat("nc=",nc,"\n")
-                    # DEVELOPER NOTE
-                    #
-                    # I thought it might be faster to use C++ for the calculations, since the memory pressure ought to
-                    # be a bit smaller (because there is no need to rep() the AHRS values across cells). However, I
-                    # tried a test, but the results, below, suggest the R method is much faster. Also, it will be
-                    # easier for others to modify, I think, so we will use it.
-                    #
-                    # Speed test with 292M file:
-                    #
-                    # C++ method
-                    #  user  system elapsed
-                    # 2.553   0.952   3.511
-                    #> message("C++ method")
-                    #> for (cell in 1:nc) {
-                    #>     res@data[[item]]$v[, cell, 1:3] <- do_ad2cp_ahrs(V[, cell, 1:3], AHRS)
-                    #
-                    # R method
-                    # user  system elapsed
-                    # 0.400   0.139   0.540
-                    #
-                    #> message("R method")
-                    # Prior to 2022-07-08 (when read.adp.nortek() was
-                    # vectorized), AHRS was a rotation matrix.  After that, it
-                    # became a list that holds that matrix, and other things.
-                    M <- if (is.matrix(AHRS)) AHRS else AHRS$rotationMatrix
-                    # cat("next is str(M)\n", str(M))
-                    # cat("next is str(V)\n", str(V))
-                    # cat("dim(M): ", paste(dim(M), collapse="x"),"\n")
-                    # cat("dim(V): ", paste(dim(V), collapse="x"),"\n")
-                    if (length(dim(M)) != 3L) {
-                        stop("dim(M) should be of length 3, but it is ", length(dim(M)))
-                    }
-                    e <- V[, , 1] * rep(M[, 1, 1], times = nc) + V[, , 2] * rep(M[, 1, 2], times = nc) + V[, , 3] * rep(M[, 1, 3], times = nc)
-                    n <- V[, , 1] * rep(M[, 2, 1], times = nc) + V[, , 2] * rep(M[, 2, 2], times = nc) + V[, , 3] * rep(M[, 2, 3], times = nc)
-                    u <- V[, , 1] * rep(M[, 3, 1], times = nc) + V[, , 2] * rep(M[, 2, 3], times = nc) + V[, , 3] * rep(M[, 3, 3], times = nc)
-                    # FIXME: perhaps use the declination now, rotating e and n.  But first, we will need to know
-                    # what declination was used by the instrument, in its creation of AHRS.
-                    res@data[[item]]$v[, , 1] <- e
-                    res@data[[item]]$v[, , 2] <- n
-                    res@data[[item]]$v[, , 3] <- u
-                    res@data[[item]]$oceCoordinate <- "enu"
-                } else if (oceCoordinate == "beam") {
-                    stop("cannot convert from beam to Enu coordinates; use beamToXyz() first")
-                }
-            }
-        }
-    }
-    res@processingLog <- processingLogAppend(
-        res@processingLog,
-        paste("xyzToEnuAdpAD2CP(x",
-            ", declination=", declination,
-            ", debug=", debug, ")",
-            sep = ""
-        )
-    )
-    oceDebug(debug, "END xyzToEnuAdpAD2CP()\n", unindent = 1)
-    res
-}
 
 #' Convert adp Object from ENU Coordinate to Rotated Coordinate
 #'
@@ -4471,14 +4216,13 @@ adpConvertRawToNumeric <- function(object = NULL, variables = NULL, debug = getO
 #' contain bottom ranges. Commonly, [handleFlags()] would then be used to remove
 #' such data.
 #'
-#' If the object's `oceCoordinate` is `"beam"`, this works by using
-#' [smooth.spline()] on the time-dependent bottom ranges, beam-by-beam. If
-#' `oceCoordinate` is `"enu"`, `"xyz"`, or `"other"`, a [smooth.spline()] is
-#' used on a time-dependent bottom range averaged across all the beams. The `df`
-#' value of the present function is passed to [smooth.spline()], as a way to
-#' control smoothness.  Once this is done, data within distance of \eqn{1-trim}
-#' multiplied by the bottom range are flagged as being bad.  The default value
-#' of `trim` is 0.15, which is close to the value (0.134) of
+#' If the object's `oceCoordinate` is `"beam"`, this works by smoothing the
+#' time-dependent bottom ranges (as controlled by the `smoother` and perhaps the
+#' `df` parameters), beam-by-beam. If `oceCoordinate` is `"enu"`, `"xyz"`, or
+#' `"other"`, smoothing is done based on a time-dependent bottom range averaged
+#' across all the beams.  Once this is done, data within distance of
+#' \eqn{1-trim} multiplied by the bottom range are flagged as being bad.  The
+#' default value of `trim` is 0.15, which is close to the value (0.134) of
 #' \eqn{1-cos(angle*pi/180)}, with angle=30 as the beam angle in degrees.
 #'
 #' @param x an [adp-class] object containing bottom ranges.
@@ -4488,6 +4232,14 @@ adpConvertRawToNumeric <- function(object = NULL, variables = NULL, debug = getO
 #' fields that have the same dimensionality as `v` in the `data` slot.
 #'
 #' @param df the degrees of freedom to use during the smoothing spline operation.
+#'
+#' @param smoother a function used to smooth the boundary distance.  If
+#' this is not given, then [smooth.spline()] is called with `df` set equal
+#' to the value of `df` given by the user.  If it is NULL, then no smoothing
+#' is done. If it is a function that takes 2 arguments and returns
+#' a vector of values, then that is used.  For example, a user might set
+#' `smoother=function(x, y) smooth.spline(x,y,nknots=length(x)/5)$y`
+#' to use a smoothing spline with the indicated number of knots.
 #'
 #' @param trim a scale factor for boundary trimming (see \dQuote{Details}).
 #'
@@ -4505,7 +4257,7 @@ adpConvertRawToNumeric <- function(object = NULL, variables = NULL, debug = getO
 #' @family things related to adp data
 #'
 #' @export
-adpFlagPastBoundary <- function(x = NULL, fields = NULL, df = 20, trim = 0.15, good = 1, bad = 4, debug = getOption("oceDebug")) {
+adpFlagPastBoundary <- function(x = NULL, fields = NULL, df = 20, smoother, trim = 0.15, good = 1, bad = 4, debug = getOption("oceDebug")) {
     oceDebug(debug, "adpFlagPastBoundary() START\n", sep = "", unindent = 1)
     if (!inherits(x, "adp")) {
         stop("x must be an adp object")
@@ -4515,6 +4267,18 @@ adpFlagPastBoundary <- function(x = NULL, fields = NULL, df = 20, trim = 0.15, g
     }
     if (is.null(x[["oceCoordinate"]])) {
         stop("this object does not have an oceCoordinate; you may set it using oceSetMetadata()")
+    }
+    if (missing(smoother)) { # default: smoothing spline with df=10
+        smoother <- function(x, y) {
+            smooth.spline(x, y, df = df)$y
+        }
+    } else if (is.null(smoother)) { # NULL: no smoothing
+        smoother <- function(x, y) {
+            y
+        }
+    }
+    if (!is.function(smoother)) {
+        stop("'smoother' must be a function, NULL, or not provided")
     }
     dimNeeded <- dim(x[["v"]])
     if (is.null(fields)) {
@@ -4537,8 +4301,8 @@ adpFlagPastBoundary <- function(x = NULL, fields = NULL, df = 20, trim = 0.15, g
             ok <- is.finite(br)
             X <- timeSeconds[ok]
             y <- br[ok]
-            s <- smooth.spline(X, y, df = df)
-            boundary <- predict(s, timeSeconds)$y
+            # s <- smooth.spline(X, y, df = df)
+            boundary <- smoother(X, y) # predict(s, timeSeconds)$y
             for (itime in seq_along(x[["time"]])) {
                 jbad <- x[["distance"]] > (1.0 - trim) * boundary[itime]
                 mask[itime, jbad, kbeam] <- bad
@@ -4551,8 +4315,9 @@ adpFlagPastBoundary <- function(x = NULL, fields = NULL, df = 20, trim = 0.15, g
         timeSeconds <- as.numeric(x[["time"]])
         X <- timeSeconds[ok]
         y <- brVector[ok]
-        s <- smooth.spline(X, y, df = df)
-        boundary <- predict(s, timeSeconds)$y
+        # s <- smooth.spline(X, y, df = df)
+        # boundary <- predict(s, timeSeconds)$y
+        boundary <- smoother(X, y)
         for (itime in seq_along(x[["time"]])) {
             jbad <- x[["distance"]] > (1.0 - trim) * boundary[itime]
             mask[itime, jbad, ] <- bad
@@ -4666,3 +4431,4 @@ setMethod(
         res
     }
 )
+

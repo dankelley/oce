@@ -24,7 +24,7 @@ Program format, described in reference 1 and exemplified in reference 2.}
 }
 \description{
 Writes a comma-separated file containing the data frame stored in
-the \code{data} slot of the first argument.  The file is suitable
+the \code{data} slot of the first parameter.  The file is suitable
 for reading with a spreadsheet, or
 with \code{\link[=read.csv]{read.csv()}}.  This output file will contain
 some of the metadata in \code{x}, if \code{metadata} is \code{TRUE}.
@@ -55,6 +55,7 @@ Other things related to ctd data:
 \code{\link{CTD_BCD2014666_008_1_DN.ODF.gz}},
 \code{\link{[[,ctd-method}},
 \code{\link{[[<-,ctd-method}},
+\code{\link{argo2ctd}()},
 \code{\link{as.ctd}()},
 \code{\link{cnvName2oceName}()},
 \code{\link{ctd}},
@@ -66,7 +67,8 @@ Other things related to ctd data:
 \code{\link{ctdRaw}},
 \code{\link{ctdRepair}()},
 \code{\link{ctdTrim}()},
-\code{\link{ctd_aml.csv.gz}},
+\code{\link{ctd_aml_type1.csv.gz}},
+\code{\link{ctd_aml_type3.csv.gz}},
 \code{\link{d200321-001.ctd.gz}},
 \code{\link{d201211_0011.cnv.gz}},
 \code{\link{handleFlags,ctd-method}},

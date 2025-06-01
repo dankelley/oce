@@ -13,7 +13,7 @@ oce.plot.ts(
   log = "",
   logStyle = "r",
   flipy = FALSE,
-  xlab,
+  xlab = "",
   ylab,
   drawTimeRange,
   simplify = 2560,

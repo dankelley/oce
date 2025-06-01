@@ -5,13 +5,13 @@
 #' This class stores Ruskin data, from RBR (see reference 1).
 #'
 #' A [rsk-class] object may be read with [read.rsk()] or created with
-#' [as.rsk()], but the former method is much preferred because it
-#' retains the entirety of the information in the file.
-#' Plots can be made with [plot,rsk-method()], while
-#' [summary,rsk-method()] produces statistical summaries and `show`
-#' produces overviews.   If atmospheric pressure has not been removed from the
-#' data, [rskPatm()] may provide guidance as to its value,
-#' but this is no equal to record-keeping at sea.
+#' [as.rsk()], but the former method is much preferred because it retains the
+#' entirety of the information in the file. Plots can be made with
+#' [plot,rsk-method()], while [summary,rsk-method()] produces statistical
+#' summaries and `show` produces overviews.   If atmospheric pressure has not
+#' been removed from the data, [rskPatm()] may provide guidance as to its value,
+#' but this is no equal to using relevant observations or re-analysis
+#' values.
 #'
 #' @templateVar class rsk
 #'
@@ -114,8 +114,12 @@ setMethod(
         m <- object@metadata
         mnames <- names(m)
         cat("rsk summary\n-----------\n", ...)
+        if ("dbInfo" %in% names(m)) {
+            dbInfo <- m$dbInfo
+            cat("* Database:      version ", dbInfo$version, ", type \"", dbInfo$type, "\"\n", ..., sep = "")
+        }
         cat("* Instrument:    model ", m$model,
-            " serial number ", m$serialNumber, "\n",
+            ", serial number ", m$serialNumber, "\n",
             sep = ""
         )
         if ("pressureAtmospheric" %in% mnames) {
@@ -310,6 +314,14 @@ unitFromStringRsk <- function(s) {
         # 2022-06-28 else if (grepl("\\xc2\\xb5Mol/m\\xc2\\xb2/s", s)) # micr Mol/m^2/s
     } else if (grepl("\u03bcMol/m\u00b2/s", s)) {
         list(unit = expression(mu * mol / m^2 / s), scale = "")
+    } else if (grepl("^m$", s)) {
+        list(unit = expression(m), scale = "")
+    } else if (grepl("^m/s$", s)) {
+        list(unit = expression(m / s), scale = "")
+    } else if (grepl("^PSU", s)) {
+        list(unit = expression(), scale = "PSU")
+    } else if (grepl("^\u00B5S/cm$", s)) { # 'micro' sign, not Greek mu
+        list(unit = expression(mu * S / cm), scale = "")
     } else if (is.na(s)) {
         list(unit = expression(), scale = "?")
     } else {
@@ -697,6 +709,10 @@ setMethod(
 #' `metadata` slot of the returned object. This may be useful for detailed
 #' analysis.
 #'
+#' @param retainDerived logical value, TRUE by default, indicating whether to
+#' save derived quantities such as sea pressure, salinity, etc. Until version
+#' 1.8-4, these derived quantities were not retained.
+#'
 #' @param processingLog if provided, the action item to be stored in the log.
 #' This is typically only provided for internal calls; the default that it provides
 #' is better for normal calls by a user.
@@ -728,7 +744,9 @@ setMethod(
 read.rsk <- function(
     file, from = 1, to, by = 1, type, encoding = NA,
     tz = getOption("oceTz", default = "UTC"), tzOffsetLocation,
-    patm = FALSE, allTables = TRUE, processingLog, debug = getOption("oceDebug")) {
+    patm = FALSE, allTables = TRUE,
+    retainDerived = TRUE,
+    processingLog, debug = getOption("oceDebug")) {
     if (missing(file)) {
         stop("must supply 'file'")
     }
@@ -783,7 +801,7 @@ read.rsk <- function(
     measurementStart <- measurementEnd <- measurementDeltat <- NULL
     pressureAtmospheric <- NA
     res <- new("rsk", filename = filename)
-    if (!missing(type) && type == "rsk") {
+    if (!missing(type) && type == "rsk") { # handle Ruskin files (sqlite3 files with names ending in .rsk)
         if (!requireNamespace("RSQLite", quietly = TRUE)) {
             stop("must install.packages(\"RSQLite\") to read rsk data")
         }
@@ -794,7 +812,7 @@ read.rsk <- function(
         # Advanced users might want to see what tables are in this file.
         tableNames <- RSQLite::dbListTables(con)
         oceDebug(
-            debug, "This file had the following tables: ",
+            debug, "Found the following data tables: ",
             paste(sort(tableNames), collapse = ", "), "\n"
         )
         if (allTables) {
@@ -892,15 +910,20 @@ read.rsk <- function(
             pressureAtmospheric <- 10.1325
         }
         # message("NEW: pressureAtmospheric:", pressureAtmospheric)
-        oceDebug(debug, "after studying the RSK file, now have pressureAtmospheric=", pressureAtmospheric, "\n")
+
         # From notes in comments above, it seems necessary to order by
         # timestamp (tstamp). Ordering does not seem to be an option for
         # dbReadTable(), so we use dbFetch().
         #
         # Get time stamp. Note the trick of making it floating-point
         # to avoid the problem that R lacks 64 bit integers.
-        fields <- DBI::dbListFields(con, "data")
-        fields <- fields[!grepl("tstamp", fields)]
+        fieldsAll <- DBI::dbListFields(con, "data")
+        #issue2291> cat(vectorShow(fieldsAll, n = -1))
+        #issue2291> cat("FIXME: rsk.R:903 mark 'a'\n")
+        fields <- fieldsAll[!grepl("tstamp", fieldsAll)]
+        #issue2291> cat(vectorShow(fields, n = -1))
+        channelIDs <- as.integer(gsub("channel", "", fields))
+        #issue2291> cat(vectorShow(channelIDs, n = -1))
         sql_fields <- if (packageVersion("RSQLite") < "2.0") "1.0*tstamp AS tstamp" else "tstamp"
         sql_fields <- paste(c(sql_fields, fields), collapse = ",")
         sql_fields <- paste("SELECT", sql_fields, "FROM data")
@@ -992,34 +1015,53 @@ read.rsk <- function(
         # Need to check if there is a datasetID column (for rskVersion >= 1.12.2)
         # If so, for now just extract it from the data matrix
         hasDatasetID <- sum(grep("datasetID", names(data))) > 0
+        oceDebug(debug, "hasDatasetID=", hasDatasetID, "\n")
         if (hasDatasetID) {
             datasetID <- data[, grep("datasetID", names(data))]
             data <- data[, -grep("datasetID", names(data)), drop = FALSE]
         }
         data <- data[, -1L, drop = FALSE] # drop the corrupted time column
         # Get column names from the 'channels' table.
-        names <- tolower(RSQLite::dbReadTable(con, "channels")$longName)
-        # FIXME: some longnames have UTF-8 characters, and/or
+        channelsTable <- RSQLite::dbReadTable(con, "channels")
+        # Subset channelsTable to only things that are in the data and,
+        # possibly also subsetting for whether data are derived, depending
+        # on the value of the retainDerived parameter (added for 1.8-4).
+        channelsTableKeep <- sapply(
+            seq_len(nrow(channelsTable)),
+            \(i) channelsTable[i, "channelID"] %in% channelIDs
+        )
+        if (!retainDerived) {
+            channelsTableKeep <- channelsTableKeep & channelsTable$isMeasured == 1
+        }
+        #issue2291> cat("next is channelsTable (original)\n")
+        #issue2291> print(channelsTable)
+        channelsTable <- channelsTable[channelsTableKeep, ]
+        #issue2291> cat("next is channelsTable (trimmed)\n")
+        #issue2291> print(channelsTable)
+        # NOTE: some longnames have UTF-8 characters, and/or
         # spaces. Should coerce to ascii with no spaces, or at least
         # recognize fields and rename (e.g. `dissolved O2` should
         # just be `oxygen`)
-        names <- gsub(" ", "", names, fixed = TRUE) # remove spaces
+        names <- tolower(channelsTable$longName)
         Encoding(names) <- "latin1"
         names <- iconv(names, "latin1", "ASCII", sub = "")
-        # if dissolvedo is a name call it oxygen
-        names[which(match(names, "dissolvedo") == 1)] <- "oxygen"
-        channelsTable <- RSQLite::dbReadTable(con, "channels")
-        if ("isMeasured" %in% names(channelsTable)) {
-            isMeasured <- channelsTable$isMeasured == 1
-        } else {
-            isMeasured <- channelsTable$isDerived == 0
-            # warning("old Ruskin file detected; if problems arise, update file with Ruskin software")
-        }
-        dataNamesOriginal <- c("-", channelsTable$shortName[isMeasured])
+        names[names == "dissolvedo"] <- "oxygen" # fix a weird name
+        #issue2291> cat(vectorShow(names, n = -1))
+        names <- gsub(" (.)", "\\U\\1", names, perl = TRUE)
+        #issue2291> cat(vectorShow(names, n = -1))
+        #issue2291> cat("next is head(data)\n")
+        #issue2291> print(head(data))
+        #issue2291> cat("next is units\n")
+        unitsRsk <- channelsTable$units
+        #issue2291> cat(vectorShow(unitsRsk, n = -1))
+        dataNamesOriginal <- c("-", channelsTable$shortName)
+        #issue2291> cat("next is dataNamesOriginal\n")
+        #issue2291> print(dataNamesOriginal)
         # 1491> message("below is dataNamesOriginal: (at start)");print(dataNamesOriginal)
         # [issue 1483] print(cbind(channelsTable,isMeasured))
-        names <- names[isMeasured] # only take names of things that are in the data table
-        unitsRsk <- channelsTable$units[isMeasured]
+        #<> # FIXME: I don't think this is right 2024-02-03 (DEK)
+        #<> names <- names[isMeasured] # only take names of things that are in the data table
+        #<> unitsRsk <- channelsTable$units[isMeasured]
         # Check for duplicated names, and append digits to make unique
         if (sum(duplicated(names)) > 0) {
             for (n in names) {
@@ -1030,6 +1072,8 @@ read.rsk <- function(
             }
         }
         names(data) <- names
+        #issue2291> cat("next is head(data) after assigning named\n")
+        #issue2291> print(head(data))
         data <- as.list(data)
         instruments <- RSQLite::dbReadTable(con, "instruments")
         serialNumber <- instruments$serialID
@@ -1038,7 +1082,10 @@ read.rsk <- function(
         sampleInterval <- schedules$samplingPeriod / 1000 # stored as milliseconds in rsk
         RSQLite::dbDisconnect(con)
         res@data$time <- time
+        #issue2291> cat("L1066 res@data:\n")
+        #issue2291> print(str(res@data))
         res@metadata$dataNamesOriginal <- dataNamesOriginal
+        #issue2291> cat("DAN L1069 inserting data; names= ", paste(names, collapse = ","), "\n")
         for (iname in seq_along(names)) {
             res@data[[names[iname]]] <- data[[names[iname]]]
             res@metadata$units[[names[iname]]] <- unitFromStringRsk(unitsRsk[iname])
@@ -1147,7 +1194,7 @@ read.rsk <- function(
         res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep = "", collapse = ""))
         oceDebug(debug, "END read.rsk()\n", sep = "", unindent = 1)
         return(res)
-    } else if (!(missing(type)) && type == "txt") {
+    } else if (!(missing(type)) && type == "txt") { # Handle text files
         oceDebug("RBR txt format\n")
         oceDebug(debug, "Format is Rtext Ruskin txt export", "\n")
         # FIXME: reading a  lot if there are lots of "Events". Is there a better way to do this?
@@ -1181,6 +1228,8 @@ read.rsk <- function(
             channels[[iChannel]] <- d[, iChannel + 2]
         }
         names(channels) <- channelNames
+        cat("FIXME DAN rsk.R:1186 'b' next is channels\n")
+        print(channels)
         # Now do subsetting
         if (inherits(from, "POSIXt") || inherits(from, "character")) {
             if (!inherits(to, "POSIXt") && !inherits(to, "character")) {
@@ -1224,6 +1273,8 @@ read.rsk <- function(
         for (iChannel in 1:numberOfChannels) {
             channelsSub[[iChannel]] <- channels[[iChannel]][keep]
         }
+        #issue2291> cat("FIXME DAN rsk.R:1231 'c' next is channels\n")
+        #issue2291> print(channels)
         names(channelsSub) <- channelNames
         res <- as.rsk(time,
             columns = channelsSub,
@@ -1372,207 +1423,6 @@ read.rsk <- function(
     res
 }
 
-
-#' Create a ctd Object from an rsk Object
-#'
-#' A new `ctd` object is assembled from the contents of the `rsk` object.
-#' The data and metadata are mostly unchanged, with an important exception: the
-#' `pressure` item in the `data` slot may altered, because `rsk`
-#' instruments measure total pressure, not sea pressure; see \dQuote{Details}.
-#'
-#' The `pressureType` element of the
-#' `metadata` of `rsk` objects defines the pressure type, and this controls
-#' how pressure is set up in the returned object. If `object@@metadata$pressureType`
-#' is `"absolute"` (or `NULL`) then the resultant pressure will be adjusted
-#' to make it into `"sea"` pressure. To do this, the value of
-#' `object@@metadata$pressureAtmospheric` is inspected. If this is present, then
-#' it is subtracted from `pressure`. If this is missing, then
-#' standard pressure (10.1325 dbar) will be subtracted. At this stage, the
-#' pressure should be near zero at the ocean surface, but some additional adjustment
-#' might be necessary, and this may be indicated by setting the argument `pressureAtmospheric` to
-#' a non-zero value to be subtracted from pressure.
-#'
-#' @param x an [rsk-class] object.
-#'
-#' @param pressureAtmospheric A numerical value (a constant or a vector),
-#' that is subtracted from the pressure in `object` before storing it in the return value.
-#'
-#' @param longitude numerical value of longitude, in degrees East.
-#'
-#' @param latitude numerical value of latitude, in degrees North.
-#'
-#' @param ship optional string containing the ship from which the observations were made.
-#'
-#' @param cruise optional string containing a cruise identifier.
-#'
-#' @param station optional string containing a station identifier.
-#'
-#' @param deploymentType character string indicating the type of deployment (see
-#' [as.ctd()]).
-#'
-#' @template debugTemplate
-rsk2ctd <- function(
-    x, pressureAtmospheric = 0, longitude = NULL, latitude = NULL,
-    ship = NULL, cruise = NULL, station = NULL, deploymentType = NULL,
-    debug = getOption("oceDebug")) {
-    oceDebug(debug, "rsk2ctd(...) START\n", sep = "", unindent = 1)
-    res <- new("ctd")
-    res@metadata <- x@metadata
-    # The user may have already inserted some metadata, even if read.rsk() didn't, so
-    # we have to take care of two cases in deciding on some things. The procedure is
-    # to use the argument to rsk2ctd if one is given, otherwise to use the value already
-    # in x@metadata, otherwise to set a default that matches as.ctd().
-    res@metadata$longitude <- if (!is.null(longitude)) {
-        longitude
-    } else {
-        if (is.null(res@metadata$longitude)) {
-            NA
-        } else {
-            res@metadata$longitude
-        }
-    }
-    res@metadata$latitude <- if (!is.null(latitude)) {
-        latitude
-    } else {
-        if (is.null(res@metadata$latitude)) {
-            NA
-        } else {
-            res@metadata$latitude
-        }
-    }
-    res@metadata$ship <- if (!is.null(ship)) {
-        ship
-    } else {
-        if (is.null(res@metadata$ship)) {
-            ""
-        } else {
-            res@metadata$ship
-        }
-    }
-    res@metadata$cruise <- if (!is.null(cruise)) {
-        cruise
-    } else {
-        if (is.null(res@metadata$cruise)) {
-            ""
-        } else {
-            res@metadata$cruise
-        }
-    }
-    res@metadata$station <- if (!is.null(station)) {
-        station
-    } else {
-        if (is.null(res@metadata$station)) {
-            ""
-        } else {
-            res@metadata$station
-        }
-    }
-    res@metadata$deploymentType <- if (!is.null(deploymentType)) {
-        deploymentType
-    } else {
-        if (is.null(res@metadata$deploymentType)) {
-            "unknown"
-        } else {
-            res@metadata$deploymentType
-        }
-    }
-    # We start by copying the data, but we may need to do some fancy footwork
-    # for pressure, because RBR devices store absolute pressure, not the sea
-    # pressure that we have in CTD objects.
-    res@data <- x@data
-    if (!("pressure" %in% names(res@data))) {
-        stop("there is no pressure in this rsk object, so it cannot be converted to a ctd object")
-    }
-    pressureAtmosphericStandard <- 10.1325
-    if (is.null(x@metadata$pressureType)) {
-        oceDebug(debug, "metadata$pressureType is NULL so guessing absolute pressure:\n")
-        warning("rsk object lacks metadata$pressureType; assuming absolute and subtracting standard atm pressure to get sea pressure")
-        res@data$pressure <- x@data$pressure - pressureAtmosphericStandard
-        res@metadata$units$pressure$scale <- "sea"
-        res@metadata$dataNamesOriginal[substr(res@metadata$dataNamesOriginal, 1, 4) == "pres"] <- ""
-        res@processingLog <- processingLogAppend(
-            res@processingLog,
-            paste("subtracted 10.1325dbar (std atm) from pressure\n")
-        )
-    } else {
-        # subtract atm pressure, if it has not already been subtracted
-        oceDebug(debug, "metadata$pressureType is not NULL\n")
-        if ("sea" != substr(x@metadata$pressureType, 1, 3)) {
-            oceDebug(debug, "must convert from absolute pressure to sea pressure\n")
-            if (!("pressureAtmospheric" %in% names(x@metadata))) {
-                oceDebug(debug, "pressure is 'absolute'; subtracting std atm 10.1325 dbar\n")
-                res@data$pressure <- x@data$pressure - pressureAtmosphericStandard
-                res@metadata$units$pressure$scale <- "sea"
-                res@metadata$dataNamesOriginal[substr(res@metadata$dataNamesOriginal, 1, 4) == "pres"] <- ""
-                res@processingLog <- processingLogAppend(
-                    res@processingLog,
-                    paste("subtracted", pressureAtmosphericStandard, "dbar (std atm) from absolute pressure to get sea pressure")
-                )
-                oceDebug(debug, "subtracted std atm pressure from pressure\n")
-            } else {
-                res@data$pressure <- x@data$pressure - x@metadata$pressureAtmospheric
-                res@metadata$units$pressure$scale <- "sea"
-                res@metadata$dataNamesOriginal[substr(res@metadata$dataNamesOriginal, 1, 4) == "pres"] <- ""
-                res@processingLog <- processingLogAppend(
-                    res@processingLog,
-                    paste(
-                        "subtracted",
-                        x@metadata$pressureAtmospheric,
-                        "dbar from absolute pressure to get sea pressure"
-                    )
-                )
-                oceDebug(debug, "subtracted", x@metadata$pressureAtmospheric, "dbar from pressure\n")
-            }
-        }
-    }
-    # Now we have sea pressure (if the rsk was set up correctly for the above to
-    # work right), so we can adjust a second time, if the user changed from the
-    # default of pressureAtmospheric=0.
-    if (pressureAtmospheric[1] != 0) {
-        res@data$pressure <- res@data$pressure - pressureAtmospheric
-        oceDebug(debug, "subtracted", pressureAtmospheric, "dbar from pressure")
-    }
-    res@processingLog <- processingLogAppend(
-        res@processingLog,
-        paste("subtracted", pressureAtmospheric, "dbar from sea pressure")
-    )
-    if (!("salinity" %in% names(x@data))) {
-        C <- x[["conductivity"]]
-        if (is.null(C)) {
-            stop("objects must have salinity or conductivity to be converted to CTD form")
-        }
-        unit <- as.character(x@metadata$units$conductivity$unit)
-        if (0 == length(unit)) {
-            S <- swSCTp(x[["conductivity"]], x[["temperature"]], res[["pressure"]])
-            res@processingLog <- processingLogAppend(res@processingLog, "calculating salinity based on conductivity in (assumed) ratio units")
-        } else if (unit == "uS/cm") {
-            S <- swSCTp(x[["conductivity"]] / 42914.0, x[["temperature"]], res[["pressure"]])
-            res@processingLog <- processingLogAppend(res@processingLog, "calculating salinity based on conductivity in uS/cm")
-        } else if (unit == "mS/cm") {
-            S <- swSCTp(x[["conductivity"]] / 42.914, x[["temperature"]], res[["pressure"]])
-            res@processingLog <- processingLogAppend(res@processingLog, "calculating salinity based on conductivity in mS/cm")
-        } else if (unit == "S/m") {
-            S <- swSCTp(x[["conductivity"]] / 4.2914, x[["temperature"]], res[["pressure"]])
-            res@processingLog <- processingLogAppend(res@processingLog, "calculating salinity based on conductivity in S/m")
-        } else {
-            stop("unrecognized conductivity unit '", unit, "'; only uS/cm, mS/cm and S/m are handled")
-        }
-        res <- oceSetData(res,
-            name = "salinity", value = S,
-            unit = list(unit = expression(), scale = "PSS-78")
-        )
-    }
-    oceDebug(debug, "END rsk2ctd()\n", sep = "", unindent = 1)
-    res@processingLog <- processingLogAppend(
-        res@processingLog,
-        paste("rsk2ctd(..., pressureAtmospheric=", pressureAtmospheric, ", debug)\n",
-            sep = "", collapse = ""
-        )
-    )
-    res
-}
-
-
 #' Estimate Atmospheric Pressure in an rsk Object
 #'
 #' Estimate atmospheric pressure in an [rsk-class] object.  Pressures must be in
@@ -1671,6 +1521,7 @@ rskToc <- function(dir, from, to, debug = getOption("oceDebug")) {
     if (length(tbl.files) < 1) {
         stop("could not locate a .TBL file in direcory ", dir)
     }
+    oceDebug(debug, "rskToc() START\n", unindent = 1)
     tref <- as.POSIXct("2010-01-01", tz = "UTC") # arbitrary time, to make integers
     file.code <- NULL
     startTime <- NULL
@@ -1713,5 +1564,6 @@ rskToc <- function(dir, from, to, debug = getOption("oceDebug")) {
         startTime <- startTime[ok]
         oceDebug(debug, "taking into account the times, ended up with", length(file.code), "files\n")
     }
+    oceDebug(debug, "END rskToc()\n", unindent = 1)
     list(filename = filename, startTime = startTime)
 }

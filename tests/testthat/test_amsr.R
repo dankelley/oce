@@ -1,5 +1,15 @@
 library(oce)
 
+test_that("amsr[['metadata']] works (issue 2229)", {
+    data(amsr)
+    expect_equal(7L, length(amsr[["metadata"]]))
+})
+
+test_that("amsr[['data']] works (related to issue 2229)", {
+    data(amsr)
+    expect_equal(11L, length(amsr[["data"]]))
+})
+
 test_that("amsr[['SST']]", {
     data(amsr)
     SST <- amsr[["SST"]]

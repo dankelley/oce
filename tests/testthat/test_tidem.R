@@ -110,9 +110,9 @@ test_that("tidemVuf() agrees with T_TIDE", {
 })
 
 test_that("tidem constituents match previous versions", {
-    expect_message(
+    expect_warning(
         m <- tidem(sealevel),
-        "the tidal record is too short to fit for constituents"
+        "tidal record too short to fit constituents"
     )
     nameExpected <- c(
         "Z0", "SSA", "MSM", "MM", "MSF", "MF", "ALP1", "2Q1", "SIG1", "Q1", "RHO1", "O1", "TAU1",
@@ -162,9 +162,9 @@ test_that("tidem constituents match previous versions", {
 })
 
 test_that("prediction works with newdata and without newdata", {
-    expect_message(
+    expect_warning(
         m <- tidem(sealevel),
-        "the tidal record is too short to fit for constituents"
+        "tidal record too short to fit constituents"
     )
     p1 <- predict(m)
     p2 <- predict(m, newdata = sealevel[["time"]])
@@ -176,9 +176,9 @@ test_that("tailoring of constituents", {
     tide3 <- tidem(sealevel, constituents = c("M2", "K2"))
     expect_equal(tide3[["data"]]$name, c("M2", "K2"))
     # check that we can remove constituents
-    expect_message(
+    expect_warning(
         tide5 <- tidem(sealevel, constituents = c("standard", "-M2")),
-        "the tidal record is too short to fit for constituents"
+        "tidal record too short to fit constituents"
     )
     expect_equal(tide5[["data"]]$name, resolvable[resolvable != "M2"])
 })
@@ -195,7 +195,7 @@ test_that("Foreman (1977 App 7.3) and T-TIDE (Pawlowciz 2002 Table 1) test", {
     # this is set up to matche the test in Foreman's Appendix 7.1 (and 7.3),
     # and also in the TTIDE paper by Pawlowicz et al 2002 (Table 1).
     data("sealevelTuktoyaktuk")
-    expect_message(
+    expect_warning(
         m <- tidem(sealevelTuktoyaktuk,
             constituents = c("standard", "M10"),
             infer = list(
@@ -205,7 +205,7 @@ test_that("Foreman (1977 App 7.3) and T-TIDE (Pawlowciz 2002 Table 1) test", {
                 phase = c(-7.07, -22.40)
             )
         ),
-        "the tidal record is too short to fit for constituents"
+        "tidal record too short to fit constituents"
     )
     # Do constituents match Foreman and TTIDE?
     expect_equal(foreman$name, ttide$name)

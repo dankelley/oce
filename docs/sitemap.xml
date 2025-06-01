@@ -5,6 +5,7 @@
 <url><loc>https://dankelley.github.io/oce/ISSUE_TEMPLATE.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/LICENSE-text.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/README_developers.html</loc></url>
+<url><loc>https://dankelley.github.io/oce/SECURITY.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/articles/A_oce.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/articles/B_ctd.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/articles/C_adp.html</loc></url>
@@ -13,11 +14,13 @@
 <url><loc>https://dankelley.github.io/oce/articles/F_subclassing.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/articles/G_altering_defaults.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/articles/G_initialization_file.html</loc></url>
+<url><loc>https://dankelley.github.io/oce/articles/H_tides.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/articles/index.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/authors.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/index.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/news/index.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/CTD_BCD2014666_008_1_DN.ODF.gz.html</loc></url>
+<url><loc>https://dankelley.github.io/oce/reference/D4902337_219.nc.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/GMTOffsetFromTz.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/ODF2oce.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/ODFListFromHeader.html</loc></url>
@@ -54,6 +57,7 @@
 <url><loc>https://dankelley.github.io/oce/reference/argShow.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/argo-class.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/argo.html</loc></url>
+<url><loc>https://dankelley.github.io/oce/reference/argo2ctd.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/argoGrid.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/argoJuldToTime.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/argoNames2oceNames.html</loc></url>
@@ -61,6 +65,7 @@
 <url><loc>https://dankelley.github.io/oce/reference/as.argo.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/as.cm.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/as.coastline.html</loc></url>
+<url><loc>https://dankelley.github.io/oce/reference/as.ctd.argo.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/as.ctd.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/as.echosounder.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/as.gps.html</loc></url>
@@ -93,6 +98,7 @@
 <url><loc>https://dankelley.github.io/oce/reference/binMean1D.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/binMean2D.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/binmapAdp.html</loc></url>
+<url><loc>https://dankelley.github.io/oce/reference/bodcNames2oceNames.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/bound125.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/bremen-class.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/byteToBinary.html</loc></url>
@@ -126,6 +132,8 @@
 <url><loc>https://dankelley.github.io/oce/reference/ctdTrim.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/ctd_aml.csv.gz.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/ctd_aml.csv.html</loc></url>
+<url><loc>https://dankelley.github.io/oce/reference/ctd_aml_type1.csv.gz.html</loc></url>
+<url><loc>https://dankelley.github.io/oce/reference/ctd_aml_type3.csv.gz.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/ctimeToSeconds.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/curl.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/d200321-001.ctd.gz.html</loc></url>
@@ -244,6 +252,7 @@
 <url><loc>https://dankelley.github.io/oce/reference/met.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/metNames2oceNames.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/moonAngle.html</loc></url>
+<url><loc>https://dankelley.github.io/oce/reference/netcdfTOC.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/numberAsHMS.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/numberAsPOSIXct.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/oce-class.html</loc></url>
@@ -367,6 +376,7 @@
 <url><loc>https://dankelley.github.io/oce/reference/read.coastline.openstreetmap.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/read.coastline.shapefile.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/read.ctd.aml.html</loc></url>
+<url><loc>https://dankelley.github.io/oce/reference/read.ctd.aml.type3.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/read.ctd.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/read.ctd.itp.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/read.ctd.odf.html</loc></url>
@@ -393,8 +403,11 @@
 <url><loc>https://dankelley.github.io/oce/reference/read.topo.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/read.woa.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/read.xbt.edf.html</loc></url>
+<url><loc>https://dankelley.github.io/oce/reference/read.xbt.edf2.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/read.xbt.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/read.xbt.noaa1.html</loc></url>
+<url><loc>https://dankelley.github.io/oce/reference/read.xbt.noaa2.html</loc></url>
+<url><loc>https://dankelley.github.io/oce/reference/rename.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/rescale.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/resizableLabel.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/retime.html</loc></url>
@@ -599,6 +612,7 @@
 <url><loc>https://dankelley.github.io/oce/reference/xbt-class.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/xbt.edf.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/xbt.html</loc></url>
+<url><loc>https://dankelley.github.io/oce/reference/xbt2.edf.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/xyzToEnu.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/xyzToEnuAdp.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/xyzToEnuAdpAD2CP.html</loc></url>

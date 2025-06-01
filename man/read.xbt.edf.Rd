@@ -2,7 +2,7 @@
 % Please edit documentation in R/xbt.R
 \name{read.xbt.edf}
 \alias{read.xbt.edf}
-\title{Read an xbt File in Sippican Format}
+\title{Read an xbt File in Sippican Format Type 1}
 \usage{
 read.xbt.edf(
   file,
@@ -40,7 +40,8 @@ An \linkS4class{xbt} object.
 \description{
 The function was written by inspection of a particular file, and might
 be wrong for other files; see \dQuote{Details} for a note on character
-translation.
+translation. The format uses space-separated data columns, unlike the tab-
+separated columns of \code{\link[=read.xbt.edf2]{read.xbt.edf2()}}.
 }
 \details{
 The header is converted to ASCII format prior to storage in
@@ -57,7 +58,6 @@ can find a way to otherwise silence the NOTE.
 library(oce)
 xbt <- read.oce(system.file("extdata", "xbt.edf", package = "oce"))
 summary(xbt)
-plot(xbt)
 
 }
 \author{

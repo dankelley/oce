@@ -4,22 +4,26 @@
 \encoding{UTF-8}
 \name{xbt.edf}
 \alias{xbt.edf}
-\title{Sample xbt File in .edf Format}
+\title{Sample xbt File in space-separated .edf Format}
 \description{
-Sample xbt File in .edf Format
+Sample xbt File in space-separated .edf Format
 }
 \examples{
-xbt <- read.oce(system.file("extdata", "xbt.edf", package="oce"))
+xbt <- read.xbt(system.file("extdata", "xbt.edf", package = "oce"))
+summary(xbt)
 
 }
 \seealso{
 Other raw datasets: 
 \code{\link{CTD_BCD2014666_008_1_DN.ODF.gz}},
+\code{\link{D4902337_219.nc}},
 \code{\link{adp_rdi.000}},
 \code{\link{ctd.cnv.gz}},
-\code{\link{ctd_aml.csv.gz}},
+\code{\link{ctd_aml_type1.csv.gz}},
+\code{\link{ctd_aml_type3.csv.gz}},
 \code{\link{d200321-001.ctd.gz}},
-\code{\link{d201211_0011.cnv.gz}}
+\code{\link{d201211_0011.cnv.gz}},
+\code{\link{xbt2.edf}}
 
 Other things related to xbt data: 
 \code{\link{[[,xbt-method}},
@@ -28,10 +32,12 @@ Other things related to xbt data:
 \code{\link{plot,xbt-method}},
 \code{\link{read.xbt}()},
 \code{\link{read.xbt.noaa1}()},
+\code{\link{read.xbt.noaa2}()},
 \code{\link{subset,xbt-method}},
 \code{\link{summary,xbt-method}},
 \code{\link{xbt}},
-\code{\link{xbt-class}}
+\code{\link{xbt-class}},
+\code{\link{xbt2.edf}}
 }
 \concept{raw datasets}
 \concept{things related to xbt data}

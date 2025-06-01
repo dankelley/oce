@@ -2,35 +2,37 @@
 % Please edit documentation in R/extdata.R
 \docType{data}
 \encoding{UTF-8}
-\name{ctd_aml.csv.gz}
-\alias{ctd_aml.csv.gz}
-\title{Sample ctd File in aml Format}
+\name{ctd_aml_type1.csv.gz}
+\alias{ctd_aml_type1.csv.gz}
+\title{Sample ctd File in aml Format 1}
 \description{
 This file may be read with \code{\link[=read.ctd.aml]{read.ctd.aml()}}.  It is based
 on a file donated by Ashley Stanek, which was shortened to
-just 50 points for inclusion in oce, and which had some
+just 5 points for inclusion in oce, and which had some
 identifying information (serial number, IP address, and WEP
-code) zeroed-out.
+code) redacted.
 }
 \examples{
-ctd <- read.ctd.aml(system.file("extdata", "ctd_aml.csv.gz", package="oce"))
-summary(ctd)
-plot(ctd)
+ctd <- read.ctd.aml(system.file("extdata", "ctd_aml_type1.csv.gz", package = "oce"))
 
 }
 \seealso{
 Other raw datasets: 
 \code{\link{CTD_BCD2014666_008_1_DN.ODF.gz}},
+\code{\link{D4902337_219.nc}},
 \code{\link{adp_rdi.000}},
 \code{\link{ctd.cnv.gz}},
+\code{\link{ctd_aml_type3.csv.gz}},
 \code{\link{d200321-001.ctd.gz}},
 \code{\link{d201211_0011.cnv.gz}},
-\code{\link{xbt.edf}}
+\code{\link{xbt.edf}},
+\code{\link{xbt2.edf}}
 
 Other things related to ctd data: 
 \code{\link{CTD_BCD2014666_008_1_DN.ODF.gz}},
 \code{\link{[[,ctd-method}},
 \code{\link{[[<-,ctd-method}},
+\code{\link{argo2ctd}()},
 \code{\link{as.ctd}()},
 \code{\link{cnvName2oceName}()},
 \code{\link{ctd}},
@@ -42,6 +44,7 @@ Other things related to ctd data:
 \code{\link{ctdRaw}},
 \code{\link{ctdRepair}()},
 \code{\link{ctdTrim}()},
+\code{\link{ctd_aml_type3.csv.gz}},
 \code{\link{d200321-001.ctd.gz}},
 \code{\link{d201211_0011.cnv.gz}},
 \code{\link{handleFlags,ctd-method}},

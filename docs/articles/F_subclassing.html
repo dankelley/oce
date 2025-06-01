@@ -8,8 +8,8 @@
 <title>6. Subclassing oce objects • oce</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.4.2/css/all.min.css" rel="stylesheet">
-<link href="../deps/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="6. Subclassing oce objects">
 </head>
 <body>
@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">oce</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.8-3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.8-4</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -40,6 +40,7 @@
     <li><a class="dropdown-item" href="../articles/E_flags.html">5. Dealing with data-quality flags</a></li>
     <li><a class="dropdown-item" href="../articles/F_subclassing.html">6. Subclassing oce objects</a></li>
     <li><a class="dropdown-item" href="../articles/G_altering_defaults.html">7. Altering oce Defaults</a></li>
+    <li><a class="dropdown-item" href="../articles/H_tides.html">8. Tidal Analysis</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -65,7 +66,7 @@
       <h1>6. Subclassing oce objects</h1>
                         <h4 data-toc-skip class="author">Dan Kelley (<a href="https://orcid.org/0000-0001-7808-5911" class="external-link uri">https://orcid.org/0000-0001-7808-5911</a>)</h4>
             
-            <h4 data-toc-skip class="date">2024-08-14</h4>
+            <h4 data-toc-skip class="date">2025-04-19</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/dankelley/oce/blob/HEAD/vignettes/F_subclassing.Rmd" class="external-link"><code>vignettes/F_subclassing.Rmd</code></a></small>
       <div class="d-none name"><code>F_subclassing.Rmd</code></div>
@@ -134,7 +135,7 @@ much:</p>
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">o</span><span class="op">)</span></span>
 <span><span class="co">#&gt; * Processing Log</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     - 2024-08-14 19:23:02 UTC: `Create oce object`</span></span></code></pre></div>
+<span><span class="co">#&gt;     - 2025-04-19 15:31:11 UTC: `Create oce object`</span></span></code></pre></div>
 <p>but if we populate the object with some data and metadata</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">o</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/oceSetData.html">oceSetData</a></span><span class="op">(</span><span class="va">o</span>, <span class="st">"time"</span>, <span class="va">db</span><span class="op">$</span><span class="va">t</span><span class="op">)</span></span>
@@ -147,17 +148,18 @@ much:</p>
 <span><span class="co">#&gt; * Time: 2021-11-01 21:04:00 to 2021-11-08 06:00:00 (146 samples, mean increment 1.054713 hour)</span></span>
 <span><span class="co">#&gt; * Data Overview</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;                  Min.    Mean    Max. Dim. NAs</span></span>
-<span><span class="co">#&gt;     longitude -63.011 -62.775 -62.636  146   0</span></span>
-<span><span class="co">#&gt;     latitude   41.932  42.305  42.572  146   0</span></span>
+<span><span class="co">#&gt;               Min.       Mean       Max.       Dim. NAs OriginalName</span></span>
+<span><span class="co">#&gt;     time      1635800640 1636074398 1636351200 146  0   "-"         </span></span>
+<span><span class="co">#&gt;     longitude -63.011    -62.775    -62.636    146  0   "-"         </span></span>
+<span><span class="co">#&gt;     latitude  41.932     42.305     42.572     146  0   "-"         </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; * Processing Log</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     - 2024-08-14 19:23:02 UTC: `Create oce object`</span></span>
-<span><span class="co">#&gt;     - 2024-08-14 19:23:03 UTC: `oceSetData(object = o, name = "time", value = db$t)`</span></span>
-<span><span class="co">#&gt;     - 2024-08-14 19:23:03 UTC: `oceSetData(object = o, name = "longitude", value = db$lon)`</span></span>
-<span><span class="co">#&gt;     - 2024-08-14 19:23:03 UTC: `oceSetData(object = o, name = "latitude", value = db$lat)`</span></span>
-<span><span class="co">#&gt;     - 2024-08-14 19:23:03 UTC: `oceSetMetadata(object = o, name = "ID", value = 4201703)`</span></span></code></pre></div>
+<span><span class="co">#&gt;     - 2025-04-19 15:31:11 UTC: `Create oce object`</span></span>
+<span><span class="co">#&gt;     - 2025-04-19 15:31:11 UTC: `oceSetData(object = o, name = "time", value = db$t)`</span></span>
+<span><span class="co">#&gt;     - 2025-04-19 15:31:11 UTC: `oceSetData(object = o, name = "longitude", value = db$lon)`</span></span>
+<span><span class="co">#&gt;     - 2025-04-19 15:31:11 UTC: `oceSetData(object = o, name = "latitude", value = db$lat)`</span></span>
+<span><span class="co">#&gt;     - 2025-04-19 15:31:11 UTC: `oceSetMetadata(object = o, name = "ID", value = 4201703)`</span></span></code></pre></div>
 <p>Note, however, that the <code>ID</code> is not listed by
 <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code>. This is because the general form of that
 function is set up to focus on the contents of the <code>data</code>
@@ -313,13 +315,14 @@ drifter. The rest of the information provided by the base-level
 <span><span class="co">#&gt; * Time: 2021-11-01 21:04:00 to 2021-11-08 06:00:00 (146 samples, mean increment 1.054713 hour)</span></span>
 <span><span class="co">#&gt; * Data Overview</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;                  Min.    Mean    Max. Dim. NAs</span></span>
-<span><span class="co">#&gt;     longitude -63.011 -62.775 -62.636  146   0</span></span>
-<span><span class="co">#&gt;     latitude   41.932  42.305  42.572  146   0</span></span>
+<span><span class="co">#&gt;               Min.       Mean       Max.       Dim. NAs</span></span>
+<span><span class="co">#&gt;     time      1635800640 1636074398 1636351200 146  0  </span></span>
+<span><span class="co">#&gt;     longitude -63.011    -62.775    -62.636    146  0  </span></span>
+<span><span class="co">#&gt;     latitude  41.932     42.305     42.572     146  0  </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; * Processing Log</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     - 2024-08-14 19:23:03 UTC: `create 'drifter' object`</span></span></code></pre></div>
+<span><span class="co">#&gt;     - 2025-04-19 15:31:12 UTC: `create 'drifter' object`</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="specializing-the-accessor">Specializing the <code>[[</code> accessor<a class="anchor" aria-label="anchor" href="#specializing-the-accessor"></a>
@@ -423,7 +426,7 @@ frequency.</p></li>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
     </footer>

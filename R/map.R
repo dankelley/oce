@@ -35,7 +35,9 @@ angleShift <- function(angle) {
 # Change some projection names, and fix problem with ortho (which lacks full inverse coverage
 # unless a spherical earth is used).
 repairProjection <- function(projection, longlatProj, debug = getOption("oceDebug")) {
-    oceDebug(debug, "repairProjection(projection=\"", projection, "\", longlatProj=\"", longlatProj, "\") START\n", sep = "", unindent = 1)
+    oceDebug(debug, "repairProjection() START\n", sep = "", unindent = 1)
+    oceDebug(debug, "    given projection  \"", projection, "\"\n", sep = "")
+    oceDebug(debug, "    given longlatProj \"", longlatProj, "\"\n", sep = "")
     if (grepl("latlon( |$)", projection)) {
         warning("converting old name 'latlon' to new name 'latlong'\n")
         projection <- gsub("latlon", "latlong", projection)
@@ -47,24 +49,25 @@ repairProjection <- function(projection, longlatProj, debug = getOption("oceDebu
     if (packageVersion("sf") >= "1.0.0") {
         if (grepl("ortho", projection)) {
             oceDebug(debug, "Handling sf version >= 1.0.0 with +proj=ortho: change to spherical earth\n")
-            if (!grepl("+f=", projection)) {
-                oceDebug(debug, "+f= not present in proj, so adding it\n")
+            if (!grepl("\\+f[ ]*=", projection)) {
+                oceDebug(debug, "  +f= not present in projection, so adding it\n")
                 projection <- paste(projection, "+f=0")
-                longlatProj <- paste(longlatProj, "+f=0")
-                oceDebug(debug, "  new projection= \"", projection, "\"\n")
-                oceDebug(debug, "  new longlatProj=\"", longlatProj, "\"\n")
+                oceDebug(debug, "    new projection: \"", projection, "\"\n")
             }
-            if (grepl("+a=", projection)) {
-                a <- gsub("^(.*)+a=([^ ])(.*)$", "\\2", projection)
-                longlatProj <- paste0(longlatProj, " +a=", a)
-                oceDebug(debug, "proj had +a, so inserting that in longlatProj\n")
-                oceDebug(debug, "  new longlatProj=\"", longlatProj, "\"\n")
-            } else {
-                oceDebug(debug, "+a= not present in proj, so adding it\n")
+            if (!grepl("\\+f[ ]*=", longlatProj)) {
+                oceDebug(debug, "  +f= not present in longlatProj, so adding it\n")
+                longlatProj <- paste(longlatProj, "+f=0")
+                oceDebug(debug, "    new longlatProj: \"", longlatProj, "\"\n")
+            }
+            if (!grepl("\\+a[ ]*=", projection)) {
+                oceDebug(debug, "  +a= not present in projection, so adding it\n")
                 projection <- paste(projection, "+a=6371")
+                oceDebug(debug, "    new projection: \"", projection, "\"\n")
+            }
+            if (!grepl("\\+a[ ]*=", longlatProj)) {
+                oceDebug(debug, "  +a= not present in longlatProj, so adding it\n")
                 longlatProj <- paste(longlatProj, "+a=6371")
-                oceDebug(debug, "  new projection= \"", projection, "\"\n")
-                oceDebug(debug, "  new longlatProj=\"", longlatProj, "\"\n")
+                oceDebug(debug, "    new longlatProj: \"", longlatProj, "\"\n")
             }
         }
     }
@@ -514,6 +517,10 @@ badFillFix2 <- function(x, y, xorig, yorig) {
 #'
 #' @param lty axis line type, passed to [axis()].
 #'
+#' @param las two-element axis label orientation, passed to [axis()]. The first
+#' value is for the horizontal axis, and the second is for the vertical axis.
+#' See [par()] for the meanings of the permitted values, namely 0, 1, 2 and 3.
+#'
 #' @param lwd axis line width, passed to [axis()]).
 #'
 #' @param lwd.ticks tick line width, passed to [axis()].
@@ -568,7 +575,7 @@ badFillFix2 <- function(x, y, xorig, yorig) {
 mapAxis <- function(
     side = 1:2, longitude = TRUE, latitude = TRUE,
     axisStyle = 1, tick = TRUE, line = NA, pos = NA, outer = FALSE, font = NA,
-    lty = "solid", lwd = 1, lwd.ticks = lwd, col = NULL, col.ticks = NULL,
+    las = c(0, 0), lty = "solid", lwd = 1, lwd.ticks = lwd, col = NULL, col.ticks = NULL,
     hadj = NA, padj = NA, tcl = -0.3, cex.axis = 1, mgp = c(0, 0.5, 0), debug = getOption("oceDebug")) {
     if ("none" == .Projection()$type) {
         stop("must create a map first, with mapPlot()\n")
@@ -585,6 +592,9 @@ mapAxis <- function(
     }
     if (!(axisStyle %in% 1:5)) {
         stop("invalid axis style ", paste(axisStyle, collapse = ","), "; must be 1, 2, 3, 4 or 5")
+    }
+    if (length(las) != 2L) {
+        stop("las must be a two-element integer vector")
     }
     boxLonLat <- usrLonLat()
     axis <- .axis()
@@ -647,7 +657,7 @@ mapAxis <- function(
             if (!inherits(tfcn, "try-error")) {
                 at <- tfcn(longitude)
                 if (any(is.finite(at))) {
-                    axis(side = 1, at = at, label = formatLonLat(longitude, "longitude", axisStyle = axisStyle))
+                    axis(side = 1, at = at, label = formatLonLat(longitude, "longitude", axisStyle = axisStyle), las = las[1])
                 }
             }
         }
@@ -669,7 +679,7 @@ mapAxis <- function(
             if (!inherits(tfcn, "try-error")) {
                 at <- tfcn(latitude)
                 if (any(is.finite(at))) {
-                    axis(side = 2, at = at, label = formatLonLat(latitude, "latitude", axisStyle = axisStyle), line = line)
+                    axis(side = 2, at = at, label = formatLonLat(latitude, "latitude", axisStyle = axisStyle), las = las[2], line = line)
                 }
             }
         }
@@ -696,7 +706,7 @@ mapAxis <- function(
 #' Importantly, the `longitude` system must match that of the
 #' [mapPlot()] call that made the underlying plot. If not, the
 #' contours can have spurious lines that run across the plot. See
-#' \sQuote{Dealing with longitude conventions} for a method
+#' \dQuote{Dealing with longitude conventions} for a method
 #' of handling conflicting longitude conventions between [mapPlot()]
 #' and [mapContour()].
 #'
@@ -1810,6 +1820,10 @@ mapLongitudeLatitudeXY <- function(longitude, latitude) {
 #' @param mgp three-element numerical vector describing axis-label
 #' placement, passed to [mapAxis()].
 #'
+#' @param las two-element axis label orientation, passed to [axis()]. The first
+#' value is for the horizontal axis, and the second is for the vertical axis.
+#' See [par()] for the meanings of the permitted values, namely 0, 1, 2 and 3.
+#'
 #' @param drawBox logical value indicating whether to draw a box around the plot.
 #' This is helpful for many projections at sub-global scale.
 #'
@@ -1881,8 +1895,6 @@ mapLongitudeLatitudeXY <- function(longitude, latitude) {
 #' # at the top of the document entitled "A Guide to NSIDC's Polar Stereographic
 #' # Projection" at https://nsidc.org/data/user-resources/help-center, with the
 #' # box indicating the region of the NSIDC grid.
-#' library(oce)
-#' data(coastlineWorld)
 #' projection <- sf::st_crs("EPSG:3413")
 #' cat(projection$proj4string, "\n") # see the projection details
 #' par(mar = c(2, 2, 1, 1)) # tighten margins
@@ -2013,30 +2025,50 @@ mapPlot <- function(
     geographical = 0,
     bg, fill, border = NULL, col = NULL,
     clip = TRUE, type = "polygon", axes = TRUE, axisStyle = 1,
-    cex, cex.axis = 1, mgp = c(0, 0.5, 0), drawBox = TRUE, showHemi = TRUE,
+    cex, cex.axis = 1, mgp = c(0, 0.5, 0), las = c(0, 0), drawBox = TRUE, showHemi = TRUE,
     polarCircle = 0, lonlabels = TRUE, latlabels = TRUE,
     projection = "+proj=moll", tissot = FALSE, trim = TRUE,
     debug = getOption("oceDebug"), ...) {
     debug <- max(0, min(debug, 3))
-    oceDebug(debug, "mapPlot(longitude, latitude,",
+    oceDebug(debug, "mapPlot(...,",
         argShow(longitudelim),
         argShow(latitudelim),
         argShow(type),
         if (inherits(projection, "crs")) {
-            paste("projection=sf::st_crs(\"", projection$input, "\"),", sep = "")
-        } else if (!missing(projection)) paste("projection=", projection, "\",", sep = ""),
+            paste0("projection=\"sf::st_crs(\"", projection$input, "\"),")
+        } else if (!missing(projection)) {
+            paste0("projection=\"", projection, "\",")
+        },
         argShow(grid),
         argShow(geographical),
-        ", ...) START\n",
+        "...) START\n",
         sep = "", unindent = 1
     )
     dots <- list(...)
+    dotsnames <- names(dots)
+    if (!missing(longitudelim) && !identical(order(longitudelim), 1:2)) {
+        warning("reordering longitudelim\n")
+        longitudelim <- sort(longitudelim)
+    }
+    if (!missing(latitudelim) && !identical(order(latitudelim), 1:2)) {
+        warning("reordering latitudelim\n")
+        latitudelim <- sort(latitudelim)
+    }
+    if ("xlim" %in% dotsnames && !identical(order(dots$xlim), 1:2)) {
+        stop("xlim elements are not in order.  (Advice: use longitudelim instead of xlim.)")
+    }
+    if ("ylim" %in% dotsnames && !identical(order(dots$ylim), 1:2)) {
+        stop("ylim elements are not in order.  (Advice: use latitudelim instead of ylim.)")
+    }
     if (1 == length(grid)) {
         grid <- rep(grid, 2)
     }
     geographical <- round(geographical)
     if (geographical < 0 || geographical > 4) {
         stop("argument geographical must be an integer between 0 to 4, inclusive")
+    }
+    if (length(las) != 2L) {
+        stop("las must be a two-element integer vector")
     }
     # Note the deprecation of sp::CRS() values.  I do not plan to permit values
     # from sf::st_crs() because I can't find documentation of the fields of those
@@ -2062,7 +2094,7 @@ mapPlot <- function(
         if (is.na(tmp)) {
             oceDebug(debug, "original projection\n      '", projection, "'\n  not converted, owing to an error with sf::st_crs()\n", sep = "")
         } else {
-            oceDebug(debug, "used sf::st_crs() to convert projection to \"", tmp, "\"\n", sep = "")
+            oceDebug(debug, "sf::st_crs() set projection to\n    \"", tmp, "\"\n", sep = "")
             projection <- tmp
         }
     }
@@ -2331,6 +2363,7 @@ mapPlot <- function(
         # world map in mollweide projection, the bounding points will be "in
         # space", so we must check for this when we calculate the span.
         usr <- par("usr")
+        oceDebug(debug, vectorShow(usr))
         # xll <- usr[1]
         # yll <- usr[3]
         # xur <- usr[2]
@@ -2545,7 +2578,7 @@ mapPlot <- function(
                             if (is.logical(lonlabels) && !lonlabels) {
                                 axis(side = 1, at = axisLabels1$at[!skip], labels = FALSE, mgp = mgp)
                             } else {
-                                axis(side = 1, at = axisLabels1$at[!skip], labels = axisLabels1$value[!skip], mgp = mgp)
+                                axis(side = 1, at = axisLabels1$at[!skip], labels = axisLabels1$value[!skip], las = las[1], mgp = mgp)
                             }
                         }
                     }
@@ -2565,7 +2598,7 @@ mapPlot <- function(
                             if (is.logical(latlabels) && !latlabels) {
                                 axis(side = 2, at = axisLabels2$at[!skip], labels = FALSE, mgp = mgp)
                             } else {
-                                axis(side = 2, at = axisLabels2$at[!skip], labels = axisLabels2$value[!skip], mgp = mgp)
+                                axis(side = 2, at = axisLabels2$at[!skip], labels = axisLabels2$value[!skip], las = las[2], mgp = mgp)
                             }
                         }
                     }
@@ -2901,27 +2934,37 @@ mapGrid <- function(
 
 #' Add a Scalebar to a Map
 #'
-#' Draw a scalebar on a map created by [mapPlot()] or otherwise.
+#' Draw a scalebar on a map created by [mapPlot()] or [plot,coastline-method()].
+#' For plots made otherwise, see \sQuote{Details}.
+#'
+#' It is also possible to use this with any plot, but the results will
+#' only make sense if the aspect ratio is set properly so that an item that is
+#' circular in nature is (very closely) circular on the plot. This aspect ratio
+#' condition is met by both [mapPlot()] and [plot,coastline-method()].
 #'
 #' The scale is appropriate to the centre of the plot, and will become
-#' increasingly inaccurate away from that spot, with the error depending on
-#' the projection and the fraction of the earth that is shown.
+#' increasingly inaccurate away from that spot, with the error depending on the
+#' projection and the fraction of the earth that is shown.
 #'
-#' Until December 2020, it was required that the map had been drawn by [mapPlot()],
-#' but now it can be any diagram showing longitude and latitude in degrees.
+## Until December 2020, it was required that the map had been drawn by
+## [mapPlot()], but now it can be any diagram showing longitude and latitude in
+## degrees.
 #'
-#' @param x,y position of the scalebar.  Eventually this may be similar to
-#'     the corresponding arguments in [legend()], but at the moment
-#'     `y` must be `NULL` and `x` must be `"topleft"` or `"topright"`.
+#' @param x,y position of the scalebar.  Eventually these two items may be
+#' handled similarly to the corresponding arguments in [legend()], but at the
+#' moment `y` must be `NULL` and `x` must be `"top"`, `"topleft"` or
+#' `"topright"`.
 #'
 #' @param length the distance to indicate, in kilometres.  If not provided, a
-#'     reasonable choice is made, based on the existing plot.
+#' reasonable choice is made, based on the existing plot.
 #'
 #' @param lwd line width of the scalebar.
 #'
 #' @param col color of the scalebar.
 #'
 #' @param cex character expansion factor for the scalebar text.
+#'
+#' @template debugTemplate
 #'
 #' @examples
 #' \donttest{
@@ -2936,22 +2979,25 @@ mapGrid <- function(
 #' mapScalebar()
 #' }
 #'
-#' @seealso A map must first have been created with [mapPlot()].
+## @seealso A map must first have been created with [mapPlot()].
 #'
 #' @family functions related to maps
 #'
 #' @author Dan Kelley
 mapScalebar <- function(
-    x, y = NULL, length,
-    lwd = 1.5 * par("lwd"), cex = par("cex"),
-    col = "black") {
+    x, y = NULL, length, lwd = 1.5 * par("lwd"), cex = par("cex"),
+    col = "black",
+    debug = getOption("oceDebug")) {
+    oceDebug(debug, "mapScale(...) START\n", sep = "", unindent = 1)
     if (!is.null(y)) {
         stop("y must be NULL in this (early) version of mapScalebar()\n")
     }
     if (missing(x)) {
         x <- "topleft"
-    } else if (is.na(pmatch(x, c("topleft", "topright")))) {
-        stop("x must be \"topleft\" or \"topright\", but it is \"", x, "\"\n")
+    } else if (!is.character(x)) {
+        stop("'x' must be a character value") # FIXME: relax this eventually, perhaps
+    } else if (!x %in% c("top", "topleft", "topright")) {
+        stop("x must be \"top\", \"topleft\" or \"topright\", but it is \"", x, "\"\n")
     }
     projection <- .Projection()$type
     usr <- par("usr")
@@ -2961,32 +3007,44 @@ mapScalebar <- function(
     dusr <- 0.01 * (usr[2] - usr[1]) # 1 percent of device width
     x1 <- x0 + dusr
     y1 <- y0
+    oceDebug(debug, vectorShow(x0))
+    oceDebug(debug, vectorShow(x1))
+    # comppute dkm, done differently for plots made by mapPlot() or otherwise
     if (projection != "none") {
-        # This means the plot was created by mapPlot
         ll0 <- map2lonlat(x0, y0)
         ll1 <- map2lonlat(x1, y1)
         dkm <- geodDist(ll0$longitude, ll0$latitude, ll1$longitude, ll1$latitude)
     } else {
-        # This means the plot was not created by mapPlot
         dkm <- geodDist(x0, y0, x1, y1)
     }
+    oceDebug(debug, vectorShow(dkm))
     kmPerUsr <- dkm / dusr
+    oceDebug(debug, vectorShow(kmPerUsr))
     # message("kmPerUsr: ", kmPerUsr)
     if (missing(length)) {
         # corner to corner distance
         ccd <- kmPerUsr * sqrt((usr[2] - usr[1])^2 + (usr[4] - usr[3])^2)
         length <- diff(pretty(c(0, ccd), n = 12)[1:2])
     }
+    oceDebug(debug, vectorShow(length))
     frac <- length / kmPerUsr
+    oceDebug(debug, vectorShow(frac))
     cin <- par("cin")[1]
     cinx <- xinch(cin)
+    oceDebug(debug, vectorShow(cinx))
     ciny <- yinch(cin)
+    oceDebug(debug, vectorShow(ciny))
     # FIXME: when get more options for x, revisit next few lines
-    xBar <- usr[1] + cinx / 2
-    if (is.character(x) && x == "topright") {
+    if (is.character(x) && x == "topleft") {
+        xBar <- usr[1] + 0.5 * cinx
+    } else if (is.character(x) && x == "topright") {
         xBar <- usr[2] - frac - 3.5 * cinx
+    } else if (is.character(x) && x == "top") {
+        xBar <- 0.5 * (usr[1] + usr[2] - 3 * cinx - frac)
     }
+    oceDebug(debug, vectorShow(xBar))
     yBar <- usr[4] - ciny / 2
+    oceDebug(debug, vectorShow(yBar))
     # Draw white-out underlay box with a border, since otherwise
     # it's hard to see a scalebar on a complex map.
     llBox <- list(x = xBar, y = yBar - 3 * ciny)
@@ -3003,14 +3061,21 @@ mapScalebar <- function(
     lines(rep(xBar + 1.5 * cinx + frac, 2), yBar - ciny + c(-ciny, ciny) / 3,
         col = col, lwd = lwd
     )
-    label <- sprintf("%.0f km", length)
+    label <- if (length < 1) { # represent down to 1m, if value is under 100m
+        sprintf("%g m", 1000 * length)
+    } else {
+        sprintf("%g km", length)
+    }
     # 1753 text(xBar+cinx, yBar-2.2*ciny, pos=4, adj=0, offset=0, label, cex=cex, col=2)#col)
+    x <- xBar + 1.5 * cinx + frac / 2
+    y <- yBar - 1.7 * ciny
+    oceDebug(debug, "placing text at x=", x, ", y=", y, "\n")
     text(
-        x = xBar + 1.5 * cinx + frac / 2,
-        y = yBar - 1.7 * ciny,
+        x, y,
         labels = label,
         pos = 1, adj = 0, offset = 0, cex = cex, col = col
     )
+    oceDebug(debug, "END mapScale(...)\n", sep = "", unindent = 1)
 }
 
 
@@ -4372,9 +4437,12 @@ knownProj4 <- c(
 #' because otherwise, if a new projection is called for, it will ruin any
 #' additions to the existing plot.
 #'
-#' @param longitude a numeric vector containing decimal longitudes, or a list
-#' containing items named `longitude` and `latitude`, in which case
-#' the indicated values are used, and next argument is ignored.
+#' @param longitude one of three choices: (1) a numeric vector containing
+#' decimal longitudes, (2) a list containing items named `longitude` and
+#' `latitude`, or (3) a [coastline-class] object, e.g. as created with
+#' [as.coastline()] or [read.coastline()]. In the second two cases, the values
+#' of longitude and latitude are inferred from the first argument, and any
+#' supplied value of `latitude` (next parameter) is ignored.
 #'
 #' @param latitude a numeric vector containing decimal latitude (ignored if
 #' `longitude` is a list, as described above).
@@ -4410,6 +4478,9 @@ lonlat2map <- function(longitude, latitude, projection = "", debug = getOption("
     if (is.list(longitude)) {
         latitude <- longitude$latitude
         longitude <- longitude$longitude
+    } else if (inherits(longitude, "coastline")) {
+        latitude <- longitude[["latitude"]]
+        longitude <- longitude[["longitude"]]
     }
     if (missing(latitude)) {
         stop("must supply latitude")

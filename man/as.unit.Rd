@@ -7,24 +7,33 @@
 as.unit(u, default = list(unit = expression(), scale = ""))
 }
 \arguments{
-\item{u}{A character string indicating a unit. Case is ignored, so that e.g.
-\code{"dbar"} and \code{"DBAR"} yield equal results.  The following are recognized:
-c(\code{"m-1"}, \code{"dbar"}, \code{"decibar"}, \code{"degree"}, \code{"degree_Celcius"},
-\code{"degree_north"}, \code{"degree_east"}, \code{"ipts-68"},
-\code{"its-90"}, \code{"m/s^1"}, \code{"m/s^2"}, \code{"pss-78"},
-\code{"umol/kg"}, \code{"micromole/kg"})}
+\item{u}{a character string indicating a unit. Case is ignored, so that e.g.
+\code{"dbar"} and \code{"DBAR"} yield equal results.  Many common notations are
+recognized, e.g. \code{kg/m^3} and \verb{kg m-3} for density, etc.}
 
-\item{default}{A default to be used for the return value, if \code{u}
-is not a recognized string.}
+\item{default}{a default to be used for the return value, if \code{u}
+is not a recognized string.  Setting this to NULL is a good way to
+discover whether a given value of \code{u} is recognized as a unit
+by this function, as opposed to something (like a conductivity
+ratio) that simply has no unit.}
 }
 \value{
-A list with elements \code{unit}, an \code{\link[=expression]{expression()}},
-and \code{scale}, a string.
+if \code{as.unit} recognizes \code{u} as unit, then it returns a list
+with elements \code{unit}, which is an \code{\link[=expression]{expression()}}, and \code{scale},
+which is a character value.  That is also the case if it does
+not recognize \code{u}, and if \code{default} is not specified.  However,
+if \code{u} is not recognized, and if \code{default} is provided by the user,
+then \code{as.unit} returns the provided value of \code{default}.
 }
 \description{
-This converts strings to unit objects.  Only a few strings are recognized,
-because most oce functions have specialized unit vocabularies and so
-have little need of this function.
+This converts strings to unit objects.  It is designed mainly for
+use within various functions in the package, not for the end user.
+Therefore, the documentation does not give a full listing; for that,
+developers should examine the \code{tests/test_that/test_units.R} file.
+Developers who wish to add new entries are asked to follow
+the conventions in this file, with regard to regular expressions,
+spaces between tokens, etc., and also to add tests for whatever
+they add.
 }
 \examples{
 as.unit("DBAR")

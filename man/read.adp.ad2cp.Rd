@@ -65,8 +65,9 @@ location.}
 \item{TOC}{a logical value.  If this is FALSE (the default) then
 the other parameters of the function are used to select data from
 the indicated \code{filename}, and an \linkS4class{adp} object is returned.
-However, if \code{TOC} is TRUE, then the number of datasets held within
-the file is returned.}
+However, if \code{TOC} is TRUE, then a dataframe detailing the number
+of entries in each of the datasets stored within the file is
+returned.}
 
 \item{debug}{an integer value indicating the level of debugging.  Set to 1 to
 get a moderate amount of debugging information, from the R code only, to 2 to
@@ -114,23 +115,50 @@ keep track of the resultant object, perhaps to combine it with other objects
 from within the AD2CP file or other files, in the normal R manner.
 
 The permitted values for \code{dataType} are shown in the table below;
-the \code{dataType} argument of \code{\link[=read.adp.ad2cp]{read.adp.ad2cp()}} may be chosen from any
-of the three columns in this table.\tabular{rrr}{
-   code (raw) \tab code (integer) \tab oce name \cr
-   ---------- \tab -------------- \tab ----------------- \cr
-   \code{0x15} \tab 21 \tab \code{burst} \cr
-   \code{0x16} \tab 22 \tab \code{average} \cr
-   \code{0x17} \tab 23 \tab \code{bottomTrack} \cr
-   \code{0x18} \tab 24 \tab \code{interleavedBurst} \cr
-   \code{0x1a} \tab 26 \tab \code{burstAltimeterRaw} \cr
-   \code{0x1b} \tab 27 \tab \code{DVLBottomTrack} \cr
-   \code{0x1c} \tab 28 \tab \code{echosounder} \cr
-   \code{0x1d} \tab 29 \tab \code{DVLWaterTrack} \cr
-   \code{0x1e} \tab 30 \tab \code{altimeter} \cr
-   \code{0x1f} \tab 31 \tab \code{averageAltimeter} \cr
-   \code{0x23} \tab 35 \tab \code{echosounderRaw} \cr
-   \code{0xa0} \tab 160 \tab \code{text} \cr
+the \code{dataType} argument of \code{\link[=read.adp.ad2cp]{read.adp.ad2cp()}} may be given
+as listed in any of the first 3 columns of this table.\tabular{rrrr}{
+   code (raw) \tab code (integer) \tab oce name \tab notes \cr
+   ---------- \tab -------------- \tab ------------------- \tab ------ \cr
+   \code{0x15} \tab 21 \tab \code{burst} \tab - \cr
+   \code{0x16} \tab 22 \tab \code{average} \tab - \cr
+   \code{0x17} \tab 23 \tab \code{bottomTrack} \tab - \cr
+   \code{0x18} \tab 24 \tab \code{interleavedBurst} \tab - \cr
+   \code{0x1a} \tab 26 \tab \code{burstAltimeterRaw} \tab - \cr
+   \code{0x1b} \tab 27 \tab \code{DVLBottomTrack} \tab - \cr
+   \code{0x1c} \tab 28 \tab \code{echosounder} \tab - \cr
+   \code{0x1d} \tab 29 \tab \code{DVLWaterTrack} \tab - \cr
+   \code{0x1e} \tab 30 \tab \code{altimeter} \tab - \cr
+   \code{0x1f} \tab 31 \tab \code{averageAltimeter} \tab - \cr
+   \code{0x23} \tab 35 \tab \code{echosounderRaw} \tab - \cr
+   \code{0x24} \tab 36 \tab \code{echosounderRawTx} \tab 1 \cr
+   \code{0x30} \tab 48 \tab \code{waves} \tab 2 \cr
+   \code{0xa0} \tab 160 \tab \code{text} \tab 3 \cr
+   `0xc0 \tab 192 \tab \code{format8} \tab 4 \cr
+   `0xc8 \tab 200 \tab \verb{vector 2} \tab 5 \cr
 }
+
+
+Note 1: Code 0x24 (\code{echosounderRawTx}) has some coding done, but
+it is untested, as the developers lack a data file exemplar. For
+now, this data type is read as though it were 0x23, which is
+likely to produce poor results or cause errors in processing.
+
+Note 2: Code 0x30 (\code{waves}) is recognized but not handled
+yet.
+
+Note 3: Code 0xa0 (\code{text}) holds a text string that defines
+the settings used in creating the file.  This can be quite
+helpful in debugging and analysis.
+
+Note 4: Code 0xc0 (\code{format8}) is not handled, and trying to read
+this yields an error indicating this fact.  This code was listed,
+without further documentation in Nortek (2024) manual.  However,
+it is not listed in Nortek (2025). Accordingly, it is not handled
+by read.adp.ad2cp`.
+
+Note 5: Code 0xc8 (\verb{vector 2}) is listed in Nortek (2025) but that
+document provides no information on the format. Accordingly, it is
+not handled by read.adp.ad2cp`.
 }
 \section{Sample of Usage}{
 
@@ -183,6 +211,13 @@ if (file.exists(file)) {
 
 }
 \references{
+Nortek AS. “Integrator’s Guide: Signature.” Nortek AS, April 30, 2025.
+\url{https://support.nortekgroup.com/hc/en-us/article_attachments/19830760385436}.
+
+Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz (2024.1),} 2024.
+(This was once at \code{https://support.nortekgroup.com/hc/en-us/articles/360029513952-Integrators-Guide-Signature}
+but a test on 2025-05-26 revealed that this link no longer worked.)
+
 Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz.} Nortek AS,
 2017.
 

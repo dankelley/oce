@@ -8,8 +8,9 @@
 data(xbt)
 }
 \description{
-An \linkS4class{xbt} object created by using \code{\link[=read.xbt]{read.xbt()}} on a Sippican file created by extracting the near-surface
-fraction of the sample provided in Section 5.5.6 of reference 1.
+An \linkS4class{xbt} object created by using \code{\link[=read.xbt]{read.xbt()}} on a Sippican file
+created by extracting the near-surface fraction of the sample provided in
+Section 5.5.6 of reference 1.
 }
 \examples{
 library(oce)
@@ -20,8 +21,8 @@ plot(xbt)
 }
 \references{
 \enumerate{
-\item Sippican, Inc. "Bathythermograph Data Acquisition System: Installation, Operation and Maintenance
-Manual (P/N 308195, Rev. A)," 2003.
+\item Sippican, Inc. "Bathythermograph Data Acquisition System: Installation,
+Operation and Maintenance Manual (P/N 308195, Rev. A)," 2003.
 https://pages.uoregon.edu/drt/MGL0910_Science_Report/attachments/MK21_ISA_Manual_Rev_A.pdf.
 }
 }
@@ -55,10 +56,12 @@ Other things related to xbt data:
 \code{\link{plot,xbt-method}},
 \code{\link{read.xbt}()},
 \code{\link{read.xbt.noaa1}()},
+\code{\link{read.xbt.noaa2}()},
 \code{\link{subset,xbt-method}},
 \code{\link{summary,xbt-method}},
 \code{\link{xbt-class}},
-\code{\link{xbt.edf}}
+\code{\link{xbt.edf}},
+\code{\link{xbt2.edf}}
 }
 \concept{datasets provided with oce}
 \concept{things related to xbt data}

@@ -22,62 +22,65 @@
 #' The table given below indicates the translation patterns used. These are
 #' taken from reference 1. The `.cnv` convention for multiple sensors is to
 #' include optional extra digits in the name, and these are indicated
-#' with `~` or `~~` in the table; their decoding is done with [grep()].
+#' with one `#` character for each optional digit.  (These `#` characters
+#' are converted to the the appropriate regular-expression code, `\\d`,
+#' before pattern-matching with [grep()].)
 #'
 #' It is important to note that this table is by no means complete, since there
 #' are a great many SBE names listed in their document (reference 1), plus names
-#' not listed there but present in data files
-#' supplied by prominent archiving agencies. If an SBE name is not recognized,
-#' then the oce name is set to that SBE name. This can cause problems in
-#' some other processing steps (e.g. if [swRho()] or a similar
-#' function is called with an `oce` object as first argument), and so
-#' users are well-advised to rename the items as appropriate. The first
-#' step in doing this is to pass the object to `summary()`, to discover
-#' the SBE names in question. Then consult the SBE documentation to find
-#' an appropriate name for the data, and either manipulate the names in the object
-#' data slot directly or use
-#' [oceRenameData()] to rename the elements. Finally, please publish
-#' an 'issue' on the oce Github site `https://github.com/dankelley/oce/issues`
-#' so that the developers can add the data type in question. (To save
-#' development time, there is no plan to add all possible data types without
-#' a reasonable and specific expression user interest. Oxygen alone has over forty
-#' variants.)
+#' not listed there but present in data files supplied by prominent archiving
+#' agencies. If an SBE name is not recognized, then the oce name is set to that
+#' SBE name. This can cause problems in some other processing steps (e.g. if
+#' [swRho()] or a similar function is called with an `oce` object as first
+#' argument), and so users are well-advised to rename the items as appropriate.
+#' The first step in doing this is to pass the object to `summary()`, to
+#' discover the SBE names in question. Then consult the SBE documentation to
+#' find an appropriate name for the data, and either manipulate the names in the
+#' object data slot directly or use [rename()] to rename the elements.
+#' Finally, please publish an 'issue' on the oce Github site
+#' `https://github.com/dankelley/oce/issues` so that the developers can add the
+#' data type in question.
+#'
+#' The table below has well over 100 entries, but this only scratches the
+#' surface; the SBE documents list over 40 variants for oxygen alone.  To save
+#' development time, there is no plan to add all possible data types without a
+#' reasonable and specific expression user interest.
 #'
 #' \tabular{llll}{
 #' **Key**       \tab **Result**                 \tab **Unit;scale**      \tab **Notes** \cr
 #' `accM`        \tab `acceleration`             \tab m/s^2               \tab    \cr
 #' `altM`        \tab `altimeter`                \tab m                   \tab    \cr
 #' `alt`         \tab `altimeter`                \tab m                   \tab    \cr
-#' `bat~`        \tab `beamAttenuation`          \tab 1/m                 \tab    \cr
+#' `bat#`        \tab `beamAttenuation`          \tab 1/m                 \tab    \cr
 #' `C2-C1mS/cm`  \tab `conductivityDifference`   \tab mS/cm               \tab    \cr
 #' `C2-C1S/m`    \tab `conductivityDifference`   \tab S/m                 \tab    \cr
 #' `C2-C1uS/cm`  \tab `conductivityDifference`   \tab uS/cm               \tab    \cr
-#' `cond~mS/cm`  \tab `conductivity`             \tab mS/cm               \tab    \cr
-#' `cond~S/m`    \tab `conductivity`             \tab S/m                 \tab    \cr
-#' `cond~uS/cm`  \tab `conductivity`             \tab uS/cm               \tab    \cr
-#' `CStarAt~`    \tab `beamAttenuation`          \tab 1/m                 \tab    \cr
-#' `CStarTr~`    \tab `beamTransmission`         \tab percent             \tab    \cr
-#' `c~mS/cm`     \tab `conductivity`             \tab mS/cm               \tab    \cr
-#' `c~S/m`       \tab `conductivity`             \tab S/m                 \tab    \cr
-#' `c~uS/cm`     \tab `conductivity`             \tab uS/cm               \tab    \cr
-#' `density~~`   \tab `density`                  \tab kg/m^3              \tab    \cr
+#' `cond#mS/cm`  \tab `conductivity`             \tab mS/cm               \tab    \cr
+#' `cond#S/m`    \tab `conductivity`             \tab S/m                 \tab    \cr
+#' `cond#uS/cm`  \tab `conductivity`             \tab uS/cm               \tab    \cr
+#' `CStarAt#`    \tab `beamAttenuation`          \tab 1/m                 \tab    \cr
+#' `CStarTr#`    \tab `beamTransmission`         \tab percent             \tab    \cr
+#' `c#mS/cm`     \tab `conductivity`             \tab mS/cm               \tab    \cr
+#' `c#S/m`       \tab `conductivity`             \tab S/m                 \tab    \cr
+#' `c#uS/cm`     \tab `conductivity`             \tab uS/cm               \tab    \cr
+#' `density##`   \tab `density`                  \tab kg/m^3              \tab    \cr
 #' `depFM`       \tab `depth`                    \tab m                   \tab    \cr
 #' `depF`        \tab `depth`                    \tab m                   \tab    \cr
 #' `depSM`       \tab `depth`                    \tab m                   \tab    \cr
 #' `depS`        \tab `depth`                    \tab m                   \tab    \cr
 #' `dz/dtM`      \tab `descentRate`              \tab m/s                 \tab    \cr
 #' `flCM`        \tab `fluorescence`             \tab ug/l; Chelsea Mini Chl Con\tab\cr
-#' `flCUVA~`     \tab `fluorescence`             \tab ug/l; Chelsea UV Aquatracka\tab\cr
-#' `flC~`        \tab `fluorescence`             \tab ug/l; Chelsea Aqua 3\tab    \cr
-#' `flEC-AFL~`   \tab `fluorescence`             \tab mg/m^3; WET Labs ECO-AFL/FLtab\cr
-#' `flScufa~`    \tab `fluorescence`             \tab -; Turner SCUFA (RFU)\tab\cr
+#' `flCUVA#`     \tab `fluorescence`             \tab ug/l; Chelsea UV Aquatracka\tab\cr
+#' `flC#`        \tab `fluorescence`             \tab ug/l; Chelsea Aqua 3\tab    \cr
+#' `flEC-AFL#`   \tab `fluorescence`             \tab mg/m^3; WET Labs ECO-AFL/FLtab\cr
+#' `flScufa#`    \tab `fluorescence`             \tab -; Turner SCUFA (RFU)\tab\cr
 #' `flSPR`       \tab `fluorescence`             \tab -; Seapoint, Rhodamine\tab  \cr
 #' `flSPuv`      \tab `fluorescence`             \tab -; Seapoint, UV      \tab   \cr
 #' `flSP`        \tab `fluorescence`             \tab -; Seapoint          \tab   \cr
 #' `flS`         \tab `fluorescence`             \tab -; Seatech           \tab   \cr
 #' `flT`         \tab `fluorescence`             \tab -; Turner 10-005 flT \tab   \cr
-#' `f~`          \tab `frequency`                \tab Hz                   \tab   \cr
-#' `f~~`         \tab `frequency`                \tab Hz                   \tab   \cr
+#' `f#`          \tab `frequency`                \tab Hz                   \tab   \cr
+#' `f##`         \tab `frequency`                \tab Hz                   \tab   \cr
 #' `gpa`         \tab `geopotentialAnomaly`      \tab -; J/kg              \tab   \cr
 #' `latitude`    \tab `latitude`                 \tab degN                 \tab   \cr
 #' `longitude`   \tab `longitude`                \tab degE                 \tab   \cr
@@ -85,7 +88,7 @@
 #' `n2satML/L`   \tab `nitrogenSaturation`       \tab ml/l                 \tab   \cr
 #' `n2satumol/kg`\tab `nitrogenSaturation`       \tab umol/kg              \tab   \cr
 #' `nbin`        \tab `nbin`                     \tab                      \tab   \cr
-#' `obsscufa~`   \tab `backscatter`              \tab NTU; Turner SCUFA    \tab   \cr
+#' `obsscufa#`   \tab `backscatter`              \tab NTU; Turner SCUFA    \tab   \cr
 #' `opoxMg/L`    \tab `oxygen`                   \tab mg/l; Optode, Aanderaa\tab  \cr
 #' `opoxML/L`    \tab `oxygen`                   \tab ml/l; Optode, Aanderaa\tab  \cr
 #' `opoxMm/L`    \tab `oxygen`                   \tab umol/l; Optode, Aanderaa\tab\cr
@@ -97,10 +100,10 @@
 #' `oxsolML/L`   \tab `oxygen`                   \tab ml/l; Garcia-Gordon  \tab   \cr
 #' `oxsolMm/Kg`  \tab `oxygen`                   \tab umol/kg; Garcia-Gordon\tab  \cr
 #' `par/log`     \tab `PAR`                      \tab log; Satlantic       \tab   \cr
-#' `par~`        \tab `PAR`                      \tab -; Biospherical/Licor\tab   \cr
+#' `par#`        \tab `PAR`                      \tab -; Biospherical/Licor\tab   \cr
 #' `ph`          \tab `pH`                       \tab -                    \tab   \cr
-#' `potemp~68C`  \tab `thetaM`                   \tab degC; IPTS-68        \tab   \cr
-#' `potemp~90C`  \tab `thetaM`                   \tab degC; ITS-90         \tab   \cr
+#' `potemp#68C`  \tab `thetaM`                   \tab degC; IPTS-68        \tab   \cr
+#' `potemp#90C`  \tab `thetaM`                   \tab degC; ITS-90         \tab   \cr
 #' `pr50M`       \tab `pressure`                 \tab dbar; SBE50          \tab   \cr
 #' `prDE`        \tab `pressure`                 \tab psi; digiquartz      \tab 2 \cr
 #' `prdE`        \tab `pressure`                 \tab psi; strain gauge    \tab 2 \cr
@@ -112,21 +115,21 @@
 #' `pr`          \tab `pressure`                 \tab dbar                 \tab 1 \cr
 #' `ptempC`      \tab `pressureTemperature`      \tab degC; ITS-90         \tab 3 \cr
 #' `pumps`       \tab `pumpStatus`               \tab                      \tab   \cr
-#' `rhodflTC~`   \tab `Rhodamine`                \tab ppb; Turner Cyclops  \tab   \cr
-#' `sal~~`       \tab `salinity`                 \tab -, PSS-78            \tab 4 \cr
-#' `sbeox~ML/L`  \tab `oxygen`                   \tab ml/l; SBE43          \tab   \cr
-#' `sbeox~Mm/Kg` \tab `oxygen`                   \tab umol/kg; SBE43       \tab   \cr
-#' `sbeox~Mm/L`  \tab `oxygen`                   \tab umol/l; SBE43        \tab   \cr
-#' `sbeox~PS`    \tab `oxygen`                   \tab percent; SBE43       \tab   \cr
-#' `sbeox~V`     \tab `oxygenRaw`                \tab V; SBE43             \tab   \cr
-#' `sbox~dV/dT`  \tab `oxygen`                   \tab dov/dt; SBE43        \tab   \cr
-#' `sbox~ML/L`   \tab `oxygen`                   \tab ml/l; SBE43          \tab   \cr
-#' `sbox~Mm/Kg`  \tab `oxygen`                   \tab umol/kg; SBE43       \tab   \cr
-#' `sbox~Mm/L`   \tab `oxygen`                   \tab umol/l; SBE43        \tab   \cr
-#' `sbox~PS`     \tab `oxygen`                   \tab percent; SBE43       \tab   \cr
-#' `sbox~V`      \tab `oxygenRaw`                \tab V; SBE43             \tab   \cr
+#' `rhodflTC#`   \tab `Rhodamine`                \tab ppb; Turner Cyclops  \tab   \cr
+#' `sal##`       \tab `salinity`                 \tab -, PSS-78            \tab 4 \cr
+#' `sbeox#ML/L`  \tab `oxygen`                   \tab ml/l; SBE43          \tab   \cr
+#' `sbeox#Mm/Kg` \tab `oxygen`                   \tab umol/kg; SBE43       \tab   \cr
+#' `sbeox#Mm/L`  \tab `oxygen`                   \tab umol/l; SBE43        \tab   \cr
+#' `sbeox#PS`    \tab `oxygen`                   \tab percent; SBE43       \tab   \cr
+#' `sbeox#V`     \tab `oxygenRaw`                \tab V; SBE43             \tab   \cr
+#' `sbox#dV/dT`  \tab `oxygen`                   \tab dov/dt; SBE43        \tab   \cr
+#' `sbox#ML/L`   \tab `oxygen`                   \tab ml/l; SBE43          \tab   \cr
+#' `sbox#Mm/Kg`  \tab `oxygen`                   \tab umol/kg; SBE43       \tab   \cr
+#' `sbox#Mm/L`   \tab `oxygen`                   \tab umol/l; SBE43        \tab   \cr
+#' `sbox#PS`     \tab `oxygen`                   \tab percent; SBE43       \tab   \cr
+#' `sbox#V`      \tab `oxygenRaw`                \tab V; SBE43             \tab   \cr
 #' `scan`        \tab `scan`                     \tab -                    \tab   \cr
-#' `seaTurbMtr~` \tab `turbidity`                \tab FTU; Seapoint        \tab   \cr
+#' `seaTurbMtr#` \tab `turbidity`                \tab FTU; Seapoint        \tab   \cr
 #' `secS-priS`   \tab `salinityDifference`       \tab -, PSS-78            \tab   \cr
 #' \code{sigma-}\enc{é}{e} \tab `sigmaTheta`     \tab kg/m^3               \tab 5 \cr
 #' `sigma-t`     \tab `sigmaT`                   \tab kg/m^3               \tab   \cr
@@ -134,15 +137,15 @@
 #' `spar`        \tab `spar`                     \tab -                    \tab   \cr
 #' `specc`       \tab `specificConductance`      \tab uS/cm                \tab   \cr
 #' `sva`         \tab `specificVolumeAnomaly`    \tab 1e-8 m^3/kg;         \tab   \cr
-#' `svCM~`       \tab `soundSpeed`               \tab m/s; Chen-Millero    \tab   \cr
+#' `svCM#`       \tab `soundSpeed`               \tab m/s; Chen-Millero    \tab   \cr
 #' `t090Cm`      \tab `temperature`              \tab degC; ITS-90         \tab   \cr
 #' `t190C`       \tab `temperature`              \tab degC; ITS-90         \tab   \cr
-#' `T2~68C`      \tab `temperatureDifference`    \tab degC; IPTS-68        \tab   \cr
-#' `T2~90C`      \tab `temperatureDifference`    \tab degC; ITS-90         \tab   \cr
-#' `t3868C~`     \tab `temperature`              \tab degC; IPTS-68        \tab   \cr
-#' `t3890C~`     \tab `temperature`              \tab degC; ITS-90         \tab   \cr
-#' `t38~38C`     \tab `temperature`              \tab degC; IPTS-68        \tab   \cr
-#' `t38~90C`     \tab `temperature`              \tab degC; ITS-90         \tab   \cr
+#' `T2#68C`      \tab `temperatureDifference`    \tab degC; IPTS-68        \tab   \cr
+#' `T2#90C`      \tab `temperatureDifference`    \tab degC; ITS-90         \tab   \cr
+#' `t3868C#`     \tab `temperature`              \tab degC; IPTS-68        \tab   \cr
+#' `t3890C#`     \tab `temperature`              \tab degC; ITS-90         \tab   \cr
+#' `t38#38C`     \tab `temperature`              \tab degC; IPTS-68        \tab   \cr
+#' `t38#90C`     \tab `temperature`              \tab degC; ITS-90         \tab   \cr
 #' `t4968C`      \tab `temperature`              \tab degC; IPTS-68        \tab   \cr
 #' `t4990C`      \tab `temperature`              \tab degC; ITS-90         \tab   \cr
 #' `timeH`       \tab `timeH`                    \tab hour; elapsed        \tab   \cr
@@ -159,37 +162,43 @@
 #' `tnc90C`      \tab `temperature`              \tab degC; ITS-90         \tab   \cr
 #' `tsa`         \tab `thermostericAnomaly`      \tab 1e-8 m^3/kg          \tab   \cr
 #' `turbflTCdiff`\tab `turbidityDifference`      \tab NTU; Turner Cyclops  \tab   \cr
-#' `turbflTC~`   \tab `turbidity`                \tab NTU; Turner Cyclops  \tab   \cr
+#' `turbflTC#`   \tab `turbidity`                \tab NTU; Turner Cyclops  \tab   \cr
 #' `turbWETbbdiff`\tab `turbidityDifference`     \tab 1/(m\*sr); WET Labs ECO\tab \cr
-#' `turbWETbb~`  \tab `turbidity`                \tab 1/(m\*sr); WET Labs ECO\tab \cr
+#' `turbWETbb#`  \tab `turbidity`                \tab 1/(m\*sr); WET Labs ECO\tab \cr
 #' `turbWETntudiff`\tab `turbidityDifference`    \tab NTU; WET Labs ECO    \tab   \cr
-#' `turbWETntu~` \tab `turbidity`                \tab NTU; WET Labs ECO    \tab   \cr
+#' `turbWETntu#` \tab `turbidity`                \tab NTU; WET Labs ECO    \tab   \cr
 #' `tv268C`      \tab `temperature`              \tab degC; IPTS-68        \tab   \cr
 #' `tv290C`      \tab `temperature`              \tab degC; ITS-90         \tab   \cr
-#' `t~68C`       \tab `temperature`              \tab degC; IPTS-68        \tab   \cr
-#' `t~68`        \tab `temperature`              \tab degC; IPTS-68        \tab   \cr
-#' `t~90C`       \tab `temperature`              \tab degC; ITS-90         \tab   \cr
-#' `t~90`        \tab `temperature`              \tab degC; ITS-90         \tab   \cr
-#' `upoly~`      \tab `upoly`                    \tab -                    \tab   \cr
-#' `user~`       \tab `user`                     \tab -                    \tab   \cr
-#' `v~~`         \tab `voltage`                  \tab V                    \tab   \cr
+#' `t#68C`       \tab `temperature`              \tab degC; IPTS-68        \tab   \cr
+#' `t#68`        \tab `temperature`              \tab degC; IPTS-68        \tab   \cr
+#' `t#90C`       \tab `temperature`              \tab degC; ITS-90         \tab   \cr
+#' `t#90`        \tab `temperature`              \tab degC; ITS-90         \tab   \cr
+#' `upoly#`      \tab `upoly`                    \tab -                    \tab   \cr
+#' `user#`       \tab `user`                     \tab -                    \tab   \cr
+#' `v##`         \tab `voltage`                  \tab V                    \tab   \cr
 #' `wetBAttn`    \tab `beamAttenuation`          \tab 1/m; WET Labs AC3    \tab   \cr
 #' `wetBTrans`   \tab `beamTransmission`         \tab percent; WET Labs AC3\tab   \cr
 #' `wetCDOMdiff` \tab `fluorescenceDifference`   \tab mg/m^3; WET Labs CDOM\tab   \cr
-#' `wetCDOM~`    \tab `fluorescence`             \tab mg/m^3; WET Labs CDOM\tab   \cr
+#' `wetCDOM#`    \tab `fluorescence`             \tab mg/m^3; WET Labs CDOM\tab   \cr
 #' `wetChAbs`    \tab `fluorescence`             \tab 1/m; WET Labs AC3 absorption\tab\cr
 #' `wetStardiff` \tab `fluorescenceDifference`   \tab mg/m^3; WET Labs WETstar\tab \cr
-#' `wetStar~`    \tab `fluorescence`             \tab mg/m^3; WET Labs WETstar\tab \cr
+#' `wetStar#`    \tab `fluorescence`             \tab mg/m^3; WET Labs WETstar\tab \cr
 #' `xmiss`       \tab `beamTransmission`         \tab percent; Chelsea/Seatech\tab \cr
-#' `xmiss~`      \tab `beamTransmission`         \tab percent; Chelsea/Seatech\tab \cr
+#' `xmiss#`      \tab `beamTransmission`         \tab percent; Chelsea/Seatech\tab \cr
 #' }
+#'
 #' Notes:
-#' 1. 'pr' is in a Dalhousie-generated data file but seems not to be in reference 1.
-#' 2. This is an odd unit, and so if `sw*` functions are called on an object
+#'
+#' 1. `pr` is in a Dalhousie-generated data file but seems not to be in reference 1.
+#'
+#' 2. This is a strange unit, and so if `sw*` functions are called on an object
 #' containing this, a conversion will be made before performing the computation. Be
 #' on the lookout for errors, since this is a rare situation.
+#'
 #' 3. Assume ITS-90 temperature scale, since sample `.cnv` file headers do not specify it.
+#'
 #' 4. Some files have PSU for this. Should we handle that? And are there other S scales to consider?
+#'
 #' 5. The 'theta' symbol (here shown accented e) may appear in different ways with different
 #' encoding configurations, set up within R or in the operating system.
 #'
@@ -215,6 +224,7 @@
 #' and this was the reference version used in coding `oce`.
 #'
 #' @family things related to ctd data
+#'
 #' @family functions that interpret variable names and units from headers
 cnvName2oceName <- function(h, columns = NULL, debug = getOption("oceDebug")) {
     oceDebug(debug, "cnvName2oceName() BEGIN\n", unindent = 1)
@@ -243,6 +253,7 @@ cnvName2oceName <- function(h, columns = NULL, debug = getOption("oceDebug")) {
     }
     # Since 'name' is not mentioned in 'columns', try looking it up. Some of these
     # tests are a bit subtle, and could be wrong.
+    # FIXME: use rename() in place of this long conditional sequence
     if (1 == length(grep("^alt[M]?$", name))) {
         name <- "altimeter"
         unit <- list(unit = expression(m), scale = "")
@@ -403,10 +414,10 @@ cnvName2oceName <- function(h, columns = NULL, debug = getOption("oceDebug")) {
         name <- "CPAR/Corrected Irradience"
         unit <- list(unit = expression(percent), scale = "")
     } else if (1 == length(grep("^par[0-9]?$", name))) {
-        name <- "par"
+        name <- "PAR"
         unit <- list(unit = expression(), scale = "Biospherical/Licor")
     } else if (1 == length(grep("^par/log$", name))) {
-        name <- "par"
+        name <- "PAR"
         unit <- list(unit = expression(log), scale = "Satlantic")
     } else if (1 == length(grep("^ph$", name))) {
         name <- "pH"
@@ -652,33 +663,39 @@ cnvName2oceName <- function(h, columns = NULL, debug = getOption("oceDebug")) {
 #'
 #' @template encodingTemplate
 #'
-#' @param btl a logical value, with `TRUE` indicating that this is a `.BTL` file and `FALSE`
-#' (the default) indicating a `.CNV` file.  Note that if `btl` is `TRUE`, the data column
-#' names are taken directly from the file (without e.g. translating to `"Sal00"`
-#' to `"salinity"`.  Also, the "avg" and "sdev" columns are blended together, with
-#' all the latter named as in the file, but with `"_sdev"` appended.
+#' @param rename optional logical value indicating whether to rename variables
+#' from the values in the file to the oce convention, using [cnvName2oceName()]
+#' for the translation. This is done by default, but setting `rename=FALSE` can
+#' be helpful if there is a wish to control the renaming, either using a
+#' built-in dictionary or using a dictionary set up by the user.  See Examples 1
+#' and 2. if there is a desire to control renaming using [rename()].
 #'
-# @param humanDateFormat optional character string specifying the format for dates
-# in the human-entered header line that starts with "`** Date:`". See the
-# \dQuote{A note on hand-entered headers} section for the reason for this parameter.
-# If supplied, then `humanDateFormat` is supplied as the `format` argument to
-# [as.POSIXct()], which is supplied with the information on this date line.
+#' @param requireSalinity logical value indicating what to do if the dataset
+#' lacks both salinity and conductivity. If `requireSalinity` is TRUE (the
+#' default) then an error results in this situation; otherwise, a warning is
+#' issued.
 #'
-#' @author Dan Kelley and Clark Richards
+#' @param btl a logical value, with `TRUE` indicating that this is a `.BTL` file
+#' and `FALSE` (the default) indicating a `.CNV` file.  Note that if `btl` is
+#' `TRUE`, the data column names are taken directly from the file (without e.g.
+#' translating to `"Sal00"` to `"salinity"`.  Also, the "avg" and "sdev" columns
+#' are blended together, with all the latter named as in the file, but with
+#' `"_sdev"` appended.
 #'
 #' @details
-#' This function reads files stored in Seabird `.cnv` format.
-#' Note that these files can contain multiple sensors for a given field. For example,
-#' the file might contain a column named `t090C` for one
-#' temperature sensor and `t190C` for a second. The first will be denoted
-#' `temperature` in the `data` slot of the return value, and the second
-#' will be denoted `temperature1`. This means that the first sensor
-#' will be used in any future processing that accesses `temperature`. This
-#' is for convenience of processing, and it does not pose a limitation, because the
-#' data from the second sensor are also available as e.g. `x[["temperature1"]]`,
-#' where `x` is the name of the returned value.  For the details of the
-#' mapping from `.cnv` names to `ctd` names, see [cnvName2oceName()].
 #'
+#' This function reads files stored in Seabird `.cnv` format. Note that these
+#' files can contain multiple sensors for a given field. For example, the file
+#' might contain a column named `t090C` for one temperature sensor and `t190C`
+#' for a second. The first will be denoted `temperature` in the `data` slot of
+#' the return value, and the second will be denoted `temperature1`. This means
+#' that the first sensor will be used in any future processing that accesses
+#' `temperature`. This is for convenience of processing, and it does not pose a
+#' limitation, because the data from the second sensor are also available as
+#' e.g. `x[["temperature1"]]`, where `x` is the name of the returned value.  For
+#' the details of the mapping from `.cnv` names to `ctd` names, see
+#' [cnvName2oceName()].
+
 #' The names of the elements in the `data` slot of the returned value depend on
 #' the file type, as signalled by the `btl` argument.  For the default case of `.cnv` files,
 #' the original data names as stored in `file` are stored within the `metadata`
@@ -687,6 +704,22 @@ cnvName2oceName <- function(h, columns = NULL, debug = getOption("oceDebug")) {
 #' names (in the "Short Name" column of the table spanning pages 161 through 172).
 #' However, for the case of `.btl` files, the column names are as described
 #' in the documentation entry for the `btl` argument.
+#'
+#' @section A note on freshwater files:
+#'
+#' As of version 1.8-4 of the package, `read.ctd.sbe()` can handle
+#' files that lack both salinity data and conductivity data. The existence of
+#' such files is possible for sampling done in lakes. In prior versions,
+#' the function reported an error, but as of 1.8-4, it reports only
+#' a warning. The recommended practice in such a case is to do e.g.
+#'
+#' ```
+#' d <- read.ctd.sbe("file.cnv")
+#' d <- ctdAddData(d, "salinity", rep(0.0, length(d[["pressure"]]))
+#' ```
+#' to add a salinity column. That will permit e.g. density calculations,
+#' although the accuracy of such calculations is questionable, since the
+#' equations of state are meant to apply to salt water.
 #'
 #' @section A note on hand-entered headers:
 #'
@@ -801,8 +834,12 @@ cnvName2oceName <- function(h, columns = NULL, debug = getOption("oceDebug")) {
 #' Note that reading a file that contains IPTS-68 temperatures produces a warning.
 #'
 #' @examples
+#' # Example 1: default variable renaming
 #' f <- system.file("extdata", "ctd.cnv.gz", package = "oce")
-#' d <- read.ctd(f)
+#' d1 <- read.ctd(f)
+#'
+#' # Example 2: handle variable renaming after reading
+#' d2 <- read.ctd(f, rename = FALSE) |> rename("sbe")
 #'
 #' @references
 #' 1. The Sea-Bird SBE 19plus profiler is described at
@@ -819,14 +856,20 @@ cnvName2oceName <- function(h, columns = NULL, debug = getOption("oceDebug")) {
 #' `SBEDataProcessing_7.26.4.pdf` and had release date 12/08/2017,
 #' and this was the reference version used in coding `oce`.
 #'
+#' @author Dan Kelley and Clark Richards
+#'
 #' @family functions that read ctd data
 read.ctd.sbe <- function(
     file, columns = NULL, station = NULL, missingValue,
     deploymentType = "unknown", btl = FALSE, monitor = FALSE,
-    encoding = "latin1",
+    encoding = "latin1", rename = TRUE,
+    requireSalinity = TRUE,
     debug = getOption("oceDebug"), processingLog, ...) {
     if (missing(file)) {
         stop("must supply 'file'")
+    }
+    if (!is.logical(rename)) {
+        stop("rename must be a logical value")
     }
     if (is.character(file)) {
         if (!file.exists(file)) {
@@ -840,7 +883,7 @@ read.ctd.sbe <- function(
     # that filename, 'encoding' and 'debug' are passed along, so if you need
     # detailed customization, call the function on those files directly.
     if (is.character(file) && grepl("\\*", file, ignore.case = TRUE)) {
-        oceDebug(debug, "read.ctd.sbe(file=\"", file, "\") BEGIN will read a series of files\n", unindent = 1)
+        oceDebug(debug, "read.ctd.sbe(file=\"", file, "\") BEGIN will read a series of files\n", sep = " ", unindent = 1)
         files <- list.files(pattern = file)
         nfiles <- length(files)
         if (monitor) {
@@ -859,7 +902,7 @@ read.ctd.sbe <- function(
         }
         return(res)
     }
-    oceDebug(debug, "read.ctd.sbe(file=\"", file, "\") BEGIN\n", unindent = 1)
+    oceDebug(debug, "read.ctd.sbe(file=\"", file, "\", rename =", rename, ") BEGIN\n", sep = "", unindent = 1)
     # Read Seabird data file.  Note on headers: '*' is machine-generated,
     # '**' is a user header, and '#' is a post-processing header.
     filename <- ""
@@ -908,6 +951,9 @@ read.ctd.sbe <- function(
     #<> message("try\na<-with(DAN, lines[nameLines[23]])\nEncoding(a)")
     for (iline in seq_along(nameLines)) {
         nu <- cnvName2oceName(lines[nameLines[iline]], columns, debug = debug - 1)
+        if (!rename) {
+            nu$name <- nu$OriginalName
+        }
         #<> if (iline==23)
         #<> message("iline=", iline, ", nu$name=\"", nu$name, "\", nu$nameOriginal=\"", nu$nameOriginal, "\"")
         if (nu$name %in% namesUsed) {
@@ -940,10 +986,11 @@ read.ctd.sbe <- function(
     foundConductivityRatio <- "conductivity.ratio" %in% colNamesInferred
     # FIXME: should we insist on having salinity, temperature, and pressure?
     fileType <- "unknown"
+    oceDebug(debug, "Reading header\n")
     for (iline in seq_along(lines)) {
         line <- lines[iline]
         # line <- scan(file, what=\"char\", sep="\n", n=1, quiet=TRUE)
-        oceDebug(debug > 1L, paste("Examining header line ", iline, " '", line, "'\n", sep = ""))
+        oceDebug(debug > 1L, paste("  examining header line ", iline, " '", line, "'\n", sep = ""))
         header <- c(header, line)
         # if (length(grep("\*END\*", line))) #BUG# why is this regexp no good (new with R-2.1.0)
         aline <- iconv(line, from = "UTF-8", to = "ASCII", sub = "?")
@@ -969,7 +1016,7 @@ read.ctd.sbe <- function(
                 warning("cannot parse date in `", aline, "`, but will try a '** Date:' line, if there is one", sep = "")
             } else {
                 date <- dateTry
-                oceDebug(debug, "inferred date=", format(date), " from automatically-generated NMEA-time line\n")
+                oceDebug(debug, "  inferred date ", format(date), "\n")
             }
         }
         # Look at hand-entered date only if an NMEA time was not found, or was unparseable
@@ -991,24 +1038,24 @@ read.ctd.sbe <- function(
                 if (dateTry < as.POSIXct("1900-01-01")) {
                     warning("impossible date in `", aline, "` is being ignored\n", sep = "")
                 } else {
-                    oceDebug(debug, "inferred date=", format(date), " from `", aline, "`\n", sep = "")
+                    oceDebug(debug, "  inferred date ", format(date), " from `", aline, "`\n", sep = "")
                     date <- dateTry
                 }
             }
         }
-        if (0 < regexpr(".*seacat profiler.*", lline)) {
+        if (grepl(".*seacat profiler.*", lline)) {
             serialNumber <- trimws(gsub("[ ].*$", "", gsub(".*sn[ ]*", "", lline)))
         }
-        if (length(grep("^\\* Temperature SN", lline, ignore.case = TRUE))) {
+        if (grepl("^\\* Temperature SN", lline, ignore.case = TRUE)) {
             serialNumberTemperature <- trimws(gsub("^.*=\\s", "", lline))
         }
-        if (length(grep("^\\* Conductivity SN", lline, ignore.case = TRUE))) {
+        if (grepl("^\\* Conductivity SN", lline, ignore.case = TRUE)) {
             serialNumberConductivity <- trimws(gsub("^.*=\\s", "", lline))
         }
-        if (length(grep("^#[ \t]*file_type[ \t]*=[ \t]*", lline))) {
+        if (grepl("^#[ \t]*file_type[ \t]*=[ \t]*", lline)) {
             fileType <- trimws(gsub("[ \t\n]+$", "", gsub(".*=[ \t]*", "", lline)))
         }
-        if (length(grep("^\\* Sea-Bird SBE (.*) Data File:$", lline, ignore.case = TRUE))) {
+        if (grepl("^\\* Sea-Bird SBE (.*) Data File:$", lline, ignore.case = TRUE)) {
             model <- gsub("^\\* sea-bird sbe (.*) data file:$", "\\1", lline)
             res@metadata$model <- model
         }
@@ -1018,7 +1065,7 @@ read.ctd.sbe <- function(
         if (grepl("system upload time", lline)) {
             d <- sub("([^=]*)[ ]*=[ ]*", "", ignore.case = TRUE, lline)
             systemUploadTime <- decodeTime(d)
-            oceDebug(debug, " systemUploadTime ", format(systemUploadTime), " inferred from substring '", d, "'\n", sep = "")
+            oceDebug(debug, "  inferred systemUploadTime ", format(systemUploadTime), "\n")
         }
         # Styles:
         # * NMEA Latitude = 47 54.760 N
@@ -1034,7 +1081,7 @@ read.ctd.sbe <- function(
         if (grepl("start_time =", lline)) {
             d <- sub("#[ ]*start_time[ ]*=[ ]*", "", lline)
             startTime <- decodeTime(d)
-            oceDebug(debug, " startTime ", format(startTime), "' inferred from substring '", d, "'\n", sep = "")
+            oceDebug(debug, "  inferred startTime ", format(startTime), "\n", sep = "")
         }
         if (grepl("ship:", lline)) {
             ship <- sub("(.*)ship:([ \t])*", "", ignore.case = TRUE, line) # note: using full string
@@ -1042,16 +1089,16 @@ read.ctd.sbe <- function(
         }
         if (grepl("scientist:", lline)) {
             scientist <- sub("(.*)scientist:([ ])*", "", ignore.case = TRUE, line)
-        } # full string
+        }
         if (grepl("chef", lline)) {
             scientist <- sub("(.*):([ ])*", "", ignore.case = TRUE, line)
-        } # full string
+        }
         if (grepl("institute:", lline)) {
             institute <- sub("(.*)institute:([ ])*", "", ignore.case = TRUE, line)
-        } # full string
+        }
         if (grepl("address:", lline)) {
             address <- sub("(.*)address:([ ])*", "", ignore.case = TRUE, line)
-        } # full string
+        }
         if (grepl("cruise:", lline)) {
             cruise <- sub("(.*)cruise:([ ])*", "", ignore.case = TRUE, line) # full string
             cruise <- sub("[ ]*$", "", ignore.case = TRUE, cruise) # full string
@@ -1083,7 +1130,7 @@ read.ctd.sbe <- function(
             # Remove any non-numeric (e.g. sometimes a unit is here)
             look <- trimws(gsub("[-a-zA-Z]", "", look))
             waterDepth <- as.numeric(look)
-            oceDebug(debug, "inferred waterDepth=", waterDepth, "[m] from '", aline, "'\n", sep = "")
+            oceDebug(debug, "  inferred waterDepth ", waterDepth, "\n", sep = "")
         }
         # [1] "# interval = seconds: 1
         # [1] "# interval = decibars: 1
@@ -1107,16 +1154,16 @@ read.ctd.sbe <- function(
             sampleIntervalUnits <- "s"
             if (rtmp[[1]][3] == "minutes") {
                 sampleInterval <- sampleInterval / 60
-            } else {
-                if (rtmp[[1]][3] == "hours") {
-                    sampleInterval <- sampleInterval / 3600
-                } else {
-                    warning("cannot understand `", rtmp[[1]][2], "' as a unit of time for sampleInterval")
-                }
+            } else if (rtmp[[1]][3] == "hours") {
+                sampleInterval <- sampleInterval / 3600
+            } else if (rtmp[[1]][3] != "seconds") {
+                warning(
+                    "cannot understand `", rtmp[[1]][3],
+                    "' as a unit of time for sampleInterval; the offending line follows\n", lline
+                )
             }
         }
     }
-    oceDebug(debug, "Finished reading header\n")
     if (debug > 0) {
         if (is.nan(sampleInterval)) {
             warning("\"* sample rate =\" not found in header")
@@ -1130,12 +1177,13 @@ read.ctd.sbe <- function(
         if (is.na(date)) {
             warning("\"** Date:\" not found in header")
         }
+        # This item is in most files, but not all. Keep the warning?
         if (is.na(recoveryTime)) {
             warning("\"** Recovery:\" not found in header")
         }
     }
     # Require p,S,T data at least
-    if (!btl && !("temperature" %in% colNamesInferred)) {
+    if (!btl && (!("temperature" %in% colNamesInferred) && rename)) {
         warning("cannot find temperature; try using the \"columns\" argument")
     }
     res@metadata$header <- header
@@ -1157,11 +1205,34 @@ read.ctd.sbe <- function(
     res@metadata$deploymentType <- deploymentType
     res@metadata$date <- date
     if (!is.na(startTime) && startTime < as.POSIXct("1950-01-01")) {
-        warning("startTime (", startTime, ") is < 1950, suggesting a turn-of-the-century problem in this cnv file")
+        tmp <- as.POSIXlt(startTime)
+        if (tmp$year < 0) { # e.g. year 107 date 107, which we conver to 107 + 1900 = 2007
+            tmp$year <- tmp$year + 1900
+        } else { # e.g. year 3 means 1903, which we convert to 1903+100 = 2003
+            tmp$year <- tmp$year + 100
+        }
+        if (tmp < Sys.time() + 48 * 86400) {
+            warning("suspicious startTime ", startTime, " changed to ", tmp, "; see 'start_time' in file header")
+            startTime <- tmp
+        } else {
+            warning("suspicious startTime ", startTime, "; see 'start_time' in file header")
+        }
     }
     res@metadata$startTime <- startTime
     if (!is.na(recoveryTime) && recoveryTime < as.POSIXct("1950-01-01")) {
-        warning("recoveryTime < 1950, suggesting y2k problem in this cnv file")
+        tmp <- as.POSIXlt(recoveryTime)
+        tmp$year <- tmp$year + 1900
+        if (tmp$year < 0) { # e.g. year 107 date 107, which we conver to 107 + 1900 = 2007
+            tmp$year <- tmp$year + 1900
+        } else { # e.g. year 3 means 1903, which we convert to 1903+100 = 2003
+            tmp$year <- tmp$year + 100
+        }
+        if (tmp < Sys.time() + 48 * 86400) {
+            warning("suspicious recoveryTime ", recoveryTime, " changed to ", tmp, "; see 'recovery_time' in file header")
+            recoveryTime <- tmp
+        } else {
+            warning("suspicious recoveryTime ", recoveryTime, "; see 'recovery_time' in file header")
+        }
     }
     res@metadata$recoveryTime <- recoveryTime
     res@metadata$latitude <- latitude
@@ -1181,7 +1252,7 @@ read.ctd.sbe <- function(
         # The .BTL format was reverse-engineered by inspecting some files, since I could
         # not discover any documentation on the format.  Therefore, there is a good chance
         # of errors in this code.  See https://github.com/dankelley/oce/issues/1681
-        oceDebug(debug, "About to read .btl data\n")
+        oceDebug(debug, "Reading .btl data\n")
         dataHeaderStartLine <- grep("^[^#^*]", lines)[1]
         if (!length(dataHeaderStartLine)) {
             stop("cannot find the start of .btl data")
@@ -1235,7 +1306,7 @@ read.ctd.sbe <- function(
         names <- colNames # used later (perhaps incorrectly, since we don't have flags etc for .btl files)
     } else {
         pushBack(lines, file) # push back header so we can read from a file, not a text vector (for speed)
-        oceDebug(debug, "About to read .cnv data with these names: c(\"",
+        oceDebug(debug, "Reading .cnv data named: c(\"",
             paste(colNamesInferred, collapse = "\",\""), "\")\n",
             sep = ""
         )
@@ -1277,7 +1348,7 @@ read.ctd.sbe <- function(
                     name = "salinity", value = S,
                     unit = list(unit = expression(), scale = "PSS-78")
                 )
-                warning("created 'salinity' from 'temperature', 'conductivity' and 'pressure'", immediate. = TRUE)
+                warning("created salinity from temperature, conductivityRatio and pressure", immediate. = TRUE)
             } else if (foundConductivity) {
                 C <- data$conductivity
                 if (!is.null(res@metadata$units$conductivity)) {
@@ -1324,11 +1395,21 @@ read.ctd.sbe <- function(
                     name = "salinity", value = S,
                     unit = list(unit = expression(), scale = "PSS-78")
                 )
-                warning("created 'salinity' from 'temperature', 'conductivity' and 'pressure'", immediate. = TRUE)
+                warning("created salinity from temperature, conductivity and pressure", immediate. = TRUE)
             } else {
-                warning("cannot find salinity or conductivity in .cnv file; try using columns argument if the file actually contains these items",
-                    immediate. = TRUE
-                )
+                # message("rename=", rename)
+                # message("requireSalinity=", requireSalinity)
+                if (rename) {
+                    if (requireSalinity) {
+                        stop("no salinity or conductivity in file; use 'columns' if either is present with an unrecognized names")
+                    } else {
+                        warning(paste0(
+                            "no salinity or conductivity in file; use 'columns' if either",
+                            " is present with an unrecognized names, or set ",
+                            "requireSalinity=FALSE and insert values later with oceSetData()"
+                        ), immediate. = TRUE)
+                    }
+                }
             }
         }
         if ("pressurePSI" %in% names && !("pressure" %in% names)) {
@@ -1345,22 +1426,27 @@ read.ctd.sbe <- function(
             # BUG: this is a poor, nonrobust approximation of pressure
             g <- if (foundHeaderLatitude) gravity(latitude) else 9.8
             # on use of eos, see https://github.com/dankelley/oce/issues/2161
-            rho0 <- 1000 + swSigmaTheta(median(res[["salinity"]]), median(res[["temperature"]]), 0, eos = "unesco")
-            # res <- ctdAddColumn(res, res@data$depth * g * rho0 / 1e4, name="pressure", label="Pressure",
-            #                     unit=list(unit=expression("dbar"), scale=""), debug=debug-1)
-            res <- oceSetData(res,
-                name = "pressure", value = res@data$depth * g * rho0 / 1e4,
-                unit = list(unit = expression("dbar"), scale = "")
-            )
-            # colNamesOriginal <- c(colNamesOriginal, "NA")
-            warning("created 'pressure' from 'depth'")
+            dnames <- names(res@data)
+            if ("salinity" %in% dnames || "conductivity" %in% dnames) {
+                oceDebug(debug, "trying to infer pressure from depth\n")
+                rho0 <- 1000 + swSigmaTheta(median(res[["salinity"]]), median(res[["temperature"]]), 0, eos = "unesco")
+                # res <- ctdAddColumn(res, res@data$depth * g * rho0 / 1e4, name="pressure", label="Pressure",
+                #                     unit=list(unit=expression("dbar"), scale=""), debug=debug-1)
+                res <- oceSetData(res,
+                    name = "pressure", value = res@data$depth * g * rho0 / 1e4,
+                    unit = list(unit = expression("dbar"), scale = "")
+                )
+                # colNamesOriginal <- c(colNamesOriginal, "NA")
+                warning("created 'pressure' from 'depth'")
+            }
         }
     }
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep = "", collapse = ""))
     if (("temperature" %in% names(res@metadata$units)) && res@metadata$units$temperature$scale == "IPTS-68") {
         warning(
-            "this CNV file has temperature in the IPTS-68 scale, and this is stored in object, but note ",
-            " that [[\"temperature\"]] and the sw* functions convert the numbers to ITS-90 values"
+            "file has temperature in IPTS-68 so this is stored as-is, ",
+            "but note that [[\"temperature\"]] and sw* functions ",
+            "autoconvert to ITS-90 to match modern conventions"
         )
     }
     # Note: previously, at this spot, there was code to switch from the IPTS-68 scale
@@ -1369,6 +1455,6 @@ read.ctd.sbe <- function(
     # in user code, and it became unnecessary when the scale started being
     # stored in the unit. See the "note on scales" in the documentation for
     # the scheme used to prevent problems.
-    oceDebug(debug, "END read.ctd.sbe()\n")
+    oceDebug(debug, "END read.ctd.sbe()\n", sep = "", unindent = 1)
     res
 }

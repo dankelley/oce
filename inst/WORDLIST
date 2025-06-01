@@ -52,6 +52,7 @@ Bondar
 Bonne
 Boric
 CDOM
+CIOOS
 CMD
 CNV
 CPT
@@ -173,6 +174,7 @@ IGRF
 IML
 IMU
 IOC
+IOOS
 IPTS
 ISA
 ITP
@@ -193,6 +195,7 @@ JPO
 Jackett
 Jaimie
 Jakobsson
+Jupyter
 Kallay
 Kavraisky
 Keeley
@@ -228,6 +231,7 @@ MLI
 MSB
 MTIME
 MacNeil
+MacOS
 Macnab
 Mahy
 MapGen
@@ -244,12 +248,14 @@ Metrology
 Michalsky
 Mikhailo
 Millero
+Miniconda
 Mishonov
 Modelling
 Mollweide
 Multanovsky
 NBeams
 NCEP
+NERC
 NESDIS
 NGDC
 NMEA
@@ -390,6 +396,7 @@ UTS
 Unesco
 Universitaires
 Urmaev
+Utide
 VALUEs
 VMDASS
 VMDas
@@ -417,6 +424,7 @@ WHP
 WHPO
 WMO
 WOCE
+WSL
 Watanabe
 WebTide
 Webserver
@@ -475,6 +483,7 @@ axisPalette
 azimuthal
 backscatter
 barnes
+bashrc
 bathy
 bathymetry
 bathythermograph
@@ -536,6 +545,9 @@ coloured
 colours
 computable
 conceptid
+conda
+condabin
+condarc
 conductivities
 connectPoints
 constituents
@@ -565,6 +577,7 @@ dP
 dQuote
 dac
 dankelley
+datetime
 dbar
 dbars
 de
@@ -683,6 +696,7 @@ handleFlags
 hawaii
 headingSlow
 historyAppend
+hodograph
 homolosine
 htm
 http
@@ -791,6 +805,7 @@ milliSeimens
 millidegree
 millidegrees
 millimole
+miniconda
 misordered
 missingColor
 missingValue
@@ -880,6 +895,7 @@ preceded
 pregrid
 pregriddd
 pregridding
+prepending
 presentTime
 pressureOriginal
 pressureType
@@ -918,6 +934,7 @@ replot
 requireNamespace
 rescale
 reseting
+reticulate
 retime
 revH
 rgdal
@@ -959,6 +976,7 @@ soest
 soi
 sontek
 soundSpeed
+spacebar
 specialised
 speciality
 specifications
@@ -980,7 +998,9 @@ subclasses
 subclassing
 subregion
 subsampled
+subsseateechnologies
 subtype
+sudo
 sunae
 supercede
 sw
@@ -1008,6 +1028,7 @@ textpanel
 tformat
 th
 threenum
+tidalCurrent
 tidedata
 tidem
 timeseries
@@ -1066,6 +1087,7 @@ upcasts
 usd
 users's
 usgs
+utide
 utm
 vapour
 vectorize
@@ -1122,4 +1144,7 @@ ytype
 yyyy
 zipfile
 zlim
+zprofile
+zsh
+zshrc
 Šavrič

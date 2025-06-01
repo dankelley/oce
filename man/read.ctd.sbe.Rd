@@ -13,6 +13,8 @@ read.ctd.sbe(
   btl = FALSE,
   monitor = FALSE,
   encoding = "latin1",
+  rename = TRUE,
+  requireSalinity = TRUE,
   debug = getOption("oceDebug"),
   processingLog,
   ...
@@ -66,11 +68,12 @@ the device is installed on a fixed mooring, \code{"thermosalinograph"} (or
 near-surface properties, or \code{"towyo"} if the device is repeatedly
 lowered and raised.}
 
-\item{btl}{a logical value, with \code{TRUE} indicating that this is a \code{.BTL} file and \code{FALSE}
-(the default) indicating a \code{.CNV} file.  Note that if \code{btl} is \code{TRUE}, the data column
-names are taken directly from the file (without e.g. translating to \code{"Sal00"}
-to \code{"salinity"}.  Also, the "avg" and "sdev" columns are blended together, with
-all the latter named as in the file, but with \code{"_sdev"} appended.}
+\item{btl}{a logical value, with \code{TRUE} indicating that this is a \code{.BTL} file
+and \code{FALSE} (the default) indicating a \code{.CNV} file.  Note that if \code{btl} is
+\code{TRUE}, the data column names are taken directly from the file (without e.g.
+translating to \code{"Sal00"} to \code{"salinity"}.  Also, the "avg" and "sdev" columns
+are blended together, with all the latter named as in the file, but with
+\code{"_sdev"} appended.}
 
 \item{monitor}{boolean, set to \code{TRUE} to provide an indication of
 progress.  This is useful if \code{filename} is a wildcard.}
@@ -79,6 +82,18 @@ progress.  This is useful if \code{filename} is a wildcard.}
 this data file, if it is textual.  The default value for most functions is
 \code{"latin1"}, which seems to be suitable for files containing text written in
 English and French.}
+
+\item{rename}{optional logical value indicating whether to rename variables
+from the values in the file to the oce convention, using \code{\link[=cnvName2oceName]{cnvName2oceName()}}
+for the translation. This is done by default, but setting \code{rename=FALSE} can
+be helpful if there is a wish to control the renaming, either using a
+built-in dictionary or using a dictionary set up by the user.  See Examples 1
+and 2. if there is a desire to control renaming using \code{\link[=rename]{rename()}}.}
+
+\item{requireSalinity}{logical value indicating what to do if the dataset
+lacks both salinity and conductivity. If \code{requireSalinity} is TRUE (the
+default) then an error results in this situation; otherwise, a warning is
+issued.}
 
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
@@ -99,18 +114,17 @@ This function returns a \linkS4class{ctd} object.
 Read a ctd File in Seabird Format
 }
 \details{
-This function reads files stored in Seabird \code{.cnv} format.
-Note that these files can contain multiple sensors for a given field. For example,
-the file might contain a column named \code{t090C} for one
-temperature sensor and \code{t190C} for a second. The first will be denoted
-\code{temperature} in the \code{data} slot of the return value, and the second
-will be denoted \code{temperature1}. This means that the first sensor
-will be used in any future processing that accesses \code{temperature}. This
-is for convenience of processing, and it does not pose a limitation, because the
-data from the second sensor are also available as e.g. \code{x[["temperature1"]]},
-where \code{x} is the name of the returned value.  For the details of the
-mapping from \code{.cnv} names to \code{ctd} names, see \code{\link[=cnvName2oceName]{cnvName2oceName()}}.
-
+This function reads files stored in Seabird \code{.cnv} format. Note that these
+files can contain multiple sensors for a given field. For example, the file
+might contain a column named \code{t090C} for one temperature sensor and \code{t190C}
+for a second. The first will be denoted \code{temperature} in the \code{data} slot of
+the return value, and the second will be denoted \code{temperature1}. This means
+that the first sensor will be used in any future processing that accesses
+\code{temperature}. This is for convenience of processing, and it does not pose a
+limitation, because the data from the second sensor are also available as
+e.g. \code{x[["temperature1"]]}, where \code{x} is the name of the returned value.  For
+the details of the mapping from \code{.cnv} names to \code{ctd} names, see
+\code{\link[=cnvName2oceName]{cnvName2oceName()}}.
 The names of the elements in the \code{data} slot of the returned value depend on
 the file type, as signalled by the \code{btl} argument.  For the default case of \code{.cnv} files,
 the original data names as stored in \code{file} are stored within the \code{metadata}
@@ -120,6 +134,24 @@ names (in the "Short Name" column of the table spanning pages 161 through 172).
 However, for the case of \code{.btl} files, the column names are as described
 in the documentation entry for the \code{btl} argument.
 }
+\section{A note on freshwater files}{
+
+
+As of version 1.8-4 of the package, \code{read.ctd.sbe()} can handle
+files that lack both salinity data and conductivity data. The existence of
+such files is possible for sampling done in lakes. In prior versions,
+the function reported an error, but as of 1.8-4, it reports only
+a warning. The recommended practice in such a case is to do e.g.
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{d <- read.ctd.sbe("file.cnv")
+d <- ctdAddData(d, "salinity", rep(0.0, length(d[["pressure"]]))
+}\if{html}{\out{</div>}}
+
+to add a salinity column. That will permit e.g. density calculations,
+although the accuracy of such calculations is questionable, since the
+equations of state are meant to apply to salt water.
+}
+
 \section{A note on hand-entered headers}{
 
 
@@ -243,8 +275,12 @@ Note that reading a file that contains IPTS-68 temperatures produces a warning.
 }
 
 \examples{
+# Example 1: default variable renaming
 f <- system.file("extdata", "ctd.cnv.gz", package = "oce")
-d <- read.ctd(f)
+d1 <- read.ctd(f)
+
+# Example 2: handle variable renaming after reading
+d2 <- read.ctd(f, rename = FALSE) |> rename("sbe")
 
 }
 \references{
@@ -268,6 +304,7 @@ Other things related to ctd data:
 \code{\link{CTD_BCD2014666_008_1_DN.ODF.gz}},
 \code{\link{[[,ctd-method}},
 \code{\link{[[<-,ctd-method}},
+\code{\link{argo2ctd}()},
 \code{\link{as.ctd}()},
 \code{\link{cnvName2oceName}()},
 \code{\link{ctd}},
@@ -279,7 +316,8 @@ Other things related to ctd data:
 \code{\link{ctdRaw}},
 \code{\link{ctdRepair}()},
 \code{\link{ctdTrim}()},
-\code{\link{ctd_aml.csv.gz}},
+\code{\link{ctd_aml_type1.csv.gz}},
+\code{\link{ctd_aml_type3.csv.gz}},
 \code{\link{d200321-001.ctd.gz}},
 \code{\link{d201211_0011.cnv.gz}},
 \code{\link{handleFlags,ctd-method}},

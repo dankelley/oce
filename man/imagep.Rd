@@ -18,7 +18,7 @@ imagep(
   zlab = "",
   zlabPosition = c("top", "side"),
   las.palette = 0,
-  decimate = TRUE,
+  decimate = getOption("oceImagepDecimate", TRUE),
   quiet = FALSE,
   breaks,
   col,
@@ -120,12 +120,16 @@ for the palette.}
 image palette, passed as the \code{las} argument to \code{\link[=drawPalette]{drawPalette()}}.  See the
 documentation for \code{\link[=drawPalette]{drawPalette()}} for details.}
 
-\item{decimate}{Controls whether the image will be decimated before plotting,
-in three possible cases.
+\item{decimate}{an item that controls whether the image will be decimated
+before plotting, in four possible cases. Note that the default value of
+TRUE can be overridden by using \code{\link[=options]{options()}} as e.g.
+\code{options(oceImageDecimate = FALSE)} in a \verb{~/.Rprofile} startup file
+or locally within a script or session.
 \enumerate{
 \item If \code{decimate=FALSE} then every grid cell in the matrix will
 be represented by a pixel in the image.
-\item If \code{decimate=TRUE} (the default), then decimation will be done
+\item If \code{decimate=TRUE} (the default, unless \code{"oceImagepDecimate"} is
+set to another value in the startup file), then decimation will be done
 in the horizontal or vertical direction (or both) if the length of the
 corresponding edge of the \code{z} matrix exceeds 800. (This also creates
 a warning message.) The decimation

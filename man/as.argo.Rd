@@ -59,10 +59,12 @@ The documentation for the \linkS4class{argo} class explains the structure of arg
 objects, and also outlines the other functions dealing with them.
 
 Other things related to argo data: 
+\code{\link{D4902337_219.nc}},
 \code{\link{[[,argo-method}},
 \code{\link{[[<-,argo-method}},
 \code{\link{argo}},
 \code{\link{argo-class}},
+\code{\link{argo2ctd}()},
 \code{\link{argoGrid}()},
 \code{\link{argoNames2oceNames}()},
 \code{\link{handleFlags,argo-method}},

@@ -100,21 +100,23 @@ if (file.exists(f1)) {
         expect_equal(
             names(average[["data"]]),
             c(
-                "nominalCorrelation", "ensemble", "time", "soundSpeed",
-                "temperature", "pressure", "heading", "pitch", "roll",
-                "magnetometer", "accelerometer", "temperatureMagnetometer",
-                "temperatureRTC", "transmitEnergy", "powerLevel", "distance",
-                "v", "a", "q", "AHRS"
+                "nominalCorrelation", "ensemble", "time", "soundSpeed", "temperature",
+                "pressure", "heading", "pitch", "roll", "magnetometer", "accelerometer",
+                "temperatureMagnetometer", "temperatureRTC", "transmitEnergy",
+                "powerLevel", "distance", "v", "a", "q", "AHRSRotationMatrix",
+                "AHRSQuaternionsW", "AHRSQuaternionsX", "AHRSQuaternionsY", "AHRSQuaternionsZ",
+                "AHRSGyroX", "AHRSGyroY", "AHRSGyroZ"
             )
         )
         expect_equal(
             names(burst[["data"]]),
             c(
-                "nominalCorrelation", "ensemble", "time", "soundSpeed",
-                "temperature", "pressure", "heading", "pitch", "roll",
-                "magnetometer", "accelerometer", "temperatureMagnetometer",
-                "temperatureRTC", "transmitEnergy", "powerLevel", "distance",
-                "v", "a", "q", "AHRS"
+                "nominalCorrelation", "ensemble", "time", "soundSpeed", "temperature",
+                "pressure", "heading", "pitch", "roll", "magnetometer", "accelerometer",
+                "temperatureMagnetometer", "temperatureRTC", "transmitEnergy",
+                "powerLevel", "distance", "v", "a", "q", "AHRSRotationMatrix",
+                "AHRSQuaternionsW", "AHRSQuaternionsX", "AHRSQuaternionsY", "AHRSQuaternionsZ",
+                "AHRSGyroX", "AHRSGyroY", "AHRSGyroZ"
             )
         )
         expect_equal(average[["type"]], "Signature1000")
@@ -126,7 +128,7 @@ if (file.exists(f1)) {
         expect_equal(burst[["fileType"]], "AD2CP")
         expect_equal(burst[["serialNumber"]], ad2cpHeaderValue(d1, "ID", "SN"))
         expect_equal(burst[["oceCoordinate"]], "beam")
-        expect_equal(average[["cellSize"]], ad2cpHeaderValue(d1, "GETAVG", "CS"))
+        expect_equal(average[["cellSize"]], ad2cpHeaderValue(d1, "GETAVG", "CS", plan = 0))
         expect_equal(average[["blankingDistance"]], ad2cpHeaderValue(d1, "GETAVG", "BD"))
         expect_equal(average[["oceCoordinate"]], tolower(ad2cpHeaderValue(d1, "GETAVG", "CY", FALSE)))
         expect_equal(burst[["cellSize"]], ad2cpHeaderValue(d1, "GETBURSTHR", "CS"))
@@ -136,7 +138,7 @@ if (file.exists(f1)) {
         # FIXME: the next tests will fail if we store AHRS as 3D array
         # >> Data.BurstHR_AHRSRotationMatrix(1,:)
         expect_equal(
-            burst[["AHRS"]]$rotationMatrix[1, , ],
+            burst[["AHRSRotationMatrix"]][1, , ],
             matrix(c(
                 0.060653746, -0.37823972, -0.92368418, 0.31505784,
                 -0.87079191, 0.37727141, -0.94709891, -0.31389475,
@@ -379,7 +381,7 @@ if (file.exists(f1)) {
         # have any ENU from matlab, but rather it is just a test against
         # code changes, with the check values being what the code
         # produced on 2019-01-06.
-        expect_error(d1enu <- toEnu(d1), "does not work with ad2cp files")
+        d1enu <- toEnu(d1)
         # FIXME: add a way to do coordinate transformations
         # later expect_equal(d1enu[["average"]]$v[1:2,1:2,1:4],
         # later     structure(c(-0.0423407864127893, -0.0412083140396359,
@@ -405,11 +407,8 @@ if (file.exists(f1)) {
 if (file.exists(f2)) {
     test_that("read.adp() on a private AD2CP file that has only 'burst' data", {
         N <- 99 # known value for subset of a larger file
-        expect_message(
-            toc <- read.oce(f2, TOC = TRUE),
-            "setting plan=0"
-        )
-        expect_equal(N, toc[[1]]$Count[1])
+        expect_silent(toc <- read.oce(f2, TOC = TRUE))
+        expect_equal(N, toc$count[1])
         # Note: using read.adp() to ensure that it also works
         expect_warning(
             expect_warning(
@@ -429,7 +428,7 @@ if (file.exists(f2)) {
                 "temperature", "pressure", "heading", "pitch", "roll",
                 "magnetometer", "accelerometer",
                 "temperatureMagnetometer", "temperatureRTC",
-                "transmitEnergy", "powerLevel", "distance", "v", "a", "q"
+                "transmitEnergy", "powerLevel", "v", "a", "q"
             )
         )
         expect_equal(burst[["fileType"]], "AD2CP")
@@ -548,11 +547,11 @@ if (file.exists(f3)) {
         # expect_silent(plot(d3, which='a1', zlim=c(0, 255), drawTimeRange=FALSE))
         # expect_silent(plot(d3, which='a2', zlim=c(0, 255), drawTimeRange=FALSE))
         # expect_silent(plot(d3, which='a3', zlim=c(0, 255), drawTimeRange=FALSE))
-        expect_error(bxyz <- beamToXyz(b))
+        xyz <- beamToXyz(b)
         # expect_silent(plot(d3xyz, which=1, zlim=zlim, drawTimeRange=FALSE))
         # expect_silent(plot(d3xyz, which=2, zlim=zlim, drawTimeRange=FALSE))
         # expect_silent(plot(d3xyz, which=3, zlim=zlim/4, drawTimeRange=FALSE))
-        expect_error(benu <- xyzToEnu(b))
+        enu <- xyzToEnu(xyz)
         # expect_silent(plot(d3enu, which=1, zlim=zlim, drawTimeRange=FALSE))
         # expect_silent(plot(d3enu, which=2, zlim=zlim, drawTimeRange=FALSE))
         # expect_silent(plot(d3enu, which=3, zlim=zlim/4, drawTimeRange=FALSE))

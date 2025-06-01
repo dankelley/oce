@@ -1144,7 +1144,7 @@ oce.grid <- function(xat, yat, col = "lightgray", lty = "dotted", lwd = par("lwd
 #' # Flip the y axis
 #' oce.plot.ts(t, y, flipy = TRUE)
 oce.plot.ts <- function(
-    x, y, type = "l", xlim, ylim, log = "", logStyle = "r", flipy = FALSE, xlab, ylab,
+    x, y, type = "l", xlim, ylim, log = "", logStyle = "r", flipy = FALSE, xlab = "", ylab,
     drawTimeRange, simplify = 2560, fill = FALSE, col = par("col"), pch = par("pch"),
     cex = par("cex"), cex.axis = par("cex.axis"), cex.lab = par("cex.lab"), cex.main = par("cex.main"),
     xaxs = par("xaxs"), yaxs = par("yaxs"),
@@ -1162,9 +1162,6 @@ oce.plot.ts <- function(
     }
     if (!inherits(x, "POSIXt")) {
         x <- as.POSIXct(x)
-    }
-    if (missing(xlab)) {
-        xlab <- ""
     }
     if (missing(ylab)) {
         ylab <- deparse(substitute(expr = y, env = environment()))
@@ -1206,7 +1203,7 @@ oce.plot.ts <- function(
     }
     # oceDebug(debug, "length(x)", length(x), "; length(y)", length(y), "\n")
     # oceDebug(debug, "marginsAsImage=", marginsAsImage, ")\n")
-    oceDebug(debug, "x has timezone", attr(x[1], "tzone"), "\n")
+    oceDebug(debug, "x has timezone ", attr(x[1], "tzone"), "\n")
     # Repeat col, pch and cex to the right length, for possible trimming later.
     drawingPoints <- type == "p" || type == "o" || type == "b"
     if (drawingPoints) {
@@ -1218,7 +1215,7 @@ oce.plot.ts <- function(
         oceDebug(debug, "made col, pch and cex of length ", nx, " to match length(x)\n")
     }
     pc <- paletteCalculations(maidiff = rep(0, 4))
-    oceDebug(debug, as.character(dput(pc)), "\n")
+    #oceDebug(if (debug > 1) 1 else 0, vectorShow(pc), "\n")
     par(mgp = mgp, mar = mar)
     args <- list(...)
     xlimGiven <- !missing(xlim)
@@ -1257,7 +1254,7 @@ oce.plot.ts <- function(
         # FIXME: obey their mar?
         the.mai <- pc$mai0
         the.mai <- clipmin(the.mai, 0) # just in case
-        oceDebug(debug, "the.mai=", vectorShow(the.mai))
+        oceDebug(debug - 1, vectorShow(the.mai)) # only show for deep debugging
         par(mai = the.mai)
         drawPalette(mai = rep(0, 4))
     }
@@ -1265,6 +1262,7 @@ oce.plot.ts <- function(
     # sensible; thus the na.rm argument to range() is suitable for trimming bad
     # values.  However, for y, we emulate plot(), by trimming (and warning).
     if ("y" %in% log) {
+        oceDebug(debug, "prevent trying to do log of a negative number, since the y axis is logarithmic\n")
         yBAD <- (!is.finite(y)) | y <= 0.0
         nyBAD <- sum(yBAD)
         if (nyBAD > 0L) {
@@ -1276,40 +1274,87 @@ oce.plot.ts <- function(
     # Handle 'simplify' argument
     nx <- length(x)
     if (type == "l" && is.numeric(simplify) && nx > (5L * simplify)) {
-        warning("simplifying a large dataset; set simplify=NA to see raw data\n")
+        # simplification works by replacing all the points in each sub-interval
+        # with just two points: one for the minimum y value there, and the other
+        # for the maximum y value there.  (NA is used if all the data in the
+        # interval are missing.)  This way, the graph displays the data quite
+        # faithfully in most cases.  By contrast, if we instead used, say, the
+        # mean y in each interval, the curve could get smoothed enough to
+        # be unrepresentative.
+        oceDebug(debug, "simplifying a large dataset for type=\"l\" plotting; set simplify=NA to see raw data\n")
+        warning("simplifying a large dataset for type=\"l\" plotting; set simplify=NA to see raw data\n")
         xgrid <- seq(min(x, na.rm = TRUE), max(x, na.rm = TRUE), length.out = simplify)
         df <- data.frame(x, y)
         # Tests N=1e8 suggest split(X,findInterval()) is 2X faster than split(X,cut())
         #>>> dfSplit <- split(df, cut(df$x, xgrid))
         dfSplit <- split(df, as.factor(findInterval(df$x, xgrid)))
+        oceDebug(debug, "simplification is using ", length(dfSplit), " splits of a dataset with ", nx, " elements, yielding ", nx / length(dfSplit), " entries per split\n")
         # Compute within the sub-intervals, inserting NAs when no data there
         tz <- attr(x, "tzone") # cause gridded x to inherit timezone from original x
-        x <- rep(unname(sapply(dfSplit, function(DF) if (length(DF$x) > 2) mean(DF$x, na.rm = TRUE) else NA)), each = 2)
+        x <- rep(unname(sapply(
+            dfSplit,
+            function(DF) {
+                mean(DF$x, na.rm = TRUE)
+                #if (length(DF$x) > 2) {
+                #    mean(DF$x, na.rm = TRUE)
+                #} else {
+                #    NA
+                #}
+            }
+        )), each = 2)
         x <- numberAsPOSIXct(x, tz = tz)
-        ymin <- unname(sapply(dfSplit, function(DF) if (length(DF$y) > 2) min(DF$y, na.rm = TRUE) else NA))
-        ymax <- unname(sapply(dfSplit, function(DF) if (length(DF$y) > 2) max(DF$y, na.rm = TRUE) else NA))
-        y <- as.vector(rbind(ymin, ymax))
-        # Remove any segments for which min and max could not be computed
-        bad <- !is.finite(y)
-        x <- x[!bad]
-        y <- y[!bad]
+        oceDebug(debug, "after simplifying, have ", vectorShow(x))
+        #(issue2277) # FIXME: I think this might be faster if another 'apply' function were
+        #(issue2277) # used, to return 2 values, but I (DEK) can't recall what that function is.
+        #(issue2277) ymin <- unname(sapply(
+        #(issue2277)     dfSplit,
+        #(issue2277)     function(DF) {
+        #(issue2277)         # if (sum(is.finite(DF$y)) > 2) min(DF$y, na.rm = TRUE) else NA
+        #(issue2277)         min(DF$y, na.rm = TRUE)
+        #(issue2277)     }
+        #(issue2277) ))
+        #(issue2277) ymax <- unname(sapply(
+        #(issue2277)     dfSplit,
+        #(issue2277)     function(DF) {
+        #(issue2277)         # if (sum(is.finite(DF$y)) > 2) max(DF$y, na.rm = TRUE) else NA
+        #(issue2277)         max(DF$y, na.rm = TRUE)
+        #(issue2277)     }
+        #(issue2277) ))
+        y <- unname(sapply(
+            dfSplit,
+            function(DF) {
+                range(DF$y, na.rm = TRUE)
+            }
+        ))
+        y <- as.vector(y)
+        y[!is.finite(y)] <- NA # the above makes Inf values where no data
+        oceDebug(debug, "after simplifying, have ", vectorShow(y))
+        xrange <- range(x, na.rm = TRUE)
+        yrange <- range(y, na.rm = TRUE)
+    } else {
+        xrange <- range(x, na.rm = TRUE)
+        yrange <- range(y, na.rm = TRUE)
     }
-    xrange <- range(x, na.rm = TRUE)
-    yrange <- range(y, finite = TRUE)
     maybeflip <- function(y) if (flipy) rev(sort(y)) else y
-    if (!is.finite(yrange[1])) {
-        plot(xrange, c(0, 1),
-            axes = FALSE, xaxs = xaxs, yaxs = yaxs,
-            xlim = if (xlimGiven) xlim else xrange,
-            ylim = if (missing(ylim)) maybeflip(range(y, na.rm = TRUE)) else maybeflip(ylim),
-            xlab = xlab, ylab = ylab, type = "n", log = log, col = col, pch = pch, cex = cex
-        )
-        oce.axis.POSIXct(1, drawTimeRange = FALSE)
-        box()
-        mtext("bad data", side = 3, line = -1, cex = cex)
-        warning("no valid data for '", ylab, "'", sep = "")
+    if (!any(is.finite(yrange))) {
+        if (!missing(ylim)) {
+            plot(xrange, c(0, 1),
+                axes = FALSE, xaxs = xaxs, yaxs = yaxs,
+                xlim = if (xlimGiven) xlim else xrange,
+                ylim = ylim,
+                xlab = xlab, ylab = ylab, type = "n", log = log, col = col, pch = pch, cex = cex
+            )
+            oce.axis.POSIXct(1, drawTimeRange = FALSE)
+            box()
+            mtext("no non-NA y values to plot", side = 3, line = -1, cex = cex)
+            warning("no valid y data for '", ylab, "'", sep = "")
+        } else {
+            if (!identical(simplify, NA)) {
+                stop("simplification eliminated all y data; try using simplify=NA")
+            }
+        }
         oceDebug(debug, "END oce.plot.ts()\n", unindent = 1)
-        return()
+        return(invisible(NULL))
     } else {
         if (fill) {
             xx <- c(x[1], x, x[length(x)])
@@ -1334,6 +1379,7 @@ oce.plot.ts <- function(
                 type = type, col = col, cex = cex, cex.axis = cex.axis, cex.lab = cex.lab, pch = pch, log = log, ...
             )
             # mtext(paste("TEST: xlab at mgp[1]", xlab), side=1, cex=cex.lab*par("cex"), line=mgp[1])
+            mtext(xlab, side = 1, cex = cex.lab * par("cex"), line = mgp[1])
             mtext(ylab, side = 2, cex = cex.lab * par("cex"), line = mgp[1])
         }
         xat <- NULL
@@ -1343,7 +1389,9 @@ oce.plot.ts <- function(
             drawxaxis <- !is.null(xaxt) && xaxt != "n"
             yaxt <- list(...)["yaxt"]
             drawyaxis <- !is.null(yaxt) && yaxt != "n"
+            xlabs <- NULL # over-written if drawing a horizontal (time) axis
             if (drawxaxis) {
+                # message("FIXME DAN defining xlabs here")
                 xlabs <- oce.axis.POSIXct(1,
                     x = x, drawTimeRange = drawTimeRange, main = main,
                     mgp = mgp,
@@ -1352,6 +1400,9 @@ oce.plot.ts <- function(
                     tformat = tformat,
                     debug = debug - 1
                 )
+                # message("DAN xlabs from oce.axis.POSIXct() follows:")
+                # print(xlabs)
+                # print(class(xlabs))
                 xat <- xlabs
                 oceDebug(debug, "drawing x axis; set xat=c(", paste(xat, collapse = ","), ")", "\n", sep = "")
             }
@@ -1395,7 +1446,11 @@ oce.plot.ts <- function(
             } else {
                 abline(h = axTicks(2), col = grid.col, lty = grid.lty, lwd = grid.lwd)
             }
-            abline(v = axTicks(1), col = grid.col, lty = grid.lty, lwd = grid.lwd)
+            if (debug > 0) {
+                message("blue: old grid=TRUE result (only if debug > 0)")
+                abline(v = axTicks(1), col = "blue", lty = 1)
+            }
+            abline(v = xlabs, col = grid.col, lty = grid.lty, lwd = grid.lwd)
         }
         oceDebug(debug, "END oce.plot.ts()\n", unindent = 1)
         invisible(list(xat = xat, yat = yat))
@@ -1737,350 +1792,6 @@ standardDepths <- function(n = 0) {
     }
     unique(res) # remove duplicates from one "l" being the next "u"
 }
-
-#' Find the Type of an Oceanographic Data File
-#'
-#' `oceMagic` tries to infer the file type, based on the data
-#' within the file, the file name, or a combination of the two.
-#'
-#' `oceMagic` was previously called `oce.magic`, but that
-#' alias was removed in version 0.9.24; see [oce-defunct].
-#'
-#' @param file a connection or a character string giving the name of the file
-#' to be checked.
-#'
-#' @template encodingTemplate
-#'
-#' @param debug an integer, set non-zero to turn on debugging.  Higher values
-#' indicate more debugging.
-#'
-#' @return A character string indicating the file type, or `"unknown"`, if
-#' the type cannot be determined. If the result contains `"/"` characters,
-#' these separate a list describing the file type, with the first element being
-#' the general type, the second element being the manufacturer, and the third
-#' element being the manufacturer's name for the instrument. For example,
-#' `"adp/nortek/aquadopp"` indicates a acoustic-doppler profiler made by
-#' NorTek, of the model type called Aquadopp.
-#'
-#' @author Dan Kelley
-#'
-#' @seealso This is used mainly by [read.oce()].
-oceMagic <- function(file, encoding = "latin1", debug = getOption("oceDebug")) {
-    filename <- file
-    oceDebug(debug, paste("oceMagic(file=\"", filename, "\") START\n", sep = ""), sep = "", unindent = 1)
-    isdir <- file.info(file)$isdir
-    if (is.finite(isdir) && isdir) {
-        tst <- file.info(paste(file, "/", file, "_MTL.txt", sep = ""))$isdir
-        if (!is.na(tst) && !tst) {
-            oceDebug(debug, "END oceMagic() returning landsat\n", unindent = 1)
-            return("landsat")
-        } else {
-            stop("please supply a file name, not a directory name")
-        }
-    }
-    if (is.character(file)) {
-        oceDebug(debug, "'file' is a character value\n")
-        if (grepl(".asc$", filename)) {
-            someLines <- readLines(file, n = 1L)
-            if (42 == length(strsplit(someLines[1], " ")[[1]])) {
-                oceDebug(debug, "END oceMagic() returning lisst\n", unindent = 1)
-                return("lisst")
-            }
-        }
-        if (grepl(".adr$", filename)) {
-            oceDebug(debug, "file names ends in .adr, so this is an adv/sontek/adr file.\n")
-            oceDebug(debug, "END oceMagic() returning adv/sontek/adr\n", unindent = 1)
-            return("adv/sontek/adr")
-        }
-        if (grepl(".rsk$", filename)) {
-            oceDebug(debug, "file names ends with \".rsk\", so this is an RBR/rsk file.\n")
-            oceDebug(debug, "END oceMagic() returning RBR/rsk\n", unindent = 1)
-            return("RBR/rsk")
-        }
-        if (grepl(".s4a.", filename)) {
-            oceDebug(debug, "file names contains \".s4a.\", so this is an interocean S4 file.\n")
-            oceDebug(debug, "END oceMagic() returning interocean/s4\n", unindent = 1)
-            return("interocean/s4")
-        }
-        if (grepl(".ODF$", filename, ignore.case = TRUE)) {
-            # in BIO files, the data type seems to be on line 14.  Read more, for safety.
-            lines <- readLines(file, encoding = "latin1")
-            dt <- try(
-                {
-                    grep("DATA_TYPE[ \t]*=", lines, perl = TRUE)
-                },
-                silent = TRUE
-            )
-            if (inherits(dt, "try-error") || length(t) < 1) {
-                stop("cannot infer type of ODF file")
-            }
-            subtype <- gsub("[',]", "", tolower(strsplit(lines[dt[1]], "=")[[1]][2]))
-            subtype <- gsub("^\\s*", "", subtype)
-            subtype <- gsub("\\s*$", "", subtype)
-            res <- paste(subtype, "odf", sep = "/")
-            oceDebug(debug, paste0("END oceMagic() returning ", res, "\n"), sep = "", unindent = 1)
-            return(res)
-        }
-        if (grepl(".WCT$", filename, ignore.case = TRUE)) {
-            # old-style WOCE
-            oceDebug(debug, "END oceMagic() returning ctd/woce/other\n", unindent = 1)
-            return("ctd/woce/other") # e.g. http://cchdo.ucsd.edu/data/onetime/atlantic/a01/a01e/a01ect.zip
-        }
-        if (grepl(".nc$", filename, ignore.case = TRUE)) {
-            # argo or netcdf?
-            if (requireNamespace("ncdf4", quietly = TRUE)) {
-                if (substr(filename, 1, 5) == "http:") {
-                    stop(
-                        "cannot open netcdf files over the web; try doing as follows\n    download.file(\"",
-                        filename, "\", \"", gsub(".*/", "", filename), "\")"
-                    )
-                }
-                # NOTE: need to name ncdf4 package because otherwise R checks give warnings.
-                f <- ncdf4::nc_open(filename)
-                if ("DATA_TYPE" %in% names(f$var)) {
-                    if (grepl("argo", ncdf4::ncvar_get(f, "DATA_TYPE"), ignore.case = TRUE)) {
-                        oceDebug(debug, "END oceMagic() returning argo (upper-case style)\n", unindent = 1)
-                        ncdf4::nc_close(f)
-                        return("argo")
-                    } else {
-                        oceDebug(debug, "END oceMagic() returning netcdf (upper-case style)\n", unindent = 1)
-                        ncdf4::nc_close(f)
-                        return("netcdf")
-                    }
-                } else if ("data_type" %in% names(f$var)) {
-                    if (grepl("argo", ncdf4::ncvar_get(f, "data_type"), ignore.case = TRUE)) {
-                        oceDebug(debug, "END oceMagic() returning argo (lower-case style)\n", unindent = 1)
-                        ncdf4::nc_close(f)
-                        return("argo")
-                    } else {
-                        oceDebug(debug, "END oceMagic() returning netcdf (lower-case style)\n", unindent = 1)
-                        ncdf4::nc_close(f)
-                        return("netcdf")
-                    }
-                }
-                ncdf4::nc_close(f) # it's netcdf, but with no data_type
-                return("unknown")
-            } else {
-                stop("must install.packages(\"ncdf4\") to read a NetCDF file")
-            }
-        }
-        if (grepl(".xml$", filename, ignore.case = TRUE)) {
-            firstLine <- readLines(filename, 1L)
-            if (grepl(".weather.gc.ca", firstLine)) {
-                oceDebug(debug, "END oceMagic() returning met/xml2\n", unindent = 1)
-                return("met/xml2")
-            }
-        }
-        if (grepl(".osm.xml$", filename, ignore.case = TRUE)) {
-            oceDebug(debug, "END oceMagic() returning openstreetmap (xml style)\n", unindent = 1)
-            return("openstreetmap")
-        }
-        if (grepl(".osm$", filename, ignore.case = TRUE)) {
-            oceDebug(debug, "END oceMagic() returning openstreetmap (non xml style)\n", unindent = 1)
-            return("openstreetmap")
-        }
-        if (grepl(".gpx$", filename, ignore.case = TRUE)) {
-            oceDebug(debug, "END oceMagic() returning gpx (e.g. Garmin GPS data)\n", unindent = 1)
-            return("gpx")
-        }
-        if (grepl(".csv$", filename, ignore.case = TRUE)) {
-            con <- file(filename, "r", encoding = encoding)
-            someLines <- readLines(con, 30L) # , encoding="UTF-8-BOM")
-            close(con)
-            # print(someLines[1])
-            if (grepl("^SSDA Sea & Sun Technology", someLines[1])) {
-                return("ctd/ssda")
-            } else if (1L == length(grep("^.*\"WMO Identifier\",", someLines))) {
-                oceDebug(debug, "END oceMagic() returning met/csv1\n", unindent = 1)
-                return("met/csv1") # FIXME: may be other things too ...
-            } else if (grepl("^.*Longitude.*Latitude.*Station Name.*Climate ID.*Dew Point", someLines[1])) {
-                oceDebug(debug, "END oceMagic() returning met/csv2 or met/csv3\n", unindent = 1)
-                if (grepl("Time \\(LST\\)", someLines[1])) {
-                    oceDebug(debug, "END oceMagic() returning met/csv2\n", unindent = 1)
-                    return("met/csv3")
-                } else {
-                    oceDebug(debug, "END oceMagic() returning met/csv3\n", unindent = 1)
-                    return("met/csv2")
-                }
-            } else if (length(grep("^Station_Name,", someLines))) {
-                oceDebug(debug, "END oceMagic() returning sealevel\n", unindent = 1)
-                return("sealevel")
-            } else if (1L == length(grep("^CTD,", someLines))) {
-                oceDebug(debug, "END oceMagic() returning ctd/woce/exchange\n", unindent = 1)
-                return("ctd/woce/exchange")
-            } else if (1L == length(grep("^BOTTLE,", someLines))) {
-                oceDebug(debug, "END oceMagic() returning section\n", unindent = 1)
-                return("section")
-            } else {
-                return("unknown")
-            }
-        }
-        if (grepl(".edf$", filename, ignore.case = TRUE)) {
-            oceDebug(debug, "END oceMagic() returning xbt/edf\n", unindent = 1)
-            return("xbt/edf")
-        }
-        file <- file(file, "r", encoding = encoding)
-    }
-    if (!inherits(file, "connection")) {
-        stop("argument 'file' must be a character string or connection")
-    }
-    oceDebug(debug, "'file' is a connection\n")
-    if (!isOpen(file)) {
-        open(file, "r", encoding = encoding)
-    }
-    # Grab text at start of file.
-    lines <- readLines(file, n = 2L, skipNul = TRUE)
-    line <- lines[1]
-    line2 <- lines[2]
-    oceDebug(debug, "first line of file: ", line, "\n", sep = "")
-    oceDebug(debug, "second line of file: ", line2, "\n", sep = "")
-    close(file)
-    file <- file(filename, "rb")
-    bytes <- readBin(file, what = "raw", n = 4)
-    oceDebug(debug, paste("first two bytes in file: 0x", bytes[1], " and 0x", bytes[2], "\n", sep = ""))
-    on.exit(close(file))
-    if (bytes[1] == 0x00 && bytes[2] == 0x00 && bytes[3] == 0x27 && bytes[4] == 0x0a) {
-        oceDebug(debug, "this is a shapefile; see e.g. http://en.wikipedia.org/wiki/Shapefile\n")
-        oceDebug(debug, "END oceMagic() returning shapefile\n", unindent = 1)
-        return("shapefile")
-    }
-    if (bytes[3] == 0xff && bytes[4] == 0xff) {
-        oceDebug(debug, "END oceMagic() returning echosounder\n", unindent = 1)
-        return("echosounder")
-    }
-    if (bytes[1] == 0x10 && bytes[2] == 0x02) {
-        # 'ADPManual v710.pdf' p83
-        if (96 == readBin(bytes[3:4], "integer", n = 1, size = 2, endian = "little")) {
-            oceDebug(debug, "this is adp/sontek (4 byte match)\n")
-        } else {
-            oceDebug(debug, "this is adp/sontek (2 byte match, but bytes 3 and 4 should become integer 96)\n")
-        }
-        oceDebug(debug, "END oceMagic() returning adp/sontek\n", unindent = 1)
-        return("adp/sontek")
-    }
-    if (bytes[1] == 0x7f && bytes[2] == 0x7f) {
-        oceDebug(debug, "END oceMagic() returning adp/rdi\n", unindent = 1)
-        return("adp/rdi")
-    }
-    if (bytes[1] == 0xa5 && bytes[2] == 0x05) {
-        # NorTek files require deeper inspection.  Here, SIG stands for "System Integrator Guide",
-        # Dated Jue 2008 (Nortek Doc No PS100-0101-0608)
-        seek(file, 0)
-        oceDebug(debug, "This is probably a nortek file of some sort.  Reading further to see for sure ...\n")
-        hardware.configuration <- readBin(file, what = "raw", n = 48) # FIXME: this hard-wiring is repeated elsewhere
-        if (hardware.configuration[1] != 0xa5 || hardware.configuration[2] != 0x05) {
-            return("unknown")
-        }
-        oceDebug(debug, "hardware.configuration[1:2]", hardware.configuration[1:2], "(expect 0xa5 0x05)\n")
-        head.configuration <- readBin(file, what = "raw", n = 224)
-        oceDebug(debug, "head.configuration[1:2]", head.configuration[1:2], "(expect 0xa5 0x04)\n")
-        if (head.configuration[1] != 0xa5 || head.configuration[2] != 0x04) {
-            return("unknown")
-        }
-        user.configuration <- readBin(file, what = "raw", n = 512)
-        oceDebug(debug, "user.configuration[1:2]", user.configuration[1:2], "(expect 0xa5 0x00)\n")
-        if (user.configuration[1] != 0xa5 || user.configuration[2] != 0x00) {
-            return("unknown")
-        }
-        nextTwoBytes <- readBin(file, what = "raw", n = 2)
-        oceDebug(
-            debug, "nextTwoBytes:", paste("0x", nextTwoBytes[1], sep = ""),
-            paste("0x", nextTwoBytes[2], sep = ""), "(e.g. 0x5 0x12 is adv/nortek/vector)\n"
-        )
-        if (nextTwoBytes[1] == 0xa5 && nextTwoBytes[2] == 0x12) {
-            oceDebug(debug, "END oceMagic() returning adv/nortek/vector\n", unindent = 1)
-            return("adv/nortek/vector")
-        }
-        if (nextTwoBytes[1] == 0xa5 && nextTwoBytes[2] == 0x01) {
-            oceDebug(debug, "these two bytes imply this is adp/nortek/aqudopp (see system-integrator-manual_jan2011.pdf Table 5.2)\n")
-            oceDebug(debug, "END oceMagic() returning adp/nortek/aquadopp\n", unindent = 1)
-            return("adp/nortek/aquadopp")
-        }
-        if (nextTwoBytes[1] == 0xa5 && nextTwoBytes[2] == 0x81) {
-            oceDebug(debug, "these two bytes imply this is adp/nortek/aqudopp (see N3015-023-Integrators-Guide-Classic_1220.pdf page 30)\n")
-            oceDebug(debug, "END oceMagic() returning adp/nortek/aquadoppPlusMagnetometer\n", unindent = 1)
-            return("adp/nortek/aquadoppPlusMagnetometer")
-        }
-        if (nextTwoBytes[1] == 0xa5 && nextTwoBytes[2] == 0x21) {
-            oceDebug(debug, "END oceMagic() returning adp/nortek/aquadoppProfiler\n", unindent = 1)
-            return("adp/nortek/aquadoppProfiler") # p37 SIG
-        }
-        if (nextTwoBytes[1] == 0xa5 && nextTwoBytes[2] == 0x2a) {
-            oceDebug(debug, "END oceMagic() returning adp/nortek/aquadoppHR\n", unindent = 1)
-            return("adp/nortek/aquadoppHR") # p38 SIG
-        }
-        stop("some sort of nortek ... two bytes are 0x", nextTwoBytes[1], " and 0x", nextTwoBytes[2], " but cannot figure out what the type is")
-    }
-    if (bytes[1] == 0xa5 && bytes[4] == 0x10) {
-        oceDebug(debug, "END oceMagic() returning adp/nortek/ad2cp\n", unindent = 1)
-        return("adp/nortek/ad2cp")
-    }
-    if (bytes[1] == 0x9b && bytes[2] == 0x00) {
-        warning(paste(
-            "Possibly this is an RDI CTD file. Oce cannot read such files yet, because\n",
-            " the author has not located file-format documents.  If you get such documents\n",
-            " from RDI, please send them to dan.kelley@dal.ca so the format can be added."
-        ))
-        return("possibly RDI CTD")
-    }
-    if (1 == length(grep("^CTD", line))) {
-        oceDebug(debug, "END oceMagic() returning ctd/woce/exchange\n", unindent = 1)
-        return("ctd/woce/exchange")
-    }
-    if (1 == length(grep("^EXPOCODE", line))) {
-        oceDebug(debug, "END oceMagic() returning ctd/woce/other\n", unindent = 1)
-        return("ctd/woce/other")
-    }
-    if (1 == length(grep("^\\s*ODF_HEADER", line))) {
-        oceDebug(debug, "END oceMagic() returning odf\n", unindent = 1)
-        return("odf")
-    }
-    if (grepl("^\\* Sea-Bird SBE", line) || grepl("^\\* Viking Buoy CTD file", line)) {
-        oceDebug(debug, "END oceMagic() returning ctd/sbe\n", unindent = 1)
-        return("ctd/sbe")
-    }
-
-    if (1 == length(grep("^%ITP", line))) {
-        oceDebug(debug, "END oceMagic() returning ctd/itp\n", unindent = 1)
-        return("ctd/itp")
-    }
-    if (1 == length(grep("^# -b", line))) {
-        oceDebug(debug, "END oceMagic() returning coastline\n", unindent = 1)
-        return("coastline")
-    }
-    if (1 == length(grep("^# Station_Name,", line))) {
-        oceDebug(debug, "END oceMagic() returning sealevel\n", unindent = 1)
-        return("sealevel")
-    }
-    if (1 == length(grep("^Station_Name,", line))) {
-        oceDebug(debug, "END oceMagic() returning sealevel\n", unindent = 1)
-        return("sealevel")
-    }
-    if (1 == length(grep("^[0-9][0-9][0-9][A-Z] ", line))) {
-        oceDebug(debug, "END oceMagic() returning sealevel\n", unindent = 1)
-        return("sealevel")
-    }
-    if (1 == length(grep("^NCOLS[ ]*[0-9]*[ ]*$", line))) {
-        oceDebug(debug, "END oceMagic() returning topo\n", unindent = )
-        return("topo")
-    }
-    if (1 == length(grep("^RBR TDR", line))) {
-        # FIXME: obsolete; to be removed Fall 2015
-        oceDebug(debug, "END oceMagic() returning RBR/dat\n", unindent = 1)
-        return("RBR/dat")
-    }
-    if (1 == length(grep("^Model=", line))) {
-        oceDebug(debug, "END oceMagic() returning RBR/txt\n", unindent = 1)
-        return("RBR/txt")
-    }
-    if (1 == length(grep("^BOTTLE", line))) {
-        oceDebug(debug, "END oceMagic() returning section\n", unindent = 1)
-        return("section")
-    }
-    oceDebug(debug, "this is unknown\n")
-    return("unknown")
-}
-
 
 
 #' Read an Oceanographic Data File

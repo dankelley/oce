@@ -10,7 +10,7 @@
 #' Several `gsw` functions require location information to be matched up with
 #' hydrographic information.  The scheme depends on the dimensionality of the
 #' hydrographic variables and the location variables. For example, the
-#' [ctd-class] stores `salinity` etc in vectors, an stores just one
+#' [ctd-class] stores `salinity` etc in vectors, and (usually) stores just one
 #' longitude-latitude pair for each vector.  By contrast, the [argo-class]
 #' stores `salinity` etc as matrices, and stores e.g. `longitude` as a vector of
 #' length matching the first dimension of `salinity`.
@@ -19,7 +19,9 @@
 #'
 #' @return `locationForGsw` returns a list containing `longitude` and
 #' `latitude`, with dimensionality matching `pressure` in the `data` slot of
-#' `x`.  If `x` lacks location information (in either its `metadata` or `data`
+#' `x`.  If `x` has just a single value for each of `longitude` and
+#' `latitude`, then that value will be repeated in the return value.
+#' If `x` lacks location information (in either its `metadata` or `data`
 #' slot) or lacks `pressure` in its data slot, then the returned list will hold
 #' NULL values for both `longitude` and `latitude`.
 #'
@@ -46,11 +48,21 @@ locationForGsw <- function(x) {
         latitude <- rep(latitude, each = dim[1])
         dim(latitude) <- dim
     } else {
-        np <- length(pressure)
-        longitude <- rep(longitude[1], length.out = np)
-        latitude <- rep(latitude[1], length.out = np)
+        npressure <- length(pressure)
+        nlongitude <- length(longitude)
+        nlatitude <- length(latitude)
+        if (nlongitude == 1L && nlatitude == 1L) {
+            longitude <- rep(longitude[1], length.out = npressure)
+            latitude <- rep(latitude[1], length.out = npressure)
+        } else {
+            if (nlongitude != npressure) {
+                stop("length of longitude must equal 1 or length(pressure)")
+            }
+            if (nlatitude != npressure) {
+                stop("length of latitude must equal 1 or length(pressure)")
+            }
+        }
     }
-    dim <- dim(pressure)
     list(longitude = longitude, latitude = latitude)
 }
 
@@ -1520,7 +1532,7 @@ swThermalConductivity <- function(salinity, temperature = NULL, pressure = NULL)
 #' the water column.  If the first parameter is an oce object that has an
 #' element named `"depth"` in its `data` slot, then return that value.
 #' Otherwise, compute depth from a formula that includes pressure and latitude,
-#' as explained in \sQuote{Details}.
+#' as explained in \dQuote{Details}.
 #'
 #' For the calculated case, the method depends on the value of `eos` parameter.
 #' If this is `"unesco"`, then depth is calculated from pressure using Saunders
@@ -3436,6 +3448,7 @@ swAbsoluteSalinity <- function(salinity, pressure = NULL, longitude = NULL, lati
     if (missing(salinity)) {
         stop("must provide salinity")
     }
+    debug <- max(0, debug)
     if (inherits(salinity, "oce")) {
         x <- salinity # store this for clarity
         if (!"salinity" %in% names(x@data)) {

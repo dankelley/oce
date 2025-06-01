@@ -2,12 +2,9 @@
 library(oce)
 data(argo)
 
-test_that("as.ctd works with multi-column argo", {
+test_that("as.ctd works with built-in argo dataset", {
     expect_silent(as.ctd(argo[["profile", 1]]))
-})
-
-test_that("as.ctd works with multi-column argo", {
-    expect_warning(as.ctd(argo[["profile", 1:5]]), "using just column 1")
+    expect_warning(as.ctd(argo[["profile", 1:5]]), "since 'profile' not given, defaulting to 1")
 })
 
 test_that("global attributes in metadata", {
@@ -246,6 +243,27 @@ test_that("[[ handles both cycleNumber and cycle", {
     expect_equal(argo[["cycle"]], 1:223)
 })
 
+test_that("can get spiciness from 2-column built-in argo file", {
+    file <- system.file("extdata", "D4902337_219.nc", package = "oce")
+    expect_silent(d <- read.argo(file))
+    spiciness0 <- d[["spiciness0"]]
+    dim(spiciness0)
+    nrow <- 501
+    ncol <- 2
+    expect_equal(c(nrow, ncol), dim(spiciness0))
+    expect_equal(
+        head(spiciness0),
+        structure(c(
+            -0.740665385460943, -0.777904393473634, -0.843097049624618,
+            -0.869665638826788, -0.888032049002035, -0.898649902384776, -0.735575985145829,
+            -0.737577845207895, -0.73793188835235, -0.739934295750885, -0.741397992241687,
+            -0.74540191167246
+        ), dim = c(6L, 2L))
+    )
+    ctd <- as.ctd(d, profile = 1)
+    expect_equal(ctd[["spiciness0"]], d[["spiciness0"]][, 1])
+})
+
 file <- "local_data/GL_PR_PF_5906438.nc"
 if (file.exists(file)) {
     test_that("can read a Copernicus BGC file", {
@@ -260,7 +278,7 @@ if (file.exists(file)) {
 
 file <- "local_data/argo/D4903224_012.nc"
 if (file.exists(file)) {
-    test_that("can get spiciness from 2-column argo file", {
+    test_that("can get spiciness from 2-column private (non-CRAN) argo file", {
         expect_silent(d <- read.argo(file))
         spiciness0 <- d[["spiciness0"]]
         expect_equal(c(1011, 2), dim(spiciness0))
@@ -274,6 +292,8 @@ if (file.exists(file)) {
                 6.18102988626372
             ), dim = c(6L, 2L))
         )
+        ctd <- as.ctd(d, profile = 1)
+        expect_equal(ctd[["spiciness0"]], d[["spiciness0"]][, 1])
     })
 }
 
@@ -292,5 +312,7 @@ if (file.exists(file)) {
                 7.02504314496063
             ), dim = c(6L, 1L))
         )
+        ctd <- as.ctd(d, profile = 1)
+        expect_equal(ctd[["spiciness0"]], d[["spiciness0"]][, 1])
     })
 }

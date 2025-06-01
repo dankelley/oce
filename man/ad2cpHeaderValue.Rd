@@ -4,27 +4,34 @@
 \alias{ad2cpHeaderValue}
 \title{Infer an Item From a Nortek AD2CP File Header}
 \usage{
-ad2cpHeaderValue(x, key, item, numeric = TRUE, default)
+ad2cpHeaderValue(x, key, item, numeric = TRUE, default, plan = 0, debug = 0)
 }
 \arguments{
 \item{x}{an \linkS4class{adp} object that holds AD2CP data.}
 
-\item{key}{Character value that identifies a particular line in the file
+\item{key}{character value that identifies a particular line in the file
 header.}
 
-\item{item}{Character value indicating the name of the item sought.}
+\item{item}{character value indicating the name of the item sought.}
 
-\item{numeric}{Logical value indicating whether to convert the return value
+\item{numeric}{logical value indicating whether to convert the return value
 from a string to a numerical value.}
 
-\item{default}{Optional value to be used if the item is not found in the
+\item{default}{optional value to be used if the item is not found in the
 header, or if the header is \code{NULL} (as in the case of a split-up file
 that lacks the initial header information)}
+
+\item{plan}{integer specifying the plan, with the same
+meaning as for \code{\link[=read.adp.ad2cp]{read.adp.ad2cp()}}.}
+
+\item{debug}{integer indicating degree of debugging information
+to be printed during processing. The default value of 0 means to
+work quietly.}
 }
 \value{
-String or number interpreted from the \code{x[["text"]]}, or \code{NULL},
-if the desired item is not found there, or if \code{x} is not of the required
-class and variety.
+\code{ad2cpHeaderValue} returns a character value or number interpreted
+from the output from \code{x[["text"]]}, or \code{NULL}, if the desired item is not
+found there, or if \code{x} is not of the required class and variety.
 }
 \description{
 Infer an Item From a Nortek AD2CP File Header

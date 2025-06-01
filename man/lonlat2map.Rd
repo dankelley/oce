@@ -7,9 +7,12 @@
 lonlat2map(longitude, latitude, projection = "", debug = getOption("oceDebug"))
 }
 \arguments{
-\item{longitude}{a numeric vector containing decimal longitudes, or a list
-containing items named \code{longitude} and \code{latitude}, in which case
-the indicated values are used, and next argument is ignored.}
+\item{longitude}{one of three choices: (1) a numeric vector containing
+decimal longitudes, (2) a list containing items named \code{longitude} and
+\code{latitude}, or (3) a \linkS4class{coastline} object, e.g. as created with
+\code{\link[=as.coastline]{as.coastline()}} or \code{\link[=read.coastline]{read.coastline()}}. In the second two cases, the values
+of longitude and latitude are inferred from the first argument, and any
+supplied value of \code{latitude} (next parameter) is ignored.}
 
 \item{latitude}{a numeric vector containing decimal latitude (ignored if
 \code{longitude} is a list, as described above).}

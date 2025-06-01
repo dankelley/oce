@@ -33,3 +33,14 @@ from tens of degrees to degrees. Also, some items are created from scratch, e.g.
 and direction. (Note that e.g. u is positive if the wind blows to the east; the
 data are thus in the normal Physics convention.)
 }
+\seealso{
+Other functions that convert variable names to the oce convention: 
+\code{\link{ODFNames2oceNames}()},
+\code{\link{argoNames2oceNames}()},
+\code{\link{bodcNames2oceNames}()},
+\code{\link{woceNames2oceNames}()}
+}
+\author{
+Dan Kelley
+}
+\concept{functions that convert variable names to the oce convention}

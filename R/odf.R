@@ -540,6 +540,8 @@ findInHeader <- function(key, lines, returnOnlyFirst = TRUE, numeric = FALSE, pr
 #' For sources that describe the ODF format, see the documentation
 #' for the [odf-class].
 #'
+#' @family functions that convert variable names to the oce convention
+#'
 #' @family things related to odf data
 ODFNames2oceNames <- function(ODFnames, columns = NULL, PARAMETER_HEADER = NULL, debug = getOption("oceDebug")) {
     oceDebug(debug, "ODFNames2oceNames() START\n", unindent = 1, sep = "")

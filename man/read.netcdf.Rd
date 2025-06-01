@@ -4,14 +4,23 @@
 \alias{read.netcdf}
 \title{Read a NetCDF File}
 \usage{
-read.netcdf(file, ..., encoding = NA, debug = getOption("oceDebug"))
+read.netcdf(
+  file,
+  ...,
+  encoding = NA,
+  renamer = NULL,
+  debug = getOption("oceDebug")
+)
 }
 \arguments{
-\item{file}{the name of a file}
+\item{file}{character value specifying the name of a NetCDF file.}
 
 \item{...}{ignored}
 
 \item{encoding}{ignored.}
+
+\item{renamer}{function used to rename variables that are read from the file,
+or NULL (which is the default) to avoid such renaming.  See \dQuote{Details}.}
 
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
@@ -22,25 +31,150 @@ be printed. If one function calls another, it usually reduces the value of
 by specifying higher \code{debug} values.}
 }
 \value{
-An \linkS4class{oce} object.
+An \linkS4class{oce} object with \code{var} elements from the NetCDF file stored in
+the \code{data} slot. See the \dQuote{Examples} for hints on renaming the
+elements, and moving some of them to the \code{metadata} slot.
 }
 \description{
-Read a netcdf file, trying to interpret its contents sensibly.
+Read the contents of a NetCDF file, saving the information in a basic
+\linkS4class{oce} object.  Since NetCDF files can hold any manner of data,
+\code{read.netcdf()} might be used as a first step in the construction of another
+object of a specialized class, perhaps \linkS4class{ctd}, \linkS4class{topo}, etc.  As
+explained in \dQuote{Details}, the \code{renamer} argument can facilitate this
+work.  More work is required to move flags from the \code{data} slot of the
+result to the \code{metadata} slot, and this is illustrated in Example 3.
 }
 \details{
-It is important to note that this is a preliminary version of
-this function, and much about it may change without notice.
-Indeed, it may be removed entirely.
+By default, the names of the data variables are not changed from those in the
+data file.  This can be confusing to users who are unfamiliar with the naming
+scheme used in a particular file, and so \code{read.netcdf()} has a parameter
+named \code{renamer} with which the user can provide a translation key to go from
+names in the NetCDF file to more standard oce names (like \code{salinity}).  See
+\dQuote{Examples} to see how this works, for a particular file that follows
+the NERC/BODC convention for naming variables.
 
-Below are some features that may be changed.
-\enumerate{
-\item The names of data items are not changed from those in the netcdf
-file on the assumption that this will offer the least surprise to
-the user.
-\item An attempt is made to find some common metadata from global
-attributes in the netcdf file. These attributes include
-\code{Longitude}, \code{Latitude}, \code{Ship} and \code{Cruise}.
-Before they are stored in the metadata, they are converted to
-lower case, since that is the oce convention.
+Unlike more specialized functions such as \code{\link[=read.ctd.sbe]{read.ctd.sbe()}}, \code{read.netcdf()}
+does not try to associate data-quality flags with the corresponding data
+items. This is because, in the files examined by the author, there is no
+clear pattern in the names.  For example, the test file referred to
+in the \dQuote{Examples} section (which is not supplied with this package)
+has three variables that relate to temperature, namely \code{"TEMPS901"},
+\code{"TEMPP901"}, and \code{"TEMPPR01"}.  Given common naming conventions, a quality
+flag variable is normally constructed by prepending the letter \code{"Q"} to
+the name of another variable.  Although there are no such names in this
+dataset, it \emph{does} have something called \code{"QTEMP_01"} that one might guess
+to be a temperature-quality flag.  Based on this (and similar)
+assumptions, Example 3 shows how to move data-quality variables from
+the \code{data} slot of the returned object to the \code{metadata} slot,
+which is where oce expects to find it, for further processing of
+data-quality flags.
+
+In this same example file, there are some data fields that contain strings
+that evidently provide calibration and other information on some of
+the sensors.  Example 3 shows how to move these things from the \code{data}
+slot to the \code{metadata} slot.
+
+Readers might wonder why the renaming and moving of material from the
+\code{data} slot to the \code{metadata} slot is not done by \code{read.netcdf()} itself.
+The answer is that these things apply only to files of the type being
+dealt with in this example.  The NetCDF format can hold a very wide variety
+of information, and so the basic behaviour of \code{read.netcdf()} is just to
+read the data items (things called \code{var} by functions in the \code{ncdf4}
+package, which \code{read.netcdf()} uses to read the file) and store them
+in the \code{data} slot.  In most cases, it is simply up to the user to
+decide what to do with the information.
+
+Finally, it should be noted that \code{read.netcdf()} tries to get some
+common metadata elements from global attributes in the NetCDF file.
+These include \code{Longitude}, \code{Latitude}, \code{Ship} and \code{Cruise}, all
+of which are renamed in lower-case and stored in the \code{metadata} slot,
+in accordance with oce convention.
 }
+\examples{
+\dontrun{
+# Download the file.  (This may break if the server changes.)
+file <- tempfile(fileext = ".nc")
+url <- paste0(
+    "https://cioosatlantic.ca/erddap/files/",
+    "bio_maritimes_region_ecosystem_survey_ctd/",
+    "Maritimes\%20Region\%20Ecosystem\%20Survey\%20Summer/",
+    "2023/CTD_CAR2023011_001_496780_DN.ODF.nc"
+)
+download.file(url, file)
+
+# Example 1: read without translating names
+d <- read.netcdf(file)
+summary(d)
+
+# Example 2: as Example 1, but translate (some) names
+d <- read.netcdf(file, renamer = bodcNames2oceNames)
+summary(d)
+
+# Example 3: as Example 2, but handle some flags that were
+# noticed in this particular file.  See Details for more
+# notes on variable names.  Note that the following code
+# only deals with the first instance of a variable, e.g.
+# temperature, and not temperature2 or temperature3.
+# (This is of little consequence, since all 3 of the temperatures
+# are identical.)
+d <- read.netcdf(file, renamer = bodcNames2oceNames)
+# Looking within the NetCDF file indicates that the built-in
+# scheme for DFO files is appropriate here.
+d <- initializeFlagScheme(d, name = "DFO")
+# Move some data elements to the `metadata@flags` list,
+# so they can be used for flag-handling operations. Some
+# guesses had to be made on the name mapping (see Details).
+flags <- list(
+    QALTB_01 = "heightAboveBottom",
+    QCPHLPR01 = "cholorophyll-a",
+    QCNDC_01 = "conductivity",
+    QDOXY_01 = "oxygen",
+    QOXYV_01 = "oxygenVoltage",
+    QPOTM_01 = "theta",
+    QPRES_01 = "pressure",
+    QPSAL_01 = "salinity",
+    QPSAR_01 = "downwellingIrradiance",
+    QSIGP_01 = "sigmaTheta",
+    QTEMP_01 = "temperature"
+)
+for (i in seq_along(flags)) {
+    varName <- flags[[i]]
+    flagName <- names(flags)[i]
+    # cat("fileName=", varName, ", flagName=", flagName, "\n", sep="")
+    d@metadata$flags[[varName]] <- d[[flagName]] # move
+    d@data[[flagName]] <- NULL # delete original
+}
+# For this group of files, it appears that sensor metadata are
+# stored with particular names, e.g. "TemperatureSensor". The
+# following moves these from the data slot to the metadata slot.
+dataNames <- names(d@data)
+for (sensorName in dataNames[grep("Sensor$", dataNames)]) {
+    d@metadata[[sensorName]] <- d@data[[sensorName]]
+    d@data[[sensorName]] <- NULL
+}
+summary(d)
+# Display information about the temperator sensor
+cat("Temperature Sensor\n")
+if (require("jsonlite")) {
+    str(jsonlite::fromJSON(d[["TemperatureSensor"]]))
+}
+
+# Finally, remove the downloaded file, according to CRAN
+# policy regarding downloads in documentation examples.
+file.remove(file)
+}
+
+}
+\references{
+\enumerate{
+\item Data variable vocabulary used by NERC/BODC.
+\url{http://vocab.nerc.ac.uk/collection/P01/current/}
+\item CIOOS Atlantic ERDDAP server entry for Bedford Institute measurements in
+the waters of Maritime Canada.
+\url{https://cioosatlantic.ca/erddap/files/bio_maritimes_region_ecosystem_survey_ctd/}
+(Link tested 2024-09-21.)
+}
+}
+\author{
+Dan Kelley
 }

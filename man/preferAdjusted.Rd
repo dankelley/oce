@@ -82,7 +82,7 @@ data items that have \code{NA} for all the adjusted values.  This
 condition is rare for core variables (salinity, temperature and
 pressure) but is annoyingly common for biogeochemical variables; see
 e.g. Section 2.2.5 of Reference 1 for a discussion of
-the conditions under which Argo netcdf files contain
+the conditions under which Argo NetCDF files contain
 adjusted values. Setting \code{fallback=FALSE} means that adjusted
 values (if they exist) will always be returned, even if they
 are a useless collection of \code{NA} values.
@@ -94,7 +94,7 @@ the object was created by \code{preferAdjusted}.
 It should be noted that, regardless of whether \code{preferAdjusted}
 has been used, the analyst can always access either unadjusted
 or adjusted data directly, using the original variable names stored
-in the source netcdf file.  For example, \code{argo[["PSAL"]]}
+in the source NetCDF file.  For example, \code{argo[["PSAL"]]}
 yields unadjusted salinity values, and
 \code{argo[["PSAL_ADJUSTED"]]} yields adjusted values (if they exist, or
 \code{NULL} if they do not).

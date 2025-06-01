@@ -26,7 +26,7 @@ case \code{longitude}, \code{latitude} and \code{z} are inferred from that objec
 Importantly, the \code{longitude} system must match that of the
 \code{\link[=mapPlot]{mapPlot()}} call that made the underlying plot. If not, the
 contours can have spurious lines that run across the plot. See
-\sQuote{Dealing with longitude conventions} for a method
+\dQuote{Dealing with longitude conventions} for a method
 of handling conflicting longitude conventions between \code{\link[=mapPlot]{mapPlot()}}
 and \code{\link[=mapContour]{mapContour()}}.}
 

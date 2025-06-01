@@ -32,7 +32,7 @@ by specifying higher \code{debug} values.}
 }
 \description{
 This uses information about profiles that is contained within the \code{metadata}
-slot of the first argument, \code{x}, having been inserted there by \code{\link[=read.rsk]{read.rsk()}}.
+slot of the first parameter, \code{x}, having been inserted there by \code{\link[=read.rsk]{read.rsk()}}.
 If \code{x} was created by reading an \code{.rsk} file with \code{\link[=read.rsk]{read.rsk()}},
 and if that file contained geographical information (that is, if it had a
 data table named \code{geodata}) then the \emph{first} longitude and latitude from each
@@ -43,6 +43,7 @@ Other things related to ctd data:
 \code{\link{CTD_BCD2014666_008_1_DN.ODF.gz}},
 \code{\link{[[,ctd-method}},
 \code{\link{[[<-,ctd-method}},
+\code{\link{argo2ctd}()},
 \code{\link{as.ctd}()},
 \code{\link{cnvName2oceName}()},
 \code{\link{ctd}},
@@ -53,7 +54,8 @@ Other things related to ctd data:
 \code{\link{ctdRaw}},
 \code{\link{ctdRepair}()},
 \code{\link{ctdTrim}()},
-\code{\link{ctd_aml.csv.gz}},
+\code{\link{ctd_aml_type1.csv.gz}},
+\code{\link{ctd_aml_type3.csv.gz}},
 \code{\link{d200321-001.ctd.gz}},
 \code{\link{d201211_0011.cnv.gz}},
 \code{\link{handleFlags,ctd-method}},

@@ -152,7 +152,10 @@ oceUnits2whpUnits <- function(units, scales) {
 #' `https://cchdo.github.io/hdo-assets/documentation/manuals/pdf/90_1/chap4.pdf`
 #'
 #' @family things related to ctd data
+#'
 #' @family functions that interpret variable names and units from headers
+#'
+#' @family functions that convert variable names to the oce convention
 woceNames2oceNames <- function(names) {
     # see woceNames2oceNames, and update both at once when new items added
     #
@@ -237,7 +240,7 @@ woceUnit2oceUnit <- function(woceUnit) {
     if (woceUnit == "%") {
         return(list(unit = expression(percent), scale = ""))
     }
-    return(list(unit = expression(), scale = ""))
+    list(unit = expression(), scale = "")
 }
 
 

@@ -47,10 +47,13 @@ are to be acquired. See \dQuote{History}.}
 \item{type}{character value indicating where to get the data.  This may be
 \code{"3day"} (the default), for a composite covering 3 days of observation, which
 removes most viewing-path and cloud blanks, \code{"daily"} for a daily reading,
-\code{"weekly"} for a composite covering a week, or \code{"monthly"} for a composite
-covering a month.  In the \code{"daily"} case, the data arrays are 3D, with the
-third dimension representing ascending and descending traces, but in all the
-other cases, the arrays are 2D.}
+\code{"weekly"} for a composite covering a week, \code{"monthly"} for a composite
+covering a month, or \code{"rt"} for what seems to be realtime datasets (which
+seem to be restricted to the prior few days only).  Note that the \code{"rt"}
+files store \code{SST} and related variables in 3D arrays, as opposed to the
+2D arrays used for the other file types.  This is because the ascending
+and descending passes are both available; to select a choice for
+plotting, use the \code{pass} parameter of \code{\link[=plot,amsr-method]{plot,amsr-method()}}.}
 
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
@@ -91,12 +94,17 @@ had changed, e.g.
 becoming
 \verb{http://data.remss.com/amsr2/bmaps_v08/y2017/m01/f34_20170114v8.gz}
 
-On 26 July 2023, it was noticed that the server-url naming convention
+On 2023-07-26, it was noticed that the server-url naming convention
 had changed again, requiring not only the alteration of the default
 \code{server} value but also the addition of a new parameter named \code{type}.
-Worse yet -- much worse -- the file format is now changed from a gzipped
-format to a NetCDF format, and this will require a complete rewriting
+Worse yet the file format had evidently been changed from a gzipped
+format to a NetCDF format, which required a complete rewriting
 of \code{\link[=read.amsr]{read.amsr()}}.
+
+On 2024-08-17, it was noticed that the server has a directory called \code{rt}
+which seems to hold realtime data for a few recent days (and a few other
+isolated 3-day sequences in the past two years). These files may be
+of use in analysis of current events.
 }
 
 \section{Sample of Usage}{

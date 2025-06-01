@@ -5,7 +5,7 @@
 \alias{argo}
 \title{Sample argo Data}
 \source{
-The netcdf file used by \code{\link[=read.argo]{read.argo()}} to create this \linkS4class{argo}
+The NetCDF file used by \code{\link[=read.argo]{read.argo()}} to create this \linkS4class{argo}
 object was downloaded using FTP to
 \code{ftp.ifremer.fr/ifremer/argo/dac/bodc/6900388/6900388_prof.nc}
 on 2020 June 24.
@@ -53,9 +53,11 @@ Other datasets provided with oce:
 \code{\link{xbt}}
 
 Other things related to argo data: 
+\code{\link{D4902337_219.nc}},
 \code{\link{[[,argo-method}},
 \code{\link{[[<-,argo-method}},
 \code{\link{argo-class}},
+\code{\link{argo2ctd}()},
 \code{\link{argoGrid}()},
 \code{\link{argoNames2oceNames}()},
 \code{\link{as.argo}()},

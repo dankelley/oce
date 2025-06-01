@@ -52,7 +52,7 @@ setClass("argo", contains = "oce")
 #' data(coastlineWorld)
 #' plot(argo, which = "trajectory")
 #'
-#' @source The netcdf file used by [read.argo()] to create this [argo-class]
+#' @source The NetCDF file used by [read.argo()] to create this [argo-class]
 #' object was downloaded using FTP to
 #' \code{ftp.ifremer.fr/ifremer/argo/dac/bodc/6900388/6900388_prof.nc}
 #' on 2020 June 24.
@@ -560,6 +560,8 @@ getData <- function(file, name, quiet = FALSE) {
 #' `http://www.argodatamgt.org/content/download/27444/187206/file/argo-parameters-list-core-and-b.xlsx`
 #'
 #' @author Dan Kelley, with help from Anna Victor
+#'
+#' @family functions that convert variable names to the oce convention
 #'
 #' @family things related to argo data
 argoNames2oceNames <- function(names, ignore.case = TRUE) {
@@ -1096,7 +1098,7 @@ argoDecodeFlags <- function(f) # local function
 #'
 #' *1. Variable renaming.*
 #'
-#' The names of several data parameters stored within the netCDF file
+#' The names of several data parameters stored within the NetCDF file
 #' are altered to fit the oce context. For example, `PRES` becomes `pressure`,
 #' matching the name of this variable in other oce data types.
 #' The original names are reported by `summary,argo-method`, and
@@ -1104,10 +1106,10 @@ argoDecodeFlags <- function(f) # local function
 #' the renaming should not be too inconvenient to Argo experts who
 #' are new to oce.
 #'
-#' Argo netcdf files employ a `"SNAKE_CASE"` naming scheme (sometimes
+#' Argo NetCDF files employ a `"SNAKE_CASE"` naming scheme (sometimes
 #' using lower case) that is inconsistent with the `"camelCase"` scheme
 #' used in oce. Since argo objects are just a small part of oce, a decision
-#' was made to rename argo items. For example, `"CYCLE_NUMBER"` in the netcdf file
+#' was made to rename argo items. For example, `"CYCLE_NUMBER"` in the NetCDF file
 #' becomes `"cycleNumber"` in the oce object returned by `read.argo`.
 #' (Note that `[[,argo-method` also accepts `"cycle"` for this item.)
 #' The conversion for objects in the `data` slot often also involves
@@ -1127,12 +1129,12 @@ argoDecodeFlags <- function(f) # local function
 #'
 #' *2. Metadata.*
 #'
-#' Several of the netCDF global attributes are also renamed before
+#' Several of the NetCDF global attributes are also renamed before
 #' placement in the `metadata` slot of the return value.  These include
 #' `conventions`, `featureType`, `history`, `institution`,
 #' `nParameters`, `nProfiles`,  `references`, `source`, `title`,
 #' and `userManualVersion`.
-#' These names are derived from those in the netcdf
+#' These names are derived from those in the NetCDF
 #' file, and mainly follow the pattern explained in the
 #' \dQuote{Variable renaming convention} section.
 #'
@@ -1156,14 +1158,14 @@ argoDecodeFlags <- function(f) # local function
 #' `PRES_ERROR`. The same pattern works for other profile data. The variables
 #' are stored with names created as explained in the
 #' \dQuote{Variable renaming convention} section below. Note that
-#' flags, which are stored variables ending in `"_QC"` in the netcdf
+#' flags, which are stored variables ending in `"_QC"` in the NetCDF
 #' file, are stored in the `flags` item within the `metadata` slot
 #' of the returned object; thus, for example,
 #' `PRES_QC` is stored as `pressure` in `flags`.
 #'
 #' *4. How time is handled.*
 #'
-#' The netcdf files for profile data store time in an item named `juld`,
+#' The NetCDF files for profile data store time in an item named `juld`,
 #' which holds the overall profile time, in what the Argo documentation
 #' calls Julian days, with respect to a reference time that is also stored
 #' in the file.  Based on this information, a [POSIXct] value named `time`
@@ -1301,7 +1303,7 @@ read.argo <- function(file, encoding = NA, debug = getOption("oceDebug"), proces
     if (is.character(file)) {
         filename <- fullFilename(file)
         file <- ncdf4::nc_open(file)
-        #on.exit(ncdf4::nc_close(file))
+        # on.exit(ncdf4::nc_close(file))
     } else {
         if (!inherits(file, "connection")) {
             ncdf4::nc_close(file)
@@ -1309,7 +1311,7 @@ read.argo <- function(file, encoding = NA, debug = getOption("oceDebug"), proces
         }
         if (!isOpen(file)) {
             file <- ncdf4::nc_open(file)
-            #on.exit(ncdf4::nc_close(file))
+            # on.exit(ncdf4::nc_close(file))
         }
     }
     oceDebug(debug, "read.argo(file=\"", filename, "\", ...) START\n", sep = "", unindent = 1)
@@ -1606,6 +1608,7 @@ read.argo <- function(file, encoding = NA, debug = getOption("oceDebug"), proces
             list(unit = expression(degree * W), scale = "")
         }
     }
+    # Note: for issue 2293, we may change the dimensionality of mtime later
     if (maybeLC("MTIME", lc) %in% varNames) {
         res@data$mtime <- ncdf4::ncvar_get(file, maybeLC("MTIME", lc))
         res@metadata$dataNamesOriginal$mtime <- "MTIME"
@@ -1739,6 +1742,7 @@ read.argo <- function(file, encoding = NA, debug = getOption("oceDebug"), proces
             res@metadata$units$pressureAdjustedError <- list(unit = expression(dbar), scale = "")
         }
     }
+
     # Fix up names of flags. This became required with changes made to argoNames2oceNames() in Dec 17-18, 2016. Arguably, I
     # should find out why the change occurred, but fixing the names now is just as easy, and might be clearer to the reader.
     names(res@metadata$flags) <- gsub("QC$", "", names(res@metadata$flags))
@@ -1770,7 +1774,7 @@ read.argo <- function(file, encoding = NA, debug = getOption("oceDebug"), proces
         }
         oceDebug(debug - 1, "  Remaining ", length(varNames), "are: =", paste(varNames, collapse = " "), "\n")
         n <- paste(item, maybeLC("_QC", lc), sep = "")
-        oceDebug(debug - 2, "  about to try to get '", n, "' from netcdf file\n", sep = "")
+        oceDebug(debug - 2, "  about to try to get '", n, "' from NetCDF file\n", sep = "")
         d <- getData(file, maybeLC(n, lc), quiet = TRUE)
         oceDebug(debug - 2, "  ... got it\n", sep = "")
         varNames <- varNamesOmit(varNames, n)
@@ -1886,6 +1890,11 @@ read.argo <- function(file, encoding = NA, debug = getOption("oceDebug"), proces
             }
             res@metadata[[ocename]] <- value
         }
+    }
+    # For issue 2293, fix up the dimension of mtime
+    if ("mtime" %in% names(res@data) && is.matrix(res@data$pressure)) {
+        oceDebug(debug, "reforming dimensionality of @data$mtime (for issue 2293)\n")
+        dim(res@data$mtime) <- dim(res@data$pressure)
     }
     # Record a log item
     res@processingLog <- processingLogAppend(res@processingLog, paste("read.argo(file=\"", filename, "\")", sep = ""))
@@ -2127,7 +2136,7 @@ setMethod(
         }
         par(mgp = mgp, mar = mar)
         if (missing(level) || level == "all") {
-            level <- seq(1L, dim(x@data$temperature)[1])
+            level <- seq_len(dim(x@data$pressure)[1])
         }
         longitude <- x[["longitude"]]
         latitude <- x[["latitude"]]
@@ -2140,13 +2149,6 @@ setMethod(
             longitude <- rep(x[["longitude"]], each = dim[1])
             latitude <- rep(x[["latitude"]], each = dim[1])
         }
-        ctd <- as.ctd(x@data$salinity, x@data$temperature, x@data$pressure,
-            longitude = longitude, latitude = latitude,
-            units = list(
-                temperature = list(unit = expression(degree * C), scale = "ITS-90"),
-                conductivity = list(list = expression(), scale = "")
-            )
-        ) # guess on units
         whichOrig <- which
         which <- oce.pmatch(
             which,
@@ -2165,6 +2167,22 @@ setMethod(
                 "spiciness2 profile" = 11
             )
         )
+        # We don't need a ctd object for a trajectory plot, i.e. if
+        # which is either 1 or 2. Also, prevent attempts to plot S or T
+        # if x lacks such data (as may be so with BGC-argo data).
+        if (any(!(which %in% c(1, 2)))) {
+            oceDebug(debug, "creating a ctd object for plotting\n")
+            if (2 != sum(c("salinity", "temperature") %in% names(x@data))) {
+                stop("Cannot make hydrographic plots, because dataset lacks S or T")
+            }
+            ctd <- as.ctd(x@data$salinity, x@data$temperature, x@data$pressure,
+                longitude = longitude, latitude = latitude,
+                units = list(
+                    temperature = list(unit = expression(degree * C), scale = "ITS-90"),
+                    conductivity = list(list = expression(), scale = "")
+                )
+            ) # guess on units
+        }
         # if (any(is.na(which)))
         #    stop("In plot,argo-method() :\n  unrecognized value(s) of which: ", paste(whichOrig[is.na(which)], collapse=", "), call.=FALSE)
         lw <- length(which)
@@ -2180,7 +2198,7 @@ setMethod(
             par(mfcol = c(nnn, ceiling(lw / nnn)))
             rm(nnn)
         }
-        for (w in 1:nw) {
+        for (w in seq_len(nw)) {
             oceDebug(debug, "handling which[", w, "]=\"", which[w], "\"\n", sep = "")
             if (is.na(which[w])) {
                 oceDebug(debug, "not a special case, so passing 'which' to plot,ctd-method\n")
@@ -2480,7 +2498,7 @@ setMethod("handleFlags",
 #' condition is rare for core variables (salinity, temperature and
 #' pressure) but is annoyingly common for biogeochemical variables; see
 #' e.g. Section 2.2.5 of Reference 1 for a discussion of
-#' the conditions under which Argo netcdf files contain
+#' the conditions under which Argo NetCDF files contain
 #' adjusted values. Setting `fallback=FALSE` means that adjusted
 #' values (if they exist) will always be returned, even if they
 #' are a useless collection of `NA` values.
@@ -2492,7 +2510,7 @@ setMethod("handleFlags",
 #' It should be noted that, regardless of whether `preferAdjusted`
 #' has been used, the analyst can always access either unadjusted
 #' or adjusted data directly, using the original variable names stored
-#' in the source netcdf file.  For example, `argo[["PSAL"]]`
+#' in the source NetCDF file.  For example, `argo[["PSAL"]]`
 #' yields unadjusted salinity values, and
 #' `argo[["PSAL_ADJUSTED"]]` yields adjusted values (if they exist, or
 #' `NULL` if they do not).

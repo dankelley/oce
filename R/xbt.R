@@ -2,10 +2,10 @@
 
 #' Class to Store XBT (Expendable Bathythermograph) Data
 #'
-#' This class stores expendable bathythermograph (XBT) data, e.g. from a Sippican
-#' device.  Reference 1 gives some information on Sippican
-#' devices, and reference 2 is a useful introduction to the
-#' modern literature on XBTs in general.
+#' This class stores expendable bathythermograph (XBT) data, e.g. as read using
+#' [read.xbt()] and related functions. Reference 1 gives some information on
+#' Sippican devices, and reference 2 is a useful introduction to the modern
+#' literature on XBTs in general.
 #'
 #' @references
 #' 1. Sippican, Inc. "Bathythermograph Data Acquisition System: Installation, Operation and Maintenance
@@ -20,7 +20,7 @@
 #' @templateVar class xbt
 #'
 # nolint start (long lines)
-#' @templateVar dataExample The key items stored in this slot are `depth` (or `z`) and `temperature`, although some datasets also have `soundSpeed`.  Note that `depth` and `z` are inferred from time in water, using an empirical formula for instrument descent rate, and that `soundSpeed` is #' calculated using a fixed  practical salinity of 35. Note that the `[[` accessor will compute any of `depth`, `z` or `pressure`, based on whatever is in the data object.  Similarly, `soundspeed` will compute sound speed (assuming a practical salinity of 35), if that that item is present in the `data` slot.
+#' @templateVar dataExample The key items stored in this slot are `depth` (or `z`) and `temperature`, although some datasets also have `soundSpeed`.  Note that `depth` and `z` are inferred from time in water, using an empirical formula for instrument descent rate, and that `soundSpeed` is calculated using a fixed  practical salinity of 35. Note that the `[[` accessor will compute any of `depth`, `z` or `pressure`, based on whatever is in the data object.  Similarly, `soundspeed` will compute sound speed (assuming a practical salinity of 35), if that that item is present in the `data` slot.
 # nolint end(long lines)
 #'
 #' @templateVar metadataExample {}
@@ -39,8 +39,9 @@ setClass("xbt", contains = "oce")
 
 #' Sample xbt Data
 #'
-#' An [xbt-class] object created by using [read.xbt()] on a Sippican file created by extracting the near-surface
-#' fraction of the sample provided in Section 5.5.6 of reference 1.
+#' An [xbt-class] object created by using [read.xbt()] on a Sippican file
+#' created by extracting the near-surface fraction of the sample provided in
+#' Section 5.5.6 of reference 1.
 #'
 #' @name xbt
 #'
@@ -55,9 +56,10 @@ setClass("xbt", contains = "oce")
 #' plot(xbt)
 #'
 #' @references
-#' 1. Sippican, Inc. "Bathythermograph Data Acquisition System: Installation, Operation and Maintenance
-#' Manual (P/N 308195, Rev. A)," 2003.
-#' https://pages.uoregon.edu/drt/MGL0910_Science_Report/attachments/MK21_ISA_Manual_Rev_A.pdf.
+#'
+#' 1. Sippican, Inc. "Bathythermograph Data Acquisition System: Installation,
+#'    Operation and Maintenance Manual (P/N 308195, Rev. A)," 2003.
+#'    https://pages.uoregon.edu/drt/MGL0910_Science_Report/attachments/MK21_ISA_Manual_Rev_A.pdf.
 #'
 #' @family datasets provided with oce
 #' @family things related to xbt data
@@ -127,7 +129,16 @@ setMethod(
             if ("soundSpeed" %in% dataNames) {
                 x@data$soundSpeed
             } else {
-                swSoundSpeed(S0, x[["temperature"]], x[["pressure"]])
+                n <- length(x@data$temperature)
+                if ("longitude" %in% names(x@metadata)) {
+                    swSoundSpeed(rep(S0, n),
+                        x[["temperature"]], x[["pressure"]],
+                        longitude = x[["longitude"]],
+                        latitude = x[["latitude"]]
+                    )
+                } else {
+                    swSoundSpeed(S0, x[["temperature"]], x[["pressure"]], eos = "unesco")
+                }
             }
         } else {
             callNextMethod()
@@ -318,17 +329,18 @@ as.xbt <- function(
 
 #' Read an xbt file
 #'
-#' Two file types are handled: (1) the `"sippican"` format, used
-#' for Sippican XBT files, handled with [read.xbt.edf()], and (2)
-#' the `"noaa1"` format, handled with [read.xbt.noaa1()]. The first of
-#' these is recognized by [read.oce()], but the second must be called
-#' directly with [read.xbt.noaa1()].
+#' Three file types are handled: (1) the `"sippican"` format of Sippican XBT
+#' files with space-separated data columns, (2) a related `"sippican2` format,
+#' (also known as MK21 export format) in which data columns are separated by tab
+#' characters, and (3) the `"noaa1"` format. These three types are handled
+#' either by setting `type` to the named string, or by directly calling
+#' [read.xbt.edf()], [read.xbt.edf2()], or [read.xbt.noaa1()].
 #'
 #' @param file a connection or a character string giving the name of the file to
 #' load.
 #'
 #' @param type character string indicating type of file, with valid choices being
-#' `"sippican"` and `"noaa1"`.
+#' `"sippican"`, `"sippican2"`, and `"noaa1"`.
 #'
 #' @param longitude,latitude optional signed numbers indicating the longitude in degrees
 #' East and latitude in degrees North. These values are used if `type="sippican"`,
@@ -347,7 +359,7 @@ as.xbt <- function(
 #'
 #' @examples
 #' library(oce)
-#' xbt <- read.oce(system.file("extdata", "xbt.edf", package = "oce"))
+#' xbt <- read.xbt(system.file("extdata", "xbt.edf", package = "oce"))
 #' summary(xbt)
 #' plot(xbt)
 #'
@@ -362,11 +374,12 @@ as.xbt <- function(
 read.xbt <- function(
     file,
     type = "sippican",
-    longitude = NA,
-    latitude = NA,
+    longitude,
+    latitude,
     encoding = "latin1",
     debug = getOption("oceDebug"),
     processingLog) {
+    debug <- max(0L, min(debug, 2L))
     if (missing(file)) {
         stop("must supply 'file'")
     }
@@ -379,17 +392,21 @@ read.xbt <- function(
         }
     }
     oceDebug(debug, "read.xbt(file=\"", file, "\", type=\"",
-        type, "\", longitude=", longitude, ", latitude=", latitude, "...) START\n",
+        type, "\" ...) START\n",
         sep = "", unindent = 1
     )
     if (is.character(file) && "http://" != substr(file, 1, 7) && 0 == file.info(file)$size) {
         stop("empty file (read.xbt)")
     }
-    type <- match.arg(type)
     res <- if (type == "sippican") {
         read.xbt.edf(
             file = file, longitude = longitude, latitude = latitude,
-            encoding = encoding, debug = debug - 1, processingLog = processingLog
+            encoding = encoding, debug = debug - 1L, processingLog = processingLog
+        )
+    } else if (type == "sippican2") {
+        read.xbt.edf2(
+            file = file, longitude = longitude, latitude = latitude,
+            encoding = encoding, debug = debug - 1L, processingLog = processingLog
         )
     } else if (type == "noaa1") {
         if (!is.null(longitude)) {
@@ -398,20 +415,20 @@ read.xbt <- function(
         if (!is.null(latitude)) {
             warning("latitude argument is ignored for type=\"noaa1\"\n")
         }
-        read.xbt.noaa1(file = file, encoding = encoding, debug = debug - 1, processingLog = processingLog)
+        read.xbt.noaa1(file = file, encoding = encoding, debug = debug - 1L, processingLog = processingLog)
     } else {
-        stop("unknown type of current meter")
+        stop("unknown XBT type; try \"sippican\", \"sippican2\", or \"noaa1\"")
     }
     oceDebug(debug, "END read.xbt()\n", sep = "", unindent = 1)
     res
 }
 
-#' Read an xbt File in Sippican Format
-#'
+#' Read an xbt File in Sippican Format Type 1
 #'
 #' The function was written by inspection of a particular file, and might
 #' be wrong for other files; see \dQuote{Details} for a note on character
-#' translation.
+#' translation. The format uses space-separated data columns, unlike the tab-
+#' separated columns of [read.xbt.edf2()].
 #'
 #' The header is converted to ASCII format prior to storage in
 #' the `metadata` slot, so that e.g. a degree sign in the original file will
@@ -446,7 +463,6 @@ read.xbt <- function(
 #' library(oce)
 #' xbt <- read.oce(system.file("extdata", "xbt.edf", package = "oce"))
 #' summary(xbt)
-#' plot(xbt)
 #'
 #' @author Dan Kelley
 read.xbt.edf <- function(
@@ -470,7 +486,7 @@ read.xbt.edf <- function(
     if (is.character(file) && "http://" != substr(file, 1, 7) && 0 == file.info(file)$size) {
         stop("empty file (read.xbt.edf)")
     }
-    oceDebug(debug, "read.xbt(file=\"", file, "\", longitude=", longitude, ", latitude=", latitude, "...) START\n",
+    oceDebug(debug, "read.xbt.edf(file=\"", file, "\", longitude=", longitude, ", latitude=", latitude, "...) START\n",
         sep = "", unindent = 1
     )
     filename <- ""
@@ -516,7 +532,7 @@ read.xbt.edf <- function(
     londeg <- as.numeric(lons[1])
     lonmin <- as.numeric(gsub("[EWew]", "", lons[2]))
     res@metadata$longitude <- (londeg + lonmin / 60) * ifelse(length(grep("W", lons[2])), -1, 1)
-    res@metadata$probeType <- getHeaderItem(l, "Probe Type")
+    res@metadata$probeType <- trimws(getHeaderItem(l, "Probe Type"))
     res@metadata$terminalDepth <- as.numeric(gsub("[ ]*m$", "", getHeaderItem(l, "Terminal Depth"))) # FIXME: assumes metric
     res@data <- as.list(read.table(file, skip = headerEnd + 1, col.names = c("depth", "temperature", "soundSpeed"), encoding = encoding))
     res@metadata$filename <- filename
@@ -528,8 +544,141 @@ read.xbt.edf <- function(
     res
 }
 
-#' Read an xbt File in NOAA Format
+#' Read an xbt File in Sippican Format Type 2
 #'
+#' The function was written by inspection of a particular file provided by a
+#' user in late 2024. The format has been referred to as MK21 export format, and
+#' a key difference to the format handled by [read.xbt.edf()] is that data
+#' columns are separated by tab characters, not spaces. The reading of header
+#' data is more rudimentary than is the case for [read.xbt.edf()], because the
+#' sample data file made available to the author did not seem to have much
+#' useful information in its header.
+#'
+#' @inheritParams read.xbt.edf
+#'
+#' @examples
+#' library(oce)
+#' xbt2 <- read.xbt(system.file("extdata", "xbt2.edf", package = "oce"), type = "sippican2")
+#' summary(xbt2)
+#'
+#' @return An [xbt-class] object.
+#'
+#' @author Dan Kelley
+read.xbt.edf2 <- function(
+    file, longitude, latitude, encoding = "latin1",
+    debug = getOption("oceDebug"), processingLog) {
+    getHeaderItem <- function(headerLines, name) {
+        w <- grep(name, headerLines)
+        if (length(w) == 0L) {
+            return(NULL)
+        }
+        if (length(w) > 1L) {
+            warning("multiple matches for header item \"", name, "\"")
+            w <- w[1]
+        }
+        trimws(strsplit(headerLines[w], " : ")[[1]][2])
+    }
+    if (missing(file)) {
+        stop("must supply 'file'")
+    }
+    oceDebug(debug, "read.xbt.edf2(file=\"", file, "\", ...) START\n", sep = "", unindent = 1)
+    res <- new("xbt")
+    res@metadata$filename <- "(file connection)"
+    if (is.character(file)) {
+        res@metadata$filename <- file
+        if (!file.exists(file)) {
+            stop("cannot find file \"", file, "\"")
+        }
+        if (0L == file.info(file)$size) {
+            stop("empty file \"", file, "\"")
+        }
+    }
+    lines <- readLines(file)
+    nlines <- length(lines)
+    endOfHeader <- grep("^// Data$", lines)
+    if (0 == length(endOfHeader)) {
+        stop("cannot find '// Data' line")
+    }
+    if (1 < length(endOfHeader)) {
+        stop("cannot handle multiple '// Data' lines")
+    }
+    headerLines <- lines[seq_len(endOfHeader)]
+    res@metadata$header <- headerLines
+    if (missing(longitude)) { # decode E or W; also decode sign (unlikely to be used)
+        tmp <- trimws(getHeaderItem(headerLines, "Longitude"))
+        signFactor <- 1.0
+        if (grepl("W$", tmp)) {
+            signFactor <- -signFactor
+        }
+        tmp <- gsub("[ ]{0,1}[EW]$", "", tmp)
+        if (grepl("-", tmp)) {
+            signFactor <- -signFactor
+            tmp <- gsub("-", "", tmp)
+        }
+        longitude <- if (grepl(" ", tmp)) {
+            tmp <- as.numeric(strsplit(tmp, " ")[[1]])
+            signFactor * (tmp[1] + tmp[2] / 60)
+        } else {
+            signFactor * as.numeric(tmp)
+        }
+    }
+    res@metadata$longitude <- longitude
+    if (missing(latitude)) { # decode N or S; also decode sign (unlikely to be used)
+        tmp <- trimws(getHeaderItem(headerLines, "Latitude"))
+        signFactor <- 1.0
+        if (grepl("S$", tmp)) {
+            signFactor <- -signFactor
+        }
+        tmp <- gsub("[ ]{0,1}[NS]$", "", tmp)
+        if (grepl("-", tmp)) {
+            signFactor <- -signFactor
+            tmp <- gsub("-", "", tmp)
+        }
+        latitude <- if (grepl(" ", tmp)) {
+            tmp <- as.numeric(strsplit(tmp, " ")[[1]])
+            signFactor * (tmp[1] + tmp[2] / 60)
+        } else {
+            signFactor * as.numeric(tmp)
+        }
+    }
+    res@metadata$latitude <- latitude
+    res@metadata$serialNumber <- getHeaderItem(headerLines, "Serial Number")
+    res@metadata$type <- trimws(getHeaderItem(headerLines, "Probe Type"))
+    # Decode time (relies on d/m/y ordering in a sample file)
+    dateOfLaunch <- getHeaderItem(headerLines, "Date of Launch")
+    timeOfLaunch <- getHeaderItem(headerLines, "Time of Launch")
+    res@metadata$time <- as.POSIXct(paste(dateOfLaunch, timeOfLaunch), "%d/%m/%y %H:%M:%S", tz = "UTC")
+    # FIXME: what does next do if there is no match?
+    res@metadata$probeType <- trimws(strsplit(headerLines[grep("^Probe Type", headerLines)], ":")[[1]][2])
+    dataLines <- lines[seq(endOfHeader + 1, nlines)]
+    nameLines <- headerLines[grep("^Field.*:", headerLines)]
+    originalNames <- gsub(".*:[ ]*(.*)[ ].*", "\\1", nameLines)
+    names <- originalNames
+    # rename to oce conventions
+    names[names == "Temperature"] <- "temperature"
+    names[names == "Time"] <- "time"
+    names[names == "Depth"] <- "depth"
+    names[names == "Sound Velocity"] <- "soundSpeed"
+    names[names == "Resistance"] <- "resistance"
+    names(originalNames) <- names
+    res@metadata$dataNamesOriginal <- originalNames
+    u <- gsub(".*[(](.*)[)]", "\\1", nameLines)
+    # as.unit() does not like the degree sign I see in a file,
+    # and I fear encoding issues, so let's just brute-force
+    # the unit. Note that we cannot guess the scale.
+    needToFix <- grep("C$", u)
+    if (1 == length(needToFix)) {
+        u[needToFix] <- "degree C"
+    }
+    units <- lapply(u, as.unit)
+    names(units) <- names
+    res@metadata$units <- units
+    res@data <- read.delim(text = dataLines, sep = "\t", header = FALSE, col.names = names)
+    oceDebug(debug, "END read.xbt.edf2()\n", sep = "", unindent = 1)
+    res
+}
+
+#' Read an xbt File in NOAA Format
 #'
 #' This file format, described at \code{https://www.aoml.noaa.gov/phod/dhos/axbt.php}, contains a header
 #' line, followed by data lines.  For example, a particular file at this site has first
@@ -578,7 +727,7 @@ read.xbt.noaa1 <- function(
             stop("empty file \"", file, "\"")
         }
     }
-    oceDebug(debug, "read.xbt(file=\"", file, "\", type=\"", "...) START\n", sep = "", unindent = 1)
+    oceDebug(debug, "read.xbt.noaa(file=\"", file, "\", type=\"", "...) START\n", sep = "", unindent = 1)
     filename <- "?"
     if (is.character(file)) {
         filename <- fullFilename(file)
@@ -622,6 +771,185 @@ read.xbt.noaa1 <- function(
     }
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep = "", collapse = ""))
     oceDebug(debug, "END read.xbt.noaa1()\n", sep = "", unindent = 1)
+    res
+}
+
+# Internal function
+read.xbt.noaa2.internal <- function(line, debug = 0) {
+    S <- function(x) {
+        if (debug) {
+            cat(deparse(substitute(expr = x, env = environment())), ": '", x, "'\n", sep = "")
+        }
+    }
+    oceDebug(debug, vectorShow(line))
+    WMOquadrant <- substr(line, 3, 3)
+    S(WMOquadrant)
+    if (!WMOquadrant %in% c(1, 3, 5, 7)) {
+        stop("WMOquadrant=", WMOquadrant, " is not in permitted list 1, 3, 5 or 7")
+    }
+    # latitude (FIXME: what about 'X'?)
+    latitudeDDMMX <- substr(line, 4, 8)
+    S(latitudeDDMMX)
+    latDeg <- as.integer(substr(latitudeDDMMX, 1, 2))
+    latMin <- as.integer(substr(latitudeDDMMX, 3, 4))
+    latX <- substr(latitudeDDMMX, 5, 5)
+    S(latX)
+    latX <- if (identical(latX, " ")) 0 else as.integer(latX)
+    S(latX)
+    S(as.integer(latX))
+    latitude <- latDeg + (latMin + latX / 10) / 60
+    S(latitude)
+    latitudeHemisphere <- substr(line, 9, 9)
+    S(latitudeHemisphere)
+    if (!latitudeHemisphere %in% c("S", "N")) {
+        stop("latitudeHemisphere=", latitudeHemisphere, " must be 'S' or 'N'")
+    }
+    if (latitudeHemisphere == "S") {
+        latitude <- -latitude
+    }
+    latitudePrecision <- substr(line, 10, 10)
+    S(latitudePrecision)
+    # longitude (FIXME: what about 'X'?)
+    longitudeDDDMMX <- substr(line, 11, 16)
+    S(longitudeDDDMMX)
+    lonDeg <- as.integer(substr(longitudeDDDMMX, 1, 3))
+    S(lonDeg)
+    lonMin <- as.integer(substr(longitudeDDDMMX, 4, 5))
+    S(lonMin)
+    lonX <- substr(longitudeDDDMMX, 6, 6)
+    S(lonX)
+    lonX <- if (identical(lonX, " ")) 0 else as.integer(lonX)
+    S(lonX)
+    longitude <- lonDeg + (lonMin + lonX / 10) / 60
+    S(longitude)
+    longitudeHemisphere <- substr(line, 17, 17)
+    S(longitudeHemisphere)
+    if (!longitudeHemisphere %in% c("E", "W")) {
+        stop("longitudeHemisphere=", longitudeHemisphere, " must be 'E' or 'W'")
+    }
+    if (longitudeHemisphere == "W") {
+        longitude <- -longitude
+    }
+    longitudePrecision <- substr(line, 18, 18)
+    S(longitudePrecision)
+    # date (this does NOT match the docs, which say year is 2 characters)
+    YYYYMMDD <- substr(line, 19, 26)
+    S(YYYYMMDD)
+    HHMM <- substr(line, 27, 30)
+    S(HHMM)
+    time <- ISOdatetime(as.integer(substr(YYYYMMDD, 1, 4)),
+        as.integer(substr(YYYYMMDD, 5, 6)),
+        as.integer(substr(YYYYMMDD, 7, 8)),
+        as.integer(substr(HHMM, 1, 2)),
+        as.integer(substr(HHMM, 3, 4)),
+        sec = 0,
+        tz = "UTC"
+    )
+    # Skip a lot of things, since the above seem (maybe) OK and I want to get to
+    # the "good stuff"
+    bottomDepth <- substr(line, 82, 85)
+    S(bottomDepth) # why blank? maybe I don't worry, though
+    # OK, let's skip to see if we can find T=T(z) data, AKA the "good stuff".
+    count <- as.integer(substr(line, 96, 99))
+    S(count)
+    if (count <= 0) {
+        stop("count=", count, " is not possible")
+    }
+    depth <- rep(NA, count)
+    temperature <- rep(NA, count)
+    offset <- 101 # character offset
+    for (i in seq_len(count)) {
+        depth[i] <- as.numeric(substr(line, offset, offset + 3)) # metres
+        temperature[i] <- 0.01 * as.numeric(substr(line, offset + 4, offset + 7)) # factor yields degC
+        offset <- offset + 8
+    }
+    if (debug) {
+        print(data.frame(depth = depth, temperature = temperature))
+    }
+    rval <- new("xbt")
+    rval@metadata$longitude <- longitude
+    rval@metadata$latitude <- latitude
+    rval@metadata$time <- time
+    rval@data$depth <- depth
+    rval@data$temperature <- temperature
+    rval@data$pressure <- swPressure(depth)
+    rval
+}
+
+#' Read an xbt File in UBT (Universal BathyThermograph) Format
+#'
+#' This is preliminary function that might be changed through
+#' the month of February 2025.  Note that, at present, this
+#' function returns a list of [xbt-class] objects, as opposed
+#' to a single [xbt-class] object. This is because the data
+#' format holds one profile per line.  Also, please note that
+#' the documentation used to frame the function (Reference 1)
+#' does not accurately describe test files (Reference 2), owing
+#' to a change of year format from the documented two-character
+#' form to a more modern 4-character form.  Other aspects of
+#' the documented format are also at odds with the data (see
+#' issue 2289 on the github site for oce).
+#'
+#' @param file character value naming a file, or a file connection,
+#' containing the data, with each line corresponding to an XBT
+#' profile.
+#'
+#' @param debug a flag that turns on debugging.  The value indicates the depth
+#' within the call stack to which debugging applies.
+#'
+#' @param missingValue ignored.
+#'
+#' @template encodingTemplate
+#'
+#' @param processingLog ignored.
+#'
+#' @return A list containing [xbt-class] objects, one per line in `file`.
+#'
+#' @family things related to xbt data
+#'
+#' @examples
+#' # Plot the 2 profiles in a built-in data file
+#' library(oce)
+#' xbts <- read.xbt.noaa2(system.file("extdata", "xbt_noaa2", package = "oce"))
+#' par(mfrow = c(1, 2))
+#' for (xbt in xbts) {
+#'     summary(xbt)
+#'     plot(xbt)
+#' }
+#'
+#' @references
+#' 1. https://www.ncei.noaa.gov/data/oceans/nodc/formats/UBT_Universal_Bathythermograph.html
+#' 2. https://data.noaa.gov/onestop/collections/details/22c9b8d0-c32b-4824-815b-04ce80078d10
+#'
+#' @author Dan Kelley
+read.xbt.noaa2 <- function(
+    file, debug = getOption("oceDebug"), missingValue = -9.99,
+    encoding = "latin1", processingLog) {
+    if (missing(file)) {
+        stop("must supply 'file'")
+    }
+    if (is.character(file)) {
+        if (!file.exists(file)) {
+            stop("cannot find file \"", file, "\"")
+        }
+        if (0L == file.info(file)$size) {
+            stop("empty file \"", file, "\"")
+        }
+    }
+    oceDebug(debug, "read.xbt.noaa2(file=\"", file, "\", type=\"", "...) START\n", sep = "", unindent = 1)
+    if (is.character(file)) {
+        file <- file(file, "r", encoding = encoding)
+        on.exit(close(file))
+    }
+    if (!inherits(file, "connection")) {
+        stop("argument `file' must be a character string or connection")
+    }
+    if (!isOpen(file)) {
+        open(file, "r", encoding = encoding)
+        on.exit(close(file))
+    }
+    res <- lapply(readLines(file), read.xbt.noaa2.internal, debug = debug)
+    oceDebug(debug, "END read.xbt.noaa2()\n", sep = "", unindent = 1)
     res
 }
 
@@ -683,7 +1011,7 @@ setMethod(
         oceDebug(debug, "which: c(", paste(which, collapse = ", "), ")\n")
         if (lw > 1) {
             par(mfrow = c(1, lw))
-            oceDebug(debug, "calling par(mfrow=c(", lw, ", 1)\n")
+            oceDebug(debug, "calling par(mfrow=c(", lw, ", 1))\n")
         }
         z <- x[["z"]]
         temperature <- x[["temperature"]]

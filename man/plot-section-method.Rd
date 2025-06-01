@@ -7,7 +7,7 @@
 \usage{
 \S4method{plot}{section}(
   x,
-  which = c(1, 2, 3, 99),
+  which,
   eos,
   at = NULL,
   labels = TRUE,
@@ -226,12 +226,19 @@ Creates a summary plot for a CTD section, with one panel for each value of
 \code{which}.
 }
 \details{
-The type of plot is governed by \code{which}, as follows.
+The type of plot is governed by \code{which}, as listed below;
+if \code{which} is not supplied, it defaults to
+\code{c(1,2,3,99)} if \code{eos} is \code{"unesco"} or to
+\code{c(1.5,2.5,3.5,99)} if \code{eos} is \code{"gsw"}.
 \itemize{
-\item \code{which=0} or \code{"potential temperature"} for potential temperature contours
-\item \code{which=1} or \code{"temperature"} for in-situ temperature contours (the default)
+\item \code{which=0} or \code{"potential temperature"} for
+potential temperature contours
+\item \code{which=1} or \code{"temperature"} for in-situ temperature contours
+\item \code{which=1.5} or \code{"CT"} for Conservative Temperature contours
 \item \code{which=2} or \code{"salinity"} for salinity contours
-\item \code{which=3} or \code{"sigmaTheta"} for sigma-theta contours
+\item \code{which=2.5} or \code{"SA"} for Absolute Salinity contours
+\item \code{which=3} or \code{"sigmaTheta"} for sigma-theta (a unesco variable) contours
+\item \code{which=3.5} or \code{"sigma0"} for sigma0 (a gsw variable) contours
 \item \code{which=4} or \code{"nitrate"} for nitrate concentration contours
 \item \code{which=5} or \code{"nitrite"} for nitrite concentration contours
 \item \code{which=6} or \code{"oxygen"} for oxygen concentration  contours

@@ -1,4 +1,4 @@
-# vim:textwidth=120:expandtab:shiftwidth=4:softtabstop=4:foldmethod=marker
+# vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4:foldmethod=marker
 
 #' Class to Store Hydrographic Section Data
 #'
@@ -52,26 +52,29 @@ setClass("section", contains = "oce")
 
 #' Sample section Data
 #'
-#' This is line A03 (ExpoCode 90CT40_1, with nominal sampling date 1993-09-11).
-#' The chief scientist was Tereschenkov of SOI, working aboard the Russian ship
-#' Multanovsky, undertaking a westward transect from the Mediterranean outflow
-#' region across to North America, with a change of heading in the last few dozen
-#' stations to run across the nominal Gulf Stream axis.
-#' The data flags follow the "WHP Bottle"convention, set by
-#' [initializeFlagScheme,section-method()] to `"WHP bottle"`.  This convention
-#' used to be described at the link
-#' `https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm`
-#' but that was found to fail in December 2020.
+#' This is from a 1993 occupation of WOCE line A03 that ran westward across the
+#' Atlantic at approximately 36 N, ending with a turn to the northwest in the
+#' Gulf Stream region.
 #'
-#' @section Speculation on a timing error:
-#' In May 2022, it was discovered that the times in this dataset are not fully
-#' sequential, at two spots.  This might be a reporting error. Station 41 has
-#' time listed as 1993-10-03T00:06:00 and that leads to a time reversal.
-#' However, if that time were actually on the day before, then
-#' the time reversal would vanish, and the inter-station timing of
-#' about 5 to 6 hours would be recovered. A similar pattern is seen at station
-#' 45.  Of course, this hypothesis of incorrect recording is difficult to test,
-#' for data taken thirty years ago.
+#' The sampling times in this dataset are not fully sequential. For example,
+#' Station 41 is reported to be at `1993-10-03T00:06:00`, which, going by
+#' station numbers, suggests an error in the reported day. Station 45 seems to
+#' have a similar problem. However, the goal here is to represent the data as
+#' archived, so no changes are made to the times.
+#'
+#' @source
+#'
+#' The following code was used to download the datafile and create the `section`
+#' object.
+#'
+#' ```
+#' download.file("https://cchdo.ucsd.edu/data/7872/a03_hy1.csv",
+#'     "a03_hy1.csv")
+#' section <- read.section("a03_hy1.csv",
+#'     sectionId = "a03", institute = "SIO",
+#'     ship = "R/V Professor Multanovskiy",
+#'     scientist = "Vladimir Tereschenkov")
+#' ```
 #'
 #' @examples
 #' library(oce)
@@ -86,9 +89,6 @@ setClass("section", contains = "oce")
 #' @docType data
 #'
 #' @usage data(section)
-#'
-#' @source This is based on the WOCE file named `a03_hy1.csv`, downloaded
-#' from `https://cchdo.ucsd.edu/cruise/90CT40_1`, 13 April 2015.
 #'
 #' @family datasets provided with oce
 #' @family things related to section data
@@ -1112,11 +1112,19 @@ sectionAddCtd <- sectionAddStation
 #' Creates a summary plot for a CTD section, with one panel for each value of
 #' `which`.
 #'
-#' The type of plot is governed by `which`, as follows.
-#' * `which=0` or `"potential temperature"` for potential temperature contours
-#' * `which=1` or `"temperature"` for in-situ temperature contours (the default)
+#' The type of plot is governed by `which`, as listed below;
+#' if `which` is not supplied, it defaults to
+#' `c(1,2,3,99)` if `eos` is `"unesco"` or to
+#' `c(1.5,2.5,3.5,99)` if `eos` is `"gsw"`.
+#'
+#' * `which=0` or `"potential temperature"` for
+#' potential temperature contours
+#' * `which=1` or `"temperature"` for in-situ temperature contours
+#' * `which=1.5` or `"CT"` for Conservative Temperature contours
 #' * `which=2` or `"salinity"` for salinity contours
-#' * `which=3` or `"sigmaTheta"` for sigma-theta contours
+#' * `which=2.5` or `"SA"` for Absolute Salinity contours
+#' * `which=3` or `"sigmaTheta"` for sigma-theta (a unesco variable) contours
+#' * `which=3.5` or `"sigma0"` for sigma0 (a gsw variable) contours
 #' * `which=4` or `"nitrate"` for nitrate concentration contours
 #' * `which=5` or `"nitrite"` for nitrite concentration contours
 #' * `which=6` or `"oxygen"` for oxygen concentration  contours
@@ -1405,7 +1413,7 @@ sectionAddCtd <- sectionAddStation
 setMethod(
     f = "plot", signature = signature("section"),
     definition = function(x,
-                          which = c(1, 2, 3, 99), eos,
+                          which, eos,
                           at = NULL, labels = TRUE, grid = FALSE,
                           contourLevels = NULL, contourLabels = NULL,
                           stationIndices, coastline = "best", colLand = "gray",
@@ -1420,6 +1428,10 @@ setMethod(
                           ...) {
         debug <- if (debug > 4) 4 else floor(0.5 + debug)
         if (missing(eos)) eos <- getOption("oceEOS", default = "gsw")
+        if (!eos %in% c("unesco", "gsw")) stop("eos=\"", eos, "\" not understood; try either \"gsw\" or \"unesco\"")
+        if (missing(which)) {
+            which <- if (eos == "unesco") c(1, 2, 3, 99) else c(1.5, 2.5, 3.5, 99)
+        }
         # UNUSED zlimOrig <- zlim
         xtype <- match.arg(
             xtype,
@@ -1485,8 +1497,11 @@ setMethod(
         if (is.numeric(which)) {
             which[which == 0] <- "potential temperature"
             which[which == 1] <- "temperature"
+            which[which == 1.5] <- "CT"
             which[which == 2] <- "salinity"
+            which[which == 2.5] <- "SA"
             which[which == 3] <- "sigmaTheta"
+            which[which == 3.5] <- "sigma0"
             which[which == 4] <- "nitrate"
             which[which == 5] <- "nitrite"
             which[which == 6] <- "oxygen"
@@ -1760,7 +1775,7 @@ setMethod(
                 }
             } else {
                 # not isMap
-                oceDebug(debug, "not a map\n")
+                oceDebug(debug, "not a map; variable=", variable, "\n")
                 z <- x[[variable]]
                 zAllMissing <- all(is.na(z))
                 # Use try() to quiet warnings if all data are NA

@@ -12,7 +12,9 @@ locationForGsw(x)
 \value{
 \code{locationForGsw} returns a list containing \code{longitude} and
 \code{latitude}, with dimensionality matching \code{pressure} in the \code{data} slot of
-\code{x}.  If \code{x} lacks location information (in either its \code{metadata} or \code{data}
+\code{x}.  If \code{x} has just a single value for each of \code{longitude} and
+\code{latitude}, then that value will be repeated in the return value.
+If \code{x} lacks location information (in either its \code{metadata} or \code{data}
 slot) or lacks \code{pressure} in its data slot, then the returned list will hold
 NULL values for both \code{longitude} and \code{latitude}.
 }
@@ -26,7 +28,7 @@ users will need to call this function directly in routine work.
 Several \code{gsw} functions require location information to be matched up with
 hydrographic information.  The scheme depends on the dimensionality of the
 hydrographic variables and the location variables. For example, the
-\linkS4class{ctd} stores \code{salinity} etc in vectors, an stores just one
+\linkS4class{ctd} stores \code{salinity} etc in vectors, and (usually) stores just one
 longitude-latitude pair for each vector.  By contrast, the \linkS4class{argo}
 stores \code{salinity} etc as matrices, and stores e.g. \code{longitude} as a vector of
 length matching the first dimension of \code{salinity}.
