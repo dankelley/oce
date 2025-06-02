@@ -1411,7 +1411,7 @@ read.adp.ad2cp <- function(
             i0v <<- i0v + 2L
             iv <- gappyIndex(i, i0v, 2L * NS)
             tmp <- readBin(buf[iv], "integer", size = 2L, endian = "little", n = NP * NS)
-            object$altimeterRawSamples <- matrix(tmp, nrow = NP, ncol = NS, byrow = FALSE)
+            object$altimeterRawSamples <- matrix(tmp, nrow = NP, ncol = NS, byrow = TRUE)
             i0v <<- i0v + 2L * NS
             # Constructed vector of altimeterRaw sample distances.
             object$altimeterRawDistance <-
