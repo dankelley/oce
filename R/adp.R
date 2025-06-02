@@ -1035,33 +1035,40 @@ setMethod(
             }
             # FIXME: check to see if we handling slow timescale data properly
             for (name in names(x@data)) {
-                if (length(grep("Dia$", name))) {
-                    if ("distance" == name) {
-                        next
-                    }
-                    if (name == "timeDia" || is.vector(x@data[[name]])) {
-                        oceDebug(debug, "subsetting x@data$", name, ", which is a vector\n", sep = "")
-                        res@data[[name]] <- x@data[[name]][keepDia]
-                    } else if (is.matrix(x@data[[name]])) {
-                        oceDebug(debug, "subsetting x@data$", name, ", which is a matrix\n", sep = "")
-                        res@data[[name]] <- x@data[[name]][keepDia, ]
-                    } else if (is.array(x@data[[name]])) {
-                        oceDebug(debug, "subsetting x@data$", name, ", which is an array\n", sep = "")
-                        res@data[[name]] <- x@data[[name]][keepDia, , , drop = FALSE]
-                    }
+                if (length(x@data[[name]]) == 1L) {
+                    res@data[[name]] <- x@data[[name]]
                 } else {
-                    if (name == "time" || is.vector(x@data[[name]])) {
-                        if ("distance" == name) {
+                    if (length(grep("Dia$", name))) {
+                        # "distance" or "altimeterRawDistance"
+                        if (name == "distance" || name == "altimeterRawDistance") {
+                            oceDebug(debug, "not subsetting x@data$", name, " because it's a distance vector (case 2).\n", sep = "")
+                        }
+                        if (name == "timeDia" || is.vector(x@data[[name]])) {
+                            oceDebug(debug, "subsetting x@data$", name, ", which is a vector (case 1).\n", sep = "")
+                            res@data[[name]] <- x@data[[name]][keepDia]
+                        } else if (is.matrix(x@data[[name]])) {
+                            oceDebug(debug, "subsetting x@data$", name, ", which is a matrix (case 1).\n", sep = "")
+                            res@data[[name]] <- x@data[[name]][keepDia, ]
+                        } else if (is.array(x@data[[name]])) {
+                            oceDebug(debug, "subsetting x@data$", name, ", which is an array (case 1).\n", sep = "")
+                            res@data[[name]] <- x@data[[name]][keepDia, , , drop = FALSE]
+                        }
+                    } else if (grepl("[tT]ime$", name) || is.vector(x@data[[name]])) {
+                        # "distance" or "altimeterRawDistance"
+                        if (name == "distance" || name == "altimeterRawDistance") {
+                            oceDebug(debug, "not subsetting x@data$", name, " because it's a distance vector (case 2).\n", sep = "")
                             next
                         }
-                        oceDebug(debug, "subsetting x@data$", name, ", which is a vector\n", sep = "")
+                        oceDebug(debug, "subsetting x@data$", name, ", which is a vector (case 2).\n", sep = "")
                         res@data[[name]] <- x@data[[name]][keep] # FIXME: what about fast/slow
                     } else if (is.matrix(x@data[[name]])) {
-                        oceDebug(debug, "subsetting x@data$", name, ", which is a matrix\n", sep = "")
+                        oceDebug(debug, "subsetting x@data$", name, ", which is a matrix (case 2).\n", sep = "")
                         res@data[[name]] <- x@data[[name]][keep, ]
                     } else if (is.array(x@data[[name]])) {
-                        oceDebug(debug, "subsetting x@data$", name, ", which is an array\n", sep = "")
+                        oceDebug(debug, "subsetting x@data$", name, ", which is an array (case 2).\n", sep = "")
                         res@data[[name]] <- x@data[[name]][keep, , , drop = FALSE]
+                    } else {
+                        oceDebug(debug, "not subsetting x@data$", name, ", because not a known type (case 2).\n", sep = "")
                     }
                 }
             }
@@ -3202,13 +3209,13 @@ setMethod(
 toEnuAdp <- function(x, declination = 0, debug = getOption("oceDebug")) {
     debug <- max(0L, as.integer(min(debug, 3)))
     oceDebug(debug, "toEnuAdp() START\n", unindent = 1)
-    #if (is.ad2cp(x)) {
+    # if (is.ad2cp(x)) {
     #    if ("v" %in% names(x@data)) {
     #        message("FIXME: code something for toEnuAdp() on ad2cp data")
     #    } else {
     #        stop("this ad2cp object lacks a \"v\" data item")
     #    }
-    #}
+    # }
     coord <- x[["oceCoordinate"]]
     if (coord == "beam") {
         x <- xyzToEnuAdp(beamToXyzAdp(x, debug = debug - 1), declination = declination, debug = debug - 1)
@@ -4431,4 +4438,3 @@ setMethod(
         res
     }
 )
-
