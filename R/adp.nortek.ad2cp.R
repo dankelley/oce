@@ -2837,7 +2837,7 @@ xyzToEnuAdpAD2CP <- function(x, declination = 0, debug = getOption("oceDebug")) 
         # we need the times=nc part to use this for each cell
         e <- v[, , 1] * rep(M[, 1, 1], times = nc) + v[, , 2] * rep(M[, 1, 2], times = nc) + v[, , 3] * rep(M[, 1, 3], times = nc)
         n <- v[, , 1] * rep(M[, 2, 1], times = nc) + v[, , 2] * rep(M[, 2, 2], times = nc) + v[, , 3] * rep(M[, 2, 3], times = nc)
-        u <- v[, , 1] * rep(M[, 3, 1], times = nc) + v[, , 2] * rep(M[, 3, 3], times = nc) + v[, , 3] * rep(M[, 3, 3], times = nc)
+        u <- v[, , 1] * rep(M[, 3, 1], times = nc) + v[, , 2] * rep(M[, 3, 2], times = nc) + v[, , 3] * rep(M[, 3, 3], times = nc)
         # FIXME: perhaps use the declination now, rotating e and n.  But first, we will need to know
         # what declination was used by the instrument, in its creation of AHRS.
         res@data$v[, , 1] <- e
@@ -2863,7 +2863,7 @@ xyzToEnuAdpAD2CP <- function(x, declination = 0, debug = getOption("oceDebug")) 
         Rz[, 3, 3] <- 1.0
         Ry <- array(0.0, dim = c(N, 3L, 3L))
         Ry[, 1, c(1, 3)] <- c(Cp, Sp)
-        Ry[, 2, 1] <- 1.0
+        Ry[, 2, 2] <- 1.0
         Ry[, 3, c(1, 3)] <- c(-Sp, Cp)
         Rx <- array(0.0, dim = c(N, 3L, 3L))
         Rx[, 1, 1] <- 1.0
