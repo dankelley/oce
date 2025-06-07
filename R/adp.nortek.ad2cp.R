@@ -1131,10 +1131,10 @@ read.adp.ad2cp <- function(
         tz = "UTC"
     )
     soundSpeed <- 0.1 * readBin(d$buf[pointer2 + 17], "integer", size = 2, n = N, signed = FALSE, endian = "little")
-    temperature <- 0.01 * readBin(d$buf[pointer2 + 19], "integer", size = 2, n = N, signed = FALSE, endian = "little")
+    temperature <- 0.01 * readBin(d$buf[pointer2 + 19], "integer", size = 2, n = N, endian = "little")
     # FIXME: docs say pressure is uint32, but R does not handle unsigned 32-bit chunks
     # TEST<-list(buf=d$buf, pointer4=pointer4);save(TEST,file="TEST.rda")
-    pressure <- 0.001 * readBin(d$buf[pointer4 + 21L], "integer", size = 4L, n = N, endian = "little")
+    pressure <- 0.001 * readBin(d$buf[pointer4 + 21L], "integer", size = 4L, n = N, signed = FALSE, endian = "little")
     heading <- 0.01 * readBin(d$buf[pointer2 + 25L], "integer", size = 2L, n = N, signed = FALSE, endian = "little")
     pitch <- 0.01 * readBin(d$buf[pointer2 + 27L], "integer", size = 2L, n = N, endian = "little")
     roll <- 0.01 * readBin(d$buf[pointer2 + 29L], "integer", size = 2L, n = N, endian = "little")
