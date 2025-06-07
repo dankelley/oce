@@ -726,7 +726,7 @@ read.adp.ad2cp <- function(
     fileSize <- seek(file, where = 0)
     seek(file, 0, "start")
     oceDebug(debug, vectorShow(fileSize))
-    buf <- readBin(file, what = "raw", n = fileSize, size = 1)
+    buf <- readBin(file, what = "raw", n = fileSize, size = 1L)
     oceDebug(debug, "first 10 bytes in file: ",
         paste(paste("0x", head(buf, 10), sep = ""), collapse = " "), "\n",
         sep = ""
@@ -739,7 +739,7 @@ read.adp.ad2cp <- function(
         "comment from the FWRITE command)\n",
         sep = ""
     )
-    dataSize <- readBin(buf[5:6], what = "integer", n = 1, size = 2, endian = "little", signed = FALSE)
+    dataSize <- readBin(buf[5:6], what = "integer", n = 1L, size = 2L, endian = "little", signed = FALSE)
     oceDebug(debug, "dataSize:", dataSize, "\n")
     oceDebug(debug, "buf[1+headerSize+dataSize=", 1 + headerSize + dataSize, "]=0x", buf[1 + headerSize + dataSize], " (expect 0xa5)\n", sep = "")
     # Note that we read the *whole* file; from, to and by are used later, for
@@ -755,7 +755,7 @@ read.adp.ad2cp <- function(
     # FIXME: THIS IS WRONG: we should be focussing on d focussed by focusIndex.
     firstData <- which(d$id != 0xa0)[1] # first non-text chunk
     oceDebug(debug, vectorShow(firstData))
-    serialNumber <- readBin(d$buf[d$index[firstData] + 5:8], "integer", size = 4, endian = "little")
+    serialNumber <- readBin(d$buf[d$index[firstData] + 5:8], "integer", size = 4L, endian = "little")
     oceDebug(debug, vectorShow(serialNumber))
     # Create pointers for accessing 1-byte, 2-byte, and 4-byte chunks
     oceDebug(debug, "focussing on ", length(d$index), " data records\n")
@@ -1127,14 +1127,14 @@ read.adp.ad2cp <- function(
         hour = as.integer(d$buf[pointer1 + 12]),
         min = as.integer(d$buf[pointer1 + 13]),
         sec = as.integer(d$buf[pointer1 + 14]) +
-            1e-4 * readBin(d$buf[pointer2 + 15], "integer", size = 2, n = N, signed = FALSE, endian = "little"),
+            1e-4 * readBin(d$buf[pointer2 + 15], "integer", size = 2L, n = N, signed = FALSE, endian = "little"),
         tz = "UTC"
     )
-    soundSpeed <- 0.1 * readBin(d$buf[pointer2 + 17], "integer", size = 2, n = N, signed = FALSE, endian = "little")
-    temperature <- 0.01 * readBin(d$buf[pointer2 + 19], "integer", size = 2, n = N, signed = TRUE, endian = "little")
+    soundSpeed <- 0.1 * readBin(d$buf[pointer2 + 17], "integer", size = 2L, n = N, signed = FALSE, endian = "little")
+    temperature <- 0.01 * readBin(d$buf[pointer2 + 19], "integer", size = 2L, n = N, signed = TRUE, endian = "little")
     # FIXME: docs say pressure is uint32, but R does not handle unsigned 32-bit chunks
     # TEST<-list(buf=d$buf, pointer4=pointer4);save(TEST,file="TEST.rda")
-    pressure <- 0.001 * readBin(d$buf[pointer4 + 21L], "integer", size = 4L, n = N, signed = TRUE, endian = "little")
+    pressure <- 0.001 * readBin(d$buf[pointer4 + 21L], "integer", size = 4L, n = N, endian = "little")
     heading <- 0.01 * readBin(d$buf[pointer2 + 25L], "integer", size = 2L, n = N, signed = FALSE, endian = "little")
     pitch <- 0.01 * readBin(d$buf[pointer2 + 27L], "integer", size = 2L, n = N, signed = TRUE, endian = "little")
     roll <- 0.01 * readBin(d$buf[pointer2 + 29L], "integer", size = 2L, n = N, signed = TRUE, endian = "little")
@@ -1159,10 +1159,10 @@ read.adp.ad2cp <- function(
     coordinateSystem <- c("enu", "xyz", "beam", "?")[1 + BCC[, 11] + 2 * BCC[, 12]]
     # BCC case 2
     # nolint start object_useage_linter
-    ncellsEchosounderWholeFile <- readBin(d$buf[pointer2 + 31], "integer", size = 2, n = N, signed = FALSE, endian = "little")
+    ncellsEchosounderWholeFile <- readBin(d$buf[pointer2 + 31], "integer", size = 2L, n = N, signed = FALSE, endian = "little")
     # nolint end object_useage_linter
     # cell size is recorded in mm [1, table 6.1.2, page 49]
-    cellSize <- 0.001 * readBin(d$buf[pointer2 + 33], "integer", size = 2, n = N, signed = FALSE, endian = "little")
+    cellSize <- 0.001 * readBin(d$buf[pointer2 + 33], "integer", size = 2L, n = N, signed = FALSE, endian = "little")
     # BOOKMARK-blankingDistance-1 (see also BOOKMARK-blankingDistance-2 and -3, below)
     #
     # Update 2022-08-29 Nortek informs me that the factor is always 1e-3
@@ -1182,7 +1182,7 @@ read.adp.ad2cp <- function(
     # Given this confusion, it seems sensible to define blankingDistance
     # here, *but* to change it later, if the file has a header and if that
     # header indicates a different value (at BOOKMARK-blankingDistance-2).
-    tmp <- readBin(d$buf[pointer2 + 35L], "integer", size = 2, n = N, signed = FALSE, endian = "little")
+    tmp <- readBin(d$buf[pointer2 + 35L], "integer", size = 2L, n = N, signed = FALSE, endian = "little")
     blankingDistanceFactor <- ifelse(blankingDistanceInCm == 1, 1e-2, 1e-3)
     blankingDistance <- blankingDistanceFactor * tmp
     oceDebug(debug, "Steps in the computation of blanking distance\n")
@@ -1190,44 +1190,44 @@ read.adp.ad2cp <- function(
     oceDebug(debug, "    ", vectorShow(blankingDistanceInCm, n = 10))
     oceDebug(debug, "    ", vectorShow(blankingDistanceFactor, n = 10))
     oceDebug(debug, "    ", vectorShow(blankingDistance, n = 10))
-    nominalCorrelation <- readBin(d$buf[pointer1 + 37], "integer", size = 1, n = N, signed = FALSE, endian = "little")
+    nominalCorrelation <- readBin(d$buf[pointer1 + 37], "integer", size = 1L, n = N, signed = FALSE, endian = "little")
     # Magnetometer (Table 6.2, page 82, ref 1b)
     magnetometer <- matrix(0.0, nrow = N, ncol = 3)
-    magnetometer[, 1] <- readBin(d$buf[pointer2 + 41], "integer", size = 2, n = N, signed = TRUE, endian = "little")
-    magnetometer[, 2] <- readBin(d$buf[pointer2 + 43], "integer", size = 2, n = N, signed = TRUE, endian = "little")
-    magnetometer[, 3] <- readBin(d$buf[pointer2 + 45], "integer", size = 2, n = N, signed = TRUE, endian = "little")
+    magnetometer[, 1] <- readBin(d$buf[pointer2 + 41], "integer", size = 2L, n = N, signed = TRUE, endian = "little")
+    magnetometer[, 2] <- readBin(d$buf[pointer2 + 43], "integer", size = 2L, n = N, signed = TRUE, endian = "little")
+    magnetometer[, 3] <- readBin(d$buf[pointer2 + 45], "integer", size = 2L, n = N, signed = TRUE, endian = "little")
     # Accelerometer (Table 6.2, page 82, ref 1b)
     # IMOS https://github.com/aodn/imos-toolbox/blob/e19c8c604cd062a7212cdedafe11436209336ba5/Parser/readAD2CPBinary.m#L555
     #  AccRawX starts at idx+46
     #  IMOS_pointer = oce_pointer - 1
-    accelerometer <- matrix(0.0, nrow = N, ncol = 3)
-    accelerometer[, 1] <- 1.0 / 16384.0 * readBin(d$buf[pointer2 + 47], "integer", size = 2, n = N, signed = TRUE, endian = "little")
-    accelerometer[, 2] <- 1.0 / 16384.0 * readBin(d$buf[pointer2 + 49], "integer", size = 2, n = N, signed = TRUE, endian = "little")
-    accelerometer[, 3] <- 1.0 / 16384.0 * readBin(d$buf[pointer2 + 51], "integer", size = 2, n = N, signed = TRUE, endian = "little")
+    accelerometer <- matrix(0.0, nrow = N, ncol = 3L)
+    accelerometer[, 1] <- 1.0 / 16384.0 * readBin(d$buf[pointer2 + 47], "integer", size = 2L, n = N, signed = TRUE, endian = "little")
+    accelerometer[, 2] <- 1.0 / 16384.0 * readBin(d$buf[pointer2 + 49], "integer", size = 2L, n = N, signed = TRUE, endian = "little")
+    accelerometer[, 3] <- 1.0 / 16384.0 * readBin(d$buf[pointer2 + 51], "integer", size = 2L, n = N, signed = TRUE, endian = "little")
     # NOTE: all things below this are true only for current-profiler data; see
     # page 82 of Nortek (2022) for the vexing issue of ambiguityVelocity being
     # 2 bytes for current-profiler data but 4 bytes for bottom-track data.
-    datasetDescription <- readBin(d$buf[pointer2 + 55], "integer", size = 2, n = N, signed = FALSE, endian = "little")
-    transmitEnergy <- readBin(d$buf[pointer2 + 57], "integer", size = 2, n = N, signed = FALSE, endian = "little")
+    datasetDescription <- readBin(d$buf[pointer2 + 55], "integer", size = 2L, n = N, signed = FALSE, endian = "little")
+    transmitEnergy <- readBin(d$buf[pointer2 + 57], "integer", size = 2L, n = N, signed = FALSE, endian = "little")
     # FIXME: next, using offset 59, is true only for currents ("average" or "burst").
     # Nortek (2022) page 82.
-    velocityFactor <- 10^readBin(d$buf[pointer1 + 59], "integer", size = 1, n = N, signed = TRUE, endian = "little")
+    velocityFactor <- 10^readBin(d$buf[pointer1 + 59], "integer", size = 1L, n = N, signed = TRUE, endian = "little")
     oceDebug(debug, "velocityFactor=", velocityFactor[1], " (for current-profiler data ONLY)\n")
     # 0.001 for 'average' in private file ~/Dropbox/oce_secret_data/ad2cp_secret_1.ad2cp
-    powerLevel <- readBin(d$buf[pointer1 + 60], "integer", size = 1, n = N, signed = TRUE, endian = "little")
-    temperatureMagnetometer <- 0.001 * readBin(d$buf[pointer2 + 61], "integer", size = 2, n = N, signed = TRUE, endian = "little")
+    powerLevel <- readBin(d$buf[pointer1 + 60], "integer", size = 1L, n = N, signed = TRUE, endian = "little")
+    temperatureMagnetometer <- 0.001 * readBin(d$buf[pointer2 + 61], "integer", size = 2L, n = N, signed = TRUE, endian = "little")
     # See https://github.com/dankelley/oce/issues/1957 for a discussion of the
     # unit of temperatureRTC.  Nortek (2022) says it is in degC, but a
     # previous manual says it is in 0.01C; the latter produces values that make
     # sense (e.g. approx 20C for an in-air test) so that's used here.
-    temperatureRTC <- 0.01 * readBin(d$buf[pointer2 + 63], "integer", size = 2, n = N, signed = TRUE, endian = "little")
+    temperatureRTC <- 0.01 * readBin(d$buf[pointer2 + 63], "integer", size = 2L, n = N, signed = TRUE, endian = "little")
     # UNUSED error <- readBin(d$buf[pointer2 + 65], "integer", size=4, n=N, endian="little") # FIXME: UNUSED
 
     # status0, byte 67:68, skipped
     # status,  byte 69:71, already read above so we could infer activeConfiguration
 
     oceDebug(debug, vectorShow(status[2, ]))
-    ensemble <- readBin(d$buf[pointer4 + 73], "integer", size = 4, n = N, endian = "little")
+    ensemble <- readBin(d$buf[pointer4 + 73], "integer", size = 4L, n = N, endian = "little")
 
     # Limitations
     nconfiguration <- length(unique(activeConfiguration))
@@ -1948,7 +1948,7 @@ read.adp.ad2cp <- function(
         #  bytes for _currentProfileData.  See
         # https://github.com/dankelley/oce/issues/1980#issuecomment-1188992788
         # for more context on this.
-        rval$velocityFactor <- 10^readBin(d$buf[lookIndex[1] + 61L], "integer", size = 1, n = N, signed = TRUE, endian = "little")
+        rval$velocityFactor <- 10^readBin(d$buf[lookIndex[1] + 61L], "integer", size = 1L, n = N, signed = TRUE, endian = "little")
         oceDebug(debug, vectorShow(rval$velocityFactor))
         # message(vectorShow(rval$velocityFactor))
         # Nortek (2022 page 94, 52 in zero-indexed notation)
@@ -2083,7 +2083,7 @@ read.adp.ad2cp <- function(
         #  bytes for _currentProfileData.  See
         # https://github.com/dankelley/oce/issues/1980#issuecomment-1188992788
         # for more context on this.
-        rval$velocityFactor <- 10^readBin(d$buf[lookIndex[1] + 61L], "integer", size = 1, n = N, signed = TRUE, endian = "little")
+        rval$velocityFactor <- 10^readBin(d$buf[lookIndex[1] + 61L], "integer", size = 1L, n = N, signed = TRUE, endian = "little")
         # message(vectorShow(rval$velocityFactor))
         # Nortek (2022 page 94, 52 in zero-indexed notation)
         # IMOS uses idx+52 for ambiguityVelocity
