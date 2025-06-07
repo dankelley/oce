@@ -30,6 +30,7 @@
 * Change `plot.section()` to handle `eos="gsw"` (issue #2256).
 * Change `read.adp.ad2cp()` to
   * handle TOC, datasets and plans better (issue #2303 and related),
+  * read temperature correctly (issue #2324),
   * save elements of AST (etc) individually, not within a list (issue #2318) and
   * set `data@distance` only if NC (number of cells) is nonzero (issue #2319).
 * Change `read.amsr()` to handle realtime data files (issue #2230).
