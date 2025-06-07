@@ -2427,7 +2427,7 @@ read.adp.ad2cp <- function(
     #<FIXME> if ("averageAltimeter" %in% which && length(p$averageAltimeter) > 0) # 0x1f
     #<FIXME>     data$averageAltimeter <- readProfile(id=as.raw(0x1f), debug=debug)
     if (0x1f == dataType) { # 0x1f=averageAltimeter
-        if (length(p$echosounder) < 1L) {
+        if (length(p$averageAltimeter) < 1L) {
             stop("no dataType=", dataTypeOrig, " (averageAltimeter) in file")
         }
         data <- readProfile(id = dataType, debug = debug)
