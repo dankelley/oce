@@ -1410,7 +1410,11 @@ read.adp.ad2cp <- function(
             object$altimeterRawTime <- object$time
             i0v <<- i0v + 2L
             iv <- gappyIndex(i, i0v, 2L * NS)
-            tmp <- readBin(buf[iv], "integer", size = 2L, endian = "little", n = NP * NS)
+            # altimeterRawSamples said to be signed 16bit integer,
+            # on page 99 of Nortek AS. “Signature
+            # Integration 55|250|500|1000kHz (2024.1),” 2024.
+            # https://support.nortekgroup.com/hc/en-us/articles/360029513952-Integrators-Guide-Signature.
+            tmp <- readBin(buf[iv], "integer", size = 2L, signed = TRUE, endian = "little", n = NP * NS)
             object$altimeterRawSamples <- matrix(tmp, nrow = NP, ncol = NS, byrow = TRUE)
             i0v <<- i0v + 2L * NS
             # Constructed vector of altimeterRaw sample distances.
