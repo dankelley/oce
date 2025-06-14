@@ -33,6 +33,7 @@
   * read temperature correctly (issue #2324),
   * save elements of AST (etc) individually, not within a list (issue #2318) and
   * set `data@distance` only if NC (number of cells) is nonzero (issue #2319).
+  * use number of raw altimeter samples from header, if it disagrees with value in record (issue #2326).
 * Change `read.amsr()` to handle realtime data files (issue #2230).
 * Change `read.ctd.sbe()` to
   * handle files that lack salinity and conductivity (issues #2279 and #2282) and
