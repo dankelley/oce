@@ -32,6 +32,7 @@
   * handle TOC, datasets and plans better (issue #2303 and related),
   * read temperature correctly (issue #2324),
   * save elements of AST (etc) individually, not within a list (issue #2318) and
+  * scale `altimeterRawSamples` by 1/2^15 (issue #2327).
   * set `data@distance` only if NC (number of cells) is nonzero (issue #2319).
   * use number of raw altimeter samples from header, if it disagrees with value in record (issue #2326).
 * Change `read.amsr()` to handle realtime data files (issue #2230).

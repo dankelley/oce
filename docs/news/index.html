@@ -80,7 +80,9 @@
 <ul><li>handle TOC, datasets and plans better (issue <a href="https://github.com/dankelley/oce/issues/2303" class="external-link">#2303</a> and related),</li>
 <li>read temperature correctly (issue <a href="https://github.com/dankelley/oce/issues/2324" class="external-link">#2324</a>),</li>
 <li>save elements of AST (etc) individually, not within a list (issue <a href="https://github.com/dankelley/oce/issues/2318" class="external-link">#2318</a>) and</li>
+<li>scale <code>altimeterRawSamples</code> by 1/2^15 (issue <a href="https://github.com/dankelley/oce/issues/2327" class="external-link">#2327</a>).</li>
 <li>set <code>data@distance</code> only if NC (number of cells) is nonzero (issue <a href="https://github.com/dankelley/oce/issues/2319" class="external-link">#2319</a>).</li>
+<li>use number of raw altimeter samples from header, if it disagrees with value in record (issue <a href="https://github.com/dankelley/oce/issues/2326" class="external-link">#2326</a>).</li>
 </ul></li>
 <li>Change <code><a href="../reference/read.amsr.html">read.amsr()</a></code> to handle realtime data files (issue <a href="https://github.com/dankelley/oce/issues/2230" class="external-link">#2230</a>).</li>
 <li>Change <code><a href="../reference/read.ctd.sbe.html">read.ctd.sbe()</a></code> to

@@ -202,7 +202,7 @@ keep track of the resultant object, perhaps to combine it with other objects
 from within the AD2CP file or other files, in the normal R manner.</p>
 <p>The permitted values for <code>dataType</code> are shown in the table below;
 the <code>dataType</code> argument of <code>read.adp.ad2cp()</code> may be given
-as listed in any of the first 3 columns of this table.</p><table class="table table"><tr><td>code (raw)</td><td>code (integer)</td><td>oce name</td><td>notes</td></tr><tr><td>———-</td><td>————–</td><td>——————-</td><td>——</td></tr><tr><td><code>0x15</code></td><td>21</td><td><code>burst</code></td><td>-</td></tr><tr><td><code>0x16</code></td><td>22</td><td><code>average</code></td><td>-</td></tr><tr><td><code>0x17</code></td><td>23</td><td><code>bottomTrack</code></td><td>-</td></tr><tr><td><code>0x18</code></td><td>24</td><td><code>interleavedBurst</code></td><td>-</td></tr><tr><td><code>0x1a</code></td><td>26</td><td><code>burstAltimeterRaw</code></td><td>-</td></tr><tr><td><code>0x1b</code></td><td>27</td><td><code>DVLBottomTrack</code></td><td>-</td></tr><tr><td><code>0x1c</code></td><td>28</td><td><code>echosounder</code></td><td>-</td></tr><tr><td><code>0x1d</code></td><td>29</td><td><code>DVLWaterTrack</code></td><td>-</td></tr><tr><td><code>0x1e</code></td><td>30</td><td><code>altimeter</code></td><td>-</td></tr><tr><td><code>0x1f</code></td><td>31</td><td><code>averageAltimeter</code></td><td>-</td></tr><tr><td><code>0x23</code></td><td>35</td><td><code>echosounderRaw</code></td><td>-</td></tr><tr><td><code>0x24</code></td><td>36</td><td><code>echosounderRawTx</code></td><td>1</td></tr><tr><td><code>0x30</code></td><td>48</td><td><code>waves</code></td><td>2</td></tr><tr><td><code>0xa0</code></td><td>160</td><td><code>text</code></td><td>3</td></tr><tr><td>`0xc0</td><td>192</td><td><code>format8</code></td><td>4</td></tr><tr><td>`0xc8</td><td>200</td><td><code>vector 2</code></td><td>5</td></tr></table><p>Note 1: Code 0x24 (<code>echosounderRawTx</code>) has some coding done, but
+as listed in any of the first 3 columns of this table.</p><table class="table table"><tr><td>code (raw)</td><td>code (integer)</td><td>oce name</td><td>notes</td></tr><tr><td>———-</td><td>————–</td><td>——————-</td><td>——</td></tr><tr><td><code>0x15</code></td><td>21</td><td><code>burst</code></td><td>-</td></tr><tr><td><code>0x16</code></td><td>22</td><td><code>average</code></td><td>-</td></tr><tr><td><code>0x17</code></td><td>23</td><td><code>bottomTrack</code></td><td>-</td></tr><tr><td><code>0x18</code></td><td>24</td><td><code>interleavedBurst</code></td><td>-</td></tr><tr><td><code>0x1a</code></td><td>26</td><td><code>burstAltimeterRaw</code></td><td>-</td></tr><tr><td><code>0x1b</code></td><td>27</td><td><code>DVLBottomTrack</code></td><td>-</td></tr><tr><td><code>0x1c</code></td><td>28</td><td><code>echosounder</code></td><td>-</td></tr><tr><td><code>0x1d</code></td><td>29</td><td><code>DVLWaterTrack</code></td><td>-</td></tr><tr><td><code>0x1e</code></td><td>30</td><td><code>altimeter</code></td><td>-</td></tr><tr><td><code>0x1f</code></td><td>31</td><td><code>averageAltimeter</code></td><td>-</td></tr><tr><td><code>0x23</code></td><td>35</td><td><code>echosounderRaw</code></td><td>-</td></tr><tr><td><code>0x24</code></td><td>36</td><td><code>echosounderRawTx</code></td><td>1</td></tr><tr><td><code>0x30</code></td><td>48</td><td><code>waves</code></td><td>2</td></tr><tr><td><code>0xa0</code></td><td>160</td><td><code>text</code></td><td>3</td></tr><tr><td><code>0xc0</code></td><td>192</td><td><code>format8</code></td><td>4</td></tr><tr><td><code>0xc8</code></td><td>200</td><td><code>vector 2</code></td><td>5</td></tr></table><p>Note 1: Code 0x24 (<code>echosounderRawTx</code>) has some coding done, but
 it is untested, as the developers lack a data file exemplar. For
 now, this data type is read as though it were 0x23, which is
 likely to produce poor results or cause errors in processing.</p>
@@ -212,22 +212,36 @@ yet.</p>
 the settings used in creating the file.  This can be quite
 helpful in debugging and analysis.</p>
 <p>Note 4: Code 0xc0 (<code>format8</code>) is not handled, and trying to read
-this yields an error indicating this fact.  This code was listed,
-without further documentation in Nortek (2024) manual.  However,
-it is not listed in Nortek (2025). Accordingly, it is not handled
-by read.adp.ad2cp`.</p>
+this yields an error indicating this fact.  This code was mentioned
+in Nortek (2024) without further information, but it was not
+listed in Nortek (2025). Accordingly, it is not handled
+by <code>read.adp.ad2cp</code>.</p>
 <p>Note 5: Code 0xc8 (<code>vector 2</code>) is listed in Nortek (2025) but that
 document provides no information on the format. Accordingly, it is
-not handled by read.adp.ad2cp`.</p>
+not handled by <code>read.adp.ad2cp</code>.</p>
     </div>
     <div class="section level2">
-    <h2 id="sample-of-usage">Sample of Usage<a class="anchor" aria-label="anchor" href="#sample-of-usage"></a></h2>
+    <h2 id="problems">Problems<a class="anchor" aria-label="anchor" href="#problems"></a></h2>
 
 
-<div class="sourceCode"><pre><code><span></span>
-<span><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read.adp.ad2cp.html">read.adp.ad2cp</a></span><span class="op">(</span><span class="st">"~/test.ad2cp"</span>, to<span class="op">=</span><span class="fl">100</span><span class="op">)</span> <span class="co"># or read.oce()</span></span></code></pre></div>
-
-    </div>
+<ol><li><p>In reading a file with <code>altimeterRaw</code> data components, a potential
+problem was noticed with that the part of the file that indicates the
+number of altimeter samples (called <code>NSAMP</code> in the Nortek documentation).
+The stated value was 2 times the value held in the header (text) portion
+of the file, and reading the larger value created a matrix that had
+it's upper half filled with odd striping patterns. Therefore, the
+function checks the two indicates of length, and used the one in the
+text block if they disagree.  (See
+https://github.com/dankelley/oce/issues/2326.)</p></li>
+<li><p>Related to point 1, the documentation states that <code>NSAMP</code> is
+a 4-byte value, but then, in contradiction, it also says that the
+next data element is found 2 bytes away. So is it 2 bytes long
+or 4 bytes? In this function, we assume that it is 4 bytes long,
+because otherwise we get a zero value for the next element, which
+is the cell size. Assuming 4 bytes yields the correct value
+of cell size, according to the file text element. (Again, see
+https://github.com/dankelley/oce/issues/2326.)</p></li>
+</ol></div>
     <div class="section level2">
     <h2 id="how-the-binary-file-is-decoded">How the binary file is decoded<a class="anchor" aria-label="anchor" href="#how-the-binary-file-is-decoded"></a></h2>
 
@@ -338,7 +352,7 @@ March 31, 2022.</p>
     </div>
     <div class="section level2">
     <h2 id="author">Author<a class="anchor" aria-label="anchor" href="#author"></a></h2>
-    <p>Dan Kelley</p>
+    <p>Dan Kelley and Clark Richards</p>
     </div>
 
     <div class="section level2">
@@ -348,7 +362,9 @@ March 31, 2022.</p>
 <span class="r-in"><span><span class="va">file</span> <span class="op">&lt;-</span> <span class="st">"tests/testthat/local_data/ad2cp/S102791A002_Barrow_v2.ad2cp"</span></span></span>
 <span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.exists</a></span><span class="op">(</span><span class="va">file</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span>    <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dankelley.github.io/oce/">oce</a></span><span class="op">)</span></span></span>
-<span class="r-in"><span>    <span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="read.oce.html">read.oce</a></span><span class="op">(</span><span class="va">file</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="read.oce.html">read.oce</a></span><span class="op">(</span><span class="va">file</span>, TOC <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="read.oce.html">read.oce</a></span><span class="op">(</span><span class="va">file</span>, dataType <span class="op">=</span> <span class="st">"burstAltimeterRaw"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="imagep.html">imagep</a></span><span class="op">(</span><span class="va">d</span><span class="op">[[</span><span class="st">"time"</span><span class="op">]</span><span class="op">]</span>, <span class="va">d</span><span class="op">[[</span><span class="st">"altimeterRawDistance"</span><span class="op">]</span><span class="op">]</span>, <span class="va">d</span><span class="op">[[</span><span class="st">"altimeterRawSamples"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>

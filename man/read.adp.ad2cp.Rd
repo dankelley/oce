@@ -154,19 +154,12 @@ Note 4: Code 0xc0 (\code{format8}) is not handled, and trying to read
 this yields an error indicating this fact.  This code was mentioned
 in Nortek (2024) without further information, but it was not
 listed in Nortek (2025). Accordingly, it is not handled
-by read.adp.ad2cp`.
+by \code{read.adp.ad2cp}.
 
 Note 5: Code 0xc8 (\verb{vector 2}) is listed in Nortek (2025) but that
 document provides no information on the format. Accordingly, it is
-not handled by read.adp.ad2cp`.
+not handled by \code{read.adp.ad2cp}.
 }
-\section{Sample of Usage}{
-
-\preformatted{
-d <- read.adp.ad2cp("~/test.ad2cp", to=100) # or read.oce()
-}
-}
-
 \section{Problems}{
 
 \enumerate{
@@ -177,15 +170,16 @@ The stated value was 2 times the value held in the header (text) portion
 of the file, and reading the larger value created a matrix that had
 it's upper half filled with odd striping patterns. Therefore, the
 function checks the two indicates of length, and used the one in the
-text block if they disagree.
+text block if they disagree.  (See
+https://github.com/dankelley/oce/issues/2326.)
 \item Related to point 1, the documentation states that \code{NSAMP} is
-a 2-byte value, and that it is followed by a 2-byte value that
-give the size of the samples (in millimetres).  But following
-this instruction yields 0mm as the size.  It seems unlikely
-that there is an undocumented 2-byte field in between these two
-elements, so present function reads \code{NSAMP} as a 4-byte field. This
-yields the same value, because in the file in question, the next
-2 bytes are always 0x00.
+a 4-byte value, but then, in contradiction, it also says that the
+next data element is found 2 bytes away. So is it 2 bytes long
+or 4 bytes? In this function, we assume that it is 4 bytes long,
+because otherwise we get a zero value for the next element, which
+is the cell size. Assuming 4 bytes yields the correct value
+of cell size, according to the file text element. (Again, see
+https://github.com/dankelley/oce/issues/2326.)
 }
 }
 
@@ -228,7 +222,9 @@ library(oce)
 file <- "tests/testthat/local_data/ad2cp/S102791A002_Barrow_v2.ad2cp"
 if (file.exists(file)) {
     library(oce)
-    d <- read.oce(file)
+    print(read.oce(file, TOC = TRUE))
+    d <- read.oce(file, dataType = "burstAltimeterRaw")
+    imagep(d[["time"]], d[["altimeterRawDistance"]], d[["altimeterRawSamples"]])
 }
 
 }
@@ -315,8 +311,6 @@ Other functions that read adp data:
 }
 \author{
 Dan Kelley and Clark Richards
-
-Dan Kelley
 }
 \concept{functions that read adp data}
 \concept{things related to ad2cp data}
