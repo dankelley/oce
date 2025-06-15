@@ -133,8 +133,8 @@ as listed in any of the first 3 columns of this table.\tabular{rrrr}{
    \code{0x24} \tab 36 \tab \code{echosounderRawTx} \tab 1 \cr
    \code{0x30} \tab 48 \tab \code{waves} \tab 2 \cr
    \code{0xa0} \tab 160 \tab \code{text} \tab 3 \cr
-   `0xc0 \tab 192 \tab \code{format8} \tab 4 \cr
-   `0xc8 \tab 200 \tab \verb{vector 2} \tab 5 \cr
+   \code{0xc0} \tab 192 \tab \code{format8} \tab 4 \cr
+   \code{0xc8} \tab 200 \tab \verb{vector 2} \tab 5 \cr
 }
 
 
@@ -151,9 +151,9 @@ the settings used in creating the file.  This can be quite
 helpful in debugging and analysis.
 
 Note 4: Code 0xc0 (\code{format8}) is not handled, and trying to read
-this yields an error indicating this fact.  This code was listed,
-without further documentation in Nortek (2024) manual.  However,
-it is not listed in Nortek (2025). Accordingly, it is not handled
+this yields an error indicating this fact.  This code was mentioned
+in Nortek (2024) without further information, but it was not
+listed in Nortek (2025). Accordingly, it is not handled
 by read.adp.ad2cp`.
 
 Note 5: Code 0xc8 (\verb{vector 2}) is listed in Nortek (2025) but that
@@ -164,6 +164,28 @@ not handled by read.adp.ad2cp`.
 
 \preformatted{
 d <- read.adp.ad2cp("~/test.ad2cp", to=100) # or read.oce()
+}
+}
+
+\section{Problems}{
+
+\enumerate{
+\item In reading a file with \code{altimeterRaw} data components, a potential
+problem was noticed with that the part of the file that indicates the
+number of altimeter samples (called \code{NSAMP} in the Nortek documentation).
+The stated value was 2 times the value held in the header (text) portion
+of the file, and reading the larger value created a matrix that had
+it's upper half filled with odd striping patterns. Therefore, the
+function checks the two indicates of length, and used the one in the
+text block if they disagree.
+\item Related to point 1, the documentation states that \code{NSAMP} is
+a 2-byte value, and that it is followed by a 2-byte value that
+give the size of the samples (in millimetres).  But following
+this instruction yields 0mm as the size.  It seems unlikely
+that there is an undocumented 2-byte field in between these two
+elements, so present function reads \code{NSAMP} as a 4-byte field. This
+yields the same value, because in the file in question, the next
+2 bytes are always 0x00.
 }
 }
 
@@ -292,6 +314,8 @@ Other functions that read adp data:
 \code{\link{read.aquadoppProfiler}()}
 }
 \author{
+Dan Kelley and Clark Richards
+
 Dan Kelley
 }
 \concept{functions that read adp data}

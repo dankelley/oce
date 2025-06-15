@@ -347,8 +347,8 @@ ad2cpCodeToName <- function(code = NULL, prefix = TRUE) {
 #' |     `0x24` |             36 |  `echosounderRawTx` |      1 |
 #' |     `0x30` |             48 |             `waves` |      2 |
 #' |     `0xa0` |            160 |              `text` |      3 |
-#' |     `0xc0  |            192 |           `format8` |      4 |
-#' |     `0xc8  |            200 |          `vector 2` |      5 |
+#' |     `0xc0` |            192 |           `format8` |      4 |
+#' |     `0xc8` |            200 |          `vector 2` |      5 |
 #'
 #' Note 1: Code 0x24 (`echosounderRawTx`) has some coding done, but
 #' it is untested, as the developers lack a data file exemplar. For
@@ -363,9 +363,9 @@ ad2cpCodeToName <- function(code = NULL, prefix = TRUE) {
 #' helpful in debugging and analysis.
 #'
 #' Note 4: Code 0xc0 (`format8`) is not handled, and trying to read
-#' this yields an error indicating this fact.  This code was listed,
-#' without further documentation in Nortek (2024) manual.  However,
-#' it is not listed in Nortek (2025). Accordingly, it is not handled
+#' this yields an error indicating this fact.  This code was mentioned
+#' in Nortek (2024) without further information, but it was not
+#' listed in Nortek (2025). Accordingly, it is not handled
 #' by read.adp.ad2cp`.
 #'
 #' Note 5: Code 0xc8 (`vector 2`) is listed in Nortek (2025) but that
@@ -511,7 +511,27 @@ ad2cpCodeToName <- function(code = NULL, prefix = TRUE) {
 #' the number of data sets within the file, according to the value
 #' of `TOC`.
 #'
-#' @author Dan Kelley
+#' @section Problems:
+#'
+#' 1. In reading a file with `altimeterRaw` data components, a potential
+#' problem was noticed with that the part of the file that indicates the
+#' number of altimeter samples (called `NSAMP` in the Nortek documentation).
+#' The stated value was 2 times the value held in the header (text) portion
+#' of the file, and reading the larger value created a matrix that had
+#' it's upper half filled with odd striping patterns. Therefore, the
+#' function checks the two indicates of length, and used the one in the
+#' text block if they disagree.
+#'
+#' 2. Related to point 1, the documentation states that `NSAMP` is
+#' a 2-byte value, and that it is followed by a 2-byte value that
+#' give the size of the samples (in millimetres).  But following
+#' this instruction yields 0mm as the size.  It seems unlikely
+#' that there is an undocumented 2-byte field in between these two
+#' elements, so present function reads `NSAMP` as a 4-byte field. This
+#' yields the same value, because in the file in question, the next
+#' 2 bytes are always 0x00.
+#'
+#' @author Dan Kelley and Clark Richards
 #'
 #' @references
 #'
