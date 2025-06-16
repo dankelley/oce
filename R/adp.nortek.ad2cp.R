@@ -767,6 +767,7 @@ read.adp.ad2cp <- function(
     #-message("L635 N=",N,", to=", to)
     # Set up object, with key metadata to allow other functions to work.
     res <- new("adp")
+
     # FIXME: THIS IS WRONG: we should be focussing on d focussed by focusIndex.
     firstData <- which(d$id != 0xa0)[1] # first non-text chunk
     oceDebug(debug, vectorShow(firstData))
@@ -2264,6 +2265,13 @@ read.adp.ad2cp <- function(
 
     data <- list()
 
+    # Major and minor version number of firmware, FW and FWMINOR
+    FW <- ad2cpHeaderValue(header, key = "GETHW", item = "FW", plan = plan)
+    oceDebug(debug, "FW=", vectorShow(FW))
+    res@metadata$firmwareVersionMajor <- FW
+    FWMINOR <- ad2cpHeaderValue(header, key = "GETHW", item = "FWMINOR", plan = plan)
+    oceDebug(debug, "FWMINOR=", vectorShow(FWMINOR))
+    res@metadata$firmwareVersionMinor <- FWMINOR
     # The following conditional blocks handle the vectorized reading of various
     # data ID classes.  Although the data format is described in many manuals,
     # this code started with Nortek (2017), DK's copy of which is highly

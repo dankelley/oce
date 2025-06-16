@@ -477,6 +477,12 @@ setMethod(
         if ("fileType" %in% mnames) {
             cat(paste("* File type:         ", object@metadata$fileType, "\n", sep = ""), ...)
         }
+        if ("firmwareVersionMajor" %in% mnames && "firmwareVersionMinor" %in% mnames) {
+            cat(paste("* Firmware:          ", object@metadata$firmwareVersionMajor, " (major), ",
+                object@metadata$firmwareVersionMinor, " (minor)\n",
+                sep = ""
+            ), ...)
+        }
         if ("dataset" %in% mnames) {
             cat(paste("* Dataset:           ", object@metadata$dataset, "\n", sep = ""), ...)
         }
