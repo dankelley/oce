@@ -239,6 +239,8 @@ is.ad2cp <- function(x) {
 #' |     `0x1e` |             30 |         `altimeter` |
 #' |     `0x1f` |             31 |  `averageAltimeter` |
 #' |     `0x23` |             35 |    `echosounderRaw` |
+#' |     `0x24` |             36 |  `echosounderRawTx` |
+#' |     `0x30` |             48 |             `waves` |
 #' |     `0xa0` |            160 |              `text` |
 #'
 #' @param code a [raw] (or corresponding integer) vector indicating the IDs of
@@ -276,6 +278,7 @@ ad2cpCodeToName <- function(code = NULL, prefix = TRUE) {
         averageAltimeter = as.raw(0x1f),
         echosounderRaw = as.raw(0x23),
         echosounderRawTx = as.raw(0x24),
+        waves = as.raw(0x30),
         text = as.raw(0xa0)
     )
     if (is.null(code)) {
@@ -347,8 +350,8 @@ ad2cpCodeToName <- function(code = NULL, prefix = TRUE) {
 #' |     `0x24` |             36 |  `echosounderRawTx` |      1 |
 #' |     `0x30` |             48 |             `waves` |      2 |
 #' |     `0xa0` |            160 |              `text` |      3 |
-#' |     `0xc0` |            192 |           `format8` |      4 |
-#' |     `0xc8` |            200 |          `vector 2` |      5 |
+## |     `0xc0` |            192 |           `format8` |      4 |
+## |     `0xc8` |            200 |          `vector 2` |      5 |
 #'
 #' Note 1: Code 0x24 (`echosounderRawTx`) has some coding done, but
 #' it is untested, as the developers lack a data file exemplar. For
@@ -362,15 +365,15 @@ ad2cpCodeToName <- function(code = NULL, prefix = TRUE) {
 #' the settings used in creating the file.  This can be quite
 #' helpful in debugging and analysis.
 #'
-#' Note 4: Code 0xc0 (`format8`) is not handled, and trying to read
-#' this yields an error indicating this fact.  This code was mentioned
-#' in Nortek (2024) without further information, but it was not
-#' listed in Nortek (2025). Accordingly, it is not handled
-#' by `read.adp.ad2cp`.
-#'
-#' Note 5: Code 0xc8 (`vector 2`) is listed in Nortek (2025) but that
-#' document provides no information on the format. Accordingly, it is
-#' not handled by `read.adp.ad2cp`.
+## Note 4: Code 0xc0 (`format8`) is not handled, and trying to read
+## this yields an error indicating this fact.  This code was mentioned
+## in Nortek (2024) without further information, but it was not
+## listed in Nortek (2025). Accordingly, it is not handled
+## by `read.adp.ad2cp`.
+##
+## Note 5: Code 0xc8 (`vector 2`) is listed in Nortek (2025) but that
+## document provides no information on the format. Accordingly, it is
+## not handled by `read.adp.ad2cp`.
 #'
 ## The coding is based mainly on descriptions in various versions of a Nortek
 ## manual (see \dQuote{References}). However, there are some gaps and
@@ -535,18 +538,6 @@ ad2cpCodeToName <- function(code = NULL, prefix = TRUE) {
 #' (This was once at \code{https://support.nortekgroup.com/hc/en-us/articles/360029513952-Integrators-Guide-Signature}
 #' but a test on 2025-05-26 revealed that this link no longer worked.)
 #'
-#' Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz.} Nortek AS,
-#' 2017.
-#'
-#' Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz.} Nortek AS,
-#' 2018.
-#'
-#' Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz.} Nortek AS,
-#' March 31, 2022.
-#'
-# Nortek AS. \dQuote{Operations Manual - Signature 250, 500 and 1000.} Nortek AS,
-# September 21, 2018.
-#'
 #' @family things related to adp data
 #' @family things related to ad2cp data
 #'
@@ -608,8 +599,8 @@ read.adp.ad2cp <- function(
         "averageAltimeter" = 0x1f,
         "echosounderRaw" = 0x23,
         "echosounderRawTx" = 0x24, # maybe handled (the docs are unclear how different from 0x23)
-        "waveData" = 0x30, # not handled
-        "format8" = 0xC0 # not handled
+        "waveData" = 0x30 # not handled
+        #"format8" = 0xC0 # not handled
     )
     dataTypeOrig <- dataType
     if (!is.null(dataType)) {
@@ -1272,7 +1263,6 @@ read.adp.ad2cp <- function(
     # 0x24 - echosounder-raw TX (not handled yet)
     # 0x30 - waves (not handled yet)
     # 0xA0 - String Data Record, eg. GPS NMEA data, comment from the FWRITE command.
-    # 0xC0 - "Nortek Data Format 8 Record" (not handled yet)
     # Set up pointers to records matching these keys.
     #-message("DAN 1");browser()
     p <- list(
@@ -1289,8 +1279,8 @@ read.adp.ad2cp <- function(
         echosounderRaw = which(d$id == 0x23),
         echosounderRawTx = which(d$id == 0x24), # not handled yet
         waves = which(d$id == 0x30), # not handled yet
-        text = which(d$id == 0xa0),
-        format8 = which(d$id == 0xc0) # not handled yet
+        text = which(d$id == 0xa0)
+        #format8 = which(d$id == 0xc0) # not handled yet
     )
 
     # x Try to retrieved a named item from the data buffer.
@@ -2614,9 +2604,9 @@ read.adp.ad2cp <- function(
         stop("dataType waves (0x30) is not handled yet")
     } # 0x30=waves (not handled yet)
 
-    if (0xc0 == dataType) { # 0xc0=format8 not handled yet
-        stop("dataType format8 (0x30) is not handled yet")
-    } # 0xc0=format8 (not handled yet)
+    #if (0xc0 == dataType) { # 0xc0=format8 not handled yet
+    #    stop("dataType format8 (0x30) is not handled yet")
+    #} # 0xc0=format8 (not handled yet)
 
     # Use header as the final word, if it contradicts what we inferred above.
     if (!is.null(header)) {

@@ -202,7 +202,7 @@ keep track of the resultant object, perhaps to combine it with other objects
 from within the AD2CP file or other files, in the normal R manner.</p>
 <p>The permitted values for <code>dataType</code> are shown in the table below;
 the <code>dataType</code> argument of <code>read.adp.ad2cp()</code> may be given
-as listed in any of the first 3 columns of this table.</p><table class="table table"><tr><td>code (raw)</td><td>code (integer)</td><td>oce name</td><td>notes</td></tr><tr><td>———-</td><td>————–</td><td>——————-</td><td>——</td></tr><tr><td><code>0x15</code></td><td>21</td><td><code>burst</code></td><td>-</td></tr><tr><td><code>0x16</code></td><td>22</td><td><code>average</code></td><td>-</td></tr><tr><td><code>0x17</code></td><td>23</td><td><code>bottomTrack</code></td><td>-</td></tr><tr><td><code>0x18</code></td><td>24</td><td><code>interleavedBurst</code></td><td>-</td></tr><tr><td><code>0x1a</code></td><td>26</td><td><code>burstAltimeterRaw</code></td><td>-</td></tr><tr><td><code>0x1b</code></td><td>27</td><td><code>DVLBottomTrack</code></td><td>-</td></tr><tr><td><code>0x1c</code></td><td>28</td><td><code>echosounder</code></td><td>-</td></tr><tr><td><code>0x1d</code></td><td>29</td><td><code>DVLWaterTrack</code></td><td>-</td></tr><tr><td><code>0x1e</code></td><td>30</td><td><code>altimeter</code></td><td>-</td></tr><tr><td><code>0x1f</code></td><td>31</td><td><code>averageAltimeter</code></td><td>-</td></tr><tr><td><code>0x23</code></td><td>35</td><td><code>echosounderRaw</code></td><td>-</td></tr><tr><td><code>0x24</code></td><td>36</td><td><code>echosounderRawTx</code></td><td>1</td></tr><tr><td><code>0x30</code></td><td>48</td><td><code>waves</code></td><td>2</td></tr><tr><td><code>0xa0</code></td><td>160</td><td><code>text</code></td><td>3</td></tr><tr><td><code>0xc0</code></td><td>192</td><td><code>format8</code></td><td>4</td></tr><tr><td><code>0xc8</code></td><td>200</td><td><code>vector 2</code></td><td>5</td></tr></table><p>Note 1: Code 0x24 (<code>echosounderRawTx</code>) has some coding done, but
+as listed in any of the first 3 columns of this table.</p><table class="table table"><tr><td>code (raw)</td><td>code (integer)</td><td>oce name</td><td>notes</td></tr><tr><td>———-</td><td>————–</td><td>——————-</td><td>——</td></tr><tr><td><code>0x15</code></td><td>21</td><td><code>burst</code></td><td>-</td></tr><tr><td><code>0x16</code></td><td>22</td><td><code>average</code></td><td>-</td></tr><tr><td><code>0x17</code></td><td>23</td><td><code>bottomTrack</code></td><td>-</td></tr><tr><td><code>0x18</code></td><td>24</td><td><code>interleavedBurst</code></td><td>-</td></tr><tr><td><code>0x1a</code></td><td>26</td><td><code>burstAltimeterRaw</code></td><td>-</td></tr><tr><td><code>0x1b</code></td><td>27</td><td><code>DVLBottomTrack</code></td><td>-</td></tr><tr><td><code>0x1c</code></td><td>28</td><td><code>echosounder</code></td><td>-</td></tr><tr><td><code>0x1d</code></td><td>29</td><td><code>DVLWaterTrack</code></td><td>-</td></tr><tr><td><code>0x1e</code></td><td>30</td><td><code>altimeter</code></td><td>-</td></tr><tr><td><code>0x1f</code></td><td>31</td><td><code>averageAltimeter</code></td><td>-</td></tr><tr><td><code>0x23</code></td><td>35</td><td><code>echosounderRaw</code></td><td>-</td></tr><tr><td><code>0x24</code></td><td>36</td><td><code>echosounderRawTx</code></td><td>1</td></tr><tr><td><code>0x30</code></td><td>48</td><td><code>waves</code></td><td>2</td></tr><tr><td><code>0xa0</code></td><td>160</td><td><code>text</code></td><td>3</td></tr></table><p>Note 1: Code 0x24 (<code>echosounderRawTx</code>) has some coding done, but
 it is untested, as the developers lack a data file exemplar. For
 now, this data type is read as though it were 0x23, which is
 likely to produce poor results or cause errors in processing.</p>
@@ -211,14 +211,6 @@ yet.</p>
 <p>Note 3: Code 0xa0 (<code>text</code>) holds a text string that defines
 the settings used in creating the file.  This can be quite
 helpful in debugging and analysis.</p>
-<p>Note 4: Code 0xc0 (<code>format8</code>) is not handled, and trying to read
-this yields an error indicating this fact.  This code was mentioned
-in Nortek (2024) without further information, but it was not
-listed in Nortek (2025). Accordingly, it is not handled
-by <code>read.adp.ad2cp</code>.</p>
-<p>Note 5: Code 0xc8 (<code>vector 2</code>) is listed in Nortek (2025) but that
-document provides no information on the format. Accordingly, it is
-not handled by <code>read.adp.ad2cp</code>.</p>
     </div>
     <div class="section level2">
     <h2 id="problems">Problems<a class="anchor" aria-label="anchor" href="#problems"></a></h2>
@@ -280,12 +272,6 @@ components to physical units.</p></li>
 <p>Nortek AS. “Signature Integration 55|250|500|1000kHz (2024.1),” 2024.
 (This was once at <code>https://support.nortekgroup.com/hc/en-us/articles/360029513952-Integrators-Guide-Signature</code>
 but a test on 2025-05-26 revealed that this link no longer worked.)</p>
-<p>Nortek AS. “Signature Integration 55|250|500|1000kHz.” Nortek AS,
-2017.</p>
-<p>Nortek AS. “Signature Integration 55|250|500|1000kHz.” Nortek AS,
-2018.</p>
-<p>Nortek AS. “Signature Integration 55|250|500|1000kHz.” Nortek AS,
-March 31, 2022.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>

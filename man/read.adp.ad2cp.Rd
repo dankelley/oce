@@ -133,8 +133,6 @@ as listed in any of the first 3 columns of this table.\tabular{rrrr}{
    \code{0x24} \tab 36 \tab \code{echosounderRawTx} \tab 1 \cr
    \code{0x30} \tab 48 \tab \code{waves} \tab 2 \cr
    \code{0xa0} \tab 160 \tab \code{text} \tab 3 \cr
-   \code{0xc0} \tab 192 \tab \code{format8} \tab 4 \cr
-   \code{0xc8} \tab 200 \tab \verb{vector 2} \tab 5 \cr
 }
 
 
@@ -149,16 +147,6 @@ yet.
 Note 3: Code 0xa0 (\code{text}) holds a text string that defines
 the settings used in creating the file.  This can be quite
 helpful in debugging and analysis.
-
-Note 4: Code 0xc0 (\code{format8}) is not handled, and trying to read
-this yields an error indicating this fact.  This code was mentioned
-in Nortek (2024) without further information, but it was not
-listed in Nortek (2025). Accordingly, it is not handled
-by \code{read.adp.ad2cp}.
-
-Note 5: Code 0xc8 (\verb{vector 2}) is listed in Nortek (2025) but that
-document provides no information on the format. Accordingly, it is
-not handled by \code{read.adp.ad2cp}.
 }
 \section{Problems}{
 
@@ -235,15 +223,6 @@ Nortek AS. “Integrator’s Guide: Signature.” Nortek AS, April 30, 2025.
 Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz (2024.1),} 2024.
 (This was once at \code{https://support.nortekgroup.com/hc/en-us/articles/360029513952-Integrators-Guide-Signature}
 but a test on 2025-05-26 revealed that this link no longer worked.)
-
-Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz.} Nortek AS,
-2017.
-
-Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz.} Nortek AS,
-2018.
-
-Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz.} Nortek AS,
-March 31, 2022.
 }
 \seealso{
 Other things related to adp data: 
