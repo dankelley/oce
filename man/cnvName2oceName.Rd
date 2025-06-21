@@ -4,13 +4,27 @@
 \alias{cnvName2oceName}
 \title{Infer Variable Name, Units and Scale From a Seabird Header}
 \usage{
-cnvName2oceName(h, columns = NULL, debug = getOption("oceDebug"))
+cnvName2oceName(
+  h,
+  columns = NULL,
+  newNameFormat = FALSE,
+  debug = getOption("oceDebug")
+)
 }
 \arguments{
-\item{h}{The header line.}
+\item{h}{character value holding the header line.}
 
-\item{columns}{Optional list containing name correspondences, as described for
+\item{columns}{optional list containing name correspondences, as described for
 \code{\link[=read.ctd.sbe]{read.ctd.sbe()}}.}
+
+\item{newNameFormat}{logical value indicating whether the column names
+in the header are in the traditional format (with an abbreviated name
+followed by a colon and then more information) or a new format noticed
+in a file provided with a github issue (https://github.com/dankelley/oce/issues/2328).
+Until (or unless) SBE provides information on this new format, the
+present parameter is provisional, as is all code relating to reading
+new-format files.  (The file is produced by the new SBE software called
+Fathom.)}
 
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that

@@ -116,8 +116,9 @@ as.unit <- function(u, default = list(unit = expression(), scale = "")) {
     } else if (grepl("^ipts-68$", u) ||
         grepl("^ipts\\s*68$", u)) {
         list(unit = expression(degree * C), scale = "IPTS-68")
-    } else if (grepl("^its-90$", u) ||
-        grepl("^its\\s*90$", u)) {
+    } else if (grepl("^its-90$", u) || grepl("^its\\s*90$", u)) {
+        list(unit = expression(degree * C), scale = "ITS-90")
+    } else if (grepl("^its-90, deg c$", u)) {
         list(unit = expression(degree * C), scale = "ITS-90")
     } else if (grepl("^inHg$", uorig)) {
         list(unit = expression(inch * Hg), scale = "")

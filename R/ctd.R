@@ -566,7 +566,7 @@ setMethod(
         model <- object@metadata$model
         mnames <- names(object@metadata)
         showMetadataItem(object, "filename", "File:                ", quote = TRUE)
-        #showMetadataItem(object, "source",        "Source:              ")
+        # showMetadataItem(object, "source",        "Source:              ")
         if (!is.null(type) && nchar(type)) {
             if (is.null(model)) {
                 cat("* Instrument:          ", type, "\n", sep = "")
@@ -587,7 +587,7 @@ setMethod(
         showMetadataItem(object, "time", "Time:                ", isdate = TRUE)
         # Next defined for argo floats
         if (identical(object@metadata$source, "Argo float")) {
-            showMetadataItem(object, "id",          "Argo id:             ")
+            showMetadataItem(object, "id", "Argo id:             ")
             showMetadataItem(object, "cycleNumber", "Argo cycleNumber:    ")
         }
         # showMetadataItem(object, "systemUploadTime",          "System upload time:  ", isdate=TRUE)
@@ -597,9 +597,9 @@ setMethod(
                 sep = ""
             )
         }
-        showMetadataItem(object, "cruise",      "Cruise:              ")
-        showMetadataItem(object, "ship",        "Vessel:              ")
-        showMetadataItem(object, "station",     "Station:             ")
+        showMetadataItem(object, "cruise", "Cruise:              ")
+        showMetadataItem(object, "ship", "Vessel:              ")
+        showMetadataItem(object, "station", "Station:             ")
         deploymentType <- object@metadata$deploymentType
         if (!is.null(deploymentType) && deploymentType != "unknown") {
             showMetadataItem(object, "deploymentType", "Deployment type:     ")
@@ -3192,15 +3192,21 @@ setMethod(
                         )
                     }
                     if ("startTime" %in% mnames) {
-                        mtext(format(x[["startTime"]], "%Y-%m-%d %H:%M"),
-                            side = 3, adj = 1, cex = par("cex"), line = 0.5
-                        )
+                        timeForLabel <- x[["startTime"]]
+                        if (length(timeForLabel) && !is.na(timeForLabel[1])) {
+                            mtext(format(timeForLabel[1], "%Y-%m-%d %H:%M"),
+                                side = 3, adj = 1, cex = par("cex"), line = 0.5
+                            )
+                        }
                     } else if ("time" %in% mnames) {
                         timeForLabel <- x[["time"]]
                         goodTimes <- which(!is.na(timeForLabel))
                         if (length(goodTimes)) {
-                            mtext(format(timeForLabel[goodTimes[1]],
-                                         "%Y-%m-%d %H:%M"),
+                            mtext(
+                                format(
+                                    timeForLabel[goodTimes[1]],
+                                    "%Y-%m-%d %H:%M"
+                                ),
                                 side = 3, adj = 1, cex = par("cex"), line = 0.5
                             )
                         }
@@ -3759,7 +3765,9 @@ parseLatLon <- function(line, debug = getOption("oceDebug")) {
     }
     res <- res * sign
     if (is.na(res)) {
-        warning("cannot decode longitude or latitude from '", line, "'")
+        if (!grepl("name [0-9]{1,2} = ", line)) { # only give warning if *not* in data slot
+            warning("cannot decode longitude or latitude from '", line, "'")
+        }
     }
     oceDebug(debug, "END parseLatLon()\n", unindent = 1)
     res
@@ -4145,8 +4153,8 @@ plotTS <- function(
     # this point called salinity and y, and also bg, col, cex, and pch.
     # See https://github.com/dankelley/oce/issues/1730
     canPlot <- is.finite(salinity) & is.finite(y)
-    #print(table(is.finite(salinity)))
-    #print(table(is.finite(y)))
+    # print(table(is.finite(salinity)))
+    # print(table(is.finite(y)))
     if (length(col) == length(y)) {
         col <- col[canPlot]
     }

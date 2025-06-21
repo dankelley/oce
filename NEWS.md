@@ -39,6 +39,7 @@
 * Change `read.ctd.sbe()` to
   * handle files that lack salinity and conductivity (issues #2279 and #2282) and
   * handle time-related header elements better (issues #2280 and #2281).
+  * handle "new" format CNV files, at least provisionally (issue #2328).
 * Change `read.ctd.aml()` to handle "type 3" format (issue #2247).
 * Change `read.met()` to handle flags better (issue #2298).
 * Change `read.netcdf()` to
