@@ -519,11 +519,12 @@ decodeHeaderRDI <- function(buf, debug = getOption("oceDebug"), tz = getOption("
 #'
 #' @param which optional character value.  If this is `"??"` then the
 #' only other parameters that are examined are `file` and `debug`,
-#' [read.adp.rdi()] works by locating the indices in `file` at which
-#' data segments begin, and storing them as `index` in a data frame
-#' that is returned. The other entries of the data frame are `time`,
-#' the time of the observation, and `size`, the number of bytes
-#' of data in that data segment.
+#' and [read.adp.rdi()] does not try to read the detailed data.
+#' Instead, all it does is to identify the starting locations
+#' of the profiles/ensembles in the file, reporting these in
+#' a data frame that also includes the size of the profile/ensemble
+#' and the time when the measurement was made. This information
+#' may prove useful to analysts who are doing low-level work.
 #'
 #' @template encodingIgnoredTemplate
 #'

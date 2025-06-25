@@ -143,10 +143,12 @@ North.</p></dd>
 <dt id="arg-which">which<a class="anchor" aria-label="anchor" href="#arg-which"></a></dt>
 <dd><p>optional character value.  If this is <code>"??"</code> then the
 only other parameters that are examined are <code>file</code> and <code>debug</code>,
-<code>read.adp.rdi()</code> works by locating the indices in <code>file</code> at which
-data segments begin, and storing them as <code>index</code> in a list that is
-returned. The other entry of the list is <code>time</code>, the time of the
-observation.</p></dd>
+and <code>read.adp.rdi()</code> does not try to read the detailed data.
+Instead, all it does is to identify the starting locations
+of the profiles/ensembles in the file, reporting these in
+a data frame that also includes the size of the profile/ensemble
+and the time when the measurement was made. This information
+may prove useful to analysts who are doing low-level work.</p></dd>
 
 
 <dt id="arg-encoding">encoding<a class="anchor" aria-label="anchor" href="#arg-encoding"></a></dt>
@@ -481,7 +483,7 @@ P/N 957-6171-00 (June 2001) <code>WinRiver User Guide International Version.pdf.
 <span class="r-out co"><span class="r-pr">#&gt;</span> ADP Summary</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> -----------</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * Filename:          "/private/var/folders/8b/l4h64m1j22v5pb7vj049ff140000gn/T/RtmpDFzqAU/temp_libpath8459703c44e3/oce/extdata/adp_rdi.000"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> * Filename:          "/private/var/folders/8b/l4h64m1j22v5pb7vj049ff140000gn/T/Rtmp6SQBWs/temp_libpath10334281e2bd8/oce/extdata/adp_rdi.000"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Instrument:        adcp</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Manufacturer:      teledyne rdi</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Serial number:     unknown</span>
@@ -530,7 +532,7 @@ P/N 957-6171-00 (June 2001) <code>WinRiver User Guide International Version.pdf.
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Processing Log</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2025-06-18 13:00:47 UTC: `read.adp.rdi(file = system.file("extdata", "adp_rdi.000", package = "oce"))`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2025-06-25 12:33:39 UTC: `read.adp.rdi(file = system.file("extdata", "adp_rdi.000", package = "oce"))`</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

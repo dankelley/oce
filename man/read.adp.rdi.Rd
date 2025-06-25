@@ -58,11 +58,12 @@ North.}
 
 \item{which}{optional character value.  If this is \code{"??"} then the
 only other parameters that are examined are \code{file} and \code{debug},
-\code{\link[=read.adp.rdi]{read.adp.rdi()}} works by locating the indices in \code{file} at which
-data segments begin, and storing them as \code{index} in a data frame
-that is returned. The other entries of the data frame are \code{time},
-the time of the observation, and \code{size}, the number of bytes
-of data in that data segment.}
+and \code{\link[=read.adp.rdi]{read.adp.rdi()}} does not try to read the detailed data.
+Instead, all it does is to identify the starting locations
+of the profiles/ensembles in the file, reporting these in
+a data frame that also includes the size of the profile/ensemble
+and the time when the measurement was made. This information
+may prove useful to analysts who are doing low-level work.}
 
 \item{encoding}{ignored.}
 
