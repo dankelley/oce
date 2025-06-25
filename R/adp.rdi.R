@@ -520,9 +520,10 @@ decodeHeaderRDI <- function(buf, debug = getOption("oceDebug"), tz = getOption("
 #' @param which optional character value.  If this is `"??"` then the
 #' only other parameters that are examined are `file` and `debug`,
 #' [read.adp.rdi()] works by locating the indices in `file` at which
-#' data segments begin, and storing them as `index` in a list that is
-#' returned. The other entry of the list is `time`, the time of the
-#' observation.
+#' data segments begin, and storing them as `index` in a data frame
+#' that is returned. The other entries of the data frame are `time`,
+#' the time of the observation, and `size`, the number of bytes
+#' of data in that data segment.
 #'
 #' @template encodingIgnoredTemplate
 #'
@@ -1003,7 +1004,12 @@ read.adp.rdi <- function(
         if (!missing(which)) {
             if (which[1] == "??") {
                 oceDebug(debug, "handling which=\"??\"\n")
-                return(list(index = ldc$ensembleStart, time = numberAsPOSIXct(ldc$time)))
+                size <- c(diff(ldc$ensembleStart), 1L + fileSize - tail(ldc$ensembleStart, 1L))
+                return(data.frame(
+                    index = ldc$ensembleStart,
+                    size = size,
+                    time = numberAsPOSIXct(ldc$time)
+                ))
             } else {
                 stop("read.adp.rdi() cannot handle which=\"?\"")
             }

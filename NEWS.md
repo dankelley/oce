@@ -35,6 +35,7 @@
   * scale `altimeterRawSamples` by 1/2^15 (issue #2327).
   * set `data@distance` only if NC (number of cells) is nonzero (issue #2319).
   * use number of raw altimeter samples from header, if it disagrees with value in record (issue #2326).
+* Change `read.adp.rdi(..., which="??")` to return a data frame that includes ensemble size (issue #2329).
 * Change `read.amsr()` to handle realtime data files (issue #2230).
 * Change `read.ctd.sbe()` to
   * handle files that lack salinity and conductivity (issues #2279 and #2282) and

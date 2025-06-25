@@ -59,9 +59,10 @@ North.}
 \item{which}{optional character value.  If this is \code{"??"} then the
 only other parameters that are examined are \code{file} and \code{debug},
 \code{\link[=read.adp.rdi]{read.adp.rdi()}} works by locating the indices in \code{file} at which
-data segments begin, and storing them as \code{index} in a list that is
-returned. The other entry of the list is \code{time}, the time of the
-observation.}
+data segments begin, and storing them as \code{index} in a data frame
+that is returned. The other entries of the data frame are \code{time},
+the time of the observation, and \code{size}, the number of bytes
+of data in that data segment.}
 
 \item{encoding}{ignored.}
 
