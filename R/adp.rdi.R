@@ -25,20 +25,30 @@
 # Teledyne RD Instruments, 2015.
 # ("SV_ODF_May15.pdf")
 
+
 #' Trim an RDI adp File
 #'
-#' Create an RDI adp file by copying the first `n` data chunks (starting with
-#' byte 0x7f 0x7f) of another such file. This can be useful in supplying small
-#' sample files for bug reports.
+#' Create an RDI adp file by copying either the first `n` data chunks or the
+#' chunks listed in `indices` from a given RDI file to a new RDI file.
+#' This can be useful in supplying small sample files for bug reports,
+#' or to speed up further processing of large datasets of which only
+#' a small portion is of interest. Note that the order of the parameters
+#' was changed in 2025-05-26, at which time the `indices` parameter
+#' was also added.
 #'
 #' @param infile name of an RDI file.
-#'
-#' @param n integer indicating the number of data chunks to keep. The default is
-#' to keep 100 chunks, a common choice for sample files.
 #'
 #' @param outfile optional name of the new RDI file to be created. If this is not
 #' supplied, a default is used, by adding `_trimmed` to the base filename, e.g.
 #' if `infile` is `"a.000"` then `outfile` will be `a_trimmed.000`.
+#'
+#' @param n integer indicating the number of data chunks to keep
+#' at the start of the file. If this is supplied, then `indices`
+#' cannot also be supplied.
+#'
+#' @param indices integer vector indicating the indices of the data
+#' chunks that are to be saved to `outfile`. If this is supplied,
+#' then `n` cannot also be supplied.
 #'
 #' @param debug an integer value indicating the level of debugging. If
 #' this is 0, then [read.adp.rdi()] proceeds quietly, except for
@@ -53,39 +63,57 @@
 #' provided or constructed.
 #'
 #' @family things related to adp data
+#'
 #' @family functions that trim data files
-#' @section Sample of Usage:
-#' \preformatted{
-#' # Can only be run by the developer, since it uses a private file.
-#' file  <- "~/data/archive/sleiwex/2008/moorings/m09/adp/rdi_2615/raw/adp_rdi_2615.000"
-#' if (file.exists(file)) {
-#'     adpRdiFileTrim(file, 9L, "test.000")
-#' }
-#' }
+#'
 #' @author Dan Kelley
-adpRdiFileTrim <- function(infile, n = 100L, outfile, debug = getOption("oceDebug")) {
-    oceDebug(debug, "adpRdiFileTrim(infile=\"", infile, "\", n=", n, ", debug=", debug, ") START\n", unindent = 1)
+adpRdiFileTrim <- function(infile, outfile, n, indices, debug = getOption("oceDebug")) {
+    oceDebug(debug, "adpRdiFileTrim(infile=\"", infile, "\"\n", ", outfile=\"", outfile, "\", ...) START \n", sep = "", unindent = 1)
     debug <- ifelse(debug < 1, 0L, ifelse(debug < 2, 1, 2))
     if (missing(infile)) {
         stop("must provide 'infile'")
     }
-    n <- as.integer(n)
-    if (n < 1L) {
-        stop("'n' must be a positive number, but it is ", n)
+    if ("adp/rdi" != oceMagic(infile)) {
+        stop("the first parameter is not the name of an RDI adp file")
     }
+    if (missing(n) && missing(indices)) {
+        stop("supply either 'n' or 'chunks'")
+    }
+    if (!missing(n) && !missing(indices)) {
+        stop("do not supply both 'n' and 'indices'")
+    }
+    if (missing(indices)) {
+        n <- as.integer(n)
+        if (n < 1L) {
+            stop("n must be 1 or larger")
+        }
+        indices <- seq(1L, n)
+    }
+    oceDebug(debug, vectorShow(indices))
     if (missing(outfile)) {
         outfile <- gsub("^(.*)\\.([^.]*)$", "\\1_trimmed.\\2", infile)
         oceDebug(debug, "created outfile value \"", outfile, "\"")
     }
-    r <- read.oce(infile, which = "??")
-    nmax <- length(r$start)
-    if (n >= nmax) {
-        stop("maximum allowed 'n' for this file is ", nmax)
+    toc <- read.adp.rdi(infile, which = "??", debug = debug - 1)
+    ntoc <- nrow(toc)
+    if (any(indices > ntoc)) {
+        stop("file has only ", ntoc, " data chunks, so cannot acquire all requested chunks")
     }
-    # add 1 to profile count; go back 1 char before that
-    last <- r$start[n + 1L] - 1L
-    buf <- readBin(infile, "raw", n = last)
-    writeBin(buf, outfile, useBytes = TRUE)
+    # build up pointer list, chunk by chunk. Most likely this could be done
+    # faster, but I think this function will get used only rarely so I'm
+    # coding this simply for now.
+    pointer <- NULL
+    for (i in indices) {
+        pointer <- c(pointer, seq(toc$index[i], toc$size[i]))
+    }
+    buf <- readBin(infile, raw(), n = file.info(infile)$size)
+    nbuf <- length(buf)
+    pointerMax <- max(pointer)
+    if (pointerMax > nbuf) {
+        stop("pointermax (", pointerMax, ") exceeds file length (", nbuf, ")")
+    }
+    bufOut <- buf[pointer]
+    writeBin(bufOut, outfile, useBytes = TRUE)
     oceDebug(debug, "END adpRdiFileTrim()\n", unindent = 1)
     outfile
 }

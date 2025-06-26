@@ -4,17 +4,22 @@
 \alias{adpRdiFileTrim}
 \title{Trim an RDI adp File}
 \usage{
-adpRdiFileTrim(infile, n = 100L, outfile, debug = getOption("oceDebug"))
+adpRdiFileTrim(infile, outfile, n, indices, debug = getOption("oceDebug"))
 }
 \arguments{
 \item{infile}{name of an RDI file.}
 
-\item{n}{integer indicating the number of data chunks to keep. The default is
-to keep 100 chunks, a common choice for sample files.}
-
 \item{outfile}{optional name of the new RDI file to be created. If this is not
 supplied, a default is used, by adding \verb{_trimmed} to the base filename, e.g.
 if \code{infile} is \code{"a.000"} then \code{outfile} will be \code{a_trimmed.000}.}
+
+\item{n}{integer indicating the number of data chunks to keep
+at the start of the file. If this is supplied, then \code{indices}
+cannot also be supplied.}
+
+\item{indices}{integer vector indicating the indices of the data
+chunks that are to be saved to \code{outfile}. If this is supplied,
+then \code{n} cannot also be supplied.}
 
 \item{debug}{an integer value indicating the level of debugging. If
 this is 0, then \code{\link[=read.adp.rdi]{read.adp.rdi()}} proceeds quietly, except for
@@ -30,21 +35,14 @@ mainly for use by the developers.}
 provided or constructed.
 }
 \description{
-Create an RDI adp file by copying the first \code{n} data chunks (starting with
-byte 0x7f 0x7f) of another such file. This can be useful in supplying small
-sample files for bug reports.
+Create an RDI adp file by copying either the first \code{n} data chunks or the
+chunks listed in \code{indices} from a given RDI file to a new RDI file.
+This can be useful in supplying small sample files for bug reports,
+or to speed up further processing of large datasets of which only
+a small portion is of interest. Note that the order of the parameters
+was changed in 2025-05-26, at which time the \code{indices} parameter
+was also added.
 }
-\section{Sample of Usage}{
-
-\preformatted{
-# Can only be run by the developer, since it uses a private file.
-file  <- "~/data/archive/sleiwex/2008/moorings/m09/adp/rdi_2615/raw/adp_rdi_2615.000"
-if (file.exists(file)) {
-    adpRdiFileTrim(file, 9L, "test.000")
-}
-}
-}
-
 \seealso{
 Other things related to adp data: 
 \code{\link{[[,adp-method}},
