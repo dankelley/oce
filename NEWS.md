@@ -7,6 +7,7 @@
 * Add `read.xbt.noaa2()` to handle UBT format (issue #2289).
 * Add `rename()` to rename variables, flags and units (issue #2238).
 * Add `Tidal Analysis` vignette (issue #2243).
+* Change `adpRdiFileTrim()` to reorder parameters, and to accept `indices` parameter (issue #2330)
 * Change `amsr[[` to handle `"metadata"` parameter (issue #2229).
 * Change `argo2ctd()` (issue #2270).
 * Change `as.unit()` to handle more units (issue #2240).
@@ -52,7 +53,6 @@
 * Change `subset,amsr-method()` to handle `"pass"` parameter.
 * Change `subset,ctd-method()` to handle items of unexpected length (issue #2250).
 * Change `tidem()` to stop if there are any non-finite time values (issue #2269).
-* Change `adpRdiFileTrim()` to reorder parameters, and to accept `indices` parameter (issue #2330)
 * Change `vectorShow()` to obey "digits" parameter for list arguments (issue #2313).
 
 # oce 1.8.3 (ON CRAN)
