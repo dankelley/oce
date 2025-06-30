@@ -1016,3 +1016,481 @@ palette2breakscolor <- function(name, breaksPerLevel = 1, topoRegion = c("water"
     col <- head(col, -1)
     list(breaks = breaks, col = col, f = d$f, b = d$b, n = d$n)
 }
+
+#' Create Two-Color Palette
+#'
+#' Create colors ranging between two specified limits, with white
+#' in the middle.
+#'
+#' @aliases oceColorsTwo oce.colorsTwo
+#'
+#' @param n number of colors to generate.
+#'
+#' @param low,high numerical values (in range 0 to 1) specifying the hue
+#' for the low and high ends of the color scale.
+#'
+#' @param smax numerical value (in range 0 to 1) for the color saturation.
+#'
+#' @param alpha numerical value (in ragne 0 to 1) for the alpha (transparency)
+#' of the colors.
+#'
+#' @examples
+#' library(oce)
+#' imagep(volcano - mean(range(volcano)),
+#'     col = oceColorsTwo(128),
+#'     zlim = "symmetric", zlab = "oceColorsTwo"
+#' )
+#' @family things related to colors
+oceColorsTwo <- function(n, low = 2 / 3, high = 0, smax = 1, alpha = 1) {
+    # code borrows heavily from cm.color()
+    if ((n <- as.integer(n[1])) > 0) {
+        even.n <- n %% 2 == 0
+        k <- n %/% 2
+        l1 <- k + 1 - even.n
+        l2 <- n - k + even.n
+        c(
+            if (l1 > 0) {
+                hsv(
+                    h = low,
+                    s = seq.int(smax, ifelse(even.n, 0.5 / k, 0), length.out = l1),
+                    v = 1,
+                    alpha = alpha
+                )
+            },
+            if (l2 > 1) {
+                hsv(
+                    h = high,
+                    s = seq.int(0, smax, length.out = l2)[-1],
+                    v = 1,
+                    alpha = alpha
+                )
+            }
+        )
+    } else {
+        character(0)
+    }
+}
+oce.colorsTwo <- oceColorsTwo
+
+#' Create Colors in a GEBCO-like Scheme
+#'
+#' The colours were determined by examination of paper
+#' charts printed during the GEBCO Fifth Edition era.
+#' The hues range from dark blue to light blue, then
+#' from light brown to dark brown.  If used to show
+#' topography in scheme centred on z=0, this means that
+#' near-coastal regions are light in tone, with darker
+#' colours representing both mountains and the deep sea.
+#'
+#' @aliases oceColorsGebco oce.colorsGebco
+#'
+#' @param n Number of colors to return
+#'
+#' @param region String indicating application region,
+#' one of `"water"`, `"land"`, or `"both"`.
+#'
+#' @param type String indicating the purpose, one of `"fill"` or `"line"`.
+#'
+#' @param debug a flag that turns on debugging.
+#'
+#' @examples
+#' library(oce)
+#' imagep(volcano, col = oceColorsGebco(128, region = "both"))
+#'
+#' @family things related to colors
+oceColorsGebco <- function(n = 9, region = c("water", "land", "both"), type = c("fill", "line"), debug = getOption("oceDebug")) {
+    oceDebug(debug, "oceColorsGebco(n=", n, ", region=\"", region, "\", type=\"", type, "\", debug=", debug, ") START\n", sep = "", unindent = 1)
+    region <- match.arg(region)
+    type <- match.arg(type)
+    land <- c(
+        "#FEF1E0", "#FDE3C1", "#FBC784", "#F1C37A", "#E6B670", "#DCA865",
+        "#D19A5C", "#C79652", "#BD9248", "#B38E3E"
+    )
+    water <- c(
+        "#0F7CAB", "#2292B5", "#38A7BF", "#4FBBC9", "#68CDD4", "#83DEDE",
+        "#A0E8E4", "#BFF2EC", "#E1FCF7", "#F0FDFB"
+    )
+    if (type == "fill") {
+        # generate land colors by e.g. rgb(t(col2rgb(land[5])-1*c(10, 4, 10))/255)
+        # until 2020-12-14 land <- c("#FBC784", "#F1C37A", "#E6B670", "#DCA865", "#D19A5C",
+        # until 2020-12-14           "#C79652", "#BD9248", "#B38E3E", "#A98A34")
+        # until 2020-12-14 water <- rev(c("#E1FCF7", "#BFF2EC", "#A0E8E4", "#83DEDE", "#68CDD4",
+        # until 2020-12-14                "#4FBBC9", "#38A7BF", "#2292B5", "#0F7CAB"))
+        # land <- c("#FEF1E0", "#FDE3C1", "#FBC784", "#F1C37A", "#E6B670", "#DCA865",
+        #          "#D19A5C", "#C79652", "#BD9248", "#B38E3E")
+        # water <- c("#0F7CAB", "#2292B5", "#38A7BF", "#4FBBC9", "#68CDD4", "#83DEDE",
+        #           "#A0E8E4", "#BFF2EC", "#E1FCF7", "#F0FDFB")
+        land <- c(
+            "#FFF0DF", "#FFE9D0", "#FFE2C1", "#FDD6A6", "#FBC98A", "#F7C580", "#F2C37B", "#EDBE76", "#E8B872", "#E3B26D",
+            "#DEAB67", "#D9A563", "#D49E5E", "#CF995A", "#CA9755", "#C59550", "#C1934C", "#BC9147", "#B78F42", "#B38E3E"
+        )
+        water <- c(
+            "#0F7CAB", "#1886AF", "#2090B4", "#2B9AB9", "#35A4BD", "#40AEC2", "#4BB7C7", "#56C0CC", "#62C9D1", "#6FD1D6",
+            "#7BD9DB", "#89E0DF", "#96E4E2", "#A4E9E5", "#B3EEE9", "#C2F3ED", "#D2F7F2", "#E2FCF7", "#EBFDF9", "#F5FEFC"
+        )
+    } else {
+        oceDebug(debug, "type=\"line\"\n")
+        land <- c(
+            "#FBC784", "#F1C37A", "#E6B670", "#DCA865", "#D19A5C",
+            "#C79652", "#BD9248", "#B38E3E", "#A98A34"
+        )
+        water <- rev(c(
+            "#A4FCE3", "#72EFE9", "#4FE3ED", "#47DCF2", "#46D7F6",
+            "#3FC0DF", "#3FC0DF", "#3BB7D3", "#36A5C3"
+        ))
+    }
+    if (region == "water") {
+        rgb.list <- col2rgb(water) / 255
+        l <- length(water)
+        r <- approx(1:l, rgb.list[1, 1:l], xout = seq(1, l, length.out = n))$y
+        g <- approx(1:l, rgb.list[2, 1:l], xout = seq(1, l, length.out = n))$y
+        b <- approx(1:l, rgb.list[3, 1:l], xout = seq(1, l, length.out = n))$y
+        res <- rgb(r, g, b)
+    } else if (region == "land") {
+        rgb.list <- col2rgb(land) / 255
+        l <- length(land)
+        r <- approx(1:l, rgb.list[1, 1:l], xout = seq(1, l, length.out = n))$y
+        g <- approx(1:l, rgb.list[2, 1:l], xout = seq(1, l, length.out = n))$y
+        b <- approx(1:l, rgb.list[3, 1:l], xout = seq(1, l, length.out = n))$y
+        res <- rgb(r, g, b)
+    } else {
+        # both
+        # See https://github.com/dankelley/oce/discussions/1756#discussioncomment-204754 for
+        # a discussion of adding some white 'ink' between the water and the land.
+        # ? rgb.list <- col2rgb(c(water, "#FFFFFF", "#FFFFFF", land)) / 255
+        # ? rgb.list <- col2rgb(c(water, "#FFFFFF", land)) / 255
+        # 20201214> rgb.list <- col2rgb(c(water, "#FFFFFF", land)) / 255
+        # 20201214> l <- ncol(rgb.list)
+        # 20201214> r <- approx(1:l, rgb.list[1, 1:l], xout=seq(1, l, length.out=n))$y
+        # 20201214> g <- approx(1:l, rgb.list[2, 1:l], xout=seq(1, l, length.out=n))$y
+        # 20201214> b <- approx(1:l, rgb.list[3, 1:l], xout=seq(1, l, length.out=n))$y
+        # I find it very difficult to see a difference between 'rgb' and 'Lab' spaces, and between
+        # 'linear' and 'spline' interpolations.
+        cr <- colorRamp(c(water, "#FFFFFF", land), bias = 1, space = "rgb", interpolate = "spline")(seq(0, 1, length.out = n))
+        res <- rgb(cr, maxColorValue = 255)
+    }
+    oceDebug(debug, "END oceColorsGebco()", sep = "", unindent = 1)
+    res
+}
+oce.colorsGebco <- oceColorsGebco
+
+#' Create Color Functions
+#'
+#' This function generates other functions that are used to specify colors.
+#' It is used within oce to create [oceColorsTemperature()]
+#' and its many cousins. Users may also find it helpful, for creating
+#' custom color schemes (see \dQuote{Examples}).
+#'
+#' @param spec Specification of the color scheme. This may be a
+#' character string, in which case it must be the name of an item stored
+#' in `data(ocecolors)`, or either a 3-column data frame or
+#' matrix, in which case the columns specify red, green and blue values
+#' (in range from 0 to 1).
+#'
+#' @section Sample of Usage:
+#' \preformatted{
+#' # Update oxygen color scheme to latest matplotlib value.
+#' library(oce)
+#' oxy <- "https://raw.githubusercontent.com/matplotlib/cmocean/master/cmocean/rgb/oxy-rgb.txt"
+#' oxyrgb <- read.table(oxy, header=FALSE)
+#' oceColorsOxygenUpdated <- oceColorsClosure(oxyrgb)
+#' par(mfrow=c(1, 2))
+#' m <- matrix(1:256)
+#' imagep(m, col=oceColorsOxygen, zlab="oxygen")
+#' imagep(m, col=oceColorsOxygenUpdated, zlab="oxygenUpdated")
+#' }
+#' @family things related to colors
+oceColorsClosure <- function(spec) {
+    function(n) {
+        if (is.character(spec)) {
+            data("ocecolors", package = "oce", envir = environment())
+            col <- get("ocecolors")[[spec]]
+        } else if (is.data.frame(spec) || is.matrix(spec)) {
+            col <- rgb(spec[, 1], spec[, 2], spec[, 3])
+        } else {
+            stop("oceColorsClosure(): first arg must be character, data frame, or 3-column matrix", call. = FALSE)
+        }
+        if (missing(n) || n <= 0) colorRampPalette(col) else colorRampPalette(col)(n)
+    }
+}
+
+#' Create Colors Similar to the Google Turbo Scheme
+#'
+#' This uses the coefficients published (with Apache license) by google,
+#' as described by Mikhailo (2019).
+#'
+#' @aliases oce.colorsTurbo oceColorsTurbo
+#'
+#' @param n number of colors to create.
+#'
+#' @references
+#' Mikhailo, Anton.
+#' \dQuote{Turbo, An Improved Rainbow Colormap for Visualization.}
+#' Google AI (blog), August 20, 2019.
+#' `https://ai.googleblog.com/2019/08/turbo-improved-rainbow-colormap-for.html`
+#'
+#' @author Dan Kelley
+#'
+#' @examples
+#' library(oce)
+#' imagep(volcano,
+#'     col = oceColorsTurbo(128),
+#'     zlab = "oceColorsTurbo"
+#' )
+#'
+#' @template colourBlindnessTemplate
+#' @family things related to colors
+oceColorsTurbo <- oce.colorsTurbo <- oceColorsClosure("turbo")
+
+
+#' Create Colors Similar to the Matlab Viridis Scheme
+#'
+#' This is patterned on a \proglang{matlab}/\proglang{python} scheme that blends
+#' from yellow to blue in a way that is designed to reproduce well
+#' in black-and-white, and to be interpretable by those with
+#' certain forms of color blindness.  See the references for
+#' notes about issues of colour blindness in computer graphics.
+#' An alternative
+#' to [oceColorsViridis] is provided in the \CRANpkg{viridis} package, as illustrated
+#' in Example 2.
+#'
+#' @aliases oce.colorsViridis oceColorsViridis
+#'
+#' @param n number of colors to create.
+#'
+#' @template colourBlindnessTemplate
+#'
+#' @author Dan Kelley
+#'
+#' @examples
+#' library(oce)
+#' # Example 1: oceColorsViridis
+#' imagep(volcano,
+#'     col = oceColorsViridis(128),
+#'     zlab = "oceColorsViridis"
+#' )
+#'
+#' @family things related to colors
+#'
+#' @template colourBlindnessTemplate
+oceColorsViridis <- oce.colorsViridis <- oceColorsClosure("viridis")
+
+#' @templateVar colorItem CDOM
+#' @templateVar colorItemUC CDOM
+#' @template cmcolorTemplate
+#'
+#' @template colourBlindnessTemplate
+oceColorsCDOM <- oce.colorsCDOM <- oceColorsClosure("cdom")
+
+#' @templateVar colorItem chlorophyll
+#' @templateVar colorItemUC Chlorophyll
+#' @template cmcolorTemplate
+#'
+#' @template colourBlindnessTemplate
+oceColorsChlorophyll <- oce.colorsChlorophyll <- oceColorsClosure("chlorophyll")
+
+#' @templateVar colorItem density
+#' @templateVar colorItemUC Density
+#' @template cmcolorTemplate
+#'
+#' @template colourBlindnessTemplate
+oceColorsDensity <- oce.colorsDensity <- oceColorsClosure("density")
+
+#' @templateVar colorItem freesurface
+#' @templateVar colorItemUC Freesurface
+#' @template cmcolorTemplate
+#'
+#' @template colourBlindnessTemplate
+oceColorsFreesurface <- oce.colorsFreesurface <- oceColorsClosure("freesurface")
+
+#' @templateVar colorItem oxygen
+#' @templateVar colorItemUC Oxygen
+#' @template cmcolorTemplate
+#'
+#' @template colourBlindnessTemplate
+oceColorsOxygen <- oce.colorsOxygen <- oceColorsClosure("oxygen")
+
+#' @templateVar colorItem PAR
+#' @templateVar colorItemUC PAR
+#' @template cmcolorTemplate
+#'
+#' @template colourBlindnessTemplate
+oceColorsPAR <- oce.colorsPAR <- oceColorsClosure("par")
+
+#' @templateVar colorItem phase
+#' @templateVar colorItemUC Phase
+#' @template cmcolorTemplate
+#'
+#' @template colourBlindnessTemplate
+oceColorsPhase <- oce.colorsPhase <- oceColorsClosure("phase")
+
+#' @templateVar colorItem salinity
+#' @templateVar colorItemUC Salinity
+#' @template cmcolorTemplate
+#'
+#' @template colourBlindnessTemplate
+oceColorsSalinity <- oce.colorsSalinity <- oceColorsClosure("salinity")
+
+#' @templateVar colorItem temperature
+#' @templateVar colorItemUC Temperature
+#' @template cmcolorTemplate
+#'
+#' @template colourBlindnessTemplate
+oceColorsTemperature <- oce.colorsTemperature <- oceColorsClosure("temperature")
+
+#' @templateVar colorItem turbidity
+#' @templateVar colorItemUC Turbidity
+#' @template cmcolorTemplate
+#'
+#' @template colourBlindnessTemplate
+oceColorsTurbidity <- oce.colorsTurbidity <- oceColorsClosure("turbidity")
+
+#' @templateVar colorItem velocity
+#' @templateVar colorItemUC Velocity
+#' @template cmcolorTemplate
+#'
+#' @template colourBlindnessTemplate
+oceColorsVelocity <- oce.colorsVelocity <- oceColorsClosure("velocity")
+
+#' @templateVar colorItem vorticity
+#' @templateVar colorItemUC Vorticity
+#' @template cmcolorTemplate
+#'
+#' @template colourBlindnessTemplate
+oceColorsVorticity <- oce.colorsVorticity <- oceColorsClosure("vorticity")
+
+
+#' Create Colors Similar to the Matlab Jet Scheme
+#' @aliases oceColorsJet oce.colorsJet oceColors9A oce.colors9A
+#' @param n number of colors
+#' @examples
+#' library(oce)
+#' imagep(volcano, col = oceColorsJet, zlab = "oceColorsJet")
+#'
+#' @template colourBlindnessTemplate
+#' @family things related to colors
+oceColorsJet <- function(n) {
+    if (missing(n) || n <= 0) {
+        colorRampPalette(c(
+            "#00007F", "blue", "#007FFF", "cyan",
+            "#7FFF7F", "yellow", "#FF7F00", "red", "#7F0000"
+        ))
+    } else {
+        colorRampPalette(c(
+            "#00007F", "blue", "#007FFF", "cyan",
+            "#7FFF7F", "yellow", "#FF7F00", "red", "#7F0000"
+        ))(n)
+    }
+}
+oce.colors9A <- oceColors9A <- oce.colorsJet <- oceColorsJet
+
+#' Create Colors in a Red-Yellow-Blue Color Scheme
+#'
+#' The results are similar to those of [oceColorsJet()], but
+#' with white hues in the centre, rather than green ones. The scheme
+#' may be useful in displaying signed quantities, and thus is somewhat
+#' analogous to [oceColorsTwo()], except that some viewers
+#' may be able to distinguish more colors with `oceColors9B`.
+#'
+#' @aliases oceColors9B oce.colors9B
+#'
+#' @param n number of colors
+#'
+#' @examples
+#' library(oce)
+#' imagep(volcano,
+#'     col = oceColors9B(128),
+#'     zlab = "oceColors9B"
+#' )
+#'
+#' @template colourBlindnessTemplate
+#' @family things related to colors
+oceColors9B <- function(n) {
+    if (missing(n) || n <= 0) {
+        colorRampPalette(c(
+            "#00007F", "blue", "#007FFF", "#22e4e7",
+            "white", "#ffe45e", "#FF7F00", "red", "#7F0000"
+        ))
+    } else {
+        colorRampPalette(c(
+            "#00007F", "blue", "#007FFF", "#22e4e7",
+            "white", "#ffe45e", "#FF7F00", "red", "#7F0000"
+        ))(n)
+    }
+}
+oce.colors9B <- oceColors9B
+
+#' Create a Vector of Colors
+#'
+#' The available schemes are:
+#' * `which=1` for a red-white-blue scheme.
+#' * `which=2` for a red-yellow-blue scheme.
+#' * `which=9.01`, `which="9A"` or `which="jet"` for [`oceColorsJet`]`(n)`.
+#' * `which=9.02` or `which="9B"` for [`oceColors9B`]`(n)`.
+#'
+#' @param n number of colors to create
+#'
+#' @param which integer or character string indicating the palette
+#' to use; see \dQuote{Details}.
+#'
+#' @aliases oce.colorsPalette oceColorsPalette
+#'
+#' @template colourBlindnessTemplate
+#'
+#' @family things related to colors
+oceColorsPalette <- function(n, which = 1) {
+    if ((n <- as.integer(n[1])) > 0) {
+        if (which == 1) {
+            # Started with http://www.personal.psu.edu/cab38/ColorBrewer/ColorBrewer.html
+            # RdBu 11 divisions
+            # and then smoothed the components with smooth.spline(...,df=6)
+            rgb <- matrix(c(
+                103, 000, 026,
+                178, 024, 046,
+                214, 096, 072,
+                244, 165, 136,
+                253, 219, 195,
+                247, 247, 247,
+                209, 229, 238,
+                146, 197, 226,
+                067, 147, 184,
+                033, 102, 179,
+                005, 048,  97
+            ), ncol = 3, byrow = TRUE) / 255
+            m <- dim(rgb)[1]
+            i <- 1:m
+            xout <- seq(1, m, length.out = n)
+            rev(rgb(
+                red = approx(i, rgb[, 1], xout, rule = 1)$y,
+                green = approx(i, rgb[, 2], xout, rule = 1)$y,
+                blue = approx(i, rgb[, 3], xout, rule = 1)$y,
+                alpha = 1
+            ))
+        } else if (which == 2) {
+            # http://www.personal.psu.edu/cab38/ColorBrewer/ColorBrewer.html
+            m <- 11 # number of classes
+            r <- c(165, 215, 244, 253, 254, 255, 224, 171, 116, 69, 49) / 255
+            g <- c(0, 48, 109, 174, 224, 255, 243, 217, 173, 117, 54) / 255
+            b <- c(38, 39, 67, 97, 144, 191, 248, 233, 209, 180, 149) / 255
+            i <- 1:m
+            xout <- seq(1, m, length.out = n)
+            rev(rgb(
+                approx(i, r, xout, rule = 1)$y,
+                approx(i, g, xout, rule = 1)$y,
+                approx(i, b, xout, rule = 1)$y
+            ))
+        } else if (which == 9.01 || which == "9A" || which == "jet") {
+            # jet, also known as 9A or 9.01
+            oceColorsJet(n)
+        } else if (which == 9.02 || which == "9B") {
+            oceColors9B(n)
+        } else {
+            stop("unknown which")
+        }
+    } else {
+        character(0)
+    }
+}
+oce.colorsPalette <- oceColorsPalette
+
+
