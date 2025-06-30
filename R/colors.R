@@ -1493,4 +1493,65 @@ oceColorsPalette <- function(n, which = 1) {
 }
 oce.colorsPalette <- oceColorsPalette
 
-
+#' Create Colors in the Cube Helix Style
+#'
+#' This is a colour scheme that renders well in black and white,
+#' that has colours that are reasonably distinct for many
+#' viewers, and that may be good for persons with colour
+#' deficiencies.  For more on such matters, the underlying
+#' theory, and the meanings of the parameter values, please
+#' see Green (2011). That R code for the present function
+#' is a rewriting of Fortran code provided in an appendix
+#' of that paper.
+#'
+#' @param n number of colors to create, with default 256.
+#'
+#' @param start numeric value indicating the starting colour.
+#' THe default, 0.5, corresponds to purpose, as in Green (2011).
+#'
+#' @param rotations numeric value for number of rotations of the
+#' helix, with default -1.5 as in Green (2011).
+#'
+#' @param hue numeric value with default 1.2, as in Green (2011).
+#'
+#' @param gamma numeric value, with default 1.
+#'
+#' @aliases oce.colorsCubeHelix oceColorsCubeHelix
+#'
+#' @examples
+#' library(oce)
+#' imagep(volcano, col = oceColorsCubeHelix)
+#'
+#' @references
+#'
+#' 1. Green, D.A. “A Colour Scheme for the Display of Astronomical
+#' Intensity Images.” Bulletin of the Astronomical Society of India,
+#' 39 (2011): 289–95.
+#'
+#' @family things related to colors
+#'
+#' @author Dan Kelley based on Fortran code by D.A. Green (2011).
+oceColorsCubeHelix <- function(n = 256, start = 0.5, rotations = -1.5, hue = 1.2, gamma = 1) {
+    if (n < 1) {
+        stop("n must be >1, but it is ", n)
+    }
+    pin <- function(x) {
+        ifelse(x < 0, 0, ifelse(x > 1, 1, x))
+    }
+    red <- rep(0.0, n)
+    green <- rep(0.0, n)
+    blue <- rep(0.0, n)
+    for (i in seq_len(n)) {
+        fract <- (i - 1.0) / (n - 1.0)
+        angle <- 2. * pi * (start / 3 + 1 + rotations * fract)
+        C <- cos(angle)
+        S <- sin(angle)
+        fract <- fract^gamma
+        amp <- hue * fract * (1.0 - fract) / 2.0
+        red[i] <- fract + amp * (-0.14861 * C + 1.78277 * S)
+        green[i] <- fract + amp * (-0.29227 * C - 0.90649 * S)
+        blue[i] <- fract + amp * (+1.97294 * C)
+    }
+    rgb(pin(red), pin(green), pin(blue))
+}
+oce.colorsCubeHelix <- oceColorsCubeHelix
