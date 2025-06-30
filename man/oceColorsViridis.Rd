@@ -76,6 +76,7 @@ Other things related to colors:
 \code{\link{oceColorsCDOM}()},
 \code{\link{oceColorsChlorophyll}()},
 \code{\link{oceColorsClosure}()},
+\code{\link{oceColorsCubeHelix}()},
 \code{\link{oceColorsDensity}()},
 \code{\link{oceColorsFreesurface}()},
 \code{\link{oceColorsGebco}()},
