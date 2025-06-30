@@ -221,6 +221,7 @@ export(
     oce.colors9B, oceColors9B,
     oce.colorsCDOM, oceColorsCDOM,
     oce.colorsChlorophyll, oceColorsChlorophyll,
+    oce.colorsCubeHelix, oceColorsCubeHelix,
     oce.colorsDensity, oceColorsDensity,
     oce.colorsFreesurface, oceColorsFreesurface,
     oce.colorsGebco, oceColorsGebco,

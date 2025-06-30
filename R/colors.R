@@ -1520,7 +1520,10 @@ oce.colorsPalette <- oceColorsPalette
 #'
 #' @examples
 #' library(oce)
+#' # Example 1: normal (dark for low values)
 #' imagep(volcano, col = oceColorsCubeHelix)
+#' # Example 2: reversed (dark for high values)
+#' imagep(volcano, col = \(n) rev(oceColorsCubeHelix(n)))
 #'
 #' @references
 #'
