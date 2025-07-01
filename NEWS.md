@@ -45,6 +45,7 @@
   * handle time-related header elements better (issues #2280 and #2281).
   * handle "new" format CNV files, at least provisionally (issue #2328).
 * Change `read.ctd.aml()` to handle "type 3" format (issue #2247).
+* Change `read.coastline()` to handle `file` in "shapefile" format (issue #1850).
 * Change `read.met()` to handle flags better (issue #2298).
 * Change `read.netcdf()` to
   * document flag handling better (issue #2236),

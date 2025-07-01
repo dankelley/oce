@@ -989,7 +989,9 @@ download.coastline <- function(resolution, item = "coastline", destdir = ".", de
 #' -16.244793 28.563330 } BUG: the 'arc/info ungenerate' format is not yet
 #' understood.
 #'
-#' @param file name of file containing coastline data.
+#' @param file name of file containing coastline data.  If this is a shapefile,
+#' then the other parameters (except `debug`) are ignored, and the results
+#' of a call to [read.coastline.shapefile()] are returned.
 #'
 #' @param type type of file, one of `"R"`, `"S"`, `"mapgen"`,
 #' `"shapefile"` or `"openstreetmap"`.
@@ -1014,12 +1016,20 @@ read.coastline <- function(
     if (missing(file)) {
         stop("must supply 'file'")
     }
+    type <- match.arg(type)
+    oceDebug(debug, "read.coastline(file=\"", file, "\", type=\"", type, "\", ...) START\n", sep = "", unindent = 1)
     if (is.character(file)) {
         if (!file.exists(file)) {
             stop("cannot find file \"", file, "\"")
         }
         if (0L == file.info(file)$size) {
             stop("empty file \"", file, "\"")
+        }
+        # if it's a shapefile, we don't need other parameters
+        if (identical(oceMagic(file), "shapefile")) {
+            res <- read.coastline.shapefile(file, debug = debug - 1L)
+            oceDebug(debug, "read.coastline() END\n", sep = "", unindent = 1)
+            return(res)
         }
     }
     type <- match.arg(type)
