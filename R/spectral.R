@@ -145,7 +145,6 @@ pwelch <- function(
             pi <- 4.0 * atan2(1.0, 1.0)
             c <- 0.54 - 0.46 * cos(2 * pi * (0:n) / n)
         }
-        c
     }
     # hanning.local <- function(n) # avoid having to pull in the signal library
     # {
@@ -192,6 +191,7 @@ pwelch <- function(
                 nfft <- nx
             }
             window <- hamming.local(nfft)
+            oceDebug(debug, "spec and nfft both given; using hamming window of length ", nfft, "\n")
         } else {
             # FIXME: should we use 'overlap' here?
             windowLength <- min(
@@ -203,6 +203,7 @@ pwelch <- function(
                 }
             )
             window <- hamming.local(windowLength)
+            oceDebug(debug, "spec given, but nfft not given; using hamming window of length ", windowLength, "\n")
         }
         # --END
     } else {
@@ -216,6 +217,7 @@ pwelch <- function(
                     stop("window must be a positive integer, if length(window)==1")
                 }
                 window <- hamming.local(floor(nx / window))
+                oceDebug(debug, "window given, but spec not given,; using hamming window of length ", nx / window, "\n")
             } else if (!is.vector(window)) {
                 stop("'window' must be a numeric vector")
             }
@@ -228,6 +230,7 @@ pwelch <- function(
                     nfft <- nx
                 }
                 window <- hamming.local(nfft)
+                oceDebug(debug, "window given, but spec not given,; using hamming window of length ", nx / window, "\n")
             } else {
                 # FIXME: should we use 'overlap' here?
                 windowLength <- min(
@@ -239,6 +242,7 @@ pwelch <- function(
                     }
                 )
                 window <- hamming.local(windowLength)
+                oceDebug(debug, "window not given; using hamming window of length ", nx / windowLength, "\n")
             }
         }
     }
@@ -248,7 +252,7 @@ pwelch <- function(
         noverlap <- floor(window.len / 2)
     }
     step <- floor(window.len - noverlap + 1)
-    oceDebug(debug, "using window.len=", window.len, "  step=", step, "  noverlap=", noverlap, "  nx=", nx, "\n", sep = "")
+    oceDebug(debug, "using window.len=", window.len, "  step=", step, "  noverlap=", noverlap, "  nx=", nx, ", normalization=", normalization, "\n", sep = "")
     if (step < 1) {
         stop("overlap cannot exceed segment length")
     }
@@ -260,7 +264,7 @@ pwelch <- function(
     if (gave.spec) {
         end <- nfft
         while (TRUE) {
-            oceDebug(debug, "  calculating subspectrum using user-supplied 'spec', at indices ", start, "to", end, "\n")
+            oceDebug(debug, "  calc. subspectrum w/ user's spec, at indices ", start, ":", end, "\n")
             xx <- ts(x[start:end], frequency = fs)
             s <- spec(xx, ...) # note the ...
             if (nrow == 0) {
@@ -285,7 +289,7 @@ pwelch <- function(
         args$demean <- demean
         args$detrend <- detrend
         while (TRUE) {
-            oceDebug(debug, "  calculating subspectrum using spectrum(), at indices ", start, "to", end, "\n")
+            oceDebug(debug, "  calc. subspectrum w/ spectrum(), at indices ", start, ":", end, "\n")
             xx <- ts(window * x[start:end], frequency = fs)
             args$x <- xx # before issue 242, wrapped RHS in as.vector()
             s <- do.call(spectrum, args = args)
@@ -303,7 +307,7 @@ pwelch <- function(
     }
     nrow <- max(1, nrow)
     psd <- matrix(psd, nrow = nrow, byrow = TRUE) / normalization
-    oceDebug(debug, "resultant spectrum is averaged across a matrix of dimension", paste(dim(psd), collapse = "x"), "\n")
+    oceDebug(debug, "spectrum averaged across ", paste(dim(psd), collapse = "x"), " matrix\n")
     res <- list(
         freq = freq, spec = apply(psd, 2, mean),
         method = "Welch", series = deparse(substitute(expr = x, env = environment())),
