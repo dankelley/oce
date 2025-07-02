@@ -265,7 +265,8 @@ pwelch <- function(
         end <- nfft
         while (TRUE) {
             oceDebug(debug, "  calc. subspectrum w/ user's spec, at indices ", start, ":", end, "\n")
-            xx <- ts(x[start:end], frequency = fs)
+            ##2299 xx <- ts(x[start:end], frequency = fs)
+            xx <- ts(window * x[start:end], frequency = fs)
             s <- spec(xx, ...) # note the ...
             if (nrow == 0) {
                 freq <- s$freq
