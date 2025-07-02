@@ -183,6 +183,28 @@ pwelch <- function(
         if (gave.window) {
             stop("window must not be given, if spec is given")
         }
+        # START-- copied from below == is this right?
+        if (gave.nfft) {
+            if (nfft < 1) {
+                stop("'nfft' must be a positive integer")
+            }
+            if (nfft > 0.5 * nx) {
+                nfft <- nx
+            }
+            window <- hamming.local(nfft)
+        } else {
+            # FIXME: should we use 'overlap' here?
+            windowLength <- min(
+                nx,
+                if (gave.noverlap) {
+                    floor(nx / 8)
+                } else {
+                    floor(nx / 8 / 0.5)
+                }
+            )
+            window <- hamming.local(windowLength)
+        }
+        # --END
     } else {
         if (gave.window) {
             if (gave.nfft && (length(window) != nfft)) {
