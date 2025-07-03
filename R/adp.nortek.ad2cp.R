@@ -321,17 +321,17 @@ ad2cpCodeToName <- function(code = NULL, prefix = TRUE) {
 #' a natural pairing with elements of the `data` slot, and `oce` uses this
 #' pairing in constructing plots and other items. However, an AD2CP file might
 #' combine such data with echosounder measurements, and these will have
-#' different values for number of beams and so forth.  This poses a challenge
-#' in naming conventions within the `oce` object, with ripple effects for
-#' plotting and data access.  Those ripple effects would extend beyond `oce`
-#' itself to user code.  To avoid such problems, [read.adp.ad2cp()]
-#' is designed to focus on one data type at a time, relying on users to
-#' keep track of the resultant object, perhaps to combine it with other objects
-#' from within the AD2CP file or other files, in the normal R manner.
+#' different values for number of beams and so forth.  This poses a challenge in
+#' naming conventions within the `oce` object, with ripple effects for plotting
+#' and data access.  Those ripple effects would extend beyond `oce` itself to
+#' user code.  To avoid such problems, [read.adp.ad2cp()] is designed to focus
+#' on one data type at a time, relying on users to keep track of the resultant
+#' object, perhaps to combine it with other objects from within the AD2CP file
+#' or other files, in the normal R manner.
 #'
-#' The permitted values for `dataType` are shown in the table below;
-#' the `dataType` argument of [read.adp.ad2cp()] may be given
-#' as listed in any of the first 3 columns of this table.
+#' The permitted values for `dataType` are shown in the table below; the
+#' `dataType` argument of [read.adp.ad2cp()] may be given as listed in any of
+#' the first 3 columns of this table.
 #'
 #' | code (raw) | code (integer) |            oce name |  notes |
 #' |      ----: |          ----: |               ----: |  ----: |
@@ -353,84 +353,83 @@ ad2cpCodeToName <- function(code = NULL, prefix = TRUE) {
 ## |     `0xc0` |            192 |           `format8` |      4 |
 ## |     `0xc8` |            200 |          `vector 2` |      5 |
 #'
-#' Note 1: Code 0x24 (`echosounderRawTx`) has some coding done, but
-#' it is untested, as the developers lack a data file exemplar. For
-#' now, this data type is read as though it were 0x23, which is
-#' likely to produce poor results or cause errors in processing.
+#' Note 1: Code 0x24 (`echosounderRawTx`) has some coding done, but it is
+#' untested, as the developers lack a data file exemplar. For now, this data
+#' type is read as though it were 0x23, which is likely to produce poor results
+#' or cause errors in processing.
 #'
-#' Note 2: Code 0x30 (`waves`) is recognized but not handled
-#' yet.
+#' Note 2: Code 0x30 (`waves`) is recognized but not handled yet.
 #'
-#' Note 3: Code 0xa0 (`text`) holds a text string that defines
-#' the settings used in creating the file.  This can be quite
-#' helpful in debugging and analysis.
+#' Note 3: Code 0xa0 (`text`) holds a text string that defines the settings used
+#' in creating the file.  This can be quite helpful in debugging and analysis.
 #'
-## Note 4: Code 0xc0 (`format8`) is not handled, and trying to read
-## this yields an error indicating this fact.  This code was mentioned
-## in Nortek (2024) without further information, but it was not
-## listed in Nortek (2025). Accordingly, it is not handled
-## by `read.adp.ad2cp`.
+## Note 4: Code 0xc0 (`format8`) is not handled, and trying to read this yields
+## an error indicating this fact.  This code was mentioned in Nortek (2024)
+## without further information, but it was not listed in Nortek (2025).
+## Accordingly, it is not handled by `read.adp.ad2cp`.
 ##
-## Note 5: Code 0xc8 (`vector 2`) is listed in Nortek (2025) but that
-## document provides no information on the format. Accordingly, it is
-## not handled by `read.adp.ad2cp`.
+## Note 5: Code 0xc8 (`vector 2`) is listed in Nortek (2025) but that document
+## provides no information on the format. Accordingly, it is not handled by
+## `read.adp.ad2cp`.
 #'
 ## The coding is based mainly on descriptions in various versions of a Nortek
 ## manual (see \dQuote{References}). However, there are some gaps and
-## contradictions in these manuals, and this posed a challenge in the
-## writing of [read.adp.ad2cp()]. Thankfully, personnel in Nortek
-## technical support team have been able to clarify issues.
+## contradictions in these manuals, and this posed a challenge in the writing of
+## [read.adp.ad2cp()]. Thankfully, personnel in Nortek technical support team
+## have been able to clarify issues.
 ##
 ## Comments in the code, along with some warnings and messages that may be
 ## issued during processing, are used to highlight some areas that may need
 ## attention in revisions to this function.
 ##
-## Early in the year 2022, support was added for 12-byte headers. Until
-## August 2022, this support was provisional and the results were unlikely
-## to be correct. However, personal contacts with Nortek experts shed
-## a great deal of light on the format, and so the present results are
-## thought to be correct.  At about the same time, support was added for
-## what oce calls `echosounderRaw` format, the details of which were
-## kindly communicated by Nortek personnel, in lieu of official documentation
-## that had not yet been finalized.
+## Early in the year 2022, support was added for 12-byte headers. Until August
+## 2022, this support was provisional and the results were unlikely to be
+## correct. However, personal contacts with Nortek experts shed a great deal of
+## light on the format, and so the present results are thought to be correct.
+## At about the same time, support was added for what oce calls `echosounderRaw`
+## format, the details of which were kindly communicated by Nortek personnel, in
+## lieu of official documentation that had not yet been finalized.
 ##
 ## The \dQuote{References} section lists some manuals that were consulted during
 ## the coding of `read.adp.ad2cp()].  Since instruments evolve over time, one
 ## might think that Nortek (2022) would be the best place to start, in coding to
 ## read AD2CP files. That would be a mistake, because that manual (as of August
 ## 2022) employs a new presentation style that is less straightforward than the
-## older manuals, with some significant gaps (e.g. no discussion of the checksum
-## computation method) and errors (e.g. in stating storage classes, whether
-## floating-point or integer).  A new manual is expected soon, however, and this
-## is expected to lead the way revision of this function and its documentation.
+##       older manuals, with some significant gaps (e.g. no discussion of the
+##       checksum computation method) and errors (e.g. in stating storage
+##       classes, whether floating-point or integer).  A new manual is expected
+##       soon, however, and this is expected to lead the way revision of this
+##       function and its documentation.
 ##
 ## 2. The Nortek (2022) explanation of the data format differs from the older
-## explanations and is arguably more difficult to understand.  With the new
-## leading-underscore format (see Nortek 2022, page 79), information is spread
-## throughout the document, making it challenging to understand data fields in
-## isolation.  The older documents laid things out more clearly, e.g. the
+##    explanations and is arguably more difficult to understand.  With the new
+##    leading-underscore format (see Nortek 2022, page 79), information is
+##    spread throughout the document, making it challenging to understand data
+##    fields in isolation.  The older documents laid things out more clearly,
+##    e.g. the
 ## average/burst format is laid out in detail, *in one place* on pages 57 to 64
 ## of Nortek, with the optional fields being clearly labelled in the rightmost
 ## column of Table 6.1.3.
 ##
 ## 3. Nortek (2022) does not always specify units correctly.  For example, on
-## page 82, Pressure is said to have "Unit \[dBar\]" in green text, but the
-## black text above states "Raw data given as 0.001 dBar". If the stated storage
-## class (uint32) is to be believed, then it seems clear that the unit must be
+##    page 82, Pressure is said to have "Unit \[dBar\]" in green text, but the
+##    black text above states "Raw data given as 0.001 dBar". If the stated
+##    storage class (uint32) is to be believed, then it seems clear that the
+##    unit must be
 ## 0.001 dBar, so the green text should be ignored.  The same can be said of
-## items throughout the data-format tables. In coding `read.adp.ad2cp()], the
-## green "Unit" text was ignored in basically every case.
+##   items throughout the data-format tables. In coding `read.adp.ad2cp()], the
+##   green "Unit" text was ignored in basically every case.
 ##
 ## Second, Nortek (2022) contains significant errors, e.g. the following.
 ##
-## 1. Nortek (2022 page 89) states the storage class for "Altimeter
-## data. Altimeter distance" (called `AltimeterDistance` by the present function)
-## to be `int32`, but Nortek (2017, 2018) both state it to be `float32`. Tests
-## with actual datasets make it clear that the format is `float32`, since wild
-## result are inferred by following the Nortek (2022) guidance.
+## 1. Nortek (2022 page 89) states the storage class for "Altimeter data.
+##    Altimeter distance" (called `AltimeterDistance` by the present function)
+##    to be `int32`, but Nortek (2017, 2018) both state it to be `float32`.
+##    Tests with actual datasets make it clear that the format is `float32`,
+##    since wild result are inferred by following the Nortek (2022) guidance.
 ##
 ## 2. As above, but for "AST data.AST distance" (called `ASTDistance` by the
-## present function).
+##    present function).
 #'
 #' @param file a connection or a character string giving the name of the file to
 #' load.
@@ -456,19 +455,19 @@ ad2cpCodeToName <- function(code = NULL, prefix = TRUE) {
 #' case, it must be a string taken from that same table.
 #'
 #' @param dataSet a positive integer that indicates which of the possibly
-#' several data sets stored within a file is to be focussed upon.  By
-#' default, the first data set is chosen. Note that data sets are found
-#' by trying to match each text data chunk against the regular expression
+#' several data sets stored within a file is to be focussed upon.  By default,
+#' the first data set is chosen. Note that data sets are found by trying to
+#' match each text data chunk against the regular expression
 #' `"^GETCLOCKSTR,TIME="`.
 #'
 #' @param tz a character value indicating time zone. This is used in
 #' interpreting times stored in the file.
 #'
-# @param ignoreChecksums a logical value indicating whether to ignore
-# checksums.  This is FALSE by default, meaning that any data chunk with an
-# improper checksum is ignored.  It may be necessary to set this to TRUE to
-# parse some problematic files, but users are asked to report issues in
-# such cases.  (This parameter may be removed without notice.)
+# @param ignoreChecksums a logical value indicating whether to ignore checksums.
+# This is FALSE by default, meaning that any data chunk with an improper
+# checksum is ignored.  It may be necessary to set this to TRUE to parse some
+# problematic files, but users are asked to report issues in such cases.  (This
+# parameter may be removed without notice.)
 #'
 #' @param longitude,latitude numerical values indicating the observation
 #' location.
@@ -477,19 +476,17 @@ ad2cpCodeToName <- function(code = NULL, prefix = TRUE) {
 # reference 1 for the meaning of 'plan').  If this is not given, it defaults to
 # the most common plan in the requested subset of the data.
 #'
-#- @param type optional character value indicating the type of Nortek
-#- instrument.  Normally, this is inferred from the file contents, but
-#- if an error is reported that no header is found, the user may
-#- find it useful to set the `type` argument. The permitted choices are
-#- `"Signature100"`, `"Signature250"`, `"Signature500"`, and
-#- `"Signature1000"`.
+#- @param type optional character value indicating the type of Nortek -
+#instrument.  Normally, this is inferred from the file contents, but - if an
+#error is reported that no header is found, the user may - find it useful to set
+#the `type` argument. The permitted choices are - `"Signature100"`,
+#`"Signature250"`, `"Signature500"`, and - `"Signature1000"`.
 #'
-#' @param TOC a logical value.  If this is FALSE (the default) then
-#' the other parameters of the function are used to select data from
-#' the indicated `filename`, and an [adp-class] object is returned.
-#' However, if `TOC` is TRUE, then a dataframe detailing the number
-#' of entries in each of the datasets stored within the file is
-#' returned.
+#' @param TOC a logical value.  If this is FALSE (the default) then the other
+#' parameters of the function are used to select data from the indicated
+#' `filename`, and an [adp-class] object is returned. However, if `TOC` is TRUE,
+#' then a dataframe detailing the number of entries in each of the datasets
+#' stored within the file is returned.
 #'
 #' @param debug an integer value indicating the level of debugging.  Set to 1 to
 #' get a moderate amount of debugging information, from the R code only, to 2 to
@@ -497,37 +494,32 @@ ad2cpCodeToName <- function(code = NULL, prefix = TRUE) {
 #' data chunks, or to 3 for intensive debugging at both levels.
 #'
 #' @param orientation,distance,monitor,despike ignored, provided only for
-#' calling compatibility with other functions that read [adp-class]
-#' files.  A warning is issued if any of these is supplied in a call
-#' to `read.adp.ad2cp()`.
+#' calling compatibility with other functions that read [adp-class] files.  A
+#' warning is issued if any of these is supplied in a call to
+#' `read.adp.ad2cp()`.
 #'
-#' @param \dots ignored parameters that might be passed to `read.adp.ad2cp()`
-#' by [read.oce()].
+#' @param \dots ignored parameters that might be passed to `read.adp.ad2cp()` by
+#' [read.oce()].
 #'
-#' @return `read.adp.ad2cp()` returns either an [adp-class] object or
-#' the number of data sets within the file, according to the value
-#' of `TOC`.
+#' @return `read.adp.ad2cp()` returns either an [adp-class] object or the number
+#' of data sets within the file, according to the value of `TOC`.
 #'
 #' @section Problems:
+#' 1. In reading a file with `altimeterRaw` data components, a potential problem
+#'    was noticed with that the part of the file that indicates the number of
+#'    altimeter samples (called `NSAMP` in the Nortek documentation). The stated
+#'    value was 2 times the value held in the header (text) portion of the file,
+#'    and reading the larger value created a matrix that had
+#'    the upper half filled with odd striping patterns. Therefore, the function
+#'    checks the two indicates of length, and used the one in the text block if
+#'    they disagree.  (See https://github.com/dankelley/oce/issues/2326.)
 #'
-#' 1. In reading a file with `altimeterRaw` data components, a potential
-#' problem was noticed with that the part of the file that indicates the
-#' number of altimeter samples (called `NSAMP` in the Nortek documentation).
-#' The stated value was 2 times the value held in the header (text) portion
-#' of the file, and reading the larger value created a matrix that had
-#' it's upper half filled with odd striping patterns. Therefore, the
-#' function checks the two indicates of length, and used the one in the
-#' text block if they disagree.  (See
-#' https://github.com/dankelley/oce/issues/2326.)
-#'
-#' 2. Related to point 1, the documentation states that `NSAMP` is
-#' a 4-byte value, but then, in contradiction, it also says that the
-#' next data element is found 2 bytes away. So is it 2 bytes long
-#' or 4 bytes? In this function, we assume that it is 4 bytes long,
-#' because otherwise we get a zero value for the next element, which
-#' is the cell size. Assuming 4 bytes yields the correct value
-#' of cell size, according to the file text element. (Again, see
-#' https://github.com/dankelley/oce/issues/2326.)
+#' 2. Related to point 1, it is unclear from the manufacturer's manuals whether
+#'    `NSAMP` is a 2-byte value (as stated in old manuals) or a 4-byte value (as
+#'    in a manual available in June 2025)? The present function assumes a 4-byte
+#'    value, which works with at least one test file available to the authors.
+#'    The manufacturer has been asked for clarity on this; again, see notes at
+#'    https://github.com/dankelley/oce/issues/2326.
 #'
 #' @references
 #'

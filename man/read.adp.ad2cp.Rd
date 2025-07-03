@@ -49,9 +49,9 @@ the table at the start of the \dQuote{Details} section.  In the character
 case, it must be a string taken from that same table.}
 
 \item{dataSet}{a positive integer that indicates which of the possibly
-several data sets stored within a file is to be focussed upon.  By
-default, the first data set is chosen. Note that data sets are found
-by trying to match each text data chunk against the regular expression
+several data sets stored within a file is to be focussed upon.  By default,
+the first data set is chosen. Note that data sets are found by trying to
+match each text data chunk against the regular expression
 \code{"^GETCLOCKSTR,TIME="}.}
 
 \item{tz}{a character value indicating time zone. This is used in
@@ -62,12 +62,11 @@ location.}
 
 \item{plan}{optional integer specifying which 'plan' to focus on (see}
 
-\item{TOC}{a logical value.  If this is FALSE (the default) then
-the other parameters of the function are used to select data from
-the indicated \code{filename}, and an \linkS4class{adp} object is returned.
-However, if \code{TOC} is TRUE, then a dataframe detailing the number
-of entries in each of the datasets stored within the file is
-returned.}
+\item{TOC}{a logical value.  If this is FALSE (the default) then the other
+parameters of the function are used to select data from the indicated
+\code{filename}, and an \linkS4class{adp} object is returned. However, if \code{TOC} is TRUE,
+then a dataframe detailing the number of entries in each of the datasets
+stored within the file is returned.}
 
 \item{debug}{an integer value indicating the level of debugging.  Set to 1 to
 get a moderate amount of debugging information, from the R code only, to 2 to
@@ -75,17 +74,16 @@ get some debugging information from the C++ code that is used to parse the
 data chunks, or to 3 for intensive debugging at both levels.}
 
 \item{orientation, distance, monitor, despike}{ignored, provided only for
-calling compatibility with other functions that read \linkS4class{adp}
-files.  A warning is issued if any of these is supplied in a call
-to \code{read.adp.ad2cp()}.}
+calling compatibility with other functions that read \linkS4class{adp} files.  A
+warning is issued if any of these is supplied in a call to
+\code{read.adp.ad2cp()}.}
 
-\item{\dots}{ignored parameters that might be passed to \code{read.adp.ad2cp()}
-by \code{\link[=read.oce]{read.oce()}}.}
+\item{\dots}{ignored parameters that might be passed to \code{read.adp.ad2cp()} by
+\code{\link[=read.oce]{read.oce()}}.}
 }
 \value{
-\code{read.adp.ad2cp()} returns either an \linkS4class{adp} object or
-the number of data sets within the file, according to the value
-of \code{TOC}.
+\code{read.adp.ad2cp()} returns either an \linkS4class{adp} object or the number
+of data sets within the file, according to the value of \code{TOC}.
 }
 \description{
 This function is under active development and may change without notice.  In
@@ -106,17 +104,17 @@ blanking distance, the cell size, the number of cells, etc.  Such items have
 a natural pairing with elements of the \code{data} slot, and \code{oce} uses this
 pairing in constructing plots and other items. However, an AD2CP file might
 combine such data with echosounder measurements, and these will have
-different values for number of beams and so forth.  This poses a challenge
-in naming conventions within the \code{oce} object, with ripple effects for
-plotting and data access.  Those ripple effects would extend beyond \code{oce}
-itself to user code.  To avoid such problems, \code{\link[=read.adp.ad2cp]{read.adp.ad2cp()}}
-is designed to focus on one data type at a time, relying on users to
-keep track of the resultant object, perhaps to combine it with other objects
-from within the AD2CP file or other files, in the normal R manner.
+different values for number of beams and so forth.  This poses a challenge in
+naming conventions within the \code{oce} object, with ripple effects for plotting
+and data access.  Those ripple effects would extend beyond \code{oce} itself to
+user code.  To avoid such problems, \code{\link[=read.adp.ad2cp]{read.adp.ad2cp()}} is designed to focus
+on one data type at a time, relying on users to keep track of the resultant
+object, perhaps to combine it with other objects from within the AD2CP file
+or other files, in the normal R manner.
 
-The permitted values for \code{dataType} are shown in the table below;
-the \code{dataType} argument of \code{\link[=read.adp.ad2cp]{read.adp.ad2cp()}} may be given
-as listed in any of the first 3 columns of this table.\tabular{rrrr}{
+The permitted values for \code{dataType} are shown in the table below; the
+\code{dataType} argument of \code{\link[=read.adp.ad2cp]{read.adp.ad2cp()}} may be given as listed in any of
+the first 3 columns of this table.\tabular{rrrr}{
    code (raw) \tab code (integer) \tab oce name \tab notes \cr
    ---------- \tab -------------- \tab ------------------- \tab ------ \cr
    \code{0x15} \tab 21 \tab \code{burst} \tab - \cr
@@ -136,38 +134,33 @@ as listed in any of the first 3 columns of this table.\tabular{rrrr}{
 }
 
 
-Note 1: Code 0x24 (\code{echosounderRawTx}) has some coding done, but
-it is untested, as the developers lack a data file exemplar. For
-now, this data type is read as though it were 0x23, which is
-likely to produce poor results or cause errors in processing.
+Note 1: Code 0x24 (\code{echosounderRawTx}) has some coding done, but it is
+untested, as the developers lack a data file exemplar. For now, this data
+type is read as though it were 0x23, which is likely to produce poor results
+or cause errors in processing.
 
-Note 2: Code 0x30 (\code{waves}) is recognized but not handled
-yet.
+Note 2: Code 0x30 (\code{waves}) is recognized but not handled yet.
 
-Note 3: Code 0xa0 (\code{text}) holds a text string that defines
-the settings used in creating the file.  This can be quite
-helpful in debugging and analysis.
+Note 3: Code 0xa0 (\code{text}) holds a text string that defines the settings used
+in creating the file.  This can be quite helpful in debugging and analysis.
 }
 \section{Problems}{
 
 \enumerate{
-\item In reading a file with \code{altimeterRaw} data components, a potential
-problem was noticed with that the part of the file that indicates the
-number of altimeter samples (called \code{NSAMP} in the Nortek documentation).
-The stated value was 2 times the value held in the header (text) portion
-of the file, and reading the larger value created a matrix that had
-it's upper half filled with odd striping patterns. Therefore, the
-function checks the two indicates of length, and used the one in the
-text block if they disagree.  (See
-https://github.com/dankelley/oce/issues/2326.)
-\item Related to point 1, the documentation states that \code{NSAMP} is
-a 4-byte value, but then, in contradiction, it also says that the
-next data element is found 2 bytes away. So is it 2 bytes long
-or 4 bytes? In this function, we assume that it is 4 bytes long,
-because otherwise we get a zero value for the next element, which
-is the cell size. Assuming 4 bytes yields the correct value
-of cell size, according to the file text element. (Again, see
-https://github.com/dankelley/oce/issues/2326.)
+\item In reading a file with \code{altimeterRaw} data components, a potential problem
+was noticed with that the part of the file that indicates the number of
+altimeter samples (called \code{NSAMP} in the Nortek documentation). The stated
+value was 2 times the value held in the header (text) portion of the file,
+and reading the larger value created a matrix that had
+the upper half filled with odd striping patterns. Therefore, the function
+checks the two indicates of length, and used the one in the text block if
+they disagree.  (See https://github.com/dankelley/oce/issues/2326.)
+\item Related to point 1, it is unclear from the manufacturer's manuals whether
+\code{NSAMP} is a 2-byte value (as stated in old manuals) or a 4-byte value (as
+in a manual available in June 2025)? The present function assumes a 4-byte
+value, which works with at least one test file available to the authors.
+The manufacturer has been asked for clarity on this; again, see notes at
+https://github.com/dankelley/oce/issues/2326.
 }
 }
 
