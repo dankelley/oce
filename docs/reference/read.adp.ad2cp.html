@@ -128,9 +128,9 @@ case, it must be a string taken from that same table.</p></dd>
 
 <dt id="arg-dataset">dataSet<a class="anchor" aria-label="anchor" href="#arg-dataset"></a></dt>
 <dd><p>a positive integer that indicates which of the possibly
-several data sets stored within a file is to be focussed upon.  By
-default, the first data set is chosen. Note that data sets are found
-by trying to match each text data chunk against the regular expression
+several data sets stored within a file is to be focussed upon.  By default,
+the first data set is chosen. Note that data sets are found by trying to
+match each text data chunk against the regular expression
 <code>"^GETCLOCKSTR,TIME="</code>.</p></dd>
 
 
@@ -149,12 +149,11 @@ location.</p></dd>
 
 
 <dt id="arg-toc">TOC<a class="anchor" aria-label="anchor" href="#arg-toc"></a></dt>
-<dd><p>a logical value.  If this is FALSE (the default) then
-the other parameters of the function are used to select data from
-the indicated <code>filename</code>, and an <a href="adp-class.html">adp</a> object is returned.
-However, if <code>TOC</code> is TRUE, then a dataframe detailing the number
-of entries in each of the datasets stored within the file is
-returned.</p></dd>
+<dd><p>a logical value.  If this is FALSE (the default) then the other
+parameters of the function are used to select data from the indicated
+<code>filename</code>, and an <a href="adp-class.html">adp</a> object is returned. However, if <code>TOC</code> is TRUE,
+then a dataframe detailing the number of entries in each of the datasets
+stored within the file is returned.</p></dd>
 
 
 <dt id="arg-debug">debug<a class="anchor" aria-label="anchor" href="#arg-debug"></a></dt>
@@ -166,21 +165,20 @@ data chunks, or to 3 for intensive debugging at both levels.</p></dd>
 
 <dt id="arg-orientation-distance-monitor-despike">orientation, distance, monitor, despike<a class="anchor" aria-label="anchor" href="#arg-orientation-distance-monitor-despike"></a></dt>
 <dd><p>ignored, provided only for
-calling compatibility with other functions that read <a href="adp-class.html">adp</a>
-files.  A warning is issued if any of these is supplied in a call
-to <code>read.adp.ad2cp()</code>.</p></dd>
+calling compatibility with other functions that read <a href="adp-class.html">adp</a> files.  A
+warning is issued if any of these is supplied in a call to
+<code>read.adp.ad2cp()</code>.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>ignored parameters that might be passed to <code>read.adp.ad2cp()</code>
-by <code><a href="read.oce.html">read.oce()</a></code>.</p></dd>
+<dd><p>ignored parameters that might be passed to <code>read.adp.ad2cp()</code> by
+<code><a href="read.oce.html">read.oce()</a></code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p><code>read.adp.ad2cp()</code> returns either an <a href="adp-class.html">adp</a> object or
-the number of data sets within the file, according to the value
-of <code>TOC</code>.</p>
+    <p><code>read.adp.ad2cp()</code> returns either an <a href="adp-class.html">adp</a> object or the number
+of data sets within the file, according to the value of <code>TOC</code>.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
@@ -193,46 +191,41 @@ blanking distance, the cell size, the number of cells, etc.  Such items have
 a natural pairing with elements of the <code>data</code> slot, and <code>oce</code> uses this
 pairing in constructing plots and other items. However, an AD2CP file might
 combine such data with echosounder measurements, and these will have
-different values for number of beams and so forth.  This poses a challenge
-in naming conventions within the <code>oce</code> object, with ripple effects for
-plotting and data access.  Those ripple effects would extend beyond <code>oce</code>
-itself to user code.  To avoid such problems, <code>read.adp.ad2cp()</code>
-is designed to focus on one data type at a time, relying on users to
-keep track of the resultant object, perhaps to combine it with other objects
-from within the AD2CP file or other files, in the normal R manner.</p>
-<p>The permitted values for <code>dataType</code> are shown in the table below;
-the <code>dataType</code> argument of <code>read.adp.ad2cp()</code> may be given
-as listed in any of the first 3 columns of this table.</p><table class="table table"><tr><td>code (raw)</td><td>code (integer)</td><td>oce name</td><td>notes</td></tr><tr><td>———-</td><td>————–</td><td>——————-</td><td>——</td></tr><tr><td><code>0x15</code></td><td>21</td><td><code>burst</code></td><td>-</td></tr><tr><td><code>0x16</code></td><td>22</td><td><code>average</code></td><td>-</td></tr><tr><td><code>0x17</code></td><td>23</td><td><code>bottomTrack</code></td><td>-</td></tr><tr><td><code>0x18</code></td><td>24</td><td><code>interleavedBurst</code></td><td>-</td></tr><tr><td><code>0x1a</code></td><td>26</td><td><code>burstAltimeterRaw</code></td><td>-</td></tr><tr><td><code>0x1b</code></td><td>27</td><td><code>DVLBottomTrack</code></td><td>-</td></tr><tr><td><code>0x1c</code></td><td>28</td><td><code>echosounder</code></td><td>-</td></tr><tr><td><code>0x1d</code></td><td>29</td><td><code>DVLWaterTrack</code></td><td>-</td></tr><tr><td><code>0x1e</code></td><td>30</td><td><code>altimeter</code></td><td>-</td></tr><tr><td><code>0x1f</code></td><td>31</td><td><code>averageAltimeter</code></td><td>-</td></tr><tr><td><code>0x23</code></td><td>35</td><td><code>echosounderRaw</code></td><td>-</td></tr><tr><td><code>0x24</code></td><td>36</td><td><code>echosounderRawTx</code></td><td>1</td></tr><tr><td><code>0x30</code></td><td>48</td><td><code>waves</code></td><td>2</td></tr><tr><td><code>0xa0</code></td><td>160</td><td><code>text</code></td><td>3</td></tr></table><p>Note 1: Code 0x24 (<code>echosounderRawTx</code>) has some coding done, but
-it is untested, as the developers lack a data file exemplar. For
-now, this data type is read as though it were 0x23, which is
-likely to produce poor results or cause errors in processing.</p>
-<p>Note 2: Code 0x30 (<code>waves</code>) is recognized but not handled
-yet.</p>
-<p>Note 3: Code 0xa0 (<code>text</code>) holds a text string that defines
-the settings used in creating the file.  This can be quite
-helpful in debugging and analysis.</p>
+different values for number of beams and so forth.  This poses a challenge in
+naming conventions within the <code>oce</code> object, with ripple effects for plotting
+and data access.  Those ripple effects would extend beyond <code>oce</code> itself to
+user code.  To avoid such problems, <code>read.adp.ad2cp()</code> is designed to focus
+on one data type at a time, relying on users to keep track of the resultant
+object, perhaps to combine it with other objects from within the AD2CP file
+or other files, in the normal R manner.</p>
+<p>The permitted values for <code>dataType</code> are shown in the table below; the
+<code>dataType</code> argument of <code>read.adp.ad2cp()</code> may be given as listed in any of
+the first 3 columns of this table.</p><table class="table table"><tr><td>code (raw)</td><td>code (integer)</td><td>oce name</td><td>notes</td></tr><tr><td>———-</td><td>————–</td><td>——————-</td><td>——</td></tr><tr><td><code>0x15</code></td><td>21</td><td><code>burst</code></td><td>-</td></tr><tr><td><code>0x16</code></td><td>22</td><td><code>average</code></td><td>-</td></tr><tr><td><code>0x17</code></td><td>23</td><td><code>bottomTrack</code></td><td>-</td></tr><tr><td><code>0x18</code></td><td>24</td><td><code>interleavedBurst</code></td><td>-</td></tr><tr><td><code>0x1a</code></td><td>26</td><td><code>burstAltimeterRaw</code></td><td>-</td></tr><tr><td><code>0x1b</code></td><td>27</td><td><code>DVLBottomTrack</code></td><td>-</td></tr><tr><td><code>0x1c</code></td><td>28</td><td><code>echosounder</code></td><td>-</td></tr><tr><td><code>0x1d</code></td><td>29</td><td><code>DVLWaterTrack</code></td><td>-</td></tr><tr><td><code>0x1e</code></td><td>30</td><td><code>altimeter</code></td><td>-</td></tr><tr><td><code>0x1f</code></td><td>31</td><td><code>averageAltimeter</code></td><td>-</td></tr><tr><td><code>0x23</code></td><td>35</td><td><code>echosounderRaw</code></td><td>-</td></tr><tr><td><code>0x24</code></td><td>36</td><td><code>echosounderRawTx</code></td><td>1</td></tr><tr><td><code>0x30</code></td><td>48</td><td><code>waves</code></td><td>2</td></tr><tr><td><code>0xa0</code></td><td>160</td><td><code>text</code></td><td>3</td></tr></table><p>Note 1: Code 0x24 (<code>echosounderRawTx</code>) has some coding done, but it is
+untested, as the developers lack a data file exemplar. For now, this data
+type is read as though it were 0x23, which is likely to produce poor results
+or cause errors in processing.</p>
+<p>Note 2: Code 0x30 (<code>waves</code>) is recognized but not handled yet.</p>
+<p>Note 3: Code 0xa0 (<code>text</code>) holds a text string that defines the settings used
+in creating the file.  This can be quite helpful in debugging and analysis.</p>
     </div>
     <div class="section level2">
     <h2 id="problems">Problems<a class="anchor" aria-label="anchor" href="#problems"></a></h2>
 
 
-<ol><li><p>In reading a file with <code>altimeterRaw</code> data components, a potential
-problem was noticed with that the part of the file that indicates the
-number of altimeter samples (called <code>NSAMP</code> in the Nortek documentation).
-The stated value was 2 times the value held in the header (text) portion
-of the file, and reading the larger value created a matrix that had
-it's upper half filled with odd striping patterns. Therefore, the
-function checks the two indicates of length, and used the one in the
-text block if they disagree.  (See
-https://github.com/dankelley/oce/issues/2326.)</p></li>
-<li><p>Related to point 1, the documentation states that <code>NSAMP</code> is
-a 4-byte value, but then, in contradiction, it also says that the
-next data element is found 2 bytes away. So is it 2 bytes long
-or 4 bytes? In this function, we assume that it is 4 bytes long,
-because otherwise we get a zero value for the next element, which
-is the cell size. Assuming 4 bytes yields the correct value
-of cell size, according to the file text element. (Again, see
-https://github.com/dankelley/oce/issues/2326.)</p></li>
+<ol><li><p>In reading a file with <code>altimeterRaw</code> data components, a potential problem
+was noticed with that the part of the file that indicates the number of
+altimeter samples (called <code>NSAMP</code> in the Nortek documentation). The stated
+value was 2 times the value held in the header (text) portion of the file,
+and reading the larger value created a matrix that had
+the upper half filled with odd striping patterns. Therefore, the function
+checks the two indicates of length, and used the one in the text block if
+they disagree.  (See https://github.com/dankelley/oce/issues/2326.)</p></li>
+<li><p>Related to point 1, it is unclear from the manufacturer's manuals whether
+<code>NSAMP</code> is a 2-byte value (as stated in old manuals) or a 4-byte value (as
+in a manual available in June 2025)? The present function assumes a 4-byte
+value, which works with at least one test file available to the authors.
+The manufacturer has been asked for clarity on this; again, see notes at
+https://github.com/dankelley/oce/issues/2326.</p></li>
 </ol></div>
     <div class="section level2">
     <h2 id="how-the-binary-file-is-decoded">How the binary file is decoded<a class="anchor" aria-label="anchor" href="#how-the-binary-file-is-decoded"></a></h2>

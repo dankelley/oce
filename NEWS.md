@@ -9,7 +9,8 @@
 * Add `read.xbt.noaa2()` to handle UBT format (issue #2289).
 * Add `rename()` to rename variables, flags and units (issue #2238).
 * Add `Tidal Analysis` vignette (issue #2243).
-* Change `adpRdiFileTrim()` to reorder parameters, and to accept `indices` parameter (issue #2330)
+* Change `adpRdiFileTrim()` to reorder parameters, and to accept `indices`
+  parameter (issue #2330)
 * Change `amsr[[` to handle `"metadata"` parameter (issue #2229).
 * Change `argo2ctd()` (issue #2270).
 * Change `as.unit()` to handle more units (issue #2240).
@@ -20,8 +21,10 @@
 * Change `concatenate()` to handle lists properly (issue #2278).
 * Change `download.amsr()` to handle realtime data files (issue #2231).
 * Change `imagep()` to handle `decimate` as set in `~/.Rprofile` (issue #2263).
-* Change `lonlat2map()` to handle a [coastline-class] object as first parameter (issue #2284).
-* Change `magneticField()` to handle the latest (generation 14) IGRF formulation (issue #2274).
+* Change `lonlat2map()` to handle a [coastline-class] object as first parameter
+  (issue #2284).
+* Change `magneticField()` to handle the latest (generation 14) IGRF
+  formulation (issue #2274).
 * Change `mapScalebar()` to
   * handle `x="top"` (issue #2283) and
   * handle `length` under 1km (issue #2287).
@@ -34,18 +37,23 @@
 * Change `read.adp.ad2cp()` to
   * handle TOC, datasets and plans better (issue #2303 and related),
   * read temperature correctly (issue #2324),
-  * save elements of AST (etc) individually, not within a list (issue #2318) and
+  * save elements of AST (etc) individually, not within a list (issue #2318)
+    and
   * scale `altimeterRawSamples` by 1/2^15 (issue #2327).
   * set `data@distance` only if NC (number of cells) is nonzero (issue #2319).
-  * use number of raw altimeter samples from header, if it disagrees with value in record (issue #2326).
-* Change `read.adp.rdi(..., which="??")` to return a data frame that includes ensemble size (issue #2329).
+  * use number of raw altimeter samples from header, if it disagrees with value
+    in record (issue #2326).
+* Change `read.adp.rdi(..., which="??")` to return a data frame that includes
+  ensemble size (issue #2329).
 * Change `read.amsr()` to handle realtime data files (issue #2230).
 * Change `read.ctd.sbe()` to
-  * handle files that lack salinity and conductivity (issues #2279 and #2282) and
+  * handle files that lack salinity and conductivity (issues #2279 and #2282)
+    and
   * handle time-related header elements better (issues #2280 and #2281).
   * handle "new" format CNV files, at least provisionally (issue #2328).
 * Change `read.ctd.aml()` to handle "type 3" format (issue #2247).
-* Change `read.coastline()` to handle `file` in "shapefile" format (issue #1850).
+* Change `read.coastline()` to handle `file` in "shapefile" format (issue
+  #1850).
 * Change `read.met()` to handle flags better (issue #2298).
 * Change `read.netcdf()` to
   * document flag handling better (issue #2236),
@@ -53,10 +61,16 @@
   * permit renaming data (issue #2235).
 * Change `read.rsk()` to handle a new file (issue #2291).
 * Change `rename()` to default to a built-in IOOS dictionary (issue #2311).
+* Change `sectionSmooth()` to disallow `method="kriging"`, because it relied
+  on the `automap` package, which was removed from CRAN on 2025-06-30
+  (issue #2332).
 * Change `subset,amsr-method()` to handle `"pass"` parameter.
-* Change `subset,ctd-method()` to handle items of unexpected length (issue #2250).
-* Change `tidem()` to stop if there are any non-finite time values (issue #2269).
-* Change `vectorShow()` to obey "digits" parameter for list arguments (issue #2313).
+* Change `subset,ctd-method()` to handle items of unexpected length (issue
+  #2250).
+* Change `tidem()` to stop if there are any non-finite time values (issue
+  #2269).
+* Change `vectorShow()` to obey "digits" parameter for list arguments (issue
+  #2313).
 
 # oce 1.8.3 (ON CRAN)
 

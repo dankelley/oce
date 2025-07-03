@@ -103,6 +103,7 @@
 </ul></li>
 <li>Change <code><a href="../reference/read.rsk.html">read.rsk()</a></code> to handle a new file (issue <a href="https://github.com/dankelley/oce/issues/2291" class="external-link">#2291</a>).</li>
 <li>Change <code><a href="../reference/rename.html">rename()</a></code> to default to a built-in IOOS dictionary (issue <a href="https://github.com/dankelley/oce/issues/2311" class="external-link">#2311</a>).</li>
+<li>Change <code><a href="../reference/sectionSmooth.html">sectionSmooth()</a></code> to disallow <code>method="kriging"</code>, because it relied on the <code>automap</code> package, which was removed from CRAN on 2025-06-30 (issue <a href="https://github.com/dankelley/oce/issues/2332" class="external-link">#2332</a>).</li>
 <li>Change <code>subset,amsr-method()</code> to handle <code>"pass"</code> parameter.</li>
 <li>Change <code>subset,ctd-method()</code> to handle items of unexpected length (issue <a href="https://github.com/dankelley/oce/issues/2250" class="external-link">#2250</a>).</li>
 <li>Change <code><a href="../reference/tidem.html">tidem()</a></code> to stop if there are any non-finite time values (issue <a href="https://github.com/dankelley/oce/issues/2269" class="external-link">#2269</a>).</li>
