@@ -2,64 +2,69 @@
 
 #' Welch Periodogram
 #'
-#' Compute periodogram using the Welch (1967) method. This is
-#' somewhat analogous to the Matlab function of the same name,
-#' but it is *not* intended as a drop-in replacement.
+#' Compute periodogram using the Welch (1967) method. This function is somewhat
+#' analogous to the Matlab function of the same name, but it is *not* intended
+#' as a drop-in replacement. Please see the \sQuote{Details} and the description
+#' of the parameters, to learn about the complex interactions of the controlling
+#' parameters.
 #'
-#' First, `x` is broken up into chunks,
-#' overlapping as specified by `noverlap`.  These chunks are then
-#' multiplied by the window, and then
-#' passed to [spectrum()].  The resulting spectra are then averaged,
-#' with the results being stored in `spec` of the return value.  Other
-#' entries of the return value mimic those returned by [spectrum()].
+#' The basic gist of the action is not too difficult to explain: `x` is broken
+#' up into subdivisions, spectral analysis is done on each, and the results are
+#' averaged to get a return value.
 #'
-#' It should be noted that the actions of several parameters are interlocked,
-#' so this can be a complex function to use.  For example, if `window` is
-#' given and has length exceeding 1, then its length must equal `nfft`, if the
-#' latter is also provided.
+#' However, things get complicated in practice. This is because there are
+#' several interlocking parameters that control both the subdivision stage and
+#' the spectral stage. The goal is to at least roughly mimic the Matlab
+#' function, so the parameter names and how they are interpreted are dictated to
+#' some extent by how things work in the Matlab code.
+#'
+#' The parameters `window`, `noverlap` and `nfft` control the subdivision
+#' behaviour. The parameters `fs`, `spec`, `demean` and `detrend` control the
+#' spectral-analysis behaviour. Users who find the documention on these things
+#' to be confusing may want to examine the code to see what is actually being
+#' done. If they see problems, they are asked to post issues on the oce github
+#' website.
 #'
 #' @param x a vector or timeseries to be analyzed.  If `x` is a timeseries, then
 #' it there is no need to `fs`, and doing so will result in an error if it does
 #' not match the value inferred from `x`.
 #'
-#' @param window optional numeric vector specifying a window to be applied
-#' to the timeseries subsamples.  This is ignored if `spec` is provided.
-#' Otherwise, if `window` is provided, then it must either
-#' be of the same length as `nfft` or be of length 1.  In the first case,
-#' the vector is multiplied into the timeseries subsample, and the length
-#' of `window` must equal `nfft` is that is supplied.
-#' In the second then `window` is taken to be the number
-#' of sub-intervals into which the time series is to be broken up, with a
-#' hamming window being used for each sub-interval.  If `window` is not
-#' specified and `nfft` is given, then the window is constructed as
-#' a hamming window with length `nfft`.  And, if neither `window`
-#' nor `nfft` are specified, then `x` will be broken up
-#' into 8 portions.
+#' @param window optional numeric vector specifying a window to be applied to
+#' the timeseries subsamples.  If `spec` is provided, then it is an error to
+#' provide `window`. This is because this function is set up to construct a
+#' window automatically in this case. The window is of the Hamming variety, of
+#' length given by `nfft`, if `nfft` is less than half the length of `x`, or of
+#' length `x` otherwise. On the other hand, if `spec` is not provided but
+#' `nfft`, then a similar window is constructed if `window` is not provided. If
+#' neither `nfft` nor `window` is provided, `pwelch` will divide the timeseries
+#' up into 8 subdivisions (equivalent, it will act as though `nfft` were set to
+#' `length(x)/8`).
 #'
 #' @param noverlap number of points to overlap between windows.  If not
 #' specified, this will be set to half the window length.
 #'
-#' @param nfft length of FFT. See `window` for how `nfft` interacts with
-#' that argument.
+#' @param nfft length of FFT. See `window` for how `nfft` interacts with that
+#' argument.
 #'
-#' @param fs frequency of time-series.  If `x` is a time-series, and if
-#' `fs` is supplied, then time-series is altered to have frequency
-#' `fs`.
+#' @param fs frequency of time-series.  If `x` is a time-series, and if `fs` is
+#' supplied, then time-series is altered to have frequency `fs`.
 #'
 #' @param spec optional function to be used for the computation of the spectrum,
-#' to allow finer-grained control of the processing.
-#' If provided, `spec` must accept a time-series as its first argument, and
-#' must return a list containing the spectrum in `spec` and the
-#' frequency in `freq`.
-#' Note that no window will be applied to the data after subsampling,
-#' and an error will be reported if `window` and `spec` are both given.
-#' An error will be reported if `spec` is given but `nfft` is not given.
-#' Note that the values of `demean`, `detrend` and `plot` are ignored if `spec`
-#' is given. However, the \dots argument *is* passed to `spec`.
+#' to allow finer-grained control of the processing. If provided, `spec` must
+#' accept a time-series as its first argument, and must return a list containing
+#' the spectrum in `spec` and the frequency in `freq`. Note that the `window`
+#' parameter must not be supplied if `spec` and `nfft` are supplied, because in
+#' that case a window is automatically constructed (see the documentation for
+#' `window`). Note that the values of `demean`, `detrend` and `plot` are ignored
+#' if `spec` is given. However, the \dots argument *is* passed to `spec`.
+#' Frankly, users who wish to supply their own `spec` might be better
+#' advised to just break up the time-series themselves, to gain full
+#' control.
 #'
-#' @param demean,detrend logical values that can control the spectrum calculation,
-#' in the default case of `spec`.  These are passed to [spectrum()] and thence
-#' [spec.pgram()]; see the help pages for the latter for an explanation.
+#' @param demean,detrend logical values that can control the spectrum
+#' calculation, in the default case of `spec`.  These are passed to [spectrum()]
+#' and thence [spec.pgram()]; see the help pages for the latter for an
+#' explanation.
 #'
 #' @param plot logical, set to `TRUE` to plot the spectrum.
 #'
@@ -70,31 +75,40 @@
 #' [spectrum()], or to `spec`, if the latter is given.
 #'
 #' @return `pwelch` returns a list mimicking the return value from [spectrum()],
-#' containing frequency `freq`, spectral power `spec`, degrees of
-#' freedom `df`, bandwidth `bandwidth`, etc.
+#' containing frequency `freq`, spectral power `spec`, degrees of freedom `df`,
+#' bandwidth `bandwidth`, etc.
 #'
 #' @section Bugs:
+#'
 #' Both bandwidth and degrees of freedom are just copied from
 #' the values for one of the chunk spectra, and are thus incorrect.  That means
 #' the cross indicated on the graph is also incorrect.
 #'
 #' @section Historical notes:
-#' * **2021-06-26:** Until this date, [pwelch()] passed the
-#' subsampled timeseries portions through [detrend()]
-#' before applying the window. This practice was dropped
-#' because it could lead to over-estimates of low frequency
-#' energy (as noticed by Holger Foysi of the University of Siegen),
-#' perhaps because [detrend()] considers only endpoints and
-#' therefore can yield inaccurate trend estimates.
-#' In a related change, `demean` and `detrend` were added
-#' as formal arguments, to avoid users having to trace the documentation
-#' for [spectrum()] and then [spec.pgram()], to learn how to
-#' remove means and trends from data.
-#' For more control, the `spec` argument was
-#' added to let users sidestep [spectrum()] entirely, by providing
-#' their own spectral computation functions.
 #'
-#' @references Welch, P. D., 1967. The Use of Fast Fourier Transform for the
+#' 1. *2021-06-26:* Until this date, [pwelch()] passed the subsampled timeseries
+#'    portions through [detrend()] before applying the window. This practice was
+#'    dropped because it could lead to over-estimates of low frequency energy
+#'    (as noticed by Holger Foysi of the University of Siegen), perhaps because
+#'    [detrend()] considers only endpoints and therefore can yield
+#'    inaccurate trend estimates. In a related change, `demean` and `detrend`
+#'    were added as formal arguments, to avoid users having to trace the
+#'    documentation for [spectrum()] and then [spec.pgram()], to learn how to
+#'    remove means and trends from data. For more control, the `spec` argument
+#'    was added to let users sidestep [spectrum()] entirely, by providing their
+#'    own spectral computation functions.
+
+#' 2. *2025-07-04:* until this date, there was an error in supplying `nfft`
+#'    together with `spec` (it is issue 2299 on the github website). This issued
+#'    an error message that resulted from the fact that it was not permitted to
+#'    supply `window` in that case. To address the problem, whilst retaining the
+#'    requirement that `window` not be supplied, `pwelch()` was changed so that
+#'    it constructs a window automatically. At this time, the documentation
+#'    was rewritten in an attempt to provide more clarity.
+#'
+#' @references
+#'
+#' Welch, P. D., 1967. The Use of Fast Fourier Transform for the
 #' Estimation of Power Spectra: A Method Based on Time Averaging Over Short,
 #' Modified Periodograms. *IEEE Transactions on Audio Electroacoustics*,
 #' AU-15, 70--73.
@@ -177,34 +191,20 @@ pwelch <- function(
     }
     if (gave.spec) {
         if (!gave.nfft) {
-            stop("must give nfft if spec is given")
+            stop("give nfft if spec is given")
         }
         if (gave.window) {
             stop("window must not be given, if spec is given")
         }
-        # START-- copied from below == is this right?
-        if (gave.nfft) {
-            if (nfft < 1) {
-                stop("'nfft' must be a positive integer")
-            }
-            if (nfft > 0.5 * nx) {
-                nfft <- nx
-            }
-            window <- hamming.local(nfft)
-            oceDebug(debug, "spec and nfft both given; using hamming window of length ", nfft, "\n")
-        } else {
-            # FIXME: should we use 'overlap' here?
-            windowLength <- min(
-                nx,
-                if (gave.noverlap) {
-                    floor(nx / 8)
-                } else {
-                    floor(nx / 8 / 0.5)
-                }
-            )
-            window <- hamming.local(windowLength)
-            oceDebug(debug, "spec given, but nfft not given; using hamming window of length ", windowLength, "\n")
+        # User gave nfft, so we can use that
+        if (nfft < 1) {
+            stop("'nfft' must be a positive integer")
         }
+        if (nfft > 0.5 * nx) {
+            nfft <- nx
+        }
+        window <- hamming.local(nfft)
+        oceDebug(debug, "spec and nfft both given; using hamming window of length ", nfft, "\n")
         # --END
     } else {
         if (gave.window) {
@@ -265,7 +265,7 @@ pwelch <- function(
         end <- nfft
         while (TRUE) {
             oceDebug(debug, "  calc. subspectrum w/ user's spec, at indices ", start, ":", end, "\n")
-            ##2299 xx <- ts(x[start:end], frequency = fs)
+            ## 2299 xx <- ts(x[start:end], frequency = fs)
             xx <- ts(window * x[start:end], frequency = fs)
             s <- spec(xx, ...) # note the ...
             if (nrow == 0) {
