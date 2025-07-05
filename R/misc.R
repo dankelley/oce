@@ -3234,17 +3234,17 @@ gravity <- function(latitude = 45, degrees = TRUE) {
 
 #' Make a Digital Filter
 #'
-#' The filter is suitable for use by [filter()],
-#' [convolve()] or (for the `asKernal=TRUE` case) with
-#' [kernapply()].  Note that [convolve()] should be faster
-#' than [filter()], but it cannot be used if the time series has
-#' missing values.  For the Blackman-Harris filter, the half-power frequency is
-#' at `1/m` cycles per time unit, as shown in the \dQuote{Examples}
-#' section.  When using [filter()] or [kernapply()] with
-#' these filters, use `circular=TRUE`.
+#' The results can be used in two different ways.  CASE 1: for filtering, using
+#' [filter()] or [convolve()] or (for the `asKernal=TRUE` case) using
+#' [kernapply()].  For the Blackman-Harris filter, the half-power frequency is
+#' at `1/m` cycles per time unit, as shown in the \dQuote{Examples} section.
+#' When using [filter()] or [kernapply()] with these filters, use
+#' `circular=TRUE`. CASE 2: for windowing, if `normalize` is set to FALSE, as
+#' for example in computing a Welch spectral estimate.
 #'
 #' @param type a string indicating the type of filter to use.  (See Harris
-#' (1978) for a comparison of these and similar filters.)
+#' (1978) for a comparison of these and similar filters.) The choices for
+#' the present function are as follows.
 #'
 #' * `"blackman-harris"` yields a modified raised-cosine filter designated
 #' as "4-Term (-92 dB) Blackman-Harris" by Harris (1978; coefficients given in
@@ -3260,26 +3260,39 @@ gravity <- function(latitude = 45, degrees = TRUE) {
 #'
 #' * `"rectangular"` for a flat filter.  (This is just for convenience.  Note that
 #' [`kernel`]`("daniell",....)` gives the same result, in kernel form.)
-#' `"hamming"` for a Hamming filter (a raised-cosine that does not taper
-#' to zero at the ends)
 #'
-#' * `"hann"` (a raised cosine that tapers to zero at the ends).
+#' * `"hamming"` for a raised-cosine filter designed by
+#' Hamming. The mathematical form is
+#' \eqn{a + (1-a)\cos(2\pi i/m)}{a + (1-a)*cos(2*pi*i/m)}
+#' where \eqn{a=0.54}{a=0.54} and \eqn{i}{i} ranges
+#' from \eqn{-m/2} to \eqn{m/2}.
+#'
+#' * `"hann"` for a cosine filter that tapers to zero at the ends, i.e.
+#' of the same mathematical form as `"hamming"`, but with
+#' \eqn{a=1/2}{1/2}.
 #'
 #' @param m length of filter.  This should be an odd number, for any
 #' non-rectangular filter.
 #'
+#' @param normalize logical value indicating whether to return numbers that sum
+#' to 1.  This is TRUE by default, which is useful if the purpose is to lowpass
+#' filter a timeseries without altering power in the pass-band.  However,
+#' `normalize=FALSE` is the right choice if the purpose is to window a
+#' timeseries, e.g. in computing a spectral estimate using Welch's method (see
+#' [pwelch()]).
+#'
 #' @param asKernel boolean, set to `TRUE` to get a smoothing kernel for
 #' the return value.
 #'
-#' @return If `asKernel` is `FALSE`, this returns a list of filter
-#' coefficients, symmetric about the midpoint and summing to 1.  These may be
+#' @return If `asKernel` is `FALSE`, this returns a vector of filter
+#' coefficients, symmetric about the midpoint. The vector will sum to 1
+#' if `normalize=TRUE` (i.e. by default).  The return value may be
 #' used with [filter()], which should be provided with argument
 #' `circular=TRUE` to avoid phase offsets.  If `asKernel` is
 #' `TRUE`, the return value is a smoothing kernel, which can be applied to
 #' a timeseries with [kernapply()], whose bandwidth can be determined
 #' with [bandwidth.kernel()], and which has both print and plot
 #' methods.
-#'
 #'
 #' @references F. J. Harris, 1978.  On the use of windows for harmonic analysis
 #' with the discrete Fourier Transform.  *Proceedings of the IEEE*, 66(1),
@@ -3288,56 +3301,57 @@ gravity <- function(latitude = 45, degrees = TRUE) {
 #' @examples
 #' library(oce)
 #'
-#' # 1. Demonstrate step-function response
+#' # Demonstrate step-function response
 #' y <- c(rep(1, 10), rep(-1, 10))
 #' x <- seq_along(y)
 #' plot(x, y, type = "o", ylim = c(-1.05, 1.05))
 #' BH <- makeFilter("blackman-harris", 11, asKernel = FALSE)
 #' H <- makeFilter("hamming", 11, asKernel = FALSE)
 #' yBH <- stats::filter(y, BH)
-#' points(x, yBH, col = 2, type = "o")
+#' lines(x, yBH, type = "o", col = 2)
 #' yH <- stats::filter(y, H)
-#' points(yH, col = 3, type = "o")
+#' lines(yH, type = "o", col = 3)
+#' grid()
 #' legend("topright",
-#'     col = 1:3, cex = 2 / 3, pch = 1,
+#'     col = 1:3, bg = "white",
 #'     legend = c("input", "Blackman Harris", "Hamming")
 #' )
 #'
-#' # 2. Show theoretical and practical filter gain, where
-#' #    the latter is based on random white noise, and
-#' #    includes a particular value for the spans
-#' #    argument of spectrum(), etc.
-#'
-#' @section Sample of Usage:
-#' \preformatted{
-#' # need signal package for this example
-#' r <- rnorm(2048)
-#' rh <- stats::filter(r, H)
-#' rh <- rh[is.finite(rh)] # kludge to remove NA at start/end
-#' sR <- spectrum(r, plot=FALSE, spans=c(11, 5, 3))
-#' sRH <- spectrum(rh, plot=FALSE, spans=c(11, 5, 3))
-#' par(mfrow=c(2, 1), mar=c(3, 3, 1, 1), mgp=c(2, 0.7, 0))
-#' plot(sR$freq, sRH$spec/sR$spec, xlab="Frequency", ylab="Power Transfer",
-#'      type="l", lwd=5, col="gray")
-#' theory <- freqz(H, n=seq(0,pi,length.out=100))
-#' # Note we must square the modulus for the power spectrum
-#' lines(theory$f/pi/2, Mod(theory$h)^2, lwd=1, col="red")
-#' grid()
-#' legend("topright", col=c("gray", "red"), lwd=c(5, 1), cex=2/3,
-#'        legend=c("Practical", "Theory"), bg="white")
-#' plot(log10(sR$freq), log10(sRH$spec/sR$spec),
-#'      xlab="log10 Frequency", ylab="log10 Power Transfer",
-#'      type="l", lwd=5, col="gray")
-#' theory <- freqz(H, n=seq(0,pi,length.out=100))
-#' # Note we must square the modulus for the power spectrum
-#' lines(log10(theory$f/pi/2), log10(Mod(theory$h)^2), lwd=1, col="red")
-#' grid()
-#' legend("topright", col=c("gray", "red"), lwd=c(5, 1), cex=2/3,
-#'        legend=c("Practical", "Theory"), bg="white")
-#' }
+#' # # 2. Show theoretical and practical filter gain, where
+#' # #    the latter is based on random white noise, and
+#' # #    includes a particular value for the spans
+#' # #    argument of spectrum(), etc.
+#' #
+#' # @section Sample of Usage:
+#' # \preformatted{
+#' # # need signal package for this example
+#' # r <- rnorm(2048)
+#' # rh <- stats::filter(r, H)
+#' # rh <- rh[is.finite(rh)] # kludge to remove NA at start/end
+#' # sR <- spectrum(r, plot=FALSE, spans=c(11, 5, 3))
+#' # sRH <- spectrum(rh, plot=FALSE, spans=c(11, 5, 3))
+#' # par(mfrow=c(2, 1), mar=c(3, 3, 1, 1), mgp=c(2, 0.7, 0))
+#' # plot(sR$freq, sRH$spec/sR$spec, xlab="Frequency", ylab="Power Transfer",
+#' #      type="l", lwd=5, col="gray")
+#' # theory <- freqz(H, n=seq(0,pi,length.out=100))
+#' # # Note we must square the modulus for the power spectrum
+#' # lines(theory$f/pi/2, Mod(theory$h)^2, lwd=1, col="red")
+#' # grid()
+#' # legend("topright", col=c("gray", "red"), lwd=c(5, 1), cex=2/3,
+#' #        legend=c("Practical", "Theory"), bg="white")
+#' # plot(log10(sR$freq), log10(sRH$spec/sR$spec),
+#' #      xlab="log10 Frequency", ylab="log10 Power Transfer",
+#' #      type="l", lwd=5, col="gray")
+#' # theory <- freqz(H, n=seq(0,pi,length.out=100))
+#' # # Note we must square the modulus for the power spectrum
+#' # lines(log10(theory$f/pi/2), log10(Mod(theory$h)^2), lwd=1, col="red")
+#' # grid()
+#' # legend("topright", col=c("gray", "red"), lwd=c(5, 1), cex=2/3,
+#' #        legend=c("Practical", "Theory"), bg="white")
+#' # }
 #'
 #' @author Dan Kelley
-makeFilter <- function(type = c("blackman-harris", "rectangular", "hamming", "hann"), m, asKernel = TRUE) {
+makeFilter <- function(type = c("blackman-harris", "rectangular", "hamming", "hann"), m, normalize = TRUE, asKernel = TRUE) {
     type <- match.arg(type)
     if (missing(m)) {
         stop("must supply 'm'")
@@ -3359,7 +3373,9 @@ makeFilter <- function(type = c("blackman-harris", "rectangular", "hamming", "ha
     } else if (type == "hann") {
         coef <- 0.50 - 0.50 * cos(2 * pi * i / (m - 1))
     }
-    coef <- coef / sum(coef) # ensure unit sum
+    if (normalize) {
+        coef <- coef / sum(coef)
+    } # ensure unit sum
     if (!asKernel) {
         return(coef)
     }
@@ -3369,7 +3385,11 @@ makeFilter <- function(type = c("blackman-harris", "rectangular", "hamming", "ha
     middle <- ceiling(m / 2)
     coef <- coef[middle:m]
     # the r=0 is to prevent code-analysis warning; it only applies to Fejer, which we do not use
-    return(kernel(coef = coef, name = paste(type, "(", m, ")", sep = ""), r = 0))
+    if (normalize) {
+        return(coef)
+    } else {
+        return(kernel(coef = coef, name = paste(type, "(", m, ")", sep = ""), r = 0))
+    }
 }
 
 #' Grid Data Using the Barnes Algorithm
