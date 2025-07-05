@@ -3265,14 +3265,15 @@ gravity <- function(latitude = 45, degrees = TRUE) {
 #' Hamming. The mathematical form is
 #' \eqn{a + (1-a)\cos(2\pi i/m)}{a + (1-a)*cos(2*pi*i/m)}
 #' where \eqn{a=0.54}{a=0.54} and \eqn{i}{i} ranges
-#' from \eqn{-m/2} to \eqn{m/2}.
+#' across the integers between \eqn{-m/2} and \eqn{m/2}.
 #'
 #' * `"hann"` for a cosine filter that tapers to zero at the ends, i.e.
 #' of the same mathematical form as `"hamming"`, but with
 #' \eqn{a=1/2}{1/2}.
 #'
 #' @param m length of filter.  This should be an odd number, for any
-#' non-rectangular filter.
+#' non-rectangular filter, but no errors or warnings are issued if it
+#' is an even number.
 #'
 #' @param normalize logical value indicating whether to return numbers that sum
 #' to 1.  This is TRUE by default, which is useful if the purpose is to lowpass
@@ -3285,14 +3286,14 @@ gravity <- function(latitude = 45, degrees = TRUE) {
 #' the return value.
 #'
 #' @return If `asKernel` is `FALSE`, this returns a vector of filter
-#' coefficients, symmetric about the midpoint. The vector will sum to 1
-#' if `normalize=TRUE` (i.e. by default).  The return value may be
-#' used with [filter()], which should be provided with argument
-#' `circular=TRUE` to avoid phase offsets.  If `asKernel` is
-#' `TRUE`, the return value is a smoothing kernel, which can be applied to
-#' a timeseries with [kernapply()], whose bandwidth can be determined
-#' with [bandwidth.kernel()], and which has both print and plot
-#' methods.
+#' coefficients, symmetric about the midpoint. The vector will sum to 1 if
+#' `normalize=TRUE` (i.e. by default).  The return value may be used with
+#' [filter()], which should be provided with argument `circular=TRUE` to avoid
+#' phase offsets.  If `asKernel` is TRUE and if `normalize` is FALSE, an error
+#' is reported.  On the other hand, if `asKernel` is TRUE and `normalize` is
+#' FALSE, then the return value is a smoothing kernel, which can be applied to a
+#' timeseries with [kernapply()], whose bandwidth can be determined with
+#' [bandwidth.kernel()], and which has both print and plot methods.
 #'
 #' @references F. J. Harris, 1978.  On the use of windows for harmonic analysis
 #' with the discrete Fourier Transform.  *Proceedings of the IEEE*, 66(1),
@@ -3310,46 +3311,12 @@ gravity <- function(latitude = 45, degrees = TRUE) {
 #' yBH <- stats::filter(y, BH)
 #' lines(x, yBH, type = "o", col = 2)
 #' yH <- stats::filter(y, H)
-#' lines(yH, type = "o", col = 3)
+#' lines(x, yH, type = "o", col = 3)
 #' grid()
 #' legend("topright",
 #'     col = 1:3, bg = "white",
 #'     legend = c("input", "Blackman Harris", "Hamming")
 #' )
-#'
-#' # # 2. Show theoretical and practical filter gain, where
-#' # #    the latter is based on random white noise, and
-#' # #    includes a particular value for the spans
-#' # #    argument of spectrum(), etc.
-#' #
-#' # @section Sample of Usage:
-#' # \preformatted{
-#' # # need signal package for this example
-#' # r <- rnorm(2048)
-#' # rh <- stats::filter(r, H)
-#' # rh <- rh[is.finite(rh)] # kludge to remove NA at start/end
-#' # sR <- spectrum(r, plot=FALSE, spans=c(11, 5, 3))
-#' # sRH <- spectrum(rh, plot=FALSE, spans=c(11, 5, 3))
-#' # par(mfrow=c(2, 1), mar=c(3, 3, 1, 1), mgp=c(2, 0.7, 0))
-#' # plot(sR$freq, sRH$spec/sR$spec, xlab="Frequency", ylab="Power Transfer",
-#' #      type="l", lwd=5, col="gray")
-#' # theory <- freqz(H, n=seq(0,pi,length.out=100))
-#' # # Note we must square the modulus for the power spectrum
-#' # lines(theory$f/pi/2, Mod(theory$h)^2, lwd=1, col="red")
-#' # grid()
-#' # legend("topright", col=c("gray", "red"), lwd=c(5, 1), cex=2/3,
-#' #        legend=c("Practical", "Theory"), bg="white")
-#' # plot(log10(sR$freq), log10(sRH$spec/sR$spec),
-#' #      xlab="log10 Frequency", ylab="log10 Power Transfer",
-#' #      type="l", lwd=5, col="gray")
-#' # theory <- freqz(H, n=seq(0,pi,length.out=100))
-#' # # Note we must square the modulus for the power spectrum
-#' # lines(log10(theory$f/pi/2), log10(Mod(theory$h)^2), lwd=1, col="red")
-#' # grid()
-#' # legend("topright", col=c("gray", "red"), lwd=c(5, 1), cex=2/3,
-#' #        legend=c("Practical", "Theory"), bg="white")
-#' # }
-#'
 #' @author Dan Kelley
 makeFilter <- function(type = c("blackman-harris", "rectangular", "hamming", "hann"), m, normalize = TRUE, asKernel = TRUE) {
     type <- match.arg(type)
@@ -3357,6 +3324,9 @@ makeFilter <- function(type = c("blackman-harris", "rectangular", "hamming", "ha
         stop("must supply 'm'")
     }
     i <- seq(0, m - 1)
+    if (!normalize && asKernel) {
+        stop("cannot specify asKernel=TRUE if normalize=FALSE")
+    }
     if (type == "blackman-harris") {
         # See Harris (1978) table on p65
         if (m == 2 * floor(m / 2)) {

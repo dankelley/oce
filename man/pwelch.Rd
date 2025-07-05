@@ -23,42 +23,46 @@ pwelch(
 it there is no need to \code{fs}, and doing so will result in an error if it does
 not match the value inferred from \code{x}.}
 
-\item{window}{optional numeric vector specifying a window to be applied to
-the timeseries subsamples.  If \code{spec} is provided, then it is an error to
-provide \code{window}. This is because this function is set up to construct a
-window automatically in this case. The window is of the Hamming variety, of
-length given by \code{nfft}, if \code{nfft} is less than half the length of \code{x}, or of
-length \code{x} otherwise. On the other hand, if \code{spec} is not provided but
-\code{nfft}, then a similar window is constructed if \code{window} is not provided. If
-neither \code{nfft} nor \code{window} is provided, \code{pwelch} will divide the timeseries
-up into 8 subdivisions (equivalent, it will act as though \code{nfft} were set to
-\code{length(x)/8}).}
+\item{window}{optional value that can have several meanings. CASE 1: If
+\code{window} is a single integer, then that is taken as the number of fragments
+into which \code{x} is subdivided. In this case, a Hamming window, of length
+\code{length(x)/window}, is constructed using \code{\link[=makeFilter]{makeFilter()}} with its \code{normalize}
+and \code{asKernel} arguments both set to FALSE.  This filter is then multiplied
+elementwise with the \code{x} values in the subdivision. CASE 2: if \code{window} is a
+numeric vector of length exceeding 1, then the values are taken to be a
+filter to be applied to the subset of \code{x}, and thus the length of \code{window}
+and the value of \code{nfft} must be equal, if both are supplied.}
 
-\item{noverlap}{number of points to overlap between windows.  If not
-specified, this will be set to half the window length.}
+\item{noverlap}{number of points to overlap between the subdivisions
+of \code{x}. If this is not provided, a value equal to half the subset
+length will be used.}
 
-\item{nfft}{length of FFT. See \code{window} for how \code{nfft} interacts with that
-argument.}
+\item{nfft}{length of the FFT, i.e. length of the desired subsets of \code{x}.
+This argument works together with the \code{window} argument; see the documention
+on the latter to learn more.}
 
-\item{fs}{frequency of time-series.  If \code{x} is a time-series, and if \code{fs} is
-supplied, then time-series is altered to have frequency \code{fs}.}
+\item{fs}{numeric value indicating the sampling frequency for \code{x}.  If
+\code{x} is already a time-series object, then \code{fs} must match its frequency,
+or an error is reported.}
 
-\item{spec}{optional function to be used for the computation of the spectrum,
-to allow finer-grained control of the processing. If provided, \code{spec} must
-accept a time-series as its first argument, and must return a list containing
-the spectrum in \code{spec} and the frequency in \code{freq}. Note that the \code{window}
-parameter must not be supplied if \code{spec} and \code{nfft} are supplied, because in
-that case a window is automatically constructed (see the documentation for
-\code{window}). Note that the values of \code{demean}, \code{detrend} and \code{plot} are ignored
-if \code{spec} is given. However, the \dots argument \emph{is} passed to \code{spec}.
-Frankly, users who wish to supply their own \code{spec} might be better
-advised to just break up the time-series themselves, to gain full
-control.}
+\item{spec}{optional function to be used, in conjunction with \code{nfft}, to
+control the computation of the spectra in the subdivided time-series. The
+purpose is to allow fine-grained control of the processing, mainly for use by
+experts. If provided, \code{spec} must accept a time-series as its first argument,
+along with optional other arguments that are passed through as the \code{...}
+argument. The return value from \code{spec} must be a list or data frame
+containing the spectrum in an element named \code{spec} and the frequency in an
+element named \code{freq}. Note that an error will be reported if \code{window} is
+provided in addition to \code{spec} and \code{nfft}. This is because \code{\link[=pwelch]{pwelch()}}
+automatically constructs a (Hamming) window and multiplies it into each
+subset of \code{x}. Also, note that the values of \code{demean} and \code{detrend} are
+ignored if \code{spec} is provided; it's up to the user to decide on these things
+and to handle them within \code{spec()}.}
 
 \item{demean, detrend}{logical values that can control the spectrum
-calculation, in the default case of \code{spec}.  These are passed to \code{\link[=spectrum]{spectrum()}}
-and thence \code{\link[=spec.pgram]{spec.pgram()}}; see the help pages for the latter for an
-explanation.}
+calculation, but only if \code{spec} is not provided. These are passed to
+\code{\link[=spectrum]{spectrum()}} and thence to \code{\link[=spec.pgram]{spec.pgram()}}; see the help pages for the latter
+for an explanation.}
 
 \item{plot}{logical, set to \code{TRUE} to plot the spectrum.}
 
@@ -76,14 +80,14 @@ bandwidth \code{bandwidth}, etc.
 \description{
 Compute periodogram using the Welch (1967) method. This function is somewhat
 analogous to the Matlab function of the same name, but it is \emph{not} intended
-as a drop-in replacement. Please see the \sQuote{Details} and the description
-of the parameters, to learn about the complex interactions of the controlling
+as a drop-in replacement. Please see the \sQuote{Arguments} and
+\sQuote{Details} to learn about the complex interactions of the controlling
 parameters.
 }
 \details{
-The basic gist of the action is not too difficult to explain: \code{x} is broken
-up into subdivisions, spectral analysis is done on each, and the results are
-averaged to get a return value.
+The gist of the \code{\link[=pwelch]{pwelch()}} behaviour is not too difficult to explain: \code{x} is
+broken up into subdivisions, spectral analysis is done on each, and the
+results are averaged to get a return value.
 
 However, things get complicated in practice. This is because there are
 several interlocking parameters that control both the subdivision stage and
@@ -125,8 +129,10 @@ together with \code{spec} (it is issue 2299 on the github website). This issued
 an error message that resulted from the fact that it was not permitted to
 supply \code{window} in that case. To address the problem, whilst retaining the
 requirement that \code{window} not be supplied, \code{pwelch()} was changed so that
-it constructs a window automatically. At this time, the documentation
-was rewritten in an attempt to provide more clarity.
+it constructs a window automatically.  (In the future, \code{\link[=pwelch]{pwelch()}} may be
+modified to accept \code{window=FALSE}, in which case no windowing will be done
+here, leaving it up to the user to decide whether to do windowing in the
+user-supplied \code{spec()} function.)
 }
 }
 
@@ -142,20 +148,6 @@ lines(w$freq, w$spec, col = "red")
 w2 <- pwelch(X, nfft = 75, plot = FALSE)
 lines(w2$freq, w2$spec, col = "green")
 abline(v = 200, col = "blue", lty = "dotted")
-cat("Checking spectral levels with Parseval's theorem:\n")
-cat("var(x)                              = ", var(x), "\n")
-cat("2 * sum(s$spec) * diff(s$freq[1:2]) = ", 2 * sum(s$spec) * diff(s$freq[1:2]), "\n")
-cat("sum(w$spec) * diff(s$freq[1:2])     = ", sum(w$spec) * diff(w$freq[1:2]), "\n")
-cat("sum(w2$spec) * diff(s$freq[1:2])    = ", sum(w2$spec) * diff(w2$freq[1:2]), "\n")
-# co2
-par(mar = c(3, 3, 2, 1), mgp = c(2, 0.7, 0))
-s <- spectrum(co2, plot = FALSE)
-plot(log10(s$freq), s$spec * s$freq,
-    xlab = expression(log[10] * Frequency), ylab = "Power*Frequency", type = "l"
-)
-title("Variance-preserving spectrum")
-pw <- pwelch(co2, nfft = 256, plot = FALSE)
-lines(log10(pw$freq), pw$spec * pw$freq, col = "red")
 
 }
 \references{
@@ -165,5 +157,5 @@ Modified Periodograms. \emph{IEEE Transactions on Audio Electroacoustics},
 AU-15, 70--73.
 }
 \author{
-Dan Kelley
+Dan Kelley and Clark Richards
 }

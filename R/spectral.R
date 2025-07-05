@@ -4,13 +4,13 @@
 #'
 #' Compute periodogram using the Welch (1967) method. This function is somewhat
 #' analogous to the Matlab function of the same name, but it is *not* intended
-#' as a drop-in replacement. Please see the \sQuote{Details} and the description
-#' of the parameters, to learn about the complex interactions of the controlling
+#' as a drop-in replacement. Please see the \sQuote{Arguments} and
+#' \sQuote{Details} to learn about the complex interactions of the controlling
 #' parameters.
 #'
-#' The basic gist of the action is not too difficult to explain: `x` is broken
-#' up into subdivisions, spectral analysis is done on each, and the results are
-#' averaged to get a return value.
+#' The gist of the [pwelch()] behaviour is not too difficult to explain: `x` is
+#' broken up into subdivisions, spectral analysis is done on each, and the
+#' results are averaged to get a return value.
 #'
 #' However, things get complicated in practice. This is because there are
 #' several interlocking parameters that control both the subdivision stage and
@@ -29,42 +29,46 @@
 #' it there is no need to `fs`, and doing so will result in an error if it does
 #' not match the value inferred from `x`.
 #'
-#' @param window optional numeric vector specifying a window to be applied to
-#' the timeseries subsamples.  If `spec` is provided, then it is an error to
-#' provide `window`. This is because this function is set up to construct a
-#' window automatically in this case. The window is of the Hamming variety, of
-#' length given by `nfft`, if `nfft` is less than half the length of `x`, or of
-#' length `x` otherwise. On the other hand, if `spec` is not provided but
-#' `nfft`, then a similar window is constructed if `window` is not provided. If
-#' neither `nfft` nor `window` is provided, `pwelch` will divide the timeseries
-#' up into 8 subdivisions (equivalent, it will act as though `nfft` were set to
-#' `length(x)/8`).
+#' @param window optional value that can have several meanings. CASE 1: If
+#' `window` is a single integer, then that is taken as the number of fragments
+#' into which `x` is subdivided. In this case, a Hamming window, of length
+#' `length(x)/window`, is constructed using [makeFilter()] with its `normalize`
+#' and `asKernel` arguments both set to FALSE.  This filter is then multiplied
+#' elementwise with the `x` values in the subdivision. CASE 2: if `window` is a
+#' numeric vector of length exceeding 1, then the values are taken to be a
+#' filter to be applied to the subset of `x`, and thus the length of `window`
+#' and the value of `nfft` must be equal, if both are supplied.
 #'
-#' @param noverlap number of points to overlap between windows.  If not
-#' specified, this will be set to half the window length.
+#' @param noverlap number of points to overlap between the subdivisions
+#' of `x`. If this is not provided, a value equal to half the subset
+#' length will be used.
 #'
-#' @param nfft length of FFT. See `window` for how `nfft` interacts with that
-#' argument.
+#' @param nfft length of the FFT, i.e. length of the desired subsets of `x`.
+#' This argument works together with the `window` argument; see the documention
+#' on the latter to learn more.
 #'
-#' @param fs frequency of time-series.  If `x` is a time-series, and if `fs` is
-#' supplied, then time-series is altered to have frequency `fs`.
+#' @param fs numeric value indicating the sampling frequency for `x`.  If
+#' `x` is already a time-series object, then `fs` must match its frequency,
+#' or an error is reported.
 #'
-#' @param spec optional function to be used for the computation of the spectrum,
-#' to allow finer-grained control of the processing. If provided, `spec` must
-#' accept a time-series as its first argument, and must return a list containing
-#' the spectrum in `spec` and the frequency in `freq`. Note that the `window`
-#' parameter must not be supplied if `spec` and `nfft` are supplied, because in
-#' that case a window is automatically constructed (see the documentation for
-#' `window`). Note that the values of `demean`, `detrend` and `plot` are ignored
-#' if `spec` is given. However, the \dots argument *is* passed to `spec`.
-#' Frankly, users who wish to supply their own `spec` might be better
-#' advised to just break up the time-series themselves, to gain full
-#' control.
+#' @param spec optional function to be used, in conjunction with `nfft`, to
+#' control the computation of the spectra in the subdivided time-series. The
+#' purpose is to allow fine-grained control of the processing, mainly for use by
+#' experts. If provided, `spec` must accept a time-series as its first argument,
+#' along with optional other arguments that are passed through as the `...`
+#' argument. The return value from `spec` must be a list or data frame
+#' containing the spectrum in an element named `spec` and the frequency in an
+#' element named `freq`. Note that an error will be reported if `window` is
+#' provided in addition to `spec` and `nfft`. This is because [pwelch()]
+#' automatically constructs a (Hamming) window and multiplies it into each
+#' subset of `x`. Also, note that the values of `demean` and `detrend` are
+#' ignored if `spec` is provided; it's up to the user to decide on these things
+#' and to handle them within `spec()`.
 #'
 #' @param demean,detrend logical values that can control the spectrum
-#' calculation, in the default case of `spec`.  These are passed to [spectrum()]
-#' and thence [spec.pgram()]; see the help pages for the latter for an
-#' explanation.
+#' calculation, but only if `spec` is not provided. These are passed to
+#' [spectrum()] and thence to [spec.pgram()]; see the help pages for the latter
+#' for an explanation.
 #'
 #' @param plot logical, set to `TRUE` to plot the spectrum.
 #'
@@ -97,14 +101,16 @@
 #'    remove means and trends from data. For more control, the `spec` argument
 #'    was added to let users sidestep [spectrum()] entirely, by providing their
 #'    own spectral computation functions.
-
+#'
 #' 2. *2025-07-04:* until this date, there was an error in supplying `nfft`
 #'    together with `spec` (it is issue 2299 on the github website). This issued
 #'    an error message that resulted from the fact that it was not permitted to
 #'    supply `window` in that case. To address the problem, whilst retaining the
 #'    requirement that `window` not be supplied, `pwelch()` was changed so that
-#'    it constructs a window automatically. At this time, the documentation
-#'    was rewritten in an attempt to provide more clarity.
+#'    it constructs a window automatically.  (In the future, [pwelch()] may be
+#'    modified to accept `window=FALSE`, in which case no windowing will be done
+#'    here, leaving it up to the user to decide whether to do windowing in the
+#'    user-supplied `spec()` function.)
 #'
 #' @references
 #'
@@ -125,41 +131,27 @@
 #' w2 <- pwelch(X, nfft = 75, plot = FALSE)
 #' lines(w2$freq, w2$spec, col = "green")
 #' abline(v = 200, col = "blue", lty = "dotted")
-#' cat("Checking spectral levels with Parseval's theorem:\n")
-#' cat("var(x)                              = ", var(x), "\n")
-#' cat("2 * sum(s$spec) * diff(s$freq[1:2]) = ", 2 * sum(s$spec) * diff(s$freq[1:2]), "\n")
-#' cat("sum(w$spec) * diff(s$freq[1:2])     = ", sum(w$spec) * diff(w$freq[1:2]), "\n")
-#' cat("sum(w2$spec) * diff(s$freq[1:2])    = ", sum(w2$spec) * diff(w2$freq[1:2]), "\n")
-#' # co2
-#' par(mar = c(3, 3, 2, 1), mgp = c(2, 0.7, 0))
-#' s <- spectrum(co2, plot = FALSE)
-#' plot(log10(s$freq), s$spec * s$freq,
-#'     xlab = expression(log[10] * Frequency), ylab = "Power*Frequency", type = "l"
-#' )
-#' title("Variance-preserving spectrum")
-#' pw <- pwelch(co2, nfft = 256, plot = FALSE)
-#' lines(log10(pw$freq), pw$spec * pw$freq, col = "red")
 #'
-#' @author Dan Kelley
+#' @author Dan Kelley and Clark Richards
 pwelch <- function(
     x, window, noverlap, nfft, fs, spec,
     demean = FALSE, detrend = TRUE,
     plot = TRUE, debug = getOption("oceDebug"), ...) {
     # http://octave.svn.sourceforge.net/viewvc/octave/trunk/octave-forge/main/signal/inst/pwelch.m
     # avoid having to pull in the signal library
-    hamming.local <- function(n) {
-        n <- round(n)
-        if (n < 0) {
-            stop("n must round to a positive integer")
-        }
-        if (n == 1) {
-            c <- 1
-        } else {
-            n <- n - 1
-            pi <- 4.0 * atan2(1.0, 1.0)
-            c <- 0.54 - 0.46 * cos(2 * pi * (0:n) / n)
-        }
-    }
+    # 2025-07-05 hamming.local <- function(n) {
+    # 2025-07-05     n <- round(n)
+    # 2025-07-05     if (n < 0) {
+    # 2025-07-05         stop("n must round to a positive integer")
+    # 2025-07-05     }
+    # 2025-07-05     if (n == 1) {
+    # 2025-07-05         1
+    # 2025-07-05     } else {
+    # 2025-07-05         n <- n - 1
+    # 2025-07-05         pi <- 4.0 * atan2(1.0, 1.0)
+    # 2025-07-05         0.54 - 0.46 * cos(2 * pi * (0:n) / n)
+    # 2025-07-05     }
+    # 2025-07-05 }
     # hanning.local <- function(n) # avoid having to pull in the signal library
     # {
     #     if (!(length(n) == 1 && (n == round(n)) && (n > 0)))
@@ -191,10 +183,10 @@ pwelch <- function(
     }
     if (gave.spec) {
         if (!gave.nfft) {
-            stop("give nfft if spec is given")
+            stop("must provide nfft if spec is provided")
         }
         if (gave.window) {
-            stop("window must not be given, if spec is given")
+            stop("window must not be provided, if spec is provided")
         }
         # User gave nfft, so we can use that
         if (nfft < 1) {
@@ -203,21 +195,24 @@ pwelch <- function(
         if (nfft > 0.5 * nx) {
             nfft <- nx
         }
-        window <- hamming.local(nfft)
-        oceDebug(debug, "spec and nfft both given; using hamming window of length ", nfft, "\n")
+        # 2025-07-05 window <- hamming.local(nfft)
+        window <- makeFilter("hamming", nfft, normalize = FALSE, asKernel = FALSE)
+        oceDebug(debug, "spec and nfft both provided; using hamming window of length ", nfft, "\n")
         # --END
     } else {
+        # did not give spec
         if (gave.window) {
             if (gave.nfft && (length(window) != nfft)) {
-                stop("if both 'window' and 'nfft' are given, then length(window) must equal nfft")
+                stop("if both 'window' and 'nfft' are provided, then length(window) must equal nfft")
             }
             if (length(window) == 1) {
                 window <- as.integer(window)
                 if (window < 1L) {
                     stop("window must be a positive integer, if length(window)==1")
                 }
-                window <- hamming.local(floor(nx / window))
-                oceDebug(debug, "window given, but spec not given,; using hamming window of length ", nx / window, "\n")
+                # 2025-07-05 window <- hamming.local(floor(nx / window))
+                window <- makeFilter("hamming", floor(nx / window), normalize = FALSE, asKernel = FALSE)
+                oceDebug(debug, "window provided, but spec not provided,; using hamming window of length ", nx / window, "\n")
             } else if (!is.vector(window)) {
                 stop("'window' must be a numeric vector")
             }
@@ -229,8 +224,9 @@ pwelch <- function(
                 if (nfft > 0.5 * nx) {
                     nfft <- nx
                 }
-                window <- hamming.local(nfft)
-                oceDebug(debug, "window given, but spec not given,; using hamming window of length ", nx / window, "\n")
+                # 2025-07-05 window <- hamming.local(nfft)
+                window <- makeFilter("hamming", nfft, normalize = FALSE, asKernel = FALSE)
+                oceDebug(debug, "window provided, but spec not provided,; using hamming window of length ", nx / window, "\n")
             } else {
                 # FIXME: should we use 'overlap' here?
                 windowLength <- min(
@@ -241,7 +237,8 @@ pwelch <- function(
                         floor(nx / 8 / 0.5)
                     }
                 )
-                window <- hamming.local(windowLength)
+                # 2025-07-05 window <- hamming.local(windowLength)
+                window <- makeFilter("hamming", windowLength, normalize = FALSE, asKernel = FALSE)
                 oceDebug(debug, "window not given; using hamming window of length ", nx / windowLength, "\n")
             }
         }
