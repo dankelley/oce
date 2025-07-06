@@ -17,7 +17,7 @@ oceColorsCubeHelix(
 \item{n}{number of colors to create, with default 256.}
 
 \item{start}{numeric value indicating the starting colour.
-THe default, 0.5, corresponds to purpose, as in Green (2011).}
+The default, 0.5, corresponds to purpose, as in Green (2011).}
 
 \item{rotations}{numeric value for number of rotations of the
 helix, with default -1.5 as in Green (2011).}

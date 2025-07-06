@@ -210,7 +210,7 @@ if (file.exists(file)) {
 
 }
 \references{
-Nortek AS. “Integrator’s Guide: Signature.” Nortek AS, April 30, 2025.
+Nortek AS. “Integrators Guide: Signature.” Nortek AS, April 30, 2025.
 \url{https://support.nortekgroup.com/hc/en-us/article_attachments/19830760385436}.
 
 Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz (2024.1),} 2024.

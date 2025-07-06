@@ -25,7 +25,7 @@ presentTime <- function(tz = "UTC") {
 #' Base Class for oce Objects
 #'
 #' This is mainly used within oce to create sub-classes, although
-#' users may wish to mek direct calls to `new("oce")` for
+#' users may wish to make direct calls to `new("oce")` for
 #' their own purposes.
 #'
 #' @slot metadata A list containing information about the data. The

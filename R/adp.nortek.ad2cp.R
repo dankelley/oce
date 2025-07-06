@@ -523,7 +523,7 @@ ad2cpCodeToName <- function(code = NULL, prefix = TRUE) {
 #'
 #' @references
 #'
-#' Nortek AS. “Integrator’s Guide: Signature.” Nortek AS, April 30, 2025.
+#' Nortek AS. “Integrators Guide: Signature.” Nortek AS, April 30, 2025.
 #' <https://support.nortekgroup.com/hc/en-us/article_attachments/19830760385436>.
 #'
 #' Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz (2024.1),} 2024.
@@ -2793,7 +2793,7 @@ beamToXyzAdpAD2CP <- function(x, debug = getOption("oceDebug")) {
 #' This function is in active development, and both the methodology and user
 #' interface may change without notice. Only developers (or invitees) should be
 #' trying to use this function. See the Nortek documents listed in
-#' \sQuote{Referencess} for more on coordinate transformation.
+#' \sQuote{References} for more on coordinate transformation.
 #'
 #' @param x an [adp-class] object created by [read.adp.ad2cp()].  It
 #' must be in xyz coordinates.

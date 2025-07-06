@@ -20,7 +20,7 @@
 #'
 #' The parameters `window`, `noverlap` and `nfft` control the subdivision
 #' behaviour. The parameters `fs`, `spec`, `demean` and `detrend` control the
-#' spectral-analysis behaviour. Users who find the documention on these things
+#' spectral-analysis behaviour. Users who find the documentation on these things
 #' to be confusing may want to examine the code to see what is actually being
 #' done. If they see problems, they are asked to post issues on the oce github
 #' website.
@@ -44,7 +44,7 @@
 #' length will be used.
 #'
 #' @param nfft length of the FFT, i.e. length of the desired subsets of `x`.
-#' This argument works together with the `window` argument; see the documention
+#' This argument works together with the `window` argument; see the documentation
 #' on the latter to learn more.
 #'
 #' @param fs numeric value indicating the sampling frequency for `x`.  If

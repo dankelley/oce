@@ -3262,9 +3262,7 @@ gravity <- function(latitude = 45, degrees = TRUE) {
 #' of the same mathematical form as `"hamming"`, but with
 #' `a` equal to 0.5.
 #'
-#' @param m length of filter.  This should be an odd number, for any
-#' non-rectangular filter, but no errors or warnings are issued if it
-#' is an even number.
+#' @param m length of filter.
 #'
 #' @param normalize logical value indicating whether to return numbers that sum
 #' to 1.  This is TRUE by default, which is useful if the purpose is to lowpass
@@ -3320,10 +3318,6 @@ makeFilter <- function(type = c("blackman-harris", "rectangular", "hamming", "ha
     if (type == "rectangular") {
         coef <- rep(1, m) # 2025-07-06 this used to be 1/m repeated
     } else {
-        if (m == 2 * floor(m / 2)) {
-            m <- m + 1
-            warning("increased m from ", m-1, " to ", m, ", to make it an odd number")
-        }
         i <- seq(0, m - 1)
         if (type == "blackman-harris") {
             # See Harris (1978) table on p65

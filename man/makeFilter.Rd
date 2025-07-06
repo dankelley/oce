@@ -30,9 +30,7 @@ of the same mathematical form as \code{"hamming"}, but with
 \code{a} equal to 0.5.
 }}
 
-\item{m}{length of filter.  This should be an odd number, for any
-non-rectangular filter, but no errors or warnings are issued if it
-is an even number.}
+\item{m}{length of filter.}
 
 \item{normalize}{logical value indicating whether to return numbers that sum
 to 1.  This is TRUE by default, which is useful if the purpose is to lowpass

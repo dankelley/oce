@@ -38,7 +38,7 @@ of \code{x}. If this is not provided, a value equal to half the subset
 length will be used.}
 
 \item{nfft}{length of the FFT, i.e. length of the desired subsets of \code{x}.
-This argument works together with the \code{window} argument; see the documention
+This argument works together with the \code{window} argument; see the documentation
 on the latter to learn more.}
 
 \item{fs}{numeric value indicating the sampling frequency for \code{x}.  If
@@ -97,7 +97,7 @@ some extent by how things work in the Matlab code.
 
 The parameters \code{window}, \code{noverlap} and \code{nfft} control the subdivision
 behaviour. The parameters \code{fs}, \code{spec}, \code{demean} and \code{detrend} control the
-spectral-analysis behaviour. Users who find the documention on these things
+spectral-analysis behaviour. Users who find the documentation on these things
 to be confusing may want to examine the code to see what is actually being
 done. If they see problems, they are asked to post issues on the oce github
 website.

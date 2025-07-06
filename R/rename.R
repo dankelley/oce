@@ -165,7 +165,7 @@ renameInternal <- function(names, dictionary = "ioos.csv", debug = 0) {
 #' }
 #'
 #' In many cases, the third and fourth columns are empty, and even if values are
-#' provided, they will be superceded by values within the data file.
+#' provided, they will be superseded by values within the data file.
 #'
 #' As an example, the entry
 #'
