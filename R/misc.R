@@ -3263,9 +3263,9 @@ gravity <- function(latitude = 45, degrees = TRUE) {
 #'
 #' * `"hamming"` for a raised-cosine filter designed by
 #' Hamming. The mathematical form is
-#' \eqn{a + (1-a)\cos(2\pi i/m)}{a + (1-a)*cos(2*pi*i/m)}
+#' \eqn{a - (1-a)\cos(2\pi i/(m-1))}{a - (1-a)*cos(2*pi*i/(m-1))}
 #' where \eqn{a=0.54}{a=0.54} and \eqn{i}{i} ranges
-#' across the integers between \eqn{-m/2} and \eqn{m/2}.
+#' from \eqn{0}{0} to \eqn{m-1}{m-1}.
 #'
 #' * `"hann"` for a cosine filter that tapers to zero at the ends, i.e.
 #' of the same mathematical form as `"hamming"`, but with
@@ -3337,7 +3337,7 @@ makeFilter <- function(type = c("blackman-harris", "rectangular", "hamming", "ha
         ff <- pi * i / (m - 1)
         coef <- a[1] - a[2] * cos(2 * ff) + a[3] * cos(4 * ff) - a[4] * cos(6 * ff)
     } else if (type == "rectangular") {
-        coef <- rep(1 / m, m)
+        coef <- rep(1, m) # 2025-07-06 this used to be 1/m repeated
     } else if (type == "hamming") {
         coef <- 0.54 - 0.46 * cos(2 * pi * i / (m - 1))
     } else if (type == "hann") {

@@ -31,9 +31,9 @@ a spectral peak, so that a value of 2 indicates a cutoff frequency of
 \code{\link{kernel}}\verb{("daniell",....)} gives the same result, in kernel form.)
 \item \code{"hamming"} for a raised-cosine filter designed by
 Hamming. The mathematical form is
-\eqn{a + (1-a)\cos(2\pi i/m)}{a + (1-a)*cos(2*pi*i/m)}
+\eqn{a - (1-a)\cos(2\pi i/(m-1))}{a - (1-a)*cos(2*pi*i/(m-1))}
 where \eqn{a=0.54}{a=0.54} and \eqn{i}{i} ranges
-across the integers between \eqn{-m/2} and \eqn{m/2}.
+from \eqn{0}{0} to \eqn{m-1}{m-1}.
 \item \code{"hann"} for a cosine filter that tapers to zero at the ends, i.e.
 of the same mathematical form as \code{"hamming"}, but with
 \eqn{a=1/2}{1/2}.
