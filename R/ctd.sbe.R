@@ -36,7 +36,7 @@
 #' The first step in doing this is to pass the object to `summary()`, to
 #' discover the SBE names in question. Then consult the SBE documentation to
 #' find an appropriate name for the data, and either manipulate the names in the
-#' object data slot directly or use [rename()] to rename the elements.
+#' object data slot directly or use [oceRename()] to rename the elements.
 #' Finally, please publish an 'issue' on the oce Github site
 #' `https://github.com/dankelley/oce/issues` so that the developers can add the
 #' data type in question.
@@ -275,7 +275,7 @@ cnvName2oceName <- function(h, columns = NULL, newNameFormat = FALSE, debug = ge
         }
         # Since 'name' is not mentioned in 'columns', try looking it up. Some of these
         # tests are a bit subtle, and could be wrong.
-        # FIXME: use rename() in place of this long conditional sequence
+        # FIXME: use oceRename() in place of this long conditional sequence
         if (1 == length(grep("^alt[M]?$", name))) {
             name <- "altimeter"
             unit <- list(unit = expression(m), scale = "")
@@ -691,7 +691,7 @@ cnvName2oceName <- function(h, columns = NULL, newNameFormat = FALSE, debug = ge
 #' for the translation. This is done by default, but setting `rename=FALSE` can
 #' be helpful if there is a wish to control the renaming, either using a
 #' built-in dictionary or using a dictionary set up by the user.  See Examples 1
-#' and 2, the latter dealing with the case of using [rename()] to rename
+#' and 2, the latter dealing with the case of using [oceRename()] to rename
 #' the variables after the file has been read.
 #'
 #' @param requireSalinity logical value indicating what to do if the dataset
@@ -863,7 +863,7 @@ cnvName2oceName <- function(h, columns = NULL, newNameFormat = FALSE, debug = ge
 #' d1 <- read.ctd(f)
 #'
 #' # Example 2: handle variable renaming after reading
-#' d2 <- read.ctd(f, rename = FALSE) |> rename("sbe")
+#' d2 <- read.ctd(f, rename = FALSE) |> oceRename("sbe")
 #'
 #' @references
 #' 1. The Sea-Bird SBE 19plus profiler is described at

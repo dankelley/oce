@@ -88,7 +88,7 @@ from the values in the file to the oce convention, using \code{\link[=cnvName2oc
 for the translation. This is done by default, but setting \code{rename=FALSE} can
 be helpful if there is a wish to control the renaming, either using a
 built-in dictionary or using a dictionary set up by the user.  See Examples 1
-and 2, the latter dealing with the case of using \code{\link[=rename]{rename()}} to rename
+and 2, the latter dealing with the case of using \code{\link[=oceRename]{oceRename()}} to rename
 the variables after the file has been read.}
 
 \item{requireSalinity}{logical value indicating what to do if the dataset
@@ -282,7 +282,7 @@ f <- system.file("extdata", "ctd.cnv.gz", package = "oce")
 d1 <- read.ctd(f)
 
 # Example 2: handle variable renaming after reading
-d2 <- read.ctd(f, rename = FALSE) |> rename("sbe")
+d2 <- read.ctd(f, rename = FALSE) |> oceRename("sbe")
 
 }
 \references{

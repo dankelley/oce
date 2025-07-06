@@ -5,9 +5,9 @@
 * Add `oceColorsCubeHelix()`, a perceptual colour scheme used in Astronomy
   (issue #2331).
 * Add `netcdfTOC()` to overview NetCDF files (issue #2232).
+* Add `oceRename()` to rename variables, flags and units (issue #2238).
 * Add `read.xbt.edf2()` to read a tab-separated file type.
 * Add `read.xbt.noaa2()` to handle UBT format (issue #2289).
-* Add `rename()` to rename variables, flags and units (issue #2238).
 * Add `Tidal Analysis` vignette (issue #2243).
 * Change `adpRdiFileTrim()` to reorder parameters, and to accept `indices`
   parameter (issue #2330)
@@ -29,6 +29,7 @@
   * handle `x="top"` (issue #2283) and
   * handle `length` under 1km (issue #2287).
 * Change `mapPlot()` to handle `las` as a parameter (issue #1707).
+* Change `oceRename()` to default to a built-in IOOS dictionary (issue #2311).
 * Change `oce.plot.ts()` to
   * handle `grid` better (issue #2267),
   * handle `simplify` better (issue #2277) and
@@ -61,7 +62,6 @@
   * handle units better and
   * permit renaming data (issue #2235).
 * Change `read.rsk()` to handle a new file (issue #2291).
-* Change `rename()` to default to a built-in IOOS dictionary (issue #2311).
 * Change `sectionSmooth()` to disallow `method="kriging"`, because it relied
   on the `automap` package, which was removed from CRAN on 2025-06-30
   (issue #2332).

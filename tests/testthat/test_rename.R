@@ -1,6 +1,6 @@
 library(oce)
 
-test_that("rename() with skeleton objects (with built-in dictionary)", {
+test_that("oceRename) with skeleton objects (with built-in dictionary)", {
     data(ctd)
     x <- new("ctd")
     x@data$PSAL <- ctd[["salinity"]]
@@ -10,7 +10,7 @@ test_that("rename() with skeleton objects (with built-in dictionary)", {
     # Create some flags to see if they get renamed properly
     x@metadata$flags <- list()
     x@metadata$flags$PSAL <- rep(1, length(x@data$PSAL))
-    y <- rename(x, "sbe")
+    y <- oceRename(x, "sbe")
     expect_equal(x[["PSAL"]], y[["salinity"]])
     expect_equal(x[["t090"]], y[["temperature"]])
     expect_equal(x[["prM"]], y[["pressure"]])
@@ -19,7 +19,7 @@ test_that("rename() with skeleton objects (with built-in dictionary)", {
     expect_equal(x[["flags"]]$PSAL, y[["flags"]]$salinity)
 })
 
-test_that("rename() with skeleton objects (with user's file dictionary)", {
+test_that("oceRename) with skeleton objects (with user's file dictionary)", {
     data(ctd)
     dfile <- tempfile(fileext = ".csv") # removed at end of test
     d <- "SALINITY,salinity,,
@@ -31,7 +31,7 @@ TEMPERATURE,temperature,degree*C,ITS-90"
     # Create some flags to see if they get renamed properly
     x@metadata$flags <- list()
     x@metadata$flags$SALINITY <- rep(1, length(x@data$SALINITY))
-    y <- rename(x, dfile)
+    y <- oceRename(x, dfile)
     expect_equal(x[["SALINITY"]], y[["salinity"]])
     expect_equal(x[["TEMPERATURE"]], y[["temperature"]])
     expect_equal(x[["flags"]]$SALINITY, y[["salinityFlag"]])
@@ -39,7 +39,7 @@ TEMPERATURE,temperature,degree*C,ITS-90"
     unlink(dfile)
 })
 
-test_that("rename() with skeleton objects (with user's list dictionary)", {
+test_that("oceRename) with skeleton objects (with user's list dictionary)", {
     data(ctd)
     d <- "SALINITY,salinity,,
 TEMPERATURE,temperature,degree*C,ITS-90"
@@ -50,14 +50,14 @@ TEMPERATURE,temperature,degree*C,ITS-90"
     # Create some flags to see if they get renamed properly
     x@metadata$flags <- list()
     x@metadata$flags$SALINITY <- rep(1, length(x@data$SALINITY))
-    y <- rename(x, dictionary)
+    y <- oceRename(x, dictionary)
     expect_equal(x[["SALINITY"]], y[["salinity"]])
     expect_equal(x[["TEMPERATURE"]], y[["temperature"]])
     expect_equal(x[["flags"]]$SALINITY, y[["salinityFlag"]])
     expect_equal(x[["flags"]]$SALINITY, y[["flags"]]$salinity)
 })
 
-test_that("rename() with skeleton objects (with user's list dictionary)", {
+test_that("oceRename) with skeleton objects (with user's list dictionary)", {
     if (1L == length(list.files(path = ".", pattern = "local_data"))) {
         colnames <- strsplit(readLines("local_data/rename.csv", encoding = "latin1", n = 1), ",")[[1]]
         d <- read.csv("local_data/rename.csv", encoding = "latin1", skip = 1)
@@ -66,7 +66,7 @@ test_that("rename() with skeleton objects (with user's list dictionary)", {
         for (name in names(d)) {
             o@data[name] <- d[name]
         }
-        oo <- rename(o, "sbe")
+        oo <- oceRename(o, "sbe")
         expect_equal(
             names(oo[["data"]]),
             c(
@@ -81,7 +81,7 @@ test_that("rename() with skeleton objects (with user's list dictionary)", {
 })
 
 
-test_that("rename() and built-in renaming", {
+test_that("oceRename) and built-in renaming", {
     f <- system.file("extdata", "ctd.cnv.gz", package = "oce")
     expect_warning(
         expect_warning(
@@ -94,7 +94,7 @@ test_that("rename() and built-in renaming", {
         tmp <- read.ctd(f, rename = FALSE),
         "suspicious startTime 1903-10-15 11:38:38 changed to 2003-10-15 11:38:38"
     )
-    d2 <- tmp |> rename("sbe")
+    d2 <- tmp |> oceRename("sbe")
     expect_equal(d1[["data"]], d2[["data"]])
     expect_equal(d1[["metadata"]], d2[["metadata"]])
 })
