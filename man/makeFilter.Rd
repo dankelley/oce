@@ -19,24 +19,15 @@ the present function are as follows.
 \item \code{"blackman-harris"} yields a modified raised-cosine filter designated
 as "4-Term (-92 dB) Blackman-Harris" by Harris (1978; coefficients given in
 the table on page 65).  This is also called "minimum 4-sample Blackman
-Harris" by that author, in his Table 1, which lists figures of merit as
-follows: highest side lobe level -92dB; side lobe fall off -6 db/octave;
-coherent gain 0.36; equivalent noise bandwidth 2.00 bins; 3.0-dB bandwidth
-1.90 bins; scallop loss 0.83 dB; worst case process loss 3.85 dB; 6.0-db
-bandwidth 2.72 bins; overlap correlation 46 percent for 75\\% overlap and 3.8
-for 50\\% overlap.  Note that the equivalent noise bandwidth is the width of
-a spectral peak, so that a value of 2 indicates a cutoff frequency of
-\code{1/m}, where \code{m} is as given below.
+Harris" by that author, in his Table 1.
 \item \code{"rectangular"} for a flat filter.  (This is just for convenience.  Note that
 \code{\link{kernel}}\verb{("daniell",....)} gives the same result, in kernel form.)
-\item \code{"hamming"} for a raised-cosine filter designed by
-Hamming. The mathematical form is
-\eqn{a - (1-a)\cos(2\pi i/(m-1))}{a - (1-a)*cos(2*pi*i/(m-1))}
-where \eqn{a=0.54}{a=0.54} and \eqn{i}{i} ranges
-from \eqn{0}{0} to \eqn{m-1}{m-1}.
+\item \code{"hamming"} for a raised-cosine filter designed by Hamming. The
+mathematical form is \code{a-(1-a)*cos(2*pi*i/(m-1))} where \code{a} is 0.54 and \code{i} is
+\code{seq(0,m-1)}.
 \item \code{"hann"} for a cosine filter that tapers to zero at the ends, i.e.
 of the same mathematical form as \code{"hamming"}, but with
-\eqn{a=1/2}{1/2}.
+\code{a} equal to 0.5.
 }}
 
 \item{m}{length of filter.  This should be an odd number, for any

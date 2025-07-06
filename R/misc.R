@@ -3249,27 +3249,18 @@ gravity <- function(latitude = 45, degrees = TRUE) {
 #' * `"blackman-harris"` yields a modified raised-cosine filter designated
 #' as "4-Term (-92 dB) Blackman-Harris" by Harris (1978; coefficients given in
 #' the table on page 65).  This is also called "minimum 4-sample Blackman
-#' Harris" by that author, in his Table 1, which lists figures of merit as
-#' follows: highest side lobe level -92dB; side lobe fall off -6 db/octave;
-#' coherent gain 0.36; equivalent noise bandwidth 2.00 bins; 3.0-dB bandwidth
-#' 1.90 bins; scallop loss 0.83 dB; worst case process loss 3.85 dB; 6.0-db
-#' bandwidth 2.72 bins; overlap correlation 46 percent for 75\% overlap and 3.8
-#' for 50\% overlap.  Note that the equivalent noise bandwidth is the width of
-#' a spectral peak, so that a value of 2 indicates a cutoff frequency of
-#' `1/m`, where `m` is as given below.
+#' Harris" by that author, in his Table 1.
 #'
 #' * `"rectangular"` for a flat filter.  (This is just for convenience.  Note that
 #' [`kernel`]`("daniell",....)` gives the same result, in kernel form.)
 #'
-#' * `"hamming"` for a raised-cosine filter designed by
-#' Hamming. The mathematical form is
-#' \eqn{a - (1-a)\cos(2\pi i/(m-1))}{a - (1-a)*cos(2*pi*i/(m-1))}
-#' where \eqn{a=0.54}{a=0.54} and \eqn{i}{i} ranges
-#' from \eqn{0}{0} to \eqn{m-1}{m-1}.
+#' * `"hamming"` for a raised-cosine filter designed by Hamming. The
+#' mathematical form is `a-(1-a)*cos(2*pi*i/(m-1))` where `a` is 0.54 and `i` is
+#' `seq(0,m-1)`.
 #'
 #' * `"hann"` for a cosine filter that tapers to zero at the ends, i.e.
 #' of the same mathematical form as `"hamming"`, but with
-#' \eqn{a=1/2}{1/2}.
+#' `a` equal to 0.5.
 #'
 #' @param m length of filter.  This should be an odd number, for any
 #' non-rectangular filter, but no errors or warnings are issued if it
@@ -3323,29 +3314,31 @@ makeFilter <- function(type = c("blackman-harris", "rectangular", "hamming", "ha
     if (missing(m)) {
         stop("must supply 'm'")
     }
-    i <- seq(0, m - 1)
     if (!normalize && asKernel) {
         stop("cannot specify asKernel=TRUE if normalize=FALSE")
     }
-    if (type == "blackman-harris") {
-        # See Harris (1978) table on p65
+    if (type == "rectangular") {
+        coef <- rep(1, m) # 2025-07-06 this used to be 1/m repeated
+    } else {
         if (m == 2 * floor(m / 2)) {
             m <- m + 1
-            warning("increased filter length by 1, to make it odd")
+            warning("increased m from ", m-1, " to ", m, ", to make it an odd number")
         }
-        a <- c(0.35875, 0.488829, 0.14128, 0.01168) # 4-term (-92dB) coefficients
-        ff <- pi * i / (m - 1)
-        coef <- a[1] - a[2] * cos(2 * ff) + a[3] * cos(4 * ff) - a[4] * cos(6 * ff)
-    } else if (type == "rectangular") {
-        coef <- rep(1, m) # 2025-07-06 this used to be 1/m repeated
-    } else if (type == "hamming") {
-        coef <- 0.54 - 0.46 * cos(2 * pi * i / (m - 1))
-    } else if (type == "hann") {
-        coef <- 0.50 - 0.50 * cos(2 * pi * i / (m - 1))
+        i <- seq(0, m - 1)
+        if (type == "blackman-harris") {
+            # See Harris (1978) table on p65
+            a <- c(0.35875, 0.488829, 0.14128, 0.01168) # 4-term (-92dB) coefficients
+            ff <- pi * i / (m - 1)
+            coef <- a[1] - a[2] * cos(2 * ff) + a[3] * cos(4 * ff) - a[4] * cos(6 * ff)
+        } else if (type == "hamming") {
+            coef <- 0.54 - 0.46 * cos(2 * pi * i / (m - 1))
+        } else if (type == "hann") {
+            coef <- 0.50 - 0.50 * cos(2 * pi * i / (m - 1))
+        }
     }
     if (normalize) {
         coef <- coef / sum(coef)
-    } # ensure unit sum
+    }
     if (!asKernel) {
         return(coef)
     }
@@ -3354,10 +3347,10 @@ makeFilter <- function(type = c("blackman-harris", "rectangular", "hamming", "ha
     }
     middle <- ceiling(m / 2)
     coef <- coef[middle:m]
-    # the r=0 is to prevent code-analysis warning; it only applies to Fejer, which we do not use
     if (normalize) {
         return(coef)
     } else {
+        # the r=0 is to prevent code-analysis warning; it only applies to Fejer, which we do not use
         return(kernel(coef = coef, name = paste(type, "(", m, ")", sep = ""), r = 0))
     }
 }

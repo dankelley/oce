@@ -34,6 +34,7 @@
   * handle `simplify` better (issue #2277) and
   * handle `xlab` better (issue #2285).
 * Change `plot.section()` to handle `eos="gsw"` (issue #2256).
+* Change `pwelch()` to fix error if `nfft` and `spec` are provided (issue #2299).
 * Change `read.adp.ad2cp()` to
   * handle TOC, datasets and plans better (issue #2303 and related),
   * read temperature correctly (issue #2324),

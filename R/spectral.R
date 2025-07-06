@@ -125,12 +125,12 @@
 #' t <- seq(0, 0.296, 1 / Fs)
 #' x <- cos(2 * pi * t * 200) + rnorm(n = length(t))
 #' X <- ts(x, frequency = Fs)
-#' s <- spectrum(X, spans = c(3, 2), main = "random + 200 Hz", log = "no")
+#' s <- spectrum(X, spans = c(3, 2), log = "no", plot = FALSE)
+#' plot(s$freq, s$spec, type = "l", xlab = "Frequency", ylab = "Spectrum")
 #' w <- pwelch(X, plot = FALSE)
-#' lines(w$freq, w$spec, col = "red")
-#' w2 <- pwelch(X, nfft = 75, plot = FALSE)
-#' lines(w2$freq, w2$spec, col = "green")
-#' abline(v = 200, col = "blue", lty = "dotted")
+#' lines(w$freq, w$spec, col = 2)
+#' abline(v = 200, col = "lightgray")
+#' legend("topright", bg = "white", lwd = 1, col = 1:2, legend = c("spectrum()", "pwelch()"))
 #'
 #' @author Dan Kelley and Clark Richards
 pwelch <- function(
