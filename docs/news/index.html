@@ -49,9 +49,9 @@
 <li>Add <code>D4902337_219.nc</code> built-in Argo profile data file (issue <a href="https://github.com/dankelley/oce/issues/2272" class="external-link">#2272</a>).</li>
 <li>Add <code><a href="../reference/oceColorsCubeHelix.html">oceColorsCubeHelix()</a></code>, a perceptual colour scheme used in Astronomy (issue <a href="https://github.com/dankelley/oce/issues/2331" class="external-link">#2331</a>).</li>
 <li>Add <code><a href="../reference/netcdfTOC.html">netcdfTOC()</a></code> to overview NetCDF files (issue <a href="https://github.com/dankelley/oce/issues/2232" class="external-link">#2232</a>).</li>
+<li>Add <code><a href="../reference/oceRename.html">oceRename()</a></code> to rename variables, flags and units (issue <a href="https://github.com/dankelley/oce/issues/2238" class="external-link">#2238</a>).</li>
 <li>Add <code><a href="../reference/read.xbt.edf2.html">read.xbt.edf2()</a></code> to read a tab-separated file type.</li>
 <li>Add <code><a href="../reference/read.xbt.noaa2.html">read.xbt.noaa2()</a></code> to handle UBT format (issue <a href="https://github.com/dankelley/oce/issues/2289" class="external-link">#2289</a>).</li>
-<li>Add <code><a href="../reference/rename.html">rename()</a></code> to rename variables, flags and units (issue <a href="https://github.com/dankelley/oce/issues/2238" class="external-link">#2238</a>).</li>
 <li>Add <code>Tidal Analysis</code> vignette (issue <a href="https://github.com/dankelley/oce/issues/2243" class="external-link">#2243</a>).</li>
 <li>Change <code><a href="../reference/adpRdiFileTrim.html">adpRdiFileTrim()</a></code> to reorder parameters, and to accept <code>indices</code> parameter (issue <a href="https://github.com/dankelley/oce/issues/2330" class="external-link">#2330</a>)</li>
 <li>Change <code>amsr[[</code> to handle <code>"metadata"</code> parameter (issue <a href="https://github.com/dankelley/oce/issues/2229" class="external-link">#2229</a>).</li>
@@ -72,6 +72,7 @@
 <li>handle <code>length</code> under 1km (issue <a href="https://github.com/dankelley/oce/issues/2287" class="external-link">#2287</a>).</li>
 </ul></li>
 <li>Change <code><a href="../reference/mapPlot.html">mapPlot()</a></code> to handle <code>las</code> as a parameter (issue <a href="https://github.com/dankelley/oce/issues/1707" class="external-link">#1707</a>).</li>
+<li>Change <code><a href="../reference/oceRename.html">oceRename()</a></code> to default to a built-in IOOS dictionary (issue <a href="https://github.com/dankelley/oce/issues/2311" class="external-link">#2311</a>).</li>
 <li>Change <code><a href="../reference/oce.plot.ts.html">oce.plot.ts()</a></code> to
 <ul><li>handle <code>grid</code> better (issue <a href="https://github.com/dankelley/oce/issues/2267" class="external-link">#2267</a>),</li>
 <li>handle <code>simplify</code> better (issue <a href="https://github.com/dankelley/oce/issues/2277" class="external-link">#2277</a>) and</li>
@@ -103,7 +104,6 @@
 <li>permit renaming data (issue <a href="https://github.com/dankelley/oce/issues/2235" class="external-link">#2235</a>).</li>
 </ul></li>
 <li>Change <code><a href="../reference/read.rsk.html">read.rsk()</a></code> to handle a new file (issue <a href="https://github.com/dankelley/oce/issues/2291" class="external-link">#2291</a>).</li>
-<li>Change <code><a href="../reference/rename.html">rename()</a></code> to default to a built-in IOOS dictionary (issue <a href="https://github.com/dankelley/oce/issues/2311" class="external-link">#2311</a>).</li>
 <li>Change <code><a href="../reference/sectionSmooth.html">sectionSmooth()</a></code> to disallow <code>method="kriging"</code>, because it relied on the <code>automap</code> package, which was removed from CRAN on 2025-06-30 (issue <a href="https://github.com/dankelley/oce/issues/2332" class="external-link">#2332</a>).</li>
 <li>Change <code>subset,amsr-method()</code> to handle <code>"pass"</code> parameter.</li>
 <li>Change <code>subset,ctd-method()</code> to handle items of unexpected length (issue <a href="https://github.com/dankelley/oce/issues/2250" class="external-link">#2250</a>).</li>

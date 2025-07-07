@@ -107,7 +107,7 @@ length will be used.</p></dd>
 
 <dt id="arg-nfft">nfft<a class="anchor" aria-label="anchor" href="#arg-nfft"></a></dt>
 <dd><p>length of the FFT, i.e. length of the desired subsets of <code>x</code>.
-This argument works together with the <code>window</code> argument; see the documention
+This argument works together with the <code>window</code> argument; see the documentation
 on the latter to learn more.</p></dd>
 
 
@@ -172,7 +172,7 @@ function, so the parameter names and how they are interpreted are dictated to
 some extent by how things work in the Matlab code.</p>
 <p>The parameters <code>window</code>, <code>noverlap</code> and <code>nfft</code> control the subdivision
 behaviour. The parameters <code>fs</code>, <code>spec</code>, <code>demean</code> and <code>detrend</code> control the
-spectral-analysis behaviour. Users who find the documention on these things
+spectral-analysis behaviour. Users who find the documentation on these things
 to be confusing may want to examine the code to see what is actually being
 done. If they see problems, they are asked to post issues on the oce github
 website.</p>
@@ -233,7 +233,6 @@ AU-15, 70–73.</p>
 <span class="r-in"><span><span class="va">s</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/spectrum.html" class="external-link">spectrum</a></span><span class="op">(</span><span class="va">X</span>, spans <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">2</span><span class="op">)</span>, log <span class="op">=</span> <span class="st">"no"</span>, plot <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">s</span><span class="op">$</span><span class="va">freq</span>, <span class="va">s</span><span class="op">$</span><span class="va">spec</span>, type <span class="op">=</span> <span class="st">"l"</span>, xlab <span class="op">=</span> <span class="st">"Frequency"</span>, ylab <span class="op">=</span> <span class="st">"Spectrum"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">w</span> <span class="op">&lt;-</span> <span class="fu">pwelch</span><span class="op">(</span><span class="va">X</span>, plot <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>increased m from 74 to 75, to make it an odd number</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="va">w</span><span class="op">$</span><span class="va">freq</span>, <span class="va">w</span><span class="op">$</span><span class="va">spec</span>, col <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span>v <span class="op">=</span> <span class="fl">200</span>, col <span class="op">=</span> <span class="st">"lightgray"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/legend.html" class="external-link">legend</a></span><span class="op">(</span><span class="st">"topright"</span>, bg <span class="op">=</span> <span class="st">"white"</span>, lwd <span class="op">=</span> <span class="fl">1</span>, col <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, legend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"spectrum()"</span>, <span class="st">"pwelch()"</span><span class="op">)</span><span class="op">)</span></span></span>
