@@ -2,9 +2,9 @@
 
 * Add `bodcNames2oceNames()` to rename NERC/BODC variables (issue #2235).
 * Add `D4902337_219.nc` built-in Argo profile data file (issue #2272).
-* Add `oceColorsCubeHelix()`, a perceptual colour scheme used in Astronomy
   (issue #2331).
 * Add `netcdfTOC()` to overview NetCDF files (issue #2232).
+* Add `oceColorsCubeHelix()`, a perceptual colour scheme used in Astronomy
 * Add `oceRename()` to rename variables, flags and units (issue #2238).
 * Add `read.xbt.edf2()` to read a tab-separated file type.
 * Add `read.xbt.noaa2()` to handle UBT format (issue #2289).
