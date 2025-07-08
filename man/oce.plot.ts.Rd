@@ -149,14 +149,14 @@ a palette, first call \code{\link[=drawPalette]{drawPalette()}}, then call
 
 \item{tformat}{optional format for labels on the time axis}
 
-\item{marginsAsImage}{boolean indicating whether to set the right-hand
-margin to the width normally taken by an image drawn with
-\code{\link[=imagep]{imagep()}}.}
+\item{marginsAsImage}{logical value indicating whether to set the right-hand
+margin to the width normally taken by an image drawn with \code{\link[=imagep]{imagep()}}.}
 
-\item{grid}{if \code{TRUE}, a grid will be drawn for each panel.  (This
-argument is needed, because calling \code{\link[=grid]{grid()}} after doing a
-sequence of plots will not result in useful results for the individual
-panels.}
+\item{grid}{logical value indicating whether tod raw a grid on the plot. For
+time axes labelled in months, this will differ from the grid that would be
+drawn by calling \code{\link[=grid]{grid()}} after the plot was completed, because
+\code{\link[=oce.plot.ts]{oce.plot.ts()}} draws months with appropriate relative lengths, whereas R
+time axes consider months to be of equal length.}
 
 \item{grid.col}{color of grid}
 

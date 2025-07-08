@@ -1103,14 +1103,14 @@ oce.grid <- function(xat, yat, col = "lightgray", lty = "dotted", lwd = par("lwd
 #'
 #' @param tformat optional format for labels on the time axis
 #'
-#' @param marginsAsImage boolean indicating whether to set the right-hand
-#' margin to the width normally taken by an image drawn with
-#' [imagep()].
+#' @param marginsAsImage logical value indicating whether to set the right-hand
+#' margin to the width normally taken by an image drawn with [imagep()].
 #'
-#' @param grid if `TRUE`, a grid will be drawn for each panel.  (This
-#' argument is needed, because calling [grid()] after doing a
-#' sequence of plots will not result in useful results for the individual
-#' panels.
+#' @param grid logical value indicating whether tod raw a grid on the plot. For
+#' time axes labelled in months, this will differ from the grid that would be
+#' drawn by calling [grid()] after the plot was completed, because
+#' [oce.plot.ts()] draws months with appropriate relative lengths, whereas R
+#' time axes consider months to be of equal length.
 #'
 #' @param grid.col color of grid
 #'
