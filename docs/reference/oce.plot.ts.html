@@ -253,16 +253,16 @@ a palette, first call <code><a href="drawPalette.html">drawPalette()</a></code>,
 
 
 <dt id="arg-marginsasimage">marginsAsImage<a class="anchor" aria-label="anchor" href="#arg-marginsasimage"></a></dt>
-<dd><p>boolean indicating whether to set the right-hand
-margin to the width normally taken by an image drawn with
-<code><a href="imagep.html">imagep()</a></code>.</p></dd>
+<dd><p>logical value indicating whether to set the right-hand
+margin to the width normally taken by an image drawn with <code><a href="imagep.html">imagep()</a></code>.</p></dd>
 
 
 <dt id="arg-grid">grid<a class="anchor" aria-label="anchor" href="#arg-grid"></a></dt>
-<dd><p>if <code>TRUE</code>, a grid will be drawn for each panel.  (This
-argument is needed, because calling <code><a href="https://rdrr.io/r/graphics/grid.html" class="external-link">grid()</a></code> after doing a
-sequence of plots will not result in useful results for the individual
-panels.</p></dd>
+<dd><p>logical value indicating whether tod raw a grid on the plot. For
+time axes labelled in months, this will differ from the grid that would be
+drawn by calling <code><a href="https://rdrr.io/r/graphics/grid.html" class="external-link">grid()</a></code> after the plot was completed, because
+<code>oce.plot.ts()</code> draws months with appropriate relative lengths, whereas R
+time axes consider months to be of equal length.</p></dd>
 
 
 <dt id="arg-grid-col">grid.col<a class="anchor" aria-label="anchor" href="#arg-grid-col"></a></dt>
