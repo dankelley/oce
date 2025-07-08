@@ -1106,7 +1106,7 @@ oce.grid <- function(xat, yat, col = "lightgray", lty = "dotted", lwd = par("lwd
 #' @param marginsAsImage logical value indicating whether to set the right-hand
 #' margin to the width normally taken by an image drawn with [imagep()].
 #'
-#' @param grid logical value indicating whether tod raw a grid on the plot. For
+#' @param grid logical value indicating whether to draw a grid on the plot. For
 #' time axes labelled in months, this will differ from the grid that would be
 #' drawn by calling [grid()] after the plot was completed, because
 #' [oce.plot.ts()] draws months with appropriate relative lengths, whereas R

@@ -152,7 +152,7 @@ a palette, first call \code{\link[=drawPalette]{drawPalette()}}, then call
 \item{marginsAsImage}{logical value indicating whether to set the right-hand
 margin to the width normally taken by an image drawn with \code{\link[=imagep]{imagep()}}.}
 
-\item{grid}{logical value indicating whether tod raw a grid on the plot. For
+\item{grid}{logical value indicating whether to draw a grid on the plot. For
 time axes labelled in months, this will differ from the grid that would be
 drawn by calling \code{\link[=grid]{grid()}} after the plot was completed, because
 \code{\link[=oce.plot.ts]{oce.plot.ts()}} draws months with appropriate relative lengths, whereas R
