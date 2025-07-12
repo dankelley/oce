@@ -36,6 +36,7 @@
   * handle `xlab` better (issue #2285).
 * Change `plot.section()` to handle `eos="gsw"` (issue #2256).
 * Change `pwelch()` to fix error if `nfft` and `spec` are provided (issue #2299).
+* Change `read.amsr()` to handle realtime data files (issue #2230).
 * Change `read.adp.ad2cp()` to
   * handle TOC, datasets and plans better (issue #2303 and related),
   * read temperature correctly (issue #2324),
@@ -47,7 +48,6 @@
     in record (issue #2326).
 * Change `read.adp.rdi(..., which="??")` to return a data frame that includes
   ensemble size (issue #2329).
-* Change `read.amsr()` to handle realtime data files (issue #2230).
 * Change `read.ctd.sbe()` to
   * handle files that lack salinity and conductivity (issues #2279 and #2282)
     and
@@ -61,7 +61,9 @@
   * document flag handling better (issue #2236),
   * handle units better and
   * permit renaming data (issue #2235).
-* Change `read.rsk()` to handle a new file (issue #2291).
+* Change `read.rsk()` to
+  * solve a column renaming problem (issue #2291) and
+  * handle files that have empty (but not missing) `geodata` tables (issue #2336).
 * Change `sectionSmooth()` to disallow `method="kriging"`, because it relied
   on the `automap` package, which was removed from CRAN on 2025-06-30
   (issue #2332).

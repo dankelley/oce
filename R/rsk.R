@@ -1100,7 +1100,8 @@ read.rsk <- function(
         res@metadata$dataNamesOriginal <- c(res@metadata$dataNamesOriginal, "tstamp")
         # Possibly add longitude and latitude to data slot. For ideas on how to
         # do that, see https://github.com/dankelley/oce/issues/2024
-        if (!is.null(geodata)) {
+        #<2336> if (!is.null(geodata)) {
+        if (!is.null(geodata) && is.data.frame(geodata) && nrow(geodata) > 0) {
             geodata$time <- numberAsPOSIXct(geodata$tstamp / 1e3, type = "unix") + tzOffsetLocation * 3600
             look <- if ("origin" %in% names(geodata)) {
                 geodata$origin == "auto"
@@ -1114,6 +1115,9 @@ read.rsk <- function(
             res@metadata$longitude <- approx(geodata$time[look], geodata$longitude[look], res@data$time, rule = 2)$y
             # message("lon-lat may be wrong; see https://github.com/dankelley/oce/issues/2024#issuecomment-1345373099")
             # message("TEST: examine both longitude and longitudeNew etc")
+            oceDebug(debug, "extracted metadata$longitude and metadata$latitude from the 'geodata' table\n")
+        } else {
+            oceDebug(debug, "metadata$longitude and metadata$latitude not set, because file lacks a 'geodata' table; consider using oceSetData() next, if you know the location\n")
         }
         res@metadata$units$pressure$scale <- "absolute"
         # 1491> message("res@metadata$dataNamesOriginal L909:");print(res@metadata$dataNamesOriginal)
