@@ -1117,7 +1117,7 @@ read.rsk <- function(
             # message("TEST: examine both longitude and longitudeNew etc")
             oceDebug(debug, "extracted metadata$longitude and metadata$latitude from the 'geodata' table\n")
         } else {
-            oceDebug(debug, "metadata$longitude and metadata$latitude not set, because file lacks a 'geodata' table; consider using oceSetData() next, if you know the location\n")
+            oceDebug(debug, "metadata$longitude and metadata$latitude not set, because file lacks a 'geodata' table; consider using oceSetMetadata() next, if you know the location\n")
         }
         res@metadata$units$pressure$scale <- "absolute"
         # 1491> message("res@metadata$dataNamesOriginal L909:");print(res@metadata$dataNamesOriginal)
