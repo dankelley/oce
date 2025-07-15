@@ -1116,7 +1116,7 @@ read.rsk <- function(
             res@metadata$longitude <- approx(geodata$time[look], geodata$longitude[look], res@data$time, rule = 2)$y
             # message("lon-lat may be wrong; see https://github.com/dankelley/oce/issues/2024#issuecomment-1345373099")
             # message("TEST: examine both longitude and longitudeNew etc")
-            oceDebug(debug, "extracted ", length(res@metadata@latitude), " values of metadata$longitude and metadata$latitude from the 'geodata' table\n")
+            oceDebug(debug, "extracted ", length(res@metadata$latitude), " values of metadata$longitude and metadata$latitude from the 'geodata' table\n")
         } else {
             oceDebug(debug, "metadata$longitude and metadata$latitude cannot be set because the .rsk file has no 'geodata' table\n")
         }
