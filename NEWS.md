@@ -62,8 +62,9 @@
   * handle units better and
   * permit renaming data (issue #2235).
 * Change `read.rsk()` to
-  * solve a column renaming problem (issue #2291) and
-  * handle files that have empty (but not missing) `geodata` tables (issue #2336).
+  * solve a column renaming problem (issue #2291),
+  * handle files that have empty (but not missing) `geodata` tables (issue #2336), and
+  * handle more unit formats (issue #2337).
 * Change `sectionSmooth()` to disallow `method="kriging"`, because it relied
   on the `automap` package, which was removed from CRAN on 2025-06-30
   (issue #2332).

@@ -285,14 +285,15 @@ unitFromStringRsk <- function(s) {
     #    MU=U+03BC, new=\u03bc, old=\xc2\xb5
     #    DEG=U+00B0, new=\u00b0, old=\xB0
     #    TWO=U+00B2, new=\u00b2, old=\xc2\xb2
-    if (grepl("mg/[lL]", s)) {
+    if (grepl("counts", s)) {
+        list(unit = expression(counts), scale = "")
+    } else if (grepl("mg/[lL]", s)) {
         list(unit = expression(mg / l), scale = "")
     } else if (grepl("m[lL]/[lL]", s)) {
         list(unit = expression(ml / l), scale = "")
-        # 2022-06-28 else if (grepl("((u)|(\xc2\xb5))[mM]ol/[lL]", s))
-    } else if (grepl("((u)|(\u03bc))[mM]ol/[lL]", s)) {
+    } else if (grepl("((u)|(\u00B5|\u03BC))[mM]ol/[lL]", s)) { # micro-mol/l
+        # Handle two variants of mu
         list(unit = expression(mu * mol / l), scale = "")
-        # 2022-06-28 else if (grepl("((u)|(\xc2\xb5))g/[lL]", s))
     } else if (grepl("((u)|(\u03bc))g/[lL]", s)) {
         list(unit = expression(mu * g / l), scale = "")
     } else if (grepl("mS/cm", s)) {
@@ -877,10 +878,10 @@ read.rsk <- function(
                         tzOffsetLocation <- epochs$UTCdelta / 3600.0 / 1000.0
                         oceDebug(debug, "inferred tzOffsetLocation=", tzOffsetLocation, "\n")
                     } else {
-                        oceDebug(debug, "tzOffsetLocation can't computed because 'epochs' table lacks 'UTCdelta'\n")
+                        oceDebug(debug, "tzOffsetLocation can't be computed because 'epochs' table lacks 'UTCdelta'\n")
                     }
                 } else {
-                    oceDebug(debug, "tzOffsetLocation can't computed because there is no 'epochs' table\n")
+                    oceDebug(debug, "tzOffsetLocation can't be computed because there is no 'epochs' table\n")
                 }
             }
             oceDebug(debug, "using specified or computed tzOffsetLocation=", tzOffsetLocation, "\n")
@@ -1115,9 +1116,9 @@ read.rsk <- function(
             res@metadata$longitude <- approx(geodata$time[look], geodata$longitude[look], res@data$time, rule = 2)$y
             # message("lon-lat may be wrong; see https://github.com/dankelley/oce/issues/2024#issuecomment-1345373099")
             # message("TEST: examine both longitude and longitudeNew etc")
-            oceDebug(debug, "extracted metadata$longitude and metadata$latitude from the 'geodata' table\n")
+            oceDebug(debug, "extracted ", length(res@metadata@latitude), " values of metadata$longitude and metadata$latitude from the 'geodata' table\n")
         } else {
-            oceDebug(debug, "metadata$longitude and metadata$latitude not set, because file lacks a 'geodata' table; consider using oceSetMetadata() next, if you know the location\n")
+            oceDebug(debug, "metadata$longitude and metadata$latitude cannot be set because the .rsk file has no 'geodata' table\n")
         }
         res@metadata$units$pressure$scale <- "absolute"
         # 1491> message("res@metadata$dataNamesOriginal L909:");print(res@metadata$dataNamesOriginal)
