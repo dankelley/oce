@@ -99,7 +99,7 @@ to sub-sample, and some degree of smoothing is usually desired.  (The
 \code{"lm"} method can be quite slow, and its results may be quite similar to those of the
 boxcar method.)
 
-For widely-spaced data, a sort of numerical cabeling effect can result when
+For widely-spaced data, a sort of numerical cabbeling effect can result when
 density is computed based on interpolated salinity and temperature.
 See reference 2 for a discussion of this issue and possible solutions.
 }

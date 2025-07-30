@@ -122,6 +122,7 @@ computableWaterProperties <- function(x) {
                 res, "SR", "Sstar",
                 paste0("sigma", 0:4),
                 "SA", paste("Absolute", "Salinity"),
+                "cabbeling",
                 "CT", paste("Conservative", "Temperature"),
                 paste0("spiciness", 0:2)
             )
