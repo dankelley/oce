@@ -1,14 +1,16 @@
 # oce 1.8.4
 
 * Add `bodcNames2oceNames()` to rename NERC/BODC variables (issue #2235).
-* Add `D4902337_219.nc` built-in Argo profile data file (issue #2272).
-  (issue #2331).
+* Add `D4902337_219.nc` built-in Argo profile data file (issue #2272). (issue
+  #2331).
 * Add `netcdfTOC()` to overview NetCDF files (issue #2232).
 * Add `oceColorsCubeHelix()`, a perceptual colour scheme used in Astronomy
 * Add `oceRename()` to rename variables, flags and units (issue #2238).
 * Add `read.xbt.edf2()` to read a tab-separated file type.
 * Add `read.xbt.noaa2()` to handle UBT format (issue #2289).
 * Add `Tidal Analysis` vignette (issue #2243).
+* Change `[[` to handle `"cabbeling"`, for objects holding sufficient
+  information for this computation (issue #2338).
 * Change `adpRdiFileTrim()` to reorder parameters, and to accept `indices`
   parameter (issue #2330)
 * Change `amsr[[` to handle `"metadata"` parameter (issue #2229).
@@ -35,7 +37,8 @@
   * handle `simplify` better (issue #2277) and
   * handle `xlab` better (issue #2285).
 * Change `plot.section()` to handle `eos="gsw"` (issue #2256).
-* Change `pwelch()` to fix error if `nfft` and `spec` are provided (issue #2299).
+* Change `pwelch()` to fix error if `nfft` and `spec` are provided (issue
+  #2299).
 * Change `read.amsr()` to handle realtime data files (issue #2230).
 * Change `read.adp.ad2cp()` to
   * handle TOC, datasets and plans better (issue #2303 and related),
@@ -63,11 +66,12 @@
   * permit renaming data (issue #2235).
 * Change `read.rsk()` to
   * solve a column renaming problem (issue #2291),
-  * handle files that have empty (but not missing) `geodata` tables (issue #2336), and
+  * handle files that have empty (but not missing) `geodata` tables (issue
+    #2336), and
   * handle more unit formats (issue #2337).
-* Change `sectionSmooth()` to disallow `method="kriging"`, because it relied
-  on the `automap` package, which was removed from CRAN on 2025-06-30
-  (issue #2332).
+* Change `sectionSmooth()` to disallow `method="kriging"`, because it relied on
+  the `automap` package, which was removed from CRAN on 2025-06-30 (issue
+  #2332).
 * Change `subset,amsr-method()` to handle `"pass"` parameter.
 * Change `subset,ctd-method()` to handle items of unexpected length (issue
   #2250).

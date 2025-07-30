@@ -179,6 +179,17 @@ test_that("derived quantities handled properly (ctd)", {
     ))
 })
 
+test_that("[['cabbeling']] works (issue 2338)", {
+    data("ctd")
+    expect_equal(
+        head(ctd[["cabbeling"]]),
+        c(
+            1.06095093898308e-05, 1.06086122033739e-05, 1.06086024504852e-05,
+            1.06088740956319e-05, 1.06080386998779e-05, 1.06072155819783e-05
+        )
+    )
+})
+
 test_that("accessor operations (adp)", {
     data(adp)
     v <- adp[["v"]]
