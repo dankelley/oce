@@ -27,7 +27,7 @@ A list containing \code{declination}, \code{inclination}, and
 \code{intensity}.
 }
 \description{
-Implements the 12th, 13th and 145h generations of the International
+Implements the 12th, 13th and 14th generations of the International
 Geomagnetic Reference Field (IGRF), based on a reworked version of a Fortran
 code downloaded from a NOAA website (see \dQuote{References}).
 }
@@ -99,6 +99,9 @@ Geologists Don't Know Why.} Nature 565 (January 9, 2019): 143.
 T. N. Bondar, et al. "International Geomagnetic Reference Field: The
 Thirteenth Generation." Earth, Planets and Space 73, no. 1 (December
 2021): 49. \doi{10.1186/s40623-020-01288-x}.
+\item Chulliat, Arnaud, Manoj nair, Li-Yin Young, et al. The US/UK World
+Magnetic Model for 2025-2030. NOAA National Centers for Environmental
+Information, 2025. \doi{10.25923/PRBC-S316}.
 }
 }
 \seealso{
