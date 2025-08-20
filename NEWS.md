@@ -36,7 +36,8 @@
   * handle `grid` better (issue #2267),
   * handle `simplify` better (issue #2277) and
   * handle `xlab` better (issue #2285).
-* Change `plot.coastline()` to improve axes aesthetics (issues #2342 and #2343).
+* Change `plot.coastline()` to improve axes aesthetics (issue #2342).
+* Change `plot.ctd()` to improve map margin note (issue #2343).
 * Change `plot.section()` to handle `eos="gsw"` (issue #2256).
 * Change `pwelch()` to fix error if `nfft` and `spec` are provided (issue
   #2299).
