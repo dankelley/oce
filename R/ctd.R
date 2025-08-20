@@ -3177,39 +3177,43 @@ setMethod(
                         mapPoints(stationLon, stationLat, cex = latlon.cex, col = latlon.col, pch = latlon.pch)
                     }
                     # draw some text in top margin
+                    topMsg <- ""
                     mnames <- names(x@metadata)
                     if ("station" %in% mnames) { # ctd from a file
-                        mtext(x[["station"]],
-                            side = 3, adj = 0, cex = par("cex"), line = 0.5
-                        )
+                        topMsg <- paste0(topMsg, "stn:", x[["station"]], " ")
                     } else if ("id" %in% mnames) { # ctd from an argo object
                         msg <- x[["id"]]
+                        topMsg <- paste0(topMsg, "id:", x[["id"]])
                         if ("cycleNumber" %in% mnames) {
-                            msg <- paste0(msg, "_", x[["cycleNumber"]])
+                            #msg <- paste0(msg, "_", x[["cycleNumber"]])
+                            topMsg <- paste(topMsg, x[["cycleNumber"]])
                         }
-                        mtext(msg,
-                            side = 3, adj = 0, cex = par("cex"), line = 0.5
-                        )
                     }
                     if ("startTime" %in% mnames) {
                         timeForLabel <- x[["startTime"]]
                         if (length(timeForLabel) && !is.na(timeForLabel[1])) {
-                            mtext(format(timeForLabel[1], "%Y-%m-%d %H:%M"),
-                                side = 3, adj = 1, cex = par("cex"), line = 0.5
-                            )
+                            topMsg <- paste(topMsg, format(
+                                timeForLabel[1],
+                                "%Y-%m-%d %H:%M"
+                            ))
                         }
                     } else if ("time" %in% mnames) {
                         timeForLabel <- x[["time"]]
                         goodTimes <- which(!is.na(timeForLabel))
                         if (length(goodTimes)) {
-                            mtext(
+                            topMsg <- paste(
+                                topMsg,
                                 format(
                                     timeForLabel[goodTimes[1]],
                                     "%Y-%m-%d %H:%M"
-                                ),
-                                side = 3, adj = 1, cex = par("cex"), line = 0.5
+                                )
                             )
                         }
+                    }
+                    if (nchar(topMsg) > 0) {
+                        #message("DAN ", mean(par("usr")[1:2]))
+                        #print(par("usr"))
+                        mtext(topMsg, line = 0.5, cex = par("cex"), adj=1)
                     }
                 }
                 if (which[w] == "map_with_filename" && !is.null(x@metadata$filename)) {
