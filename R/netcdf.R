@@ -268,6 +268,18 @@ read.netcdf <- function(file, ..., encoding = NA, renamer = NULL, debug = getOpt
                     unit = expression(pH),
                     scale = if (scale$hasatt) scale$value else ""
                 )
+            } else if (units$value == "mS cm^-1") {
+                # See https://github.com/dankelley/oce/issues/2341
+                res@metadata$units[[oceNames[i]]] <- list(
+                    unit = expression(mS/cm),
+                    scale = ""
+                )
+            } else if (units$value == "degree_Celcius") { # spelling error (in ITP files)
+                # See https://github.com/dankelley/oce/issues/2341
+                res@metadata$units[[oceNames[i]]] <- list(
+                    unit = expression(degree*C),
+                    scale = ""
+                )
             } else {
                 # Tell as.unit() to return NULL if unknown, so we can do
                 # more logic here, where we know the scale, etc.
