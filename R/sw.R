@@ -2552,7 +2552,7 @@ swSigma4 <- function(
 #' @param frequency The frequency of sound, in Hz.
 #'
 #' @param formulation character string indicating the formulation to use, either
-#' of `"fischer-simmons"` or `"francois-garrison"`; see \dQuote{References}.
+#' of `"fischer-simmons"`, `"francois-garrison"`, `"ainslie-mccolm"`, `"schulkin-marsh"` or `"thorp"`; see \dQuote{References}.
 #'
 #' @param pH seawater pH
 #'
@@ -2570,6 +2570,12 @@ swSigma4 <- function(
 #'
 #' 3. `http://resource.npl.co.uk/acoustics/techguides/seaabsorption/`
 #'
+#' 4. Michael A. Ainslie, James G. McColm; A simplified formula for viscous and chemical 
+#' absorption in sea water. J. Acoust. Soc. Am. 1 March 1998; 103 (3): 1671–1672. 
+#' 
+#' 5. M. Schulkin, H. W. Marsh; Sound Absorption in Sea Water. 
+#' J. Acoust. Soc. Am. 1 June 1962; 34 (6): 864–865.
+#' 
 #' @examples
 #' # Fisher & Simmons (1977 table IV) gives 0.52 dB/km for 35 PSU, 5 degC, 500 atm
 #' # (4990 dbar of water)a and 10 kHz
@@ -2586,10 +2592,11 @@ swSigma4 <- function(
 #' @family functions that calculate seawater properties
 swSoundAbsorption <- function(
     frequency, salinity, temperature, pressure, pH = 8,
-    formulation = c("fisher-simmons", "francois-garrison")) {
+    formulation = c("fisher-simmons", "francois-garrison", "ainslie-mccolm", "schulkin-marsh", "thorp")) {
     formulation <- match.arg(formulation)
     # nolint start T_and_F_symbol_linter
     if (formulation == "fisher-simmons") {
+        print("fisher-simmons")
         # Equation numbers are from Fisher & Simmons (1977); see help page for ref
         p <- 1 + pressure / 10 # add atmophere, then convert water part from dbar
         S <- salinity
@@ -2605,6 +2612,7 @@ swSoundAbsorption <- function(
         alpha <- (A1 * f1 * f^2) / (f1^2 + f^2) + (A2 * P2 * f2 * f^2) / (f2^2 + f^2) + A3 * P3 * f^2 # (3a)
         alpha <- alpha * 8686 / 1000 # dB/m
     } else if (formulation == "francois-garrison") {
+        print("francois-garrison")
         S <- salinity
         T <- T68fromT90(temperature)
         D <- pressure # FIXME: approximation
@@ -2631,6 +2639,42 @@ swSoundAbsorption <- function(
         P3 <- 1 - 3.83e-5 * D + 4.9e-10 * D^2
         alpha <- (A1 * P1 * f1 * f^2) / (f^2 + f1^2) + (A2 * P2 * f2 * f^2) / (f^2 + f2^2) + A3 * P3 * f^2
         alpha <- alpha / 1000
+    }else if (formulation == "ainslie-mccolm") {
+        print("ainslie-mccolm")
+        # Equation numbers are from Ainslie & McColm Model (1998); see help page for ref
+        S <- salinity
+        T <- T68fromT90(temperature)
+        D <- pressure/1000 # FIXME: approximation; D in km
+        f <- frequency / 1000 # convert to kHz
+        # f1 in kHz
+        f1 <- 0.78 * sqrt(S / 35) * exp(T / 26) # (1) - boric acid contribution
+        # f2 in kHz
+        f2 <- 42 * exp(T/17) # (2) - magnesium contribution
+        alpha <-  0.106 * ( (f1 * f^2) / (f^2 + f1^2) ) * exp( (pH - 8)/0.56 ) + 0.52 * (1 + (T/43)) * (S/35) * (f2 * f^2 / (f^2 + f2^2)) * exp(-D/6) + 0.00049 * (f^2) * exp(-( (T/27) + (D/17) )) # (3)
+        alpha <- alpha / 1000 # dB/km to dB/m
+    }else if (formulation == "schulkin-marsh") {
+        print("schulkin-marsh")
+        # Equation numbers are from schulkin-marsh Model (1962); see help page for ref
+        S <- salinity
+        T <- T68fromT90(temperature)
+        D <- pressure # FIXME: approximation; D in m
+        f <- frequency / 1000 # convert to kHz
+        A <- 2.34e-6
+        B <- 3.38e-6
+        ft <- 21.9 * 10^(6-(1520/(T+273)))
+        P <- ( 1034 + (9.81 * D) + 101.325 ) * 1.02e-5 # 1 Pa (N/m2) = 1.02×10-5 kg/cm2 | Atmospheric Pressure: (1 atm or 101,325 pascals)
+        alpha <- 8.68e3 * (((S*A*ft*(f^2))/((ft^2)+(f^2))) + (B*f^2/ft)) * (1 - (6.54e-4)*P) # (9) - 1 nepers/metre = 8.68*10**3 dB/Km
+        alpha <- alpha / 1000 # dB/km to dB/m
+    }else if (formulation == "thorp") {
+        print("thorp")
+        # Equation numbers are from thorp Model (xxxx); see help page for ref
+        S <- salinity
+        T <- T68fromT90(temperature)
+        f <- frequency / 1000 # convert to kHz
+        f1 <- 0.78 * sqrt(S / 35) * exp(T/26)
+        f2 <- 42 * exp(T/17)
+        alpha <- 0.11 * ((f^2) / (1 + f^2)) + 44 * (f^2 / (4100 + f^2)) + (2.75e-4)*f^2 + 0.003
+        alpha <- alpha / 1000 # dB/km to dB/m
     }
     # nolint end T_and_F_symbol_linter
     alpha
