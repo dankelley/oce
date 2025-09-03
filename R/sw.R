@@ -2623,7 +2623,11 @@ swSoundAbsorption <- function(
         # f2 in kHz
         f2 <- (8.17 * 10^(8 - 1990 / theta)) / (1 + 0.0018 * (S - 35)) # nolint (space before left parenthesis)
         # pure water contribution
-        A3 <- 3.964e-4 - 1.146e-5 * T + 1.45e-7 * T^2 - 6.5e-10 * T^3 # dB / km / kHz^2
+        if (T <= 20) {
+          A3 <- 4.937e-4 - 2.59e-5 * T + 9.11e-7 * T^2 - 1.50e-8 * T^3
+        } else {
+          A3 <- 3.964e-4 - 1.146e-5 * T + 1.45e-7 * T^2 - 6.5e-10 * T^3
+        }
         P3 <- 1 - 3.83e-5 * D + 4.9e-10 * D^2
         alpha <- (A1 * P1 * f1 * f^2) / (f^2 + f1^2) + (A2 * P2 * f2 * f^2) / (f^2 + f2^2) + A3 * P3 * f^2
         alpha <- alpha / 1000
