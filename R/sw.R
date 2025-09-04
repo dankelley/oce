@@ -2546,13 +2546,25 @@ swSigma4 <- function(
 #' shown in reference 3 for example.  For this reason, it is likely that more
 #' formulations will be added to this function, and entirely possible that the
 #' default may change.
+#' 
+#' @note Regarding the `"thorp-extended"` model, the equation was obtained from \[7\].
+#' This equation is an extended version of Thorp's equation, as referenced in the sources below:
+#' 1. Al-Aboosi, Yasin & Al-Aboosi, Jenan. (2018). Study of Absorption Loss Effects on Acoustic Wave Propagation 
+#' in Shallow Water Using Different Empirical Models. International Journal of Advances in Applied Sciences.
+#' 2. Milica Stojanovic. 2006. On the relationship between capacity and distance in an underwater acoustic communication channel. 
+#' In Proceedings of the 1st International Workshop on Underwater Networks (WUWNet '06). Association for Computing Machinery.
+#' 3. A. Sehgal, I. Tumar and J. Schonwalder, "Variability of available capacity due to the effects of depth and temperature in the 
+#' underwater acoustic communication channel," OCEANS 2009-EUROPE, Bremen, Germany, 2009.
 #'
+#' Following the citations will lead to Thorp's original paper, which does not include the extended equation. The original source for
+#' this extended version is not clear. 
+#' 
 #' @inheritParams swRho
 #'
 #' @param frequency The frequency of sound, in Hz.
 #'
 #' @param formulation character string indicating the formulation to use, either
-#' of `"fischer-simmons"`, `"francois-garrison"`, `"ainslie-mccolm"`, `"schulkin-marsh"` or `"thorp"`; see \dQuote{References}.
+#' of `"fischer-simmons"`, `"francois-garrison"`, `"ainslie-mccolm"`, `"schulkin-marsh"` or `"thorp-extended"`; see \dQuote{References}.
 #'
 #' @param pH seawater pH
 #'
@@ -2576,7 +2588,7 @@ swSigma4 <- function(
 #' 5. M. Schulkin, H. W. Marsh; Sound Absorption in Sea Water. 
 #' J. Acoust. Soc. Am. 1 June 1962; 34 (6): 864–865.
 #' 
-#' 6. . H. Thorp. Analytic description of the low frequency attenuation coefficient. Journal 
+#' 6. H. Thorp. Analytic description of the low frequency attenuation coefficient. Journal 
 #' of Acoustical Society of America, 1967.
 #' 
 #' 7. T. Melodia, H. Kulhandjian, L.-C. Kuo, and E. Demirors, "Advances in underwater acoustic networking," Mobile
@@ -2589,31 +2601,30 @@ swSigma4 <- function(
 #' alpha <- swSoundAbsorption(35, 4, 4990, 10e3)
 #'
 #' # reproduce part of Fig 8 of Francois and Garrison (1982 Fig 8)
-#' f <- 1e3 * 10^(seq(-1, 3, 0.1)) # in KHz
+#' f <- 1e3 * 10^(seq(-1, 3, 0.1)) # in Hz
 #' plot(f / 1000, 1e3 * swSoundAbsorption(f, 35, 10, 0, formulation = "fr"),
 #'     xlab = " Freq [kHz]", ylab = " dB/km", type = "l", log = "xy"
 #' )
 #' lines(f / 1000, 1e3 * swSoundAbsorption(f, 0, 10, 0, formulation = "fr"), lty = "solid")
 #' legend("topleft", lty = c("solid", "dashed"), legend = c("S=35", "S=0"))
 #'
-#' # reproduce a comparison plot between the existing absorption models
+#' # Comparison plot between the existing absorption models
 #' f <- 1e3 * 10^(seq(-1, 3, 0.1))
 #' plot(f / 1000, 1e3 * swSoundAbsorption(f, 35, 10, 1000, formulation = "fi"), xlab = " Freq [kHz]", ylab = " dB/km", type = "l", col="blue")
 #' lines(f / 1000, 1e3 * swSoundAbsorption(f, 35, 10, 1000, formulation = "fr"), lty = "solid", col="red")
 #' lines(f / 1000, 1e3 * swSoundAbsorption(f, 35, 10, 1000, formulation = "ai"), lty = "solid", col="green")
 #' lines(f / 1000, 1e3 * swSoundAbsorption(f, 35, 10, 1000, formulation = "sc"), lty = "solid", col="purple")
-#' lines(f / 1000, 1e3 * swSoundAbsorption(f, 35, 10, 1000, formulation = "th"), lty = "solid", col="yellow")
-#' legend("topleft", legend = c("fisher-simmons", "francois-garrison", "ainslie-mccolm", "schulkin-marsh", "thorp"), col = c("blue", "red", "green", "purple", "yellow"), lty = 1, lwd = 2)
+#' lines(f / 1000, 1e3 * swSoundAbsorption(f, 35, 10, 1000, formulation = "th"), lty = "solid", col="black")
+#' legend("topleft", legend = c("fisher-simmons", "francois-garrison", "ainslie-mccolm", "schulkin-marsh", "thorp-extended"), col = c("blue", "red", "green", "purple", "black"), lty = 1, lwd = 2)
 #' title("Comparison of sound absorption models")
 #' 
 #' @family functions that calculate seawater properties
 swSoundAbsorption <- function(
     frequency, salinity, temperature, pressure, pH = 8,
-    formulation = c("fisher-simmons", "francois-garrison", "ainslie-mccolm", "schulkin-marsh", "thorp")) {
+    formulation = c("fisher-simmons", "francois-garrison", "ainslie-mccolm", "schulkin-marsh", "thorp-extended")) {
     formulation <- match.arg(formulation)
     # nolint start T_and_F_symbol_linter
     if (formulation == "fisher-simmons") {
-        print("fisher-simmons")
         # Equation numbers are from Fisher & Simmons (1977); see help page for ref
         p <- 1 + pressure / 10 # add atmophere, then convert water part from dbar
         S <- salinity
@@ -2693,7 +2704,8 @@ swSoundAbsorption <- function(
         # underwater acoustic communication channel," OCEANS 2009-EUROPE, Bremen, Germany, 2009.
         #
         # Note:
-        # 1. Following the citations will lead to Thorp's original paper, which does NOT include the last two terms.
+        # 1. Following the citations will lead to Thorp's original paper, which does not include the last two terms. The original source for
+        # this extended version is not clear. 
         # 2. The coefficients in the first two terms differ from those in Thorp's original paper due to unit conversion 
         #    from dB/kyd to dB/km.
         S <- salinity
