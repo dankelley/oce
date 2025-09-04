@@ -77,6 +77,8 @@
 * Change `subset,amsr-method()` to handle `"pass"` parameter.
 * Change `subset,ctd-method()` to handle items of unexpected length (issue
   #2250).
+* Change `swSoundAbsorption()` to handle three more parameterizations (code and
+  documentation contributed by João Resende via pull request 2345).
 * Change `tidem()` to stop if there are any non-finite time values (issue
   #2269).
 * Change `vectorShow()` to obey "digits" parameter for list arguments (issue

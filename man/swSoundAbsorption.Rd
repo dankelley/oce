@@ -15,7 +15,7 @@ swSoundAbsorption(
 )
 }
 \arguments{
-\item{frequency}{The frequency of sound, in Hz.}
+\item{frequency}{the frequency of sound, in Hz.}
 
 \item{salinity}{either practical salinity (in which case \code{temperature}
 and \code{pressure} must be provided) \emph{or} an \code{oce} object, in
@@ -33,16 +33,18 @@ using \code{\link[=T68fromT90]{T68fromT90()}}.}
 
 \item{pressure}{pressure (dbar)}
 
-\item{pH}{seawater pH}
+\item{pH}{seawater pH.}
 
-\item{formulation}{character string indicating the formulation to use, either
-of \code{"fischer-simmons"}, \code{"francois-garrison"}, \code{"ainslie-mccolm"}, \code{"schulkin-marsh"} or \code{"thorp-extended"}; see \dQuote{References}.}
+\item{formulation}{character string indicating the formulation to use. The
+choices are \code{"fischer-simmons"}, \code{"francois-garrison"}, \code{"ainslie-mccolm"},
+\verb{"schulkin-marsh" and }"thorp-extended"`.  These may be abbreviated using
+sufficient initial letters to be distinct.}
 }
 \value{
-Sound absorption in dB/m.
+\code{swSoundAbsorption} returns the sound absorption in dB/m.
 }
 \description{
-Compute the sound absorption of seawater, in dB/m
+Compute the sound absorption of seawater, in dB/m.
 }
 \details{
 Salinity and pH are ignored in this formulation.  Several formulae may be
@@ -50,21 +52,11 @@ found in the literature, and they give results differing by 10 percent, as
 shown in reference 3 for example.  For this reason, it is likely that more
 formulations will be added to this function, and entirely possible that the
 default may change.
-}
-\note{
-Regarding the \code{"thorp-extended"} model, the equation was obtained from [7].
-This equation is an extended version of Thorp's equation, as referenced in the sources below:
-\enumerate{
-\item Al-Aboosi, Yasin & Al-Aboosi, Jenan. (2018). Study of Absorption Loss Effects on Acoustic Wave Propagation
-in Shallow Water Using Different Empirical Models. International Journal of Advances in Applied Sciences.
-\item Milica Stojanovic. 2006. On the relationship between capacity and distance in an underwater acoustic communication channel.
-In Proceedings of the 1st International Workshop on Underwater Networks (WUWNet '06). Association for Computing Machinery.
-\item A. Sehgal, I. Tumar and J. Schonwalder, "Variability of available capacity due to the effects of depth and temperature in the
-underwater acoustic communication channel," OCEANS 2009-EUROPE, Bremen, Germany, 2009.
-}
 
-Following the citations will lead to Thorp's original paper, which does not include the extended equation. The original source for
-this extended version is not clear.
+Note that the \code{"thorp-extended"} model is an extended version of Thorp's equation,
+as discussed in References 8, 9 and 10. Following these citations will lead to
+Thorp's original paper, which does not include the extended equation. The original
+source for this extended version is not clear.
 }
 \examples{
 # Fisher & Simmons (1977 table IV) gives 0.52 dB/km for 35 PSU, 5 degC, 500 atm
@@ -79,14 +71,19 @@ plot(f / 1000, 1e3 * swSoundAbsorption(f, 35, 10, 0, formulation = "fr"),
 lines(f / 1000, 1e3 * swSoundAbsorption(f, 0, 10, 0, formulation = "fr"), lty = "solid")
 legend("topleft", lty = c("solid", "dashed"), legend = c("S=35", "S=0"))
 
-# Comparison plot between the existing absorption models
-f <- 1e3 * 10^(seq(-1, 3, 0.1))
-plot(f / 1000, 1e3 * swSoundAbsorption(f, 35, 10, 1000, formulation = "fi"), xlab = " Freq [kHz]", ylab = " dB/km", type = "l", col="blue")
-lines(f / 1000, 1e3 * swSoundAbsorption(f, 35, 10, 1000, formulation = "fr"), lty = "solid", col="red")
-lines(f / 1000, 1e3 * swSoundAbsorption(f, 35, 10, 1000, formulation = "ai"), lty = "solid", col="green")
-lines(f / 1000, 1e3 * swSoundAbsorption(f, 35, 10, 1000, formulation = "sc"), lty = "solid", col="purple")
-lines(f / 1000, 1e3 * swSoundAbsorption(f, 35, 10, 1000, formulation = "th"), lty = "solid", col="black")
-legend("topleft", legend = c("fisher-simmons", "francois-garrison", "ainslie-mccolm", "schulkin-marsh", "thorp-extended"), col = c("blue", "red", "green", "purple", "black"), lty = 1, lwd = 2)
+# Comparison of the supported absorption models
+f <- 1e3 * 10^(seq(-1, 3, 0.1)) # in KHz
+plot(f / 1000, 1e3 * swSoundAbsorption(f, 35, 10, 1000, formulation = "fi"),
+    xlab = " Freq [kHz]", ylab = " dB/km", type = "l", col = "blue"
+)
+lines(f / 1000, 1e3 * swSoundAbsorption(f, 35, 10, 1000, formulation = "fr"), col = "red")
+lines(f / 1000, 1e3 * swSoundAbsorption(f, 35, 10, 1000, formulation = "ai"), col = "green")
+lines(f / 1000, 1e3 * swSoundAbsorption(f, 35, 10, 1000, formulation = "sc"), col = "purple")
+lines(f / 1000, 1e3 * swSoundAbsorption(f, 35, 10, 1000, formulation = "th"), col = "black")
+legend("topleft", legend = c(
+    "fisher-simmons", "francois-garrison",
+    "ainslie-mccolm", "schulkin-marsh", "thorp-extended"
+), col = c("blue", "red", "green", "purple", "black"), lty = 1, lwd = 2)
 title("Comparison of sound absorption models")
 
 }
@@ -104,8 +101,17 @@ absorption in sea water. J. Acoust. Soc. Am. 1 March 1998; 103 (3): 1671–1672.
 J. Acoust. Soc. Am. 1 June 1962; 34 (6): 864–865.
 \item H. Thorp. Analytic description of the low frequency attenuation coefficient. Journal
 of Acoustical Society of America, 1967.
-\item T. Melodia, H. Kulhandjian, L.-C. Kuo, and E. Demirors, "Advances in underwater acoustic networking," Mobile
-Ad Hoc Networking: Cutting Edge Directions, pp. 804-852, 2013.
+\item T. Melodia, H. Kulhandjian, L.-C. Kuo, and E. Demirors, "Advances in underwater acoustic
+networking," Mobile Ad Hoc Networking: Cutting Edge Directions, pp. 804-852, 2013.
+\item Al-Aboosi, Yasin & Al-Aboosi, Jenan. (2018). Study of Absorption Loss Effects
+on Acoustic Wave Propagation in Shallow Water Using Different Empirical Models.
+International Journal of Advances in Applied Sciences.
+\item Milica Stojanovic. 2006. On the relationship between capacity and distance in an
+nderwater acoustic communication channel. In Proceedings of the 1st International
+Workshop on Underwater Networks (WUWNet '06). Association for Computing Machinery.
+\item A. Sehgal, I. Tumar and J. Schonwalder, "Variability of available capacity
+due to the effects of depth and temperature in the underwater acoustic
+communication channel," OCEANS 2009-EUROPE, Bremen, Germany, 2009.
 }
 }
 \seealso{
@@ -154,6 +160,10 @@ Other functions that calculate seawater properties:
 \code{\link{swZ}()}
 }
 \author{
-Dan Kelley
+Dan Kelley and João Resende.  Kelley wrote an early version of
+this function, which supported only the \code{"fisher-simmons"} and
+\code{"francois-garrison"} formulations. The \code{"ainslie-mccolm"}, \verb{schulkin-marsh" and }"thorp-extended"` formulations were added in a GitHub pull request
+(number 2345) submitted on 2025-09-04 by Resende, who also added a
+comparison plot to the documentation.
 }
 \concept{functions that calculate seawater properties}

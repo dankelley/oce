@@ -1,5 +1,7 @@
 Aanderaa
+Aboosi
 accelerometer
+Acoust
 Acoustic
 ADCP
 ADCPs
@@ -15,6 +17,7 @@ ADVField
 ADVs
 AFL
 AGU
+Ainslie
 Aitoff
 al
 Albers
@@ -47,6 +50,7 @@ argoFloats
 ArgonautXR
 argos
 args
+Arnaud
 asKernel
 AST
 atTop
@@ -134,6 +138,7 @@ Cheng
 chicago
 Chl
 Chlorinity
+Chulliat
 CIOOS
 circ
 clatitude
@@ -218,6 +223,7 @@ deliminators
 DeltaAngle
 deltat
 DeltaVelocity
+Demirors
 Denbo
 der
 derivs
@@ -477,6 +483,8 @@ JAXA
 JCGM
 JCM
 jcommops
+Jenan
+João
 joss
 JPL
 JPO
@@ -500,6 +508,8 @@ Krysten
 Krzysik
 kthyng
 Kuchitsu
+Kulhandjian
+Kuo
 l'Institut
 labelled
 labelling
@@ -554,6 +564,7 @@ Mahy
 makeFilter
 makeFilter's
 makeSection
+Manoj
 mantissa
 mapArrows
 mapAxis
@@ -580,6 +591,7 @@ MathWorks
 matlab
 matplotlib
 McBryde
+McColm
 McDougall
 McDougall's
 McNally
@@ -588,6 +600,7 @@ MEDS
 Meeus
 Meeus
 Meeus's
+Melodia
 meridional
 metre
 metres
@@ -597,6 +610,7 @@ MGL
 mgp
 Michalsky
 Mikhailo
+Milica
 Millero
 millidegree
 millidegrees
@@ -624,6 +638,7 @@ Multanovsky
 multipanel
 murdoch
 Nagata
+nair
 nao
 nasa
 NaturalEarth
@@ -631,6 +646,7 @@ nav
 NBeams
 ncei
 NCEP
+nderwater
 neighbour
 neighbourhood
 neighbourhoods
@@ -804,6 +820,7 @@ replot
 requireNamespace
 rescale
 Rescale
+Resende
 reseting
 reticulate
 retime
@@ -847,6 +864,8 @@ scattergraph
 scattergraphs
 Schmid
 schmitt
+Schonwalder
+Schulkin
 SCOR
 Scotian
 SCUFA
@@ -866,6 +885,7 @@ SeaWater
 sectionAddStation
 sectionGrid
 sectionSmooth
+Sehgal
 semidurnal
 SentinelV
 sep
@@ -914,6 +934,7 @@ stereopolar
 Stereopolar
 stererographics
 stickplot
+Stojanovic
 subclasses
 subclassing
 Subclassing
@@ -960,6 +981,9 @@ tformat
 th
 Thébault
 Thierry
+thorp
+Thorp
+Thorp's
 threenum
 Thyng
 Thyng's
@@ -998,6 +1022,7 @@ Tripel
 tskernel
 tuk
 Tuktoyaktuk
+Tumar
 tz
 UBT
 uchicago
@@ -1118,6 +1143,7 @@ wocedata
 wocedocs
 WorkHorse
 WSL
+WUWNet
 www
 xa
 xaxs
@@ -1139,6 +1165,7 @@ xy
 xyz
 XYZ
 Yamaguchi
+Yasin
 Yasushi
 yaxt
 yearday
