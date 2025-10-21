@@ -6,7 +6,7 @@ rsk <- oceSetMetadata(rsk, "station", "C18")
 rsk <- oceSetMetadata(rsk, "ship", "Ault")
 rsk <- oceSetMetadata(rsk, "institute", "Ocean Research Project")
 # isolate to downcast (reduces object size, and we normally do this anyway)
-rsk <- subset(rsk, 1441381040 < time & time < 1441381480)
+rsk <- subset(rsk, 1441381041 < time & time < 1441381480)
 
 # Save in version 2, because otherwise users with R 3.5.x and earlier will not
 # be able to use data("rsk")
