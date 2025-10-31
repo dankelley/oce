@@ -185,6 +185,7 @@ read.netcdf <- function(file, ..., encoding = NA, renamer = NULL, debug = getOpt
     }
     oceDebug(debug, "read.netcdf() START\n", unindent = 1)
     nc <- ncdf4::nc_open(file)
+    on.exit(ncdf4::nc_close(nc))
     res <- new("oce")
     varNames <- names(nc$var)
     if ("time" %in% names(nc$dim)) {
