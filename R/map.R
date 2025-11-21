@@ -117,6 +117,7 @@ oceProject <- function(xy, proj, inv = FALSE, debug = getOption("oceDebug")) {
     owarn <- options()$warn # this, and the capture.output, quieten the processing
     options(warn = -1)
     na <- which(!is.finite(xy[, 1]))
+    oceDebug(debug, "fraction of non-NA values: ", sum(na) / length(na), "\n")
     xy[na, ] <- 0
     # sf_project() with proj=lcc fails at S. pole. We will never need things
     # to be *precisely* at the poles, so let's move near-polar (or extra-polar)
@@ -143,6 +144,7 @@ oceProject <- function(xy, proj, inv = FALSE, debug = getOption("oceDebug")) {
             XY <- try(unname(sf::sf_project(proj, longlatProj, xy, keep = TRUE)), silent = TRUE)
         })
     } else {
+        # cat("DAN map.R:147\n");browser()
         capture.output({
             XY <- try(unname(sf::sf_project(longlatProj, proj, xy, keep = TRUE)), silent = TRUE)
         })
@@ -867,26 +869,35 @@ mapContour <- function(
             y = latitude[yy],
             z = z, levels = levels[ilevel]
         )
-        if (length(cl) > 0) {
+        # if (debug > 1) browser()
+        ncl <- length(cl)
+        if (ncl > 0) {
             for (i in seq_along(cl)) {
-                oceDebug(debug > 1, "segment number=i=", i, "; level=", levels[ilevel], "\n")
+                oceDebug(debug > 1, "segment ", i, " of ", ncl, "\n")
                 xy <- lonlat2map(cl[[i]]$x, cl[[i]]$y)
                 xc <- xy$x
                 yc <- xy$y
                 nc <- length(xc)
-                if (drawlabels[ilevel]) {
+                haveSomeData <- sum(!is.na(xc) & !is.na(yc)) > 0
+                #oceDebug(debug > 1, vectorShow(haveSomeData))
+                if (nc > 0 && haveSomeData && drawlabels[ilevel]) {
+                    #oceDebug(debug > 2, "ilevel=", ilevel, "\n")
                     slopeMin <- 9999999 # big
                     slopeMinj <- NULL
                     slopeMinj2 <- NULL
                     canlabel <- FALSE
+                    #oceDebug(debug > 2, vectorShow(xc), "\n")
+                    #oceDebug(debug > 2, vectorShow(yc), "\n")
                     for (j in 1:nc) {
                         j2 <- j
                         while (j2 < nc) {
+                            #oceDebug(debug > 2, "j=", j, ", j2=", j2, ", nc=", nc, "\n")
                             dy <- yc[j2] - yc[j]
                             dx <- xc[j2] - xc[j]
                             dist <- sqrt(dx^2 + dy^2)
-                            if (dist > 1.4 * w && dx != 0.0) {
-                                oceDebug(debug > 2, "enough space at j=", j, ", j2=", j2, "\n")
+                            #oceDebug(debug > 2, "dx=", dx, ", dy=", dy, ", dist=", dist, ", w=", w, "\n")
+                            if (is.finite(dist) && is.finite(dx) && dist > 1.4 * w && dx != 0.0) {
+                                #oceDebug(debug > 2, "enough space at j=", j, ", j2=", j2, "\n")
                                 slope <- dy / dx
                                 if (abs(slope) < slopeMin) {
                                     slopeMin <- abs(slope)

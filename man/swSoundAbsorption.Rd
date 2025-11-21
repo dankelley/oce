@@ -107,7 +107,7 @@ networking," Mobile Ad Hoc Networking: Cutting Edge Directions, pp. 804-852, 201
 on Acoustic Wave Propagation in Shallow Water Using Different Empirical Models.
 International Journal of Advances in Applied Sciences.
 \item Milica Stojanovic. 2006. On the relationship between capacity and distance in an
-nderwater acoustic communication channel. In Proceedings of the 1st International
+underwater acoustic communication channel. In Proceedings of the 1st International
 Workshop on Underwater Networks (WUWNet '06). Association for Computing Machinery.
 \item A. Sehgal, I. Tumar and J. Schonwalder, "Variability of available capacity
 due to the effects of depth and temperature in the underwater acoustic
