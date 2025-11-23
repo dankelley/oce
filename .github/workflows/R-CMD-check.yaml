@@ -45,7 +45,6 @@ jobs:
         with:
           extra-packages: any::rcmdcheck, any::XML
           needs: check
-          cache-dependency-path: ''
 
       - uses: r-lib/actions/check-r-package@v2
         with:
