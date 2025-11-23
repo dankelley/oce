@@ -667,10 +667,10 @@ drawPalette <- function(
 
 #' Plot an Image with a Color Palette
 #'
-#' Plot an image with a color palette, in a way that does not conflict with
-#' [`par`]`("mfrow")` or [layout()].  To plot just a palette,
-#' e.g. to get an x-y plot with points colored according to a palette, use
-#' [drawPalette()] and then draw the main diagram.
+#' Plot an image with a color palette, in a way that does not conflict with the
+#' `mfrow` or `mfcol` arguments of [par()], or with [layout()].  To plot just a
+#' palette, e.g. to get an x-y plot with points colored according to a palette,
+#' use [drawPalette()] and then draw the main diagram.
 #'
 #' @details
 #' By default, creates an image with a color palette to the right.  The effect is similar to

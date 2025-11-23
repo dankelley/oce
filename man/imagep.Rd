@@ -268,10 +268,10 @@ values that can be used by \code{\link[=oce.grid]{oce.grid()}} to add a grid to 
 plot.
 }
 \description{
-Plot an image with a color palette, in a way that does not conflict with
-\code{\link{par}}\code{("mfrow")} or \code{\link[=layout]{layout()}}.  To plot just a palette,
-e.g. to get an x-y plot with points colored according to a palette, use
-\code{\link[=drawPalette]{drawPalette()}} and then draw the main diagram.
+Plot an image with a color palette, in a way that does not conflict with the
+\code{mfrow} or \code{mfcol} arguments of \code{\link[=par]{par()}}, or with \code{\link[=layout]{layout()}}.  To plot just a
+palette, e.g. to get an x-y plot with points colored according to a palette,
+use \code{\link[=drawPalette]{drawPalette()}} and then draw the main diagram.
 }
 \details{
 By default, creates an image with a color palette to the right.  The effect is similar to
