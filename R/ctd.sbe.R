@@ -72,7 +72,7 @@
 #' `flCM`        \tab `fluorescence`             \tab ug/l; Chelsea Mini Chl Con\tab\cr
 #' `flCUVA#`     \tab `fluorescence`             \tab ug/l; Chelsea UV Aquatracka\tab\cr
 #' `flC#`        \tab `fluorescence`             \tab ug/l; Chelsea Aqua 3\tab    \cr
-#' `flEC-AFL#`   \tab `fluorescence`             \tab mg/m^3; WET Labs ECO-AFL/FLtab\cr
+#' `flEC-AFL#`   \tab `fluorescence`             \tab mg/m^3; WET Labs ECO-AFL/FL\tab\cr
 #' `flScufa#`    \tab `fluorescence`             \tab -; Turner SCUFA (RFU)\tab\cr
 #' `flSPR`       \tab `fluorescence`             \tab -; Seapoint, Rhodamine\tab  \cr
 #' `flSPuv`      \tab `fluorescence`             \tab -; Seapoint, UV      \tab   \cr
