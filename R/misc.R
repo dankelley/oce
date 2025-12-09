@@ -2644,6 +2644,10 @@ resizableLabel <- function(item, axis = "x", sep, unit = NULL, debug = getOption
         # unit is ignored
         unit <- gettext("cph", domain = "R-oce")
         abbreviated <- full <- bquote(.(var) * .(L) * .(unit[[1]]) * .(R))
+    } else if (item == "Rrho") {
+        abbreviated <- full <- expression(R[rho])
+    } else if (item == "RrhoSF") {
+        abbreviated <- full <- expression(R[rho*","*SF])
     } else if (item == paste("sound", "speed")) {
         var <- gettext("Sound Speed", domain = "R-oce")
         # unit is ignored
@@ -2672,8 +2676,18 @@ resizableLabel <- function(item, axis = "x", sep, unit = NULL, debug = getOption
     whichAxis <- if (axis == "x") 1 else 2
     spaceAvailable <- abs(par("fin")[whichAxis])
     fraction <- spaceNeeded / spaceAvailable
+    oceDebug(debug, "full: '", as.character(full), "'\n")
+    oceDebug(debug, "abbreviated: '", as.character(abbreviated), "'\n")
+    oceDebug(debug, "fraction: ", fraction, "\n")
+    if (fraction < 1) {
+        rval <- full
+        oceDebug(debug, "fraction < 1, so will return full\n")
+    } else {
+        rval <- abbreviated
+        oceDebug(debug, "fraction >= 1, so will return abbreviated\n")
+    }
     oceDebug(debug, "END resizableLabel\n", unindent = 1)
-    if (fraction < 1) full else abbreviated
+    rval
 }
 
 
