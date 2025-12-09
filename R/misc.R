@@ -2376,6 +2376,11 @@ resizableLabel <- function(item, axis = "x", sep, unit = NULL, debug = getOption
         var <- gettext("Potential density anomaly", domain = "R-oce")
         full <- bquote(.(var) * .(L) * kg / m^3 * .(R))
         abbreviated <- bquote(sigma[theta] * .(L) * kg / m^3 * .(R))
+    } else if (item == "rho") {
+        # unit is ignored, since this quantity has a fixed meaning
+        var <- gettext("Density", domain = "R-oce")
+        full <- bquote(.(var) * .(L) * kg / m^3 * .(R))
+        abbreviated <- bquote(rho * .(L) * kg / m^3 * .(R))
     } else if (item == "sigma0") {
         # unit is ignored, since this quantity has a fixed meaning
         var <- gettext("Potential density anomaly wrt surface", domain = "R-oce")
@@ -2401,6 +2406,11 @@ resizableLabel <- function(item, axis = "x", sep, unit = NULL, debug = getOption
         var <- gettext("Potential density anomaly wrt 4000 dbar", domain = "R-oce")
         full <- bquote(.(var) * .(L) * kg / m^3 * .(R))
         abbreviated <- bquote(sigma[4] * .(L) * kg / m^3 * .(R))
+    } else if (item == "sigmaTheta") {
+        # unit is ignored, since this quantity has a fixed meaning
+        var <- gettext("Potential density anomaly", domain = "R-oce")
+        full <- bquote(.(var) * .(L) * kg / m^3 * .(R))
+        abbreviated <- bquote(sigma[theta] * .(L) * kg / m^3 * .(R))
     } else if (item %in% c("salinity", "SP")) {
         # unit is ignored, since this quantity has a fixed meaning
         var <- "Salinity"

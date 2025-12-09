@@ -107,7 +107,7 @@ reasonable and specific expression user interest.
 \code{flCM}        \tab \code{fluorescence}             \tab ug/l; Chelsea Mini Chl Con\tab\cr
 \code{flCUVA#}     \tab \code{fluorescence}             \tab ug/l; Chelsea UV Aquatracka\tab\cr
 \code{flC#}        \tab \code{fluorescence}             \tab ug/l; Chelsea Aqua 3\tab    \cr
-\code{flEC-AFL#}   \tab \code{fluorescence}             \tab mg/m^3; WET Labs ECO-AFL/FLtab\cr
+\code{flEC-AFL#}   \tab \code{fluorescence}             \tab mg/m^3; WET Labs ECO-AFL/FL\tab\cr
 \code{flScufa#}    \tab \code{fluorescence}             \tab -; Turner SCUFA (RFU)\tab\cr
 \code{flSPR}       \tab \code{fluorescence}             \tab -; Seapoint, Rhodamine\tab  \cr
 \code{flSPuv}      \tab \code{fluorescence}             \tab -; Seapoint, UV      \tab   \cr

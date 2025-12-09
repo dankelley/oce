@@ -943,7 +943,7 @@ drawPalette <- function(
 #' speed <- outer(h, drho, function(drho, h) sqrt(9.8 * drho * h / 1024))
 #' imagep(h, drho, speed,
 #'     xlab = "Equivalent depth [m]",
-#'     ylab = expression(paste(Delta * rho, " [kg/m^3]")),
+#'     ylab = expression(paste(Delta * rho, " [ kg/m^3 ]")),
 #'     zlab = "Internal-wave speed [m/s]"
 #' )
 #'

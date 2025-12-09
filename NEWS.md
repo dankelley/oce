@@ -38,6 +38,7 @@
   * handle `xlab` better (issue #2285).
 * Change `plot.coastline()` to improve axes aesthetics (issue #2342).
 * Change `plot.ctd()` to improve map margin note (issue #2343).
+* Change `plotProfile()` to improve unit spacing (issue #2352).
 * Change `plot.section()` to handle `eos="gsw"` (issue #2256).
 * Change `pwelch()` to fix error if `nfft` and `spec` are provided (issue
   #2299).

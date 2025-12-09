@@ -2,6 +2,8 @@
 ^nohup.out$
 ^_snaps$
 Rplot.png
+[0-9]*.png
+[0-9]*.R
 Meta
 doc
 ^vignettes/figure$

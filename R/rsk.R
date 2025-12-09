@@ -1233,8 +1233,10 @@ read.rsk <- function(
             channels[[iChannel]] <- d[, iChannel + 2]
         }
         names(channels) <- channelNames
-        cat("FIXME DAN rsk.R:1186 'b' next is channels\n")
-        print(channels)
+        if (debug > 0) {
+            cat("channels:\n")
+            print(channels)
+        }
         # Now do subsetting
         if (inherits(from, "POSIXt") || inherits(from, "character")) {
             if (!inherits(to, "POSIXt") && !inherits(to, "character")) {

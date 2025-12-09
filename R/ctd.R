@@ -3185,7 +3185,7 @@ setMethod(
                         msg <- x[["id"]]
                         topMsg <- paste0(topMsg, "id:", x[["id"]])
                         if ("cycleNumber" %in% mnames) {
-                            #msg <- paste0(msg, "_", x[["cycleNumber"]])
+                            # msg <- paste0(msg, "_", x[["cycleNumber"]])
                             topMsg <- paste(topMsg, x[["cycleNumber"]])
                         }
                     }
@@ -3211,9 +3211,9 @@ setMethod(
                         }
                     }
                     if (nchar(topMsg) > 0) {
-                        #message("DAN ", mean(par("usr")[1:2]))
-                        #print(par("usr"))
-                        mtext(topMsg, line = 0.5, cex = par("cex"), adj=1)
+                        # message("DAN ", mean(par("usr")[1:2]))
+                        # print(par("usr"))
+                        mtext(topMsg, line = 0.5, cex = par("cex"), adj = 1)
                     }
                 }
                 if (which[w] == "map_with_filename" && !is.null(x@metadata$filename)) {
@@ -4850,9 +4850,7 @@ plotProfile <- function(
                                 lwd = par("lwd"),
                                 cex = 1, pch = 1, pt.bg = "transparent",
                                 df = df, keepNA = FALSE, debug = getOption("oceDebug", 0)) {
-        oceDebug(debug, "plotJustProfile(...,",
-            argShow(xtype),
-            argShow(col), ", debug=", debug, ") START\n",
+        oceDebug(debug, "plotJustProfile(...,", argShow(col), ", ...) START\n",
             sep = "", unindent = 1
         )
         if (is.null(xlab)) {
@@ -5129,11 +5127,7 @@ plotProfile <- function(
             axes = FALSE, xaxs = xaxs, yaxs = yaxs, ...
         )
         axis(3, col = col.rho, col.axis = col.rho, col.lab = col.rho)
-        if (getOption("oceUnitBracket") == "[") {
-            mtext(expression(paste(sigma[theta], " [", kg / m^3, "] ")), side = 3, line = axisNameLoc, col = col.rho, cex = par("cex"))
-        } else {
-            mtext(expression(paste(sigma[theta], " (", kg / m^3, ") ")), side = 3, line = axisNameLoc, col = col.rho, cex = par("cex"))
-        }
+        mtext(resizableLabel("sigmaTheta", "x"), side = 3, line = axisNameLoc, col = col.rho, cex = par("cex"))
         axis(2)
         mtext(yname, side = 2, line = axisNameLoc, cex = par("cex"))
         box()
@@ -5155,21 +5149,21 @@ plotProfile <- function(
         # lines(dpdt.sm$y, dpdt.sm$x, lwd=lwd, col=col.dpdt)
         if (getOption("oceUnitBracket") == "[") {
             if (knowTimeUnit) {
-                mtext(expression(dp / dt * " [dbar/s]"),
+                mtext(expression(dp / dt * " [ dbar/s ]"),
                     side = 1, line = axisNameLoc, cex = par("cex"), col = col.dpdt
                 )
             } else {
-                mtext(expression(dp / dt * " [dbar/(time unit)]"),
+                mtext(expression(dp / dt * " [ dbar/(time unit) ]"),
                     side = 1, line = axisNameLoc, cex = par("cex"), col = col.dpdt
                 )
             }
         } else {
             if (knowTimeUnit) {
-                mtext(expression(dp / dt * " (dbar/s)"),
+                mtext(expression(dp / dt * " ( dbar/s )"),
                     side = 1, line = axisNameLoc, cex = par("cex"), col = col.dpdt
                 )
             } else {
-                mtext(expression(dp / dt * " (dbar/(time unit))"),
+                mtext(expression(dp / dt * " ( dbar/(time unit) )"),
                     side = 1, line = axisNameLoc, cex = par("cex"), col = col.dpdt
                 )
             }
@@ -5430,10 +5424,12 @@ plotProfile <- function(
     } else if (xtype == "Rrho" || xtype == "RrhoSF") {
         oceDebug(debug, "case 9: xtype is \"Rrho\" or \"RrhoSF\"\n")
         Rrho <- swRrho(x, sense = if (xtype == "Rrho") "diffusive" else "finger")
+        # message(vectorShow(Rrho))
         look <- if (keepNA) seq_along(y) else !is.na(Rrho) & !is.na(y)
+        # message(vectorShow(look))
         if (!add) {
             if (ylimGiven) {
-                plot(Rrho, y[look],
+                plot(Rrho[look], y[look],
                     lty = lty,
                     xlim = if (!missing(Rrholim)) Rrholim,
                     ylim = ylim, cex = cex, pch = pch,
@@ -5441,15 +5437,16 @@ plotProfile <- function(
                     type = "n", xlab = "", ylab = yname, ...
                 )
             } else {
-                plot(Rrho, y[look],
+                plot(Rrho[look], y[look],
                     lty = lty,
                     xlim = if (!missing(Rrholim)) Rrholim,
+                    # ylim = rev(range(y[look])), cex = cex, pch = pch,
                     ylim = rev(range(y[look])), cex = cex, pch = pch,
                     axes = FALSE, xaxs = xaxs, yaxs = yaxs,
                     type = "n", xlab = "", ylab = yname, ...
                 )
             }
-            mtext(if (is.null(xlab)) expression(R[rho]) else xlab, side = 3, line = axisNameLoc, cex = par("cex"))
+            mtext(if (is.null(xlab)) resizableLabel(xtype) else xlab, side = 3, line = axisNameLoc, cex = par("cex"))
             axis(2)
             axis(3)
             box()
@@ -5460,7 +5457,7 @@ plotProfile <- function(
                 abline(v = seq(at[1], at[2], length.out = at[3] + 1), col = col.grid, lty = lty.grid)
             }
         }
-        plotJustProfile(Rrho, y[look],
+        plotJustProfile(Rrho[look], y[look],
             type = type, lwd = lwd, lty = lty,
             cex = cex, col = col, pch = pch, pt.bg = pt.bg,
             keepNA = keepNA, debug = debug - 1
@@ -5614,15 +5611,18 @@ plotProfile <- function(
                     lty = lty, cex = cex, pch = pch, ...
                 )
             }
-            if (getOption("oceUnitBracket") == "[") {
-                mtext(if (is.null(xlab)) expression(paste(sigma[0], " [", kg / m^3, "]")) else xlab,
-                    side = 3, line = axisNameLoc, cex = par("cex")
-                )
-            } else {
-                mtext(if (is.null(xlab)) expression(paste(sigma[0], " (", kg / m^3, ")")) else xlab,
-                    side = 3, line = axisNameLoc, cex = par("cex")
-                )
-            }
+            #<2351> if (getOption("oceUnitBracket") == "[") {
+            #<2351>     mtext(if (is.null(xlab)) expression(paste(sigma[0], " [", kg / m^3, "]")) else xlab,
+            #<2351>         side = 3, line = axisNameLoc, cex = par("cex")
+            #<2351>     )
+            #<2351> } else {
+            #<2351>     mtext(if (is.null(xlab)) expression(paste(sigma[0], " (", kg / m^3, ")")) else xlab,
+            #<2351>         side = 3, line = axisNameLoc, cex = par("cex")
+            #<2351>     )
+            #<2351> }
+            mtext(if (is.null(xlab)) resizableLabel(xtype, debug = debug) else xlab,
+                side = 3, line = axisNameLoc, cex = par("cex")
+            )
             axis(2)
             axis(3)
             box()
@@ -5704,11 +5704,11 @@ plotProfile <- function(
                 )
             }
             if (getOption("oceUnitBracket") == "[") {
-                mtext(if (is.null(xlab)) expression(paste(rho, " [", kg / m^3, "]")) else xlab,
+                mtext(if (is.null(xlab)) resizableLabel("rho", "x") else xlab,
                     side = 3, line = axisNameLoc, cex = par("cex")
                 )
             } else {
-                mtext(if (is.null(xlab)) expression(paste(rho, " (", kg / m^3, ")")) else xlab,
+                mtext(if (is.null(xlab)) resizableLabel("rho", "x") else xlab,
                     side = 3, line = axisNameLoc, cex = par("cex")
                 )
             }
@@ -5748,20 +5748,12 @@ plotProfile <- function(
             type = "n", xlab = "", ylab = yname, ...
         )
         axis(3, col = col.rho, col.axis = col.rho, col.lab = col.rho)
-        tmpsep <- getOption("oceUnitSep")
-        sep <- if (!is.null(tmpsep)) tmpsep else ""
-        if (getOption("oceUnitBracket") == "[") {
-            label <- if (eos == "unesco") {
-                bquote(sigma[theta] * " [" * .(sep) * kg / m^3 * .(sep) * "]")
-            } else {
-                bquote(sigma[0] * " [" * .(sep) * kg / m^3 * .(sep) * "]")
-            }
+        #tmpsep <- getOption("oceUnitSep")
+        #sep <- if (!is.null(tmpsep)) tmpsep else ""
+        label <- if (eos == "unesco") {
+            resizableLabel("sigmaTheta", "x")
         } else {
-            label <- if (eos == "unesco") {
-                bquote(sigma[theta] * " (" * .(sep) * kg / m^3 * .(sep) * ")")
-            } else {
-                bquote(sigma[0] * " (" * .(sep) * kg / m^3 * .(sep) * ")")
-            }
+            resizableLabel("sigma0", "x")
         }
         mtext(resizableLabel(if (eos == "unesco") "sigmaTheta" else "sigma0"),
             side = 3, line = axisNameLoc, col = col.rho, cex = par("cex")
