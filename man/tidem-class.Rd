@@ -70,35 +70,6 @@ retrieve derived items.
 }
 
 \seealso{
-Other functions that plot oce data: 
-\code{\link{download.amsr}()},
-\code{\link{plot,adp-method}},
-\code{\link{plot,adv-method}},
-\code{\link{plot,amsr-method}},
-\code{\link{plot,argo-method}},
-\code{\link{plot,bremen-method}},
-\code{\link{plot,cm-method}},
-\code{\link{plot,coastline-method}},
-\code{\link{plot,ctd-method}},
-\code{\link{plot,gps-method}},
-\code{\link{plot,ladp-method}},
-\code{\link{plot,landsat-method}},
-\code{\link{plot,lisst-method}},
-\code{\link{plot,lobo-method}},
-\code{\link{plot,met-method}},
-\code{\link{plot,odf-method}},
-\code{\link{plot,rsk-method}},
-\code{\link{plot,satellite-method}},
-\code{\link{plot,sealevel-method}},
-\code{\link{plot,section-method}},
-\code{\link{plot,tidem-method}},
-\code{\link{plot,topo-method}},
-\code{\link{plot,windrose-method}},
-\code{\link{plot,xbt-method}},
-\code{\link{plotProfile}()},
-\code{\link{plotScan}()},
-\code{\link{plotTS}()}
-
 Other things related to tides: 
 \code{\link{[[,tidem-method}},
 \code{\link{[[<-,tidem-method}},
@@ -116,5 +87,4 @@ Other things related to tides:
 \author{
 Dan Kelley
 }
-\concept{functions that plot oce data}
 \concept{things related to tides}

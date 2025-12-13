@@ -37,7 +37,6 @@ tend to have more useful plots.
 }
 \seealso{
 Other functions that plot oce data: 
-\code{\link{download.amsr}()},
 \code{\link{plot,adp-method}},
 \code{\link{plot,adv-method}},
 \code{\link{plot,amsr-method}},
@@ -62,8 +61,7 @@ Other functions that plot oce data:
 \code{\link{plot,xbt-method}},
 \code{\link{plotProfile}()},
 \code{\link{plotScan}()},
-\code{\link{plotTS}()},
-\code{\link{tidem-class}}
+\code{\link{plotTS}()}
 
 Other things related to odf data: 
 \code{\link{CTD_BCD2014666_008_1_DN.ODF.gz}},

@@ -344,7 +344,6 @@ plot(adp, which = "temperature", tformat = "\%H:\%M")
 }
 \seealso{
 Other functions that plot oce data: 
-\code{\link{download.amsr}()},
 \code{\link{plot,adv-method}},
 \code{\link{plot,amsr-method}},
 \code{\link{plot,argo-method}},
@@ -369,8 +368,7 @@ Other functions that plot oce data:
 \code{\link{plot,xbt-method}},
 \code{\link{plotProfile}()},
 \code{\link{plotScan}()},
-\code{\link{plotTS}()},
-\code{\link{tidem-class}}
+\code{\link{plotTS}()}
 
 Other things related to adp data: 
 \code{\link{[[,adp-method}},

@@ -17,7 +17,6 @@
 #' @template slot_get
 #'
 #' @author Dan Kelley
-#' @family functions that plot oce data
 #' @family things related to tides
 setClass("tidem", contains = "oce")
 
