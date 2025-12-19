@@ -1918,6 +1918,22 @@ read.adp.ad2cp <- function(
         rval
     } # readProfile
 
+    readWaves <- function(id, debug = getOption("oceDebug")) # uses global 'd' and 'configuration'
+    {
+        # Reference: page 103 to 111 of Nortek Integrator AD2CP guide 2024.
+        type <- gsub(".*=", "", ad2cpCodeToName(id))
+        oceDebug(debug, "readWaves(id=0x", as.raw(id), ") # i.e. type=", type, " START\n")
+        look <- which(d$id == id)
+        oceDebug(debug, vectorShow(look))
+        lookIndex <- d$index[look]
+        oceDebug(debug, vectorShow(lookIndex))
+        offsetOfData <- as.integer(d$buf[d$index[look[1]] + 2L]) # FIXME: why 1L here?
+        message("FIXME: why adding 2L to get offsetOfData?")
+        oceDebug(debug, vectorShow(offsetOfData))
+        message("readWaves not coded yet -- FIXME (issue 2601)")
+        return(NULL)
+    }
+
     # Nortek (2022 page 93 ) "6.7 _DF20BottomTrack"
     readTrack <- function(id, debug = getOption("oceDebug")) # uses global 'd' and 'configuration'
     {
@@ -2594,6 +2610,7 @@ read.adp.ad2cp <- function(
     } # 0x23=echosounderRaw and 0x24=echosounderRawTx
 
     if (0x30 == dataType) { # 0x30=waves not handled yet
+        data <- readWaves(id = dataType, debug = debug)
         stop("dataType waves (0x30) is not handled yet")
     } # 0x30=waves (not handled yet)
 
