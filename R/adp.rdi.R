@@ -1455,7 +1455,7 @@ read.adp.rdi <- function(
                 # can have interlaced data types.
                 header$numberOfDataTypes <- readBin(buf[ensembleStart[i] + 5], "integer", n = 1, size = 1)
                 header$dataOffset <- readBin(buf[ensembleStart[i] + 6 + seq(0, 2 * header$numberOfDataTypes)],
-                    "integer",
+                    "integer", signed=FALSE, endian="little",
                     n = header$numberOfDataTypes, size = 2
                 )
                 # if (i < 30) {
