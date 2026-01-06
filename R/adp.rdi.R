@@ -1455,13 +1455,14 @@ read.adp.rdi <- function(
                 # can have interlaced data types.
                 header$numberOfDataTypes <- readBin(buf[ensembleStart[i] + 5], "integer", n = 1, size = 1)
                 header$dataOffset <- readBin(buf[ensembleStart[i] + 6 + seq(0, 2 * header$numberOfDataTypes)],
-                    "integer", signed=FALSE, endian="little",
-                    n = header$numberOfDataTypes, size = 2
+                    "integer", size = 2, signed = FALSE, endian = "little", n = header$numberOfDataTypes
                 )
-                # if (i < 30) {
-                #     cat("i=", i, ", header$numberOfDataTypes=", header$numberOfDataTypes,
-                #         ", header$dataOffset=", paste(header$dataOffset, collapse=" "), "\n")
-                # }
+                if (debug > 0 && i < 30) {
+                    cat(
+                        "i=", i, ", header$numberOfDataTypes=", header$numberOfDataTypes,
+                        ", header$dataOffset=", paste(header$dataOffset, collapse = " "), "\n"
+                    )
+                }
                 for (chunk in 1:header$numberOfDataTypes) {
                     o <- ensembleStart[i] + header$dataOffset[chunk]
                     if (buf[o] == 0x00 && buf[1 + o] == 0x00) {
