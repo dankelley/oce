@@ -597,6 +597,9 @@ decodeHeaderRDI <- function(buf, debug = getOption("oceDebug"), tz = getOption("
 #' `g`                                    \tab data goodness matrix (units?)\cr
 #' `heading`                              \tab instrument heading (degrees)\cr
 #' `headingStd`                           \tab instrument heading std-dev (deg)\cr
+#' `ISMvalid`                             \tab indication of whether ISM data are in the file\cr
+#' `ISMacc`                               \tab ISM acceleration, in 3 directions\cr
+#' `ISMmag`                               \tab ISM earth magnetic field, in 3 directions\cr
 #' `lastLatitude`                         \tab latitude at end of profile (deg)\cr
 #' `lastLongitude`                        \tab longitude at end of profile (deg)\cr
 #' `lastTime`                             \tab (FIXME add a description here)\cr
@@ -1720,7 +1723,7 @@ read.adp.rdi <- function(
                             nmea[nmeaLen] <- nmeaTmp
                         }
                     } else if (buf[o] == 0x01 && buf[1 + o] == 0x59) {
-                        oceDebug(debug, "storing ISM data (i:", i, ", o:", o, ")")
+                        #oceDebug(debug, "storing ISM data (i:", i, ", o:", o, ")")
                         ISMvalid[i] <- as.integer(buf[2 + o])
                         # acceleration is in 4-byte integers (unit: milligravity)
                         ISMacc[i, ] <- c(
@@ -1751,7 +1754,8 @@ read.adp.rdi <- function(
                             nmea[nmeaLen] <- nmeaTmp
                         }
                     } else if (buf[o] == 0x0C && buf[1 + o] == 0x02) {
-                        message("FIXME: store ambient_sound data")
+                        oceDebug(debug, "  saving ambient sound at i=", i)
+                        ambientSound[i, ] <- as.numeric(buf[o+2:5])
                     } else {
                         key <- paste("0x", as.character(buf[o]), " 0x", as.character(buf[o + 1]), sep = "")
                         if (0 == length(warningUnknownCode[[key]])) {

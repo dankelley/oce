@@ -173,6 +173,9 @@ otherwise indicated.
 \code{g}                                    \tab data goodness matrix (units?)\cr
 \code{heading}                              \tab instrument heading (degrees)\cr
 \code{headingStd}                           \tab instrument heading std-dev (deg)\cr
+\code{ISMvalid}                             \tab indication of whether ISM data are in the file\cr
+\code{ISMacc}                               \tab ISM acceleration, in 3 directions\cr
+\code{ISMmag}                               \tab ISM earth magnetic field, in 3 directions\cr
 \code{lastLatitude}                         \tab latitude at end of profile (deg)\cr
 \code{lastLongitude}                        \tab longitude at end of profile (deg)\cr
 \code{lastTime}                             \tab (FIXME add a description here)\cr
