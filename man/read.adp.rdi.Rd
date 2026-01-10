@@ -301,7 +301,9 @@ and so produce a warning.
 \tab 0x00 \tab 0x0b \tab Sentinel correlation\cr
 \tab 0x00 \tab 0x0c \tab Sentinel amplitude\cr
 \tab 0x00 \tab 0x0d \tab Sentinel percent good\cr
-\tab 0x01 \tab 0x0f \tab ?? something to do with V series and 4-beam\cr
+\tab 0x01 \tab 0x0f \tab Perhaps something to do with V series and 4-beam\cr
+\tab 0x01 \tab 0x59 \tab ISM (earth magnetic field and sensor acceleration)\cr
+\tab 0x0C \tab 0x02 \tab Ambient sound\cr
 }
 
 Lacking a comprehensive Teledyne-RDI listing of ID codes,

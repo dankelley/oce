@@ -747,7 +747,9 @@ decodeHeaderRDI <- function(buf, debug = getOption("oceDebug"), tz = getOption("
 #'   \tab 0x00 \tab 0x0b \tab Sentinel correlation\cr
 #'   \tab 0x00 \tab 0x0c \tab Sentinel amplitude\cr
 #'   \tab 0x00 \tab 0x0d \tab Sentinel percent good\cr
-#'   \tab 0x01 \tab 0x0f \tab ?? something to do with V series and 4-beam\cr
+#'   \tab 0x01 \tab 0x0f \tab Perhaps something to do with V series and 4-beam\cr
+#'   \tab 0x01 \tab 0x59 \tab ISM (earth magnetic field and sensor acceleration)\cr
+#'   \tab 0x0C \tab 0x02 \tab Ambient sound\cr
 #' }
 #'
 #' Lacking a comprehensive Teledyne-RDI listing of ID codes,
@@ -1147,8 +1149,10 @@ read.adp.rdi <- function(
             oceDebug(debug, "  0x00 0x0a Sentinel data\n") # vvFound
             oceDebug(debug, "  0x00 0x0b Sentinel correlation\n") # vqFound
             oceDebug(debug, "  0x00 0x0c Sentinel amplitude\n") # vaFound
-            oceDebug(debug, "  0x00 0x0d Sentinel percent good\n") # vgFoiund
-            oceDebug(debug, "  0x01 0x0f ? something to do with V series and 4-beam\n")
+            oceDebug(debug, "  0x00 0x0d Sentinel percent good\n") # vgFound
+            oceDebug(debug, "  0x01 0x0f Perhaps something to do with V series and 4-beam\n")
+            oceDebug(debug, "  0x01 0x59 ISM data: earth magnetic field and sensor acceleration\n") # ISMFound
+            oceDebug(debug, "  0x0C 0x02 Ambient sound\n") # ambientSoundFound
             # oceDebug(debug, "buf[1:10] near line 745: ", paste("0x", paste(buf[1:10], sep=" "), sep=""), "\n")
             vFound <- sum(codes[, 1] == 0x00 & codes[, 2] == 0x01) # velo
             qFound <- sum(codes[, 1] == 0x00 & codes[, 2] == 0x02) # corr
@@ -1159,6 +1163,23 @@ read.adp.rdi <- function(
             # information
             # nFound <- sum(codes[, 1]==0x00 & codes[, 2]==0x20) # navigation
             tmFound <- sum(codes[, 1] == 0x00 & codes[, 2] == 0x32) # transformation matrix
+            ambientSoundFound <- sum(codes[, 1] == 0x0C & codes[, 2] == 0x02) # transformation matrix
+            ISMFound <- sum(codes[, 1] == 0x01 & codes[, 2] == 0x59) # transformation matrix
+            # Set up storage
+            if (ambientSoundFound) {
+                ambientSound <- array(numeric(), dim = c(profilesToRead, 4))
+            } else {
+                ambientSound <- NULL
+            }
+            if (ISMFound) {
+                ISMvalid <- vector("numeric", profilesToRead)
+                ISMacc <- array(numeric(), dim = c(profilesToRead, 3))
+                ISMmag <- array(numeric(), dim = c(profilesToRead, 3))
+            } else {
+                ISMvalid <- NULL
+                ISMacc <- NULL
+                ISMmag <- NULL
+            }
             if (vFound) {
                 v <- array(numeric(), dim = c(profilesToRead, numberOfCells, numberOfBeams))
                 oceDebug(
@@ -1456,12 +1477,12 @@ read.adp.rdi <- function(
                     "integer",
                     size = 2, signed = FALSE, endian = "little", n = header$numberOfDataTypes
                 )
-                #if (debug > 0 && i < 30) {
+                # if (debug > 0 && i < 30) {
                 #    cat(
                 #        "i=", i, ", header$numberOfDataTypes=", header$numberOfDataTypes,
                 #        ", header$dataOffset=", paste(header$dataOffset, collapse = " "), "\n"
                 #    )
-                #}
+                # }
                 for (chunk in 1:header$numberOfDataTypes) {
                     o <- ensembleStart[i] + header$dataOffset[chunk]
                     if (i == 1) {
@@ -1698,6 +1719,21 @@ read.adp.rdi <- function(
                             nmeaLen <- nmeaLen + 1
                             nmea[nmeaLen] <- nmeaTmp
                         }
+                    } else if (buf[o] == 0x01 && buf[1 + o] == 0x59) {
+                        oceDebug(debug, "storing ISM data (i:", i, ", o:", o, ")")
+                        ISMvalid[i] <- as.integer(buf[2 + o])
+                        # acceleration is in 4-byte integers (unit: milligravity)
+                        ISMacc[i, ] <- c(
+                            readBin(buf[o + 3:6], "integer", n = 1, size = 4),
+                            readBin(buf[o + 7:10], "integer", n = 1, size = 4),
+                            readBin(buf[o + 11:14], "integer", n = 1, size = 4)
+                        )
+                        # magnetic-field components: units perhaps nTesla (a guess)
+                        ISMmag[i, ] <- c(
+                            readBin(buf[o + 15:16], "integer", n = 1, size = 2, signed = TRUE),
+                            readBin(buf[o + 17:18], "integer", n = 1, size = 2, signed = TRUE),
+                            readBin(buf[o + 19:20], "integer", n = 1, size = 2, signed = TRUE)
+                        )
                     } else if (buf[o] == 0x02 && buf[1 + o] == 0x21) {
                         # 45 bytes (table 5 [WinRiver User Guide International Verion.pdf.pdf])
                         end <- .C("nmea_len", buf[o + 2 + 0:42], 43L, integer(1))[[3]]
@@ -1714,6 +1750,8 @@ read.adp.rdi <- function(
                             nmeaLen <- nmeaLen + 1
                             nmea[nmeaLen] <- nmeaTmp
                         }
+                    } else if (buf[o] == 0x0C && buf[1 + o] == 0x02) {
+                        message("FIXME: store ambient_sound data")
                     } else {
                         key <- paste("0x", as.character(buf[o]), " 0x", as.character(buf[o + 1]), sep = "")
                         if (0 == length(warningUnknownCode[[key]])) {
@@ -2138,7 +2176,11 @@ read.adp.rdi <- function(
                     pressureMinus = pressureMinus,
                     attitudeTemp = attitudeTemp,
                     attitude = attitude,
-                    contaminationSensor = contaminationSensor
+                    contaminationSensor = contaminationSensor,
+                    ISMvalid = ISMvalid,
+                    ISMacc = ISMacc,
+                    ISMmag = ISMmag,
+                    ambientSound = ambientSound
                 )
             }
         } else {
