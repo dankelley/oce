@@ -68,7 +68,7 @@
 #'
 #' @author Dan Kelley
 adpRdiFileTrim <- function(infile, outfile, n, indices, debug = getOption("oceDebug")) {
-    oceDebug(debug, "adpRdiFileTrim(infile=\"", infile, "\"\n", ", outfile=\"", outfile, "\", ...) START \n", sep = "", unindent = 1)
+    oceDebug(debug, "adpRdiFileTrim(infile=\"", infile, "\", ...) START \n", sep = "", unindent = 1)
     debug <- ifelse(debug < 1, 0L, ifelse(debug < 2, 1, 2))
     if (missing(infile)) {
         stop("must provide 'infile'")
@@ -83,6 +83,7 @@ adpRdiFileTrim <- function(infile, outfile, n, indices, debug = getOption("oceDe
         stop("do not supply both 'n' and 'indices'")
     }
     if (missing(indices)) {
+        oceDebug(debug, "creating 'indices' from 'n'")
         n <- as.integer(n)
         if (n < 1L) {
             stop("n must be 1 or larger")
@@ -92,7 +93,7 @@ adpRdiFileTrim <- function(infile, outfile, n, indices, debug = getOption("oceDe
     oceDebug(debug, vectorShow(indices))
     if (missing(outfile)) {
         outfile <- gsub("^(.*)\\.([^.]*)$", "\\1_trimmed.\\2", infile)
-        oceDebug(debug, "created outfile value \"", outfile, "\"")
+        oceDebug(debug, "creating outfile named \"", outfile, "\"\n")
     }
     toc <- read.adp.rdi(infile, which = "??", debug = debug - 1)
     ntoc <- nrow(toc)
@@ -104,7 +105,7 @@ adpRdiFileTrim <- function(infile, outfile, n, indices, debug = getOption("oceDe
     # coding this simply for now.
     pointer <- NULL
     for (i in indices) {
-        pointer <- c(pointer, seq(toc$index[i], toc$size[i]))
+        pointer <- c(pointer, seq(toc$index[i], length.out=toc$size[i]))
     }
     buf <- readBin(infile, raw(), n = file.info(infile)$size)
     nbuf <- length(buf)
