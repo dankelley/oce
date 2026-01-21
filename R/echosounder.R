@@ -1014,8 +1014,8 @@ read.echosounder <- function(
         # actually *use* the 'code' defined previously
         # See https://github.com/dankelley/oce/issues/1634
         # code <- readBin(buf[offset+3:4], "integer", size=2, n=1, endian="little", signed=FALSE)
-        if (debug > 3) cat("buf[", 3 + offset, "] = code1 = 0x\n", code1, sep = "")
-        if (debug > 3) cat("buf[", 4 + offset, "] = code2 = 0x\n", code2, sep = "")
+        if (debug > 3) cat("buf[", 3 + offset, "] = code1 = 0x", code1, "\n", sep = "")
+        if (debug > 3) cat("buf[", 4 + offset, "] = code2 = 0x", code2, "\n", sep = "")
         # Interpret code1 and code2, which signal beam type.  These are listed in [1 table 3.5],
         # as follows (note that the table lists in little-endian ordering, so the first two
         # digits are code2 here, and the second two digits are code1 here.
