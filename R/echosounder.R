@@ -653,7 +653,7 @@ setMethod(
                     signal <- apply(signal, 2, smooth)
                 }
                 if (beam[w] == "Sv" || beam[w] == "TS") {
-                    oceDebug(debug, "using signal for z")
+                    oceDebug(debug, "using signal for z\n")
                     z <- signal
                 } else {
                     oceDebug(debug, "using log10(signal) for z\n")
@@ -1014,8 +1014,8 @@ read.echosounder <- function(
         # actually *use* the 'code' defined previously
         # See https://github.com/dankelley/oce/issues/1634
         # code <- readBin(buf[offset+3:4], "integer", size=2, n=1, endian="little", signed=FALSE)
-        if (debug > 3) cat("buf[", 3 + offset, "] = code1 = 0x", code1, sep = "")
-        if (debug > 3) cat("buf[", 4 + offset, "] = code2 = 0x", code2, sep = "")
+        if (debug > 3) cat("buf[", 3 + offset, "] = code1 = 0x\n", code1, sep = "")
+        if (debug > 3) cat("buf[", 4 + offset, "] = code2 = 0x\n", code2, sep = "")
         # Interpret code1 and code2, which signal beam type.  These are listed in [1 table 3.5],
         # as follows (note that the table lists in little-endian ordering, so the first two
         # digits are code2 here, and the second two digits are code1 here.
@@ -1171,7 +1171,7 @@ read.echosounder <- function(
             warning("Biosonics file of type 'V1' detected ... errors may crop up")
             fileType <- "V1"
         } else if (code1 == 0x32) {
-            if (debug > 3) cat(" bottom pick tuple [1 sec 4.12] ")
+            if (debug > 3) cat(" bottom pick tuple [1 sec 4.12]\n")
             # thisChannel <- .C("uint16_le", buf[offset+4+1:2], 1L, res=integer(1))$res
             # thisPing <- .C("uint16_le", buf[offset+4+1:2], 1L, res=integer(1))$res
             foundBottom <- .C("uint16_le", buf[offset + 14 + 1:2], 1L, res = integer(1), NAOK = TRUE, PACKAGE = "oce")$res
@@ -1181,7 +1181,7 @@ read.echosounder <- function(
                 thisRange <- NA
             }
             range <- c(range, thisRange)
-            if (debug > 3) cat(" thisRange:", thisRange)
+            if (debug > 3) cat(" thisRange:", thisRange, "\n")
         } else if (code1 == 0x36) {
             if (debug > 3) cat(" extended channel descriptor IGNORED\n")
         } else if (code1 == 0x33) {
