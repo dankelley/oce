@@ -5936,10 +5936,12 @@ plotProfile <- function(
         # Try to compute a top-axis label with units, unless 'xlab' was given.
         if (is.null(xlab)) {
             label <- if (xtype %in% names(x@metadata$units)) {
-                label <- resizableLabel(as.character(xtype), "x", unit = x@metadata$units[[xtype]]$unit)
+                resizableLabel(as.character(xtype), "x", unit = x@metadata$units[[xtype]]$unit)
             } else {
                 as.character(xtype)
             }
+        } else {
+            label <- xlab
         }
         look <- if (keepNA) seq_along(y) else !is.na(x@data[[xtype]]) & !is.na(y)
         dots <- list(...)
