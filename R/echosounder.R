@@ -1049,6 +1049,9 @@ read.echosounder <- function(
                 if (code1 == 0x15) {
                     # In [1 table 3.5] this case is listed as "0x0015 Single-Beam Ping"
                     tmp <- do_biosonics_ping(buf[offset + 16 + 1:(2 * ns)], samplesPerPing, ns, 0)
+                    #cat("code1 == 0x15: offset=", offset, "; look from ", offset + 16 + 1, " to ", offset + 16 + 2 * ns, "\n")
+                    #cat("next are first of the binary data in this 'look' region\n")
+                    #print(buf[offset + 16 + 1:(2 * ns)][1:10])
                     beamType <- "single-beam"
                 } else if (code1 == 0x1c) {
                     # In [1 table 3.5] this case is listed as "0x001C Dual-Beam Ping"
@@ -1069,7 +1072,7 @@ read.echosounder <- function(
                 scan <- scan + 1
                 if (debug > 3) cat("channel:", thisChannel, "ping:", pingNumber, "pingElapsedTime:", pingElapsedTime, "\n")
             } else {
-                if (debug > 0) {
+                if (debug > 1) {
                     cat("buf[", 1 + offset, ", ...] = 0x", code1,
                         " ping=", pingNumber, " ns=", ns, " channel=", thisChannel, " IGNORED since wrong channel)\n",
                         sep = ""
@@ -1110,8 +1113,10 @@ read.echosounder <- function(
                 res = integer(1), NAOK = TRUE,
                 PACKAGE = "oce"
             )$res)
+            if (debug > 1) cat("channelDeltat: ", channelDeltat, "\n", sep = "")
             pingsInFile <- readBin(buf[offset + 6 + 1:4], "integer", n = 1, size = 4, endian = "little")
             samplesPerPing <- .C("uint16_le", buf[offset + 10 + 1:2], 1L, res = integer(1), NAOK = TRUE, PACKAGE = "oce")$res # ssp [p13 1]
+            if (debug > 1) cat("samplesPerPing: ", samplesPerPing, "\n", sep = "")
             sp <- 1e-9 * readBin(buf[offset + 12 + 1:2], "integer", n = 1L, size = 2L, endian = "little") # [p13 1] time between samples (ns)
             if (debug > 1) cat("sp: ", sp, " sample period in ns\n", sep = "")
             pud <- readBin(buf[offset + 16 + 1:2], "integer", n = 1L, size = 2L, endian = "little")

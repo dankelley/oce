@@ -5,8 +5,9 @@ e <- read.oce(file, debug = 1)
 t <- e[["time"]]
 a <- e[["a"]]
 N <- 10
-cat("File starts at ", format(t[1]), ", with following decoded values, followed by ", dim(a)[2] - N, " other values\n", sep="")
+cat("File starts at ", format(t[1]), ", with following decoded 'a' values, followed by ", dim(a)[2] - N, " other values\n", sep="")
 print(a[1,1:N])
-cat("First 6 times\n")
-print(t[1:6])
+cat(vectorShow(t, n=20))
+png("test_for_julia.png")
+plot(e)
 
