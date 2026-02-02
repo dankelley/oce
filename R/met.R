@@ -1263,10 +1263,11 @@ read.met.xml2 <- function(
     res@data$speed <- as.numeric(extract("windspd")) * 1000 / 3600 # from km/h to m/s
     res@metadata$dataNamesOriginal$speed <- "-"
     res@metadata$units$speed <- list(unit = expression(m / s), scale = "")
-    res@data$u <- -res@data$speed * cos(res@data$direction * pi / 180) # from met to ocean sign
+    direction <- 90.0 - res@data$direction
+    res@data$u <- -res@data$speed * cos(direction * pi / 180) # from met to ocean sign
     res@metadata$dataNamesOriginal$u <- "-"
     res@metadata$units$u <- list(unit = expression(m / s), scale = "")
-    res@data$v <- -res@data$speed * sin(res@data$direction * pi / 180)
+    res@data$v <- -res@data$speed * sin(direction * pi / 180)
     res@metadata$dataNamesOriginal$v <- "-"
     res@metadata$units$v <- list(unit = expression(m / s), scale = "")
     # fix up NA cases
