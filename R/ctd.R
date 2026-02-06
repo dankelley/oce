@@ -4157,8 +4157,13 @@ plotTS <- function(
     # this point called salinity and y, and also bg, col, cex, and pch.
     # See https://github.com/dankelley/oce/issues/1730
     canPlot <- is.finite(salinity) & is.finite(y)
-    # print(table(is.finite(salinity)))
-    # print(table(is.finite(y)))
+    if (0 == sum(canPlot)) {
+        if (eos == "gsw") {
+            stop("There are no finite SA,CT pairs")
+        } else {
+            stop("There are no finite salinity,theta pairs")
+        }
+    }
     if (length(col) == length(y)) {
         col <- col[canPlot]
     }
@@ -4176,14 +4181,6 @@ plotTS <- function(
     }
     salinity <- salinity[canPlot]
     y <- y[canPlot]
-    if (!any(is.finite(salinity))) {
-        warning("plotTS() found no valid salinity data")
-        return(invisible(list(xat = NULL, yat = NULL)))
-    }
-    if (!any(is.finite(y))) {
-        warning("plotTS() found no valid temperature data")
-        return(invisible(list(xat = NULL, yat = NULL)))
-    }
     if (missing(Slim)) {
         Slim <- range(salinity, na.rm = TRUE)
         oceDebug(debug, "Slim was not given, so inferred Slim=c(", paste(Slim, collapse = ","), ") from the data\n", sep = "")
@@ -5748,8 +5745,8 @@ plotProfile <- function(
             type = "n", xlab = "", ylab = yname, ...
         )
         axis(3, col = col.rho, col.axis = col.rho, col.lab = col.rho)
-        #tmpsep <- getOption("oceUnitSep")
-        #sep <- if (!is.null(tmpsep)) tmpsep else ""
+        # tmpsep <- getOption("oceUnitSep")
+        # sep <- if (!is.null(tmpsep)) tmpsep else ""
         label <- if (eos == "unesco") {
             resizableLabel("sigmaTheta", "x")
         } else {
