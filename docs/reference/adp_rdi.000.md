@@ -66,7 +66,7 @@ Other things related to adp data:
 
 ``` r
 read.oce(system.file("extdata", "adp_rdi.000", package = "oce"))
-#> adp object, from file "/private/var/folders/8b/l4h64m1j22v5pb7vj049ff140000gn/T/RtmpWZrgRz/temp_libpath1549d10bb9024/oce/extdata/adp_rdi.000", with data slot containing:
+#> adp object, from file "/private/var/folders/8b/l4h64m1j22v5pb7vj049ff140000gn/T/RtmpdNg0iG/temp_libpath32578b0e13b/oce/extdata/adp_rdi.000", with data slot containing:
 #>    distance[1:84]: 2.23, 2.73, ..., 43.23, 43.73
 #>    time[1:9]: 2008-06-25 10:00:00, 2008-06-25 10:00:10, ..., 2008-06-25 10:01:10, 2008-06-25 10:01:20
 #>    pressure[1:9]: -0.244, -0.224, ..., -0.238, -0.266

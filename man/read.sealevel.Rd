@@ -13,8 +13,12 @@ read.sealevel(
 )
 }
 \arguments{
-\item{file}{a connection or a character string giving the name of the file
-to load.  See Details for the types of files that are recognized.}
+\item{file}{either of three choices: (1) a connection, (2)
+a character vector of length 1, giving the name of the file
+to load (see \sQuote{Details} for the possible file formats)
+or (3) a character vector of length 2 giving the
+names of 2 files that are to be passed, along with \code{debug} (but
+no other arguments) to \link{read.sealevel.gc2026}.}
 
 \item{tz}{time zone.  The default value, \code{oceTz}, is set to \code{UTC}
 at setup.  (If a time zone is present in the file header, this will

@@ -67,8 +67,12 @@ regardless of the GMT.offset value.</p>
 
 
 <dl><dt id="arg-file">file<a class="anchor" aria-label="anchor" href="#arg-file"></a></dt>
-<dd><p>a connection or a character string giving the name of the file
-to load.  See Details for the types of files that are recognized.</p></dd>
+<dd><p>either of three choices: (1) a connection, (2)
+a character vector of length 1, giving the name of the file
+to load (see ‘Details’ for the possible file formats)
+or (3) a character vector of length 2 giving the
+names of 2 files that are to be passed, along with <code>debug</code> (but
+no other arguments) to <a href="read.sealevel.gc2026.html">read.sealevel.gc2026</a>.</p></dd>
 
 
 <dt id="arg-tz">tz<a class="anchor" aria-label="anchor" href="#arg-tz"></a></dt>
@@ -114,8 +118,8 @@ The file type is inferred by examination of its first line. If that contains
 the string <code>Station_Name</code> the file is of type 2. If
 the file is in neither of these formats, the user might wish to scan it
 directly, and then to use <code><a href="as.sealevel.html">as.sealevel()</a></code> to create a
-<code>sealevel</code> object.
-The Hawaii archive site at
+<code>sealevel</code> object.</p>
+<p>The Hawaii archive site at
 <code>http://ilikai.soest.hawaii.edu/uhslc/datai.html</code> at one time provided a graphical
 interface for downloading sealevel data in Type 1, with format that was once
 described at <code>http://ilikai.soest.hawaii.edu/rqds/hourly.fmt</code> (although that link
@@ -136,6 +140,7 @@ provides Type 2 data.</p>
 <code>[[&lt;-,sealevel-method</code>,
 <code><a href="as.sealevel.html">as.sealevel()</a></code>,
 <code><a href="plot-sealevel-method.html">plot,sealevel-method</a></code>,
+<code><a href="read.sealevel.gc2026.html">read.sealevel.gc2026()</a></code>,
 <code><a href="sealevel.html">sealevel</a></code>,
 <code><a href="sealevel-class.html">sealevel-class</a></code>,
 <code><a href="sealevelTuktoyaktuk.html">sealevelTuktoyaktuk</a></code>,

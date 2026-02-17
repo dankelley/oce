@@ -20,7 +20,7 @@
   [`oceRename()`](https://dankelley.github.io/oce/reference/oceRename.md)
   to rename variables, flags and units (issue
   [\#2238](https://github.com/dankelley/oce/issues/2238)).
-- Add `read.sealevel.gc.2026` to read a Govt Canada format (issue
+- Add `read.sealevel.gc2026` to read a Govt Canada format (issue
   [\#2349](https://github.com/dankelley/oce/issues/2349)).
 - Add
   [`read.xbt.edf2()`](https://dankelley.github.io/oce/reference/read.xbt.edf2.md)

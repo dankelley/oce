@@ -1304,6 +1304,8 @@ Functions for working with data quality flags
   : Read a rsk File
 - [`read.sealevel()`](https://dankelley.github.io/oce/reference/read.sealevel.md)
   : Read a sealevel File
+- [`read.sealevel.gc2026()`](https://dankelley.github.io/oce/reference/read.sealevel.gc2026.md)
+  : Read a sealevel File in Government of Canada format 2026
 - [`read.section()`](https://dankelley.github.io/oce/reference/read.section.md)
   : Read a section File
 - [`read.topo()`](https://dankelley.github.io/oce/reference/read.topo.md)

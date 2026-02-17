@@ -25,7 +25,7 @@ object holding the present time, in the indicated timezone.
 
 ``` r
 presentTime() # UTC
-#> [1] "2026-02-17 19:25:53 UTC"
+#> [1] "2026-02-17 20:57:49 UTC"
 presentTime("") # the local timezone
-#> [1] "2026-02-17 15:25:53 AST"
+#> [1] "2026-02-17 16:57:49 AST"
 ```

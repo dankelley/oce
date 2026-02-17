@@ -19,8 +19,12 @@ read.sealevel(
 
 - file:
 
-  a connection or a character string giving the name of the file to
-  load. See Details for the types of files that are recognized.
+  either of three choices: (1) a connection, (2) a character vector of
+  length 1, giving the name of the file to load (see ‘Details’ for the
+  possible file formats) or (3) a character vector of length 2 giving
+  the names of 2 files that are to be passed, along with `debug` (but no
+  other arguments) to
+  [read.sealevel.gc2026](https://dankelley.github.io/oce/reference/read.sealevel.gc2026.md).
 
 - tz:
 
@@ -68,7 +72,9 @@ that contains the string `Station_Name` the file is of type 2. If the
 file is in neither of these formats, the user might wish to scan it
 directly, and then to use
 [`as.sealevel()`](https://dankelley.github.io/oce/reference/as.sealevel.md)
-to create a `sealevel` object. The Hawaii archive site at
+to create a `sealevel` object.
+
+The Hawaii archive site at
 `http://ilikai.soest.hawaii.edu/uhslc/datai.html` at one time provided a
 graphical interface for downloading sealevel data in Type 1, with format
 that was once described at
@@ -90,6 +96,7 @@ Other things related to sealevel data:
 `[[<-,sealevel-method`,
 [`as.sealevel()`](https://dankelley.github.io/oce/reference/as.sealevel.md),
 [`plot,sealevel-method`](https://dankelley.github.io/oce/reference/plot-sealevel-method.md),
+[`read.sealevel.gc2026()`](https://dankelley.github.io/oce/reference/read.sealevel.gc2026.md),
 [`sealevel`](https://dankelley.github.io/oce/reference/sealevel.md),
 [`sealevel-class`](https://dankelley.github.io/oce/reference/sealevel-class.md),
 [`sealevelTuktoyaktuk`](https://dankelley.github.io/oce/reference/sealevelTuktoyaktuk.md),

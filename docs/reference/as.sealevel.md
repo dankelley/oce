@@ -120,6 +120,7 @@ Other things related to sealevel data:
 `[[<-,sealevel-method`,
 [`plot,sealevel-method`](https://dankelley.github.io/oce/reference/plot-sealevel-method.md),
 [`read.sealevel()`](https://dankelley.github.io/oce/reference/read.sealevel.md),
+[`read.sealevel.gc2026()`](https://dankelley.github.io/oce/reference/read.sealevel.gc2026.md),
 [`sealevel`](https://dankelley.github.io/oce/reference/sealevel.md),
 [`sealevel-class`](https://dankelley.github.io/oce/reference/sealevel-class.md),
 [`sealevelTuktoyaktuk`](https://dankelley.github.io/oce/reference/sealevelTuktoyaktuk.md),
@@ -157,8 +158,8 @@ summary(sl)
 #> 
 #> * Processing Log
 #> 
-#>     - 2026-02-17 19:25:01 UTC: `create 'sealevel' object`
-#>     - 2026-02-17 19:25:01 UTC: `as.sealevel(elevation = elevation)`
+#>     - 2026-02-17 20:56:47 UTC: `create 'sealevel' object`
+#>     - 2026-02-17 20:56:47 UTC: `as.sealevel(elevation = elevation)`
 
 # As above, but start at the Y2K time.
 time <- as.POSIXct("2000-01-01") + h * 3600
@@ -180,6 +181,6 @@ summary(sl)
 #> 
 #> * Processing Log
 #> 
-#>     - 2026-02-17 19:25:01 UTC: `create 'sealevel' object`
-#>     - 2026-02-17 19:25:01 UTC: `as.sealevel(elevation = elevation, time = time)`
+#>     - 2026-02-17 20:56:47 UTC: `create 'sealevel' object`
+#>     - 2026-02-17 20:56:47 UTC: `as.sealevel(elevation = elevation, time = time)`
 ```

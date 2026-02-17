@@ -743,8 +743,12 @@ setMethod(
 #' The MEDS repository (\code{http://www.isdm-gdsi.gc.ca/isdm-gdsi/index-eng.html})
 #' provides Type 2 data.
 #'
-#' @param file a connection or a character string giving the name of the file
-#' to load.  See Details for the types of files that are recognized.
+#' @param file either of three choices: (1) a connection, (2)
+#' a character vector of length 1, giving the name of the file
+#' to load (see \sQuote{Details} for the possible file formats)
+#' or (3) a character vector of length 2 giving the
+#' names of 2 files that are to be passed, along with `debug` (but
+#' no other arguments) to [read.sealevel.gc2026].
 #'
 #' @param tz time zone.  The default value, `oceTz`, is set to `UTC`
 #' at setup.  (If a time zone is present in the file header, this will
