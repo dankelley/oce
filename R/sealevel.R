@@ -607,12 +607,17 @@ setMethod(
                 to <- from + 28 * 86400 # 28 days
                 look <- from <= x@data$time & x@data$time <= to
                 xx <- x
-                oceDebug(debug, "  for which2[", w, "]==2, subsetting to ", sum(look), " points\n", sep="")
-                xx@data <- x@data[look, ]
-                #for (i in seq_along(x@data)) {
-                #    oceDebug(debug, "  subsetting field number ", i, "\n", sep="")
-                #    xx@data[[i]] <- x@data[[i]][look]
-                #}
+                oceDebug(debug, "  for which2[", w, "]==2, subsetting to ", sum(look), " points\n", sep = "")
+                # let data be in either an old form (list) or a new one
+                # (data-frame); see https://github.com/dankelley/oce/issues/2359#issuecomment-3916646263
+                if (inherits(x@data, "list")) {
+                    for (i in seq_along(x@data)) {
+                        oceDebug(debug, "  subsetting field number ", i, "\n", sep = "")
+                        xx@data[[i]] <- x@data[[i]][look]
+                    }
+                } else { # it was made a data-frame sometime near year 2026
+                    xx@data <- x@data[look, ]
+                }
                 if (any(is.finite(xx@data$elevation))) {
                     xlim <- if (xlimGiven) xlim else (range(xx@data$time, na.rm = TRUE))
                     ylim <- if (ylimGiven) ylim else (range(xx@data$elevation, na.rm = TRUE))
