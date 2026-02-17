@@ -728,7 +728,7 @@ setMethod(
 #' the file is in neither of these formats, the user might wish to scan it
 #' directly, and then to use [as.sealevel()] to create a
 #' `sealevel` object.
-
+#'
 #' The Hawaii archive site at
 #' `http://ilikai.soest.hawaii.edu/uhslc/datai.html` at one time provided a graphical
 #' interface for downloading sealevel data in Type 1, with format that was once
@@ -768,16 +768,21 @@ read.sealevel <- function(
     if (missing(file)) {
         stop("must supply 'file'")
     }
-    if (is.character(file)) {
-        if (!file.exists(file)) {
-            stop("cannot find file \"", file, "\"")
+    if (2 == length(file)) {
+        return(read.sealevel.gc2026(file, debug = debug))
+    } else {
+        if (is.character(file)) {
+            if (!file.exists(file)) {
+                stop("cannot find file \"", file, "\"")
+            }
+            if (0L == file.info(file)$size) {
+                stop("empty file \"", file, "\"")
+            }
         }
-        if (0L == file.info(file)$size) {
-            stop("empty file \"", file, "\"")
-        }
+        oceDebug(debug, "read.sealevel(file=\"", file, "\", ...) START\n", sep = "", unindent = 1)
+        filename <- "?"
     }
-    oceDebug(debug, "read.sealevel(file=\"", file, "\", ...) START\n", sep = "", unindent = 1)
-    filename <- "?"
+
     if (is.character(file)) {
         filename <- fullFilename(file)
         file <- file(file, "r", encoding = encoding)

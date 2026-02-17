@@ -135,6 +135,7 @@ Other things related to sealevel data:
 \code{\link{[[<-,sealevel-method}},
 \code{\link{as.sealevel}()},
 \code{\link{read.sealevel}()},
+\code{\link{read.sealevel.gc2026}()},
 \code{\link{sealevel}},
 \code{\link{sealevel-class}},
 \code{\link{sealevelTuktoyaktuk}},

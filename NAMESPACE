@@ -336,7 +336,7 @@ export(
     read.odf,
     read.rsk,
     read.sealevel,
-    read.sealevel.gc.2026,
+    read.sealevel.gc2026,
     read.section,
     read.woa,
     read.xbt,

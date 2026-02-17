@@ -6,7 +6,7 @@
 * Add `netcdfTOC()` to overview NetCDF files (issue #2232).
 * Add `oceColorsCubeHelix()`, a perceptual colour scheme used in Astronomy
 * Add `oceRename()` to rename variables, flags and units (issue #2238).
-* Add `read.sealevel.gc.2026` to read a Govt Canada format (issue #2349).
+* Add `read.sealevel.gc2026` to read a Govt Canada format (issue #2349).
 * Add `read.xbt.edf2()` to read a tab-separated file type.
 * Add `read.xbt.noaa2()` to handle UBT format (issue #2289).
 * Add `Tidal Analysis` vignette (issue #2243).

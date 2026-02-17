@@ -15,16 +15,25 @@
 #' Instead, the function determines station location from a header contained
 #' within the "data" file.
 #'
-#' @param stn string holding the station name; see \sQuote{Details}.
+#' @param file string vector of length 2, holding the names of the metadata file
+#' and the data file.
+#'
+#' @template debugTemplate
 #'
 #' @return A [sealevel-class] object.
 #'
 #' @author Dan Kelley and Chantelle Layton
 #'
 #' @family things related to sealevel data
-read.sealevel.gc.2026 <- function(stn, debug = 0) {
-    mf <- paste0(stn, "_metadata.csv")
-    df <- paste0(stn, "_data.csv")
+read.sealevel.gc2026 <- function(file, debug = 0) {
+    if (2 != length(file)) stop("'file' should be of length 2")
+    if (grepl("metadata", file[1])) {
+        mf <- file[1]
+        df <- file[2]
+    } else {
+        mf <- file[2]
+        df <- file[1]
+    }
     lines <- readLines(mf)
     commaLines <- lines[grepl(",", lines)]
     keys <- NULL
@@ -61,4 +70,3 @@ read.sealevel.gc.2026 <- function(stn, debug = 0) {
     rval@metadata$deltat <- (as.numeric(data$time[2]) - as.numeric(data$time[1])) / 3600.0
     rval
 }
-
