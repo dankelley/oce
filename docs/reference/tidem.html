@@ -366,16 +366,16 @@ Computers and Geosciences, 28, 929-937.</p>
     <div class="dont-index"><p>Other things related to tides:
 <code><a href="sub-sub-tidem-method.html">[[,tidem-method</a></code>,
 <code>[[&lt;-,tidem-method</code>,
-<code><a href="as.tidem.html">as.tidem</a>()</code>,
+<code><a href="as.tidem.html">as.tidem()</a></code>,
 <code><a href="plot-tidem-method.html">plot,tidem-method</a></code>,
-<code><a href="predict.tidem.html">predict.tidem</a>()</code>,
+<code><a href="predict.tidem.html">predict.tidem()</a></code>,
 <code><a href="summary-tidem-method.html">summary,tidem-method</a></code>,
 <code><a href="tidalCurrent.html">tidalCurrent</a></code>,
 <code><a href="tidedata.html">tidedata</a></code>,
 <code><a href="tidem-class.html">tidem-class</a></code>,
-<code><a href="tidemAstron.html">tidemAstron</a>()</code>,
-<code><a href="tidemVuf.html">tidemVuf</a>()</code>,
-<code><a href="webtide.html">webtide</a>()</code></p></div>
+<code><a href="tidemAstron.html">tidemAstron()</a></code>,
+<code><a href="tidemVuf.html">tidemVuf()</a></code>,
+<code><a href="webtide.html">webtide()</a></code></p></div>
     </div>
     <div class="section level2">
     <h2 id="author">Author<a class="anchor" aria-label="anchor" href="#author"></a></h2>
@@ -440,8 +440,8 @@ Computers and Geosciences, 28, 929-937.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Processing Log</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2025-09-04 18:14:37 UTC: `create 'tidem' object`</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2025-09-04 18:14:37 UTC: `tidem(t = sealevelTuktoyaktuk)`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2026-02-17 19:26:37 UTC: `create 'tidem' object`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2026-02-17 19:26:37 UTC: `tidem(t = sealevelTuktoyaktuk)`</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># AIC analysis</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/stats/extractAIC.html" class="external-link">extractAIC</a></span><span class="op">(</span><span class="va">tide</span><span class="op">[[</span><span class="st">"model"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></span>
@@ -462,26 +462,26 @@ Computers and Geosciences, 28, 929-937.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Call:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> tidem(t = sl)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> RMS misfit to data:  4.085402e-15 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> RMS misfit to data:  4.034692e-15 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Fitted Model:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>          Freq Amplitude Phase      p    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Z0   0.00e+00  1.05e-16   0.0   0.70    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> K1   4.18e-02  5.23e-16 322.1   0.35    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Z0   0.00e+00  1.61e-16   0.0   0.55    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> K1   4.18e-02  5.53e-16 320.9   0.32    </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> M2   8.05e-02  1.00e+00 266.4 &lt;2e-16 ***</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> M3   1.21e-01  1.36e-16  70.9   0.84    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> M4   1.61e-01  5.46e-16 308.7   0.33    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2MK5 2.03e-01  1.59e-16 209.7   0.79    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2SK5 2.08e-01  4.90e-16  74.4   0.49    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> M6   2.42e-01  5.79e-16 191.5   0.45    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3MK7 2.83e-01  2.39e-16 232.2   0.67    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> M8   3.22e-01  5.93e-16 139.9   0.28    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> M3   1.21e-01  2.21e-16  61.1   0.71    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> M4   1.61e-01  5.10e-16 316.7   0.35    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2MK5 2.03e-01  1.84e-16 181.6   0.81    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2SK5 2.08e-01  4.12e-16  81.3   0.59    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> M6   2.42e-01  5.66e-16 201.3   0.38    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3MK7 2.83e-01  2.48e-16 252.0   0.69    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> M8   3.22e-01  6.82e-16 136.7   0.21    </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ---</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Processing Log</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2025-09-04 18:14:37 UTC: `create 'tidem' object`</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2025-09-04 18:14:37 UTC: `tidem(t = sl)`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2026-02-17 19:26:37 UTC: `create 'tidem' object`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2026-02-17 19:26:37 UTC: `tidem(t = sl)`</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
@@ -494,7 +494,7 @@ Computers and Geosciences, 28, 929-937.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer></div>

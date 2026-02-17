@@ -141,28 +141,28 @@ DOI: 10.1029/2005EO200006</p>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p>Other things related to colors:
-<code><a href="colormap.html">colormap</a>()</code>,
-<code><a href="colormapGMT.html">colormapGMT</a>()</code>,
-<code><a href="oceColors9B.html">oceColors9B</a>()</code>,
-<code><a href="oceColorsCDOM.html">oceColorsCDOM</a>()</code>,
-<code><a href="oceColorsChlorophyll.html">oceColorsChlorophyll</a>()</code>,
-<code><a href="oceColorsClosure.html">oceColorsClosure</a>()</code>,
-<code><a href="oceColorsCubeHelix.html">oceColorsCubeHelix</a>()</code>,
-<code><a href="oceColorsDensity.html">oceColorsDensity</a>()</code>,
-<code><a href="oceColorsFreesurface.html">oceColorsFreesurface</a>()</code>,
-<code><a href="oceColorsGebco.html">oceColorsGebco</a>()</code>,
-<code><a href="oceColorsJet.html">oceColorsJet</a>()</code>,
-<code><a href="oceColorsOxygen.html">oceColorsOxygen</a>()</code>,
-<code><a href="oceColorsPAR.html">oceColorsPAR</a>()</code>,
-<code><a href="oceColorsPalette.html">oceColorsPalette</a>()</code>,
-<code><a href="oceColorsPhase.html">oceColorsPhase</a>()</code>,
-<code><a href="oceColorsSalinity.html">oceColorsSalinity</a>()</code>,
-<code><a href="oceColorsTurbidity.html">oceColorsTurbidity</a>()</code>,
-<code><a href="oceColorsTurbo.html">oceColorsTurbo</a>()</code>,
-<code><a href="oceColorsTwo.html">oceColorsTwo</a>()</code>,
-<code><a href="oceColorsVelocity.html">oceColorsVelocity</a>()</code>,
-<code><a href="oceColorsViridis.html">oceColorsViridis</a>()</code>,
-<code><a href="oceColorsVorticity.html">oceColorsVorticity</a>()</code>,
+<code><a href="colormap.html">colormap()</a></code>,
+<code><a href="colormapGMT.html">colormapGMT()</a></code>,
+<code><a href="oceColors9B.html">oceColors9B()</a></code>,
+<code><a href="oceColorsCDOM.html">oceColorsCDOM()</a></code>,
+<code><a href="oceColorsChlorophyll.html">oceColorsChlorophyll()</a></code>,
+<code><a href="oceColorsClosure.html">oceColorsClosure()</a></code>,
+<code><a href="oceColorsCubeHelix.html">oceColorsCubeHelix()</a></code>,
+<code><a href="oceColorsDensity.html">oceColorsDensity()</a></code>,
+<code><a href="oceColorsFreesurface.html">oceColorsFreesurface()</a></code>,
+<code><a href="oceColorsGebco.html">oceColorsGebco()</a></code>,
+<code><a href="oceColorsJet.html">oceColorsJet()</a></code>,
+<code><a href="oceColorsOxygen.html">oceColorsOxygen()</a></code>,
+<code><a href="oceColorsPAR.html">oceColorsPAR()</a></code>,
+<code><a href="oceColorsPalette.html">oceColorsPalette()</a></code>,
+<code><a href="oceColorsPhase.html">oceColorsPhase()</a></code>,
+<code><a href="oceColorsSalinity.html">oceColorsSalinity()</a></code>,
+<code><a href="oceColorsTurbidity.html">oceColorsTurbidity()</a></code>,
+<code><a href="oceColorsTurbo.html">oceColorsTurbo()</a></code>,
+<code><a href="oceColorsTwo.html">oceColorsTwo()</a></code>,
+<code><a href="oceColorsVelocity.html">oceColorsVelocity()</a></code>,
+<code><a href="oceColorsViridis.html">oceColorsViridis()</a></code>,
+<code><a href="oceColorsVorticity.html">oceColorsVorticity()</a></code>,
 <code><a href="ocecolors.html">ocecolors</a></code></p></div>
     </div>
     <div class="section level2">
@@ -180,12 +180,12 @@ DOI: 10.1029/2005EO200006</p>
 <span class="r-plt img"><img src="oceColorsTemperature-1.png" alt="" width="700" height="700"></span>
 <span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
 <span class="r-in"><span><span class="co"># Example 2 (requires the cmocean package)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="imagep.html">imagep</a></span><span class="op">(</span><span class="va">volcano</span>, col<span class="op">=</span><span class="fu">cmocean</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/cmocean/man/cmocean.html" class="external-link">cmocean</a></span><span class="op">(</span><span class="st">"matter"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span><span class="fu"><a href="imagep.html">imagep</a></span><span class="op">(</span><span class="va">volcano</span>, col<span class="op">=</span><span class="fu">cmocean</span><span class="fu">::</span><span class="fu">cmocean</span><span class="op">(</span><span class="st">"matter"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>    zlab<span class="op">=</span><span class="st">"cmocean::cmocean(\"matter\")"</span><span class="op">)</span><span class="op">}</span> <span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
 <span class="r-in"><span><span class="co"># Example 3 (requires the viridis package)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="imagep.html">imagep</a></span><span class="op">(</span><span class="va">volcano</span>, col<span class="op">=</span><span class="fu">viridis</span><span class="fu">::</span><span class="va"><a href="https://sjmgarnier.github.io/viridisLite/reference/viridis.html" class="external-link">inferno</a></span>,</span></span>
+<span class="r-in"><span><span class="fu"><a href="imagep.html">imagep</a></span><span class="op">(</span><span class="va">volcano</span>, col<span class="op">=</span><span class="fu">viridis</span><span class="fu">::</span><span class="va">inferno</span>,</span></span>
 <span class="r-in"><span>    zlab<span class="op">=</span><span class="st">"viridis::inferno"</span><span class="op">)</span><span class="op">}</span> <span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
@@ -199,7 +199,7 @@ DOI: 10.1029/2005EO200006</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer></div>

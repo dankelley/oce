@@ -1,0 +1,83 @@
+# Subset an echosounder Object
+
+This function is somewhat analogous to
+[`subset.data.frame()`](https://rdrr.io/r/base/subset.html). Subsetting
+can be by `time` or `depth`, but these may not be combined; use a
+sequence of calls to subset by both.
+
+## Usage
+
+``` r
+# S4 method for class 'echosounder'
+subset(x, subset, ...)
+```
+
+## Arguments
+
+- x:
+
+  an
+  [echosounder](https://dankelley.github.io/oce/reference/echosounder-class.md)
+  object.
+
+- subset:
+
+  a condition to be applied to the `data` portion of `x`. See “Details”.
+
+- ...:
+
+  ignored.
+
+## Value
+
+An
+[echosounder](https://dankelley.github.io/oce/reference/echosounder-class.md)
+object.
+
+## See also
+
+Other things related to echosounder data:
+[`[[,echosounder-method`](https://dankelley.github.io/oce/reference/sub-sub-echosounder-method.md),
+`[[<-,echosounder-method`,
+[`as.echosounder()`](https://dankelley.github.io/oce/reference/as.echosounder.md),
+[`echosounder`](https://dankelley.github.io/oce/reference/echosounder.md),
+[`echosounder-class`](https://dankelley.github.io/oce/reference/echosounder-class.md),
+[`findBottom()`](https://dankelley.github.io/oce/reference/findBottom.md),
+[`plot,echosounder-method`](https://dankelley.github.io/oce/reference/plot-echosounder-method.md),
+[`read.echosounder()`](https://dankelley.github.io/oce/reference/read.echosounder.md),
+[`summary,echosounder-method`](https://dankelley.github.io/oce/reference/summary-echosounder-method.md)
+
+Other functions that subset oce objects:
+[`subset,adp-method`](https://dankelley.github.io/oce/reference/subset-adp-method.md),
+[`subset,adv-method`](https://dankelley.github.io/oce/reference/subset-adv-method.md),
+[`subset,amsr-method`](https://dankelley.github.io/oce/reference/subset-amsr-method.md),
+[`subset,argo-method`](https://dankelley.github.io/oce/reference/subset-argo-method.md),
+[`subset,cm-method`](https://dankelley.github.io/oce/reference/subset-cm-method.md),
+[`subset,coastline-method`](https://dankelley.github.io/oce/reference/subset-coastline-method.md),
+[`subset,ctd-method`](https://dankelley.github.io/oce/reference/subset-ctd-method.md),
+[`subset,lobo-method`](https://dankelley.github.io/oce/reference/subset-lobo-method.md),
+[`subset,met-method`](https://dankelley.github.io/oce/reference/subset-met-method.md),
+[`subset,oce-method`](https://dankelley.github.io/oce/reference/subset-oce-method.md),
+[`subset,odf-method`](https://dankelley.github.io/oce/reference/subset-odf-method.md),
+[`subset,rsk-method`](https://dankelley.github.io/oce/reference/subset-rsk-method.md),
+[`subset,sealevel-method`](https://dankelley.github.io/oce/reference/subset-sealevel-method.md),
+[`subset,section-method`](https://dankelley.github.io/oce/reference/subset-section-method.md),
+[`subset,topo-method`](https://dankelley.github.io/oce/reference/subset-topo-method.md),
+[`subset,xbt-method`](https://dankelley.github.io/oce/reference/subset-xbt-method.md)
+
+## Author
+
+Dan Kelley
+
+## Examples
+
+``` r
+library(oce)
+data(echosounder)
+plot(echosounder)
+
+plot(subset(echosounder, depth < 10))
+
+plot(subset(echosounder, time < mean(range(echosounder[["time"]]))))
+
+```

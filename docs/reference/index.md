@@ -1,0 +1,1580 @@
+# Package index
+
+## CTD data
+
+Functions related to working with CTD data
+
+- [`CTD_BCD2014666_008_1_DN.ODF.gz`](https://dankelley.github.io/oce/reference/CTD_BCD2014666_008_1_DN.ODF.gz.md)
+  : Sample ctd File in .odf Format
+- [`argo2ctd()`](https://dankelley.github.io/oce/reference/argo2ctd.md)
+  : Coerce argo Data Into a ctd Object
+- [`as.ctd()`](https://dankelley.github.io/oce/reference/as.ctd.md) :
+  Coerce Data Into a ctd Object
+- [`cnvName2oceName()`](https://dankelley.github.io/oce/reference/cnvName2oceName.md)
+  : Infer Variable Name, Units and Scale From a Seabird Header
+- [`ctd-class`](https://dankelley.github.io/oce/reference/ctd-class.md)
+  : Class to Store CTD (or general hydrographic) Data
+- [`ctd`](https://dankelley.github.io/oce/reference/ctd.md) : Sample ctd
+  Data
+- [`ctd.cnv.gz`](https://dankelley.github.io/oce/reference/ctd.cnv.gz.md)
+  : Sample ctd File in .cnv Format
+- [`ctdDecimate()`](https://dankelley.github.io/oce/reference/ctdDecimate.md)
+  : Decimate a ctd Profile
+- [`ctdFindProfiles()`](https://dankelley.github.io/oce/reference/ctdFindProfiles.md)
+  : Find Profiles Within a Tow-Yow ctd Record
+- [`ctdFindProfilesRBR()`](https://dankelley.github.io/oce/reference/ctdFindProfilesRBR.md)
+  : Find Profiles Within a ctd Object Read From a RBR File
+- [`ctdRaw`](https://dankelley.github.io/oce/reference/ctdRaw.md) :
+  Sample ctd Data, Not Trimmed of Extraneous Data
+- [`ctdRepair()`](https://dankelley.github.io/oce/reference/ctdRepair.md)
+  : Repair a Malformed ctd Object
+- [`ctdTrim()`](https://dankelley.github.io/oce/reference/ctdTrim.md) :
+  Trim Beginning and Ending of a CTD cast
+- [`ctd_aml_type1.csv.gz`](https://dankelley.github.io/oce/reference/ctd_aml_type1.csv.gz.md)
+  : Sample ctd File in aml Format 1
+- [`ctd_aml_type3.csv.gz`](https://dankelley.github.io/oce/reference/ctd_aml_type3.csv.gz.md)
+  : Sample ctd File in aml Format 3
+- [`d200321-001.ctd.gz`](https://dankelley.github.io/oce/reference/d200321-001.ctd.gz.md)
+  : Sample ctd File in .ctd Format
+- [`d201211_0011.cnv.gz`](https://dankelley.github.io/oce/reference/d201211_0011.cnv.gz.md)
+  : Sample ctd File in .cnv Format
+- [`handleFlags(`*`<ctd>`*`)`](https://dankelley.github.io/oce/reference/handleFlags-ctd-method.md)
+  : Handle Flags in ctd Objects
+- [`initialize(`*`<ctd>`*`)`](https://dankelley.github.io/oce/reference/initialize-ctd-method.md)
+  : Initialize Storage for a ctd Object
+- [`initializeFlagScheme(`*`<ctd>`*`)`](https://dankelley.github.io/oce/reference/initializeFlagScheme-ctd-method.md)
+  : Establish a Data-Quality Scheme for a ctd Object
+- [`oceNames2whpNames()`](https://dankelley.github.io/oce/reference/oceNames2whpNames.md)
+  : Translate Oce Data Names to WHP Data Names
+- [`oceUnits2whpUnits()`](https://dankelley.github.io/oce/reference/oceUnits2whpUnits.md)
+  : Translate oce Unit to WHP Unit
+- [`plot(`*`<ctd>`*`)`](https://dankelley.github.io/oce/reference/plot-ctd-method.md)
+  : Plot a ctd Object
+- [`plotProfile()`](https://dankelley.github.io/oce/reference/plotProfile.md)
+  : Plot a ctd Profile
+- [`plotScan()`](https://dankelley.github.io/oce/reference/plotScan.md)
+  : Plot a ctd Object in a Low-Level Fashion
+- [`plotTS()`](https://dankelley.github.io/oce/reference/plotTS.md) :
+  Plot Temperature-Salinity Diagram
+- [`read.ctd()`](https://dankelley.github.io/oce/reference/read.ctd.md)
+  : Read a ctd File in General Format
+- [`read.ctd.aml()`](https://dankelley.github.io/oce/reference/read.ctd.aml.md)
+  : Read a ctd File in AML Format
+- [`read.ctd.itp()`](https://dankelley.github.io/oce/reference/read.ctd.itp.md)
+  : Read a ctd File in ITP Format
+- [`read.ctd.odf()`](https://dankelley.github.io/oce/reference/read.ctd.odf.md)
+  : Read a ctd File in odf Format
+- [`read.ctd.odv()`](https://dankelley.github.io/oce/reference/read.ctd.odv.md)
+  : Read a "ctd" File in ODV Format
+- [`read.ctd.saiv()`](https://dankelley.github.io/oce/reference/read.ctd.saiv.md)
+  : Read a ctd File in SAIV Format
+- [`read.ctd.sbe()`](https://dankelley.github.io/oce/reference/read.ctd.sbe.md)
+  : Read a ctd File in Seabird Format
+- [`read.ctd.ssda()`](https://dankelley.github.io/oce/reference/read.ctd.ssda.md)
+  : Read a ctd File in SSDA Format
+- [`read.ctd.woce()`](https://dankelley.github.io/oce/reference/read.ctd.woce.md)
+  : Read a ctd File in WOCE-Exchange Format
+- [`read.ctd.woce.other()`](https://dankelley.github.io/oce/reference/read.ctd.woce.other.md)
+  : Read a ctd File in WOCE-Exchange EXPOCODE Format
+- [`setFlags(`*`<ctd>`*`)`](https://dankelley.github.io/oce/reference/setFlags-ctd-method.md)
+  : Set Data-Quality Flags within a ctd Object
+- [`` `[[`( ``*`<ctd>`*`)`](https://dankelley.github.io/oce/reference/sub-sub-ctd-method.md)
+  : Extract Something From a ctd Object
+- [`` `[[<-`( ``*`<ctd>`*`)`](https://dankelley.github.io/oce/reference/sub-subset-ctd-method.md)
+  : Replace Parts of a ctd Object
+- [`subset(`*`<ctd>`*`)`](https://dankelley.github.io/oce/reference/subset-ctd-method.md)
+  : Subset a ctd Object
+- [`summary(`*`<ctd>`*`)`](https://dankelley.github.io/oce/reference/summary-ctd-method.md)
+  : Summarize a ctd Object
+- [`woceNames2oceNames()`](https://dankelley.github.io/oce/reference/woceNames2oceNames.md)
+  : Translate WOCE Data Names to Oce Data Names
+- [`woceUnit2oceUnit()`](https://dankelley.github.io/oce/reference/woceUnit2oceUnit.md)
+  : Translate WOCE Units to oce Units
+- [`write.ctd()`](https://dankelley.github.io/oce/reference/write.ctd.md)
+  : Save a ctd Object in a CSV File
+
+## Acoustic Doppler data
+
+Functions related to acoustic Doppler instruments and data
+
+- [`ad2cpCodeToName()`](https://dankelley.github.io/oce/reference/ad2cpCodeToName.md)
+  : Map AD2CP ID Code to oce Name
+- [`ad2cpHeaderValue()`](https://dankelley.github.io/oce/reference/ad2cpHeaderValue.md)
+  : Infer an Item From a Nortek AD2CP File Header
+- [`adp-class`](https://dankelley.github.io/oce/reference/adp-class.md)
+  : Class to Store Acoustic-Doppler Profiler Data
+- [`adp`](https://dankelley.github.io/oce/reference/adp.md) : Sample adp
+  Data
+- [`adpAd2cpFileTrim()`](https://dankelley.github.io/oce/reference/adpAd2cpFileTrim.md)
+  : Trim an AD2CP File
+- [`adpConvertRawToNumeric()`](https://dankelley.github.io/oce/reference/adpConvertRawToNumeric.md)
+  : Convert Raw to Numeric Values in an adp Object
+- [`adpEnsembleAverage()`](https://dankelley.github.io/oce/reference/adpEnsembleAverage.md)
+  : Ensemble Average an adp Object in Time
+- [`adpFlagPastBoundary()`](https://dankelley.github.io/oce/reference/adpFlagPastBoundary.md)
+  : Flag adp Data Past Water Column Boundary
+- [`adpRdiFileTrim()`](https://dankelley.github.io/oce/reference/adpRdiFileTrim.md)
+  : Trim an RDI adp File
+- [`adp_rdi.000`](https://dankelley.github.io/oce/reference/adp_rdi.000.md)
+  : Sample adp File in RDI Format
+- [`applyMagneticDeclination(`*`<adp>`*`)`](https://dankelley.github.io/oce/reference/applyMagneticDeclination-adp-method.md)
+  : Alter an adp Object to Account for Magnetic Declination
+- [`as.adp()`](https://dankelley.github.io/oce/reference/as.adp.md) :
+  Create an adp Object
+- [`beamName()`](https://dankelley.github.io/oce/reference/beamName.md)
+  : Get Names of Acoustic-Doppler Beams
+- [`beamToXyz()`](https://dankelley.github.io/oce/reference/beamToXyz.md)
+  : Change the Coordinate System in an adv or adp Object
+- [`beamToXyzAdp()`](https://dankelley.github.io/oce/reference/beamToXyzAdp.md)
+  : Convert adp Object From Beam to XYZ Coordinates
+- [`beamToXyzAdpAD2CP()`](https://dankelley.github.io/oce/reference/beamToXyzAdpAD2CP.md)
+  : Convert From Beam to XYZ Coordinates (AD2CP adp Data)
+- [`beamToXyzAdv()`](https://dankelley.github.io/oce/reference/beamToXyzAdv.md)
+  : Convert adv Object from Beam Coordinates to XYZ Coordinates
+- [`beamUnspreadAdp()`](https://dankelley.github.io/oce/reference/beamUnspreadAdp.md)
+  : Adjust adp Object to Account for Spherical Spreading
+- [`binmapAdp()`](https://dankelley.github.io/oce/reference/binmapAdp.md)
+  : Bin-map an adp Object
+- [`enuToOther()`](https://dankelley.github.io/oce/reference/enuToOther.md)
+  : Rotate Acoustic-Doppler Data to a New Coordinate System
+- [`enuToOtherAdp()`](https://dankelley.github.io/oce/reference/enuToOtherAdp.md)
+  : Convert adp Object from ENU Coordinate to Rotated Coordinate
+- [`handleFlags(`*`<adp>`*`)`](https://dankelley.github.io/oce/reference/handleFlags-adp-method.md)
+  : Handle Flags in adp Objects
+- [`is.ad2cp()`](https://dankelley.github.io/oce/reference/is.ad2cp.md)
+  : Test Whether Item is a ad2cp-Type adp Object
+- [`plot(`*`<adp>`*`)`](https://dankelley.github.io/oce/reference/plot-adp-method.md)
+  : Plot an adp Object
+- [`read.adp()`](https://dankelley.github.io/oce/reference/read.adp.md)
+  : Read an adp File
+- [`read.adp.ad2cp()`](https://dankelley.github.io/oce/reference/read.adp.ad2cp.md)
+  : Read an adp File in Nortek AD2CP Format
+- [`read.adp.nortek()`](https://dankelley.github.io/oce/reference/read.adp.nortek.md)
+  : Read an adp File in Nortek Format
+- [`read.adp.rdi()`](https://dankelley.github.io/oce/reference/read.adp.rdi.md)
+  : Read an adp File in Teledyne/RDI Format
+- [`read.adp.sontek()`](https://dankelley.github.io/oce/reference/read.adp.sontek.md)
+  : Read an adp File in Sontek Format
+- [`read.adp.sontek.serial()`](https://dankelley.github.io/oce/reference/read.adp.sontek.serial.md)
+  : Read an adp File in Serial Sontek Format
+- [`read.aquadopp()`](https://dankelley.github.io/oce/reference/read.aquadopp.md)
+  : Read an adp File in Nortek Aquadopp Format
+- [`read.aquadoppHR()`](https://dankelley.github.io/oce/reference/read.aquadoppHR.md)
+  : Read Nortek Aquadopp-HR File
+- [`read.aquadoppProfiler()`](https://dankelley.github.io/oce/reference/read.aquadoppProfiler.md)
+  : Read an adp File in Nortek Aquadopp Format
+- [`rotateAboutZ()`](https://dankelley.github.io/oce/reference/rotateAboutZ.md)
+  : Rotate Velocity Components Within an oce Object
+- [`setFlags(`*`<adp>`*`)`](https://dankelley.github.io/oce/reference/setFlags-adp-method.md)
+  : Set Data-Quality Flags within a adp Object
+- [`` `[[`( ``*`<adp>`*`)`](https://dankelley.github.io/oce/reference/sub-sub-adp-method.md)
+  : Extract Something From an adp Object
+- [`` `[[<-`( ``*`<adp>`*`)`](https://dankelley.github.io/oce/reference/sub-subset-adp-method.md)
+  : Replace Parts of an adp Object
+- [`subset(`*`<adp>`*`)`](https://dankelley.github.io/oce/reference/subset-adp-method.md)
+  : Subset an adp Object
+- [`subtractBottomVelocity()`](https://dankelley.github.io/oce/reference/subtractBottomVelocity.md)
+  : Subtract Bottom Velocity From an adp Object
+- [`summary(`*`<adp>`*`)`](https://dankelley.github.io/oce/reference/summary-adp-method.md)
+  : Summarize an adp Object
+- [`toEnu()`](https://dankelley.github.io/oce/reference/toEnu.md) :
+  Rotate Acoustic-Doppler Data to the ENU Coordinate System
+- [`toEnuAdp()`](https://dankelley.github.io/oce/reference/toEnuAdp.md)
+  : Convert an adp Object to ENU Coordinates
+- [`velocityStatistics()`](https://dankelley.github.io/oce/reference/velocityStatistics.md)
+  : Report Statistics of adp or adv Velocities
+- [`xyzToEnu()`](https://dankelley.github.io/oce/reference/xyzToEnu.md)
+  : Convert Acoustic-Doppler Data From XYZ to ENU Coordinates
+- [`xyzToEnuAdp()`](https://dankelley.github.io/oce/reference/xyzToEnuAdp.md)
+  : Convert adp Object From XYZ to ENU Coordinates
+- [`xyzToEnuAdpAD2CP()`](https://dankelley.github.io/oce/reference/xyzToEnuAdpAD2CP.md)
+  : Convert adp Object of AD2CP type From XYZ to ENU Coordinates
+- [`adv-class`](https://dankelley.github.io/oce/reference/adv-class.md)
+  : Class to Store Acoustic-Doppler Velocimeter Data
+- [`adv`](https://dankelley.github.io/oce/reference/adv.md) : Sample adv
+  Data
+- [`advSontekAdrFileTrim()`](https://dankelley.github.io/oce/reference/advSontekAdrFileTrim.md)
+  : Trim a Sontek ADR adv File
+- [`applyMagneticDeclination(`*`<adv>`*`)`](https://dankelley.github.io/oce/reference/applyMagneticDeclination-adv-method.md)
+  : Alter an adv Object to Account for Magnetic Declination
+- [`enuToOtherAdv()`](https://dankelley.github.io/oce/reference/enuToOtherAdv.md)
+  : Convert ENU to Other Coordinate
+- [`plot(`*`<adv>`*`)`](https://dankelley.github.io/oce/reference/plot-adv-method.md)
+  : Plot an adv Object
+- [`read.adv()`](https://dankelley.github.io/oce/reference/read.adv.md)
+  : Read an adv File
+- [`read.adv.nortek()`](https://dankelley.github.io/oce/reference/read.adv.nortek.md)
+  : Read an adv File
+- [`read.adv.sontek.adr()`](https://dankelley.github.io/oce/reference/read.adv.sontek.adr.md)
+  : Read an adv File
+- [`read.adv.sontek.serial()`](https://dankelley.github.io/oce/reference/read.adv.sontek.serial.md)
+  : Read an adv File
+- [`read.adv.sontek.text()`](https://dankelley.github.io/oce/reference/read.adv.sontek.text.md)
+  : Read an adv File
+- [`` `[[`( ``*`<adv>`*`)`](https://dankelley.github.io/oce/reference/sub-sub-adv-method.md)
+  : Extract Something from an adv Object
+- [`` `[[<-`( ``*`<adv>`*`)`](https://dankelley.github.io/oce/reference/sub-subset-adv-method.md)
+  : Replace Parts of an adv Object
+- [`subset(`*`<adv>`*`)`](https://dankelley.github.io/oce/reference/subset-adv-method.md)
+  : Subset an adv Object
+- [`summary(`*`<adv>`*`)`](https://dankelley.github.io/oce/reference/summary-adv-method.md)
+  : Summarize an adv Object
+- [`toEnuAdv()`](https://dankelley.github.io/oce/reference/toEnuAdv.md)
+  : Convert an adv Object to ENU Coordinates
+- [`xyzToEnuAdv()`](https://dankelley.github.io/oce/reference/xyzToEnuAdv.md)
+  : Convert an adv Object From XYZ to ENU Coordinates
+
+## Argo float data and tools
+
+Functions for working with Argo data
+
+- [`D4902337_219.nc`](https://dankelley.github.io/oce/reference/D4902337_219.nc.md)
+  : Sample Argo Profile File
+- [`argo-class`](https://dankelley.github.io/oce/reference/argo-class.md)
+  : Class to Store Argo Profiler Data
+- [`argo`](https://dankelley.github.io/oce/reference/argo.md) : Sample
+  argo Data
+- [`argo2ctd()`](https://dankelley.github.io/oce/reference/argo2ctd.md)
+  : Coerce argo Data Into a ctd Object
+- [`argoGrid()`](https://dankelley.github.io/oce/reference/argoGrid.md)
+  : Grid Argo Float Data
+- [`argoNames2oceNames()`](https://dankelley.github.io/oce/reference/argoNames2oceNames.md)
+  : Convert Argo Data Name to Oce Name
+- [`as.argo()`](https://dankelley.github.io/oce/reference/as.argo.md) :
+  Coerce Data Into an argo Object
+- [`handleFlags(`*`<argo>`*`)`](https://dankelley.github.io/oce/reference/handleFlags-argo-method.md)
+  : Handle Flags in argo Objects
+- [`plot(`*`<argo>`*`)`](https://dankelley.github.io/oce/reference/plot-argo-method.md)
+  : Plot an argo Object
+- [`read.argo()`](https://dankelley.github.io/oce/reference/read.argo.md)
+  : Read an Argo Data File
+- [`read.argo.copernicus()`](https://dankelley.github.io/oce/reference/read.argo.copernicus.md)
+  : Read an argo File in Copernicus Format
+- [`` `[[`( ``*`<argo>`*`)`](https://dankelley.github.io/oce/reference/sub-sub-argo-method.md)
+  : Extract Something From an argo Object
+- [`` `[[<-`( ``*`<argo>`*`)`](https://dankelley.github.io/oce/reference/sub-subset-argo-method.md)
+  : Replace Parts of an argo Object
+- [`subset(`*`<argo>`*`)`](https://dankelley.github.io/oce/reference/subset-argo-method.md)
+  : Subset an argo Object
+- [`summary(`*`<argo>`*`)`](https://dankelley.github.io/oce/reference/summary-argo-method.md)
+  : Summarize an argo Object
+
+## Seawater properties
+
+Functions for calculating seawater properties
+
+- [`T68fromT90()`](https://dankelley.github.io/oce/reference/T68fromT90.md)
+  : Convert From ITS-90 to IPTS-68 Temperature
+- [`T90fromT48()`](https://dankelley.github.io/oce/reference/T90fromT48.md)
+  : Convert From ITS-48 to ITS-90 Temperature
+- [`T90fromT68()`](https://dankelley.github.io/oce/reference/T90fromT68.md)
+  : Convert From IPTS-68 to ITS-90 Temperature
+- [`computableWaterProperties()`](https://dankelley.github.io/oce/reference/computableWaterProperties.md)
+  : Determine Available Derived Water Properties
+- [`locationForGsw()`](https://dankelley.github.io/oce/reference/locationForGsw.md)
+  : Alter Longitude and Latitude for gsw Computations
+- [`swAbsoluteSalinity()`](https://dankelley.github.io/oce/reference/swAbsoluteSalinity.md)
+  : Seawater Absolute Salinity (GSW Formulation)
+- [`swAlpha()`](https://dankelley.github.io/oce/reference/swAlpha.md) :
+  Seawater Thermal Expansion Coefficient
+- [`swAlphaOverBeta()`](https://dankelley.github.io/oce/reference/swAlphaOverBeta.md)
+  : Ratio of Seawater Thermal Expansion Coefficient to Haline
+  Contraction Coefficient
+- [`swBeta()`](https://dankelley.github.io/oce/reference/swBeta.md) :
+  Seawater Haline Contraction Coefficient
+- [`swCSTp()`](https://dankelley.github.io/oce/reference/swCSTp.md) :
+  Electrical Conductivity Ratio From Salinity, Temperature and Pressure
+- [`swConservativeTemperature()`](https://dankelley.github.io/oce/reference/swConservativeTemperature.md)
+  : Seawater Conservative Temperature (GSW Formulation)
+- [`swDepth()`](https://dankelley.github.io/oce/reference/swDepth.md) :
+  Water Depth
+- [`swDynamicHeight()`](https://dankelley.github.io/oce/reference/swDynamicHeight.md)
+  : Dynamic Height of a Seawater Profile
+- [`swLapseRate()`](https://dankelley.github.io/oce/reference/swLapseRate.md)
+  : Seawater Lapse Rate
+- [`swN2()`](https://dankelley.github.io/oce/reference/swN2.md) :
+  Squared Buoyancy Frequency for Seawater
+- [`swPressure()`](https://dankelley.github.io/oce/reference/swPressure.md)
+  : Water Pressure
+- [`swRho()`](https://dankelley.github.io/oce/reference/swRho.md) :
+  Seawater Density
+- [`swRrho()`](https://dankelley.github.io/oce/reference/swRrho.md) :
+  Density Ratio
+- [`swSCTp()`](https://dankelley.github.io/oce/reference/swSCTp.md) :
+  Practical Salinity From Electrical Conductivity, Temperature and
+  Pressure
+- [`swSR()`](https://dankelley.github.io/oce/reference/swSR.md) :
+  Seawater Reference Salinity (GSW Formulation)
+- [`swSTrho()`](https://dankelley.github.io/oce/reference/swSTrho.md) :
+  Seawater Salinity From Temperature and Density
+- [`swSigma()`](https://dankelley.github.io/oce/reference/swSigma.md) :
+  Seawater Density Anomaly
+- [`swSigma0()`](https://dankelley.github.io/oce/reference/swSigma0.md)
+  : Seawater Potential Density Anomaly Referenced to Surface Pressure
+- [`swSigma1()`](https://dankelley.github.io/oce/reference/swSigma1.md)
+  : Seawater Potential Density Anomaly Referenced to 1000db Pressure
+- [`swSigma2()`](https://dankelley.github.io/oce/reference/swSigma2.md)
+  : Seawater Potential Density Anomaly Referenced to 2000db Pressure
+- [`swSigma3()`](https://dankelley.github.io/oce/reference/swSigma3.md)
+  : Seawater Potential Density Anomaly Referenced to 3000db Pressure
+- [`swSigma4()`](https://dankelley.github.io/oce/reference/swSigma4.md)
+  : Seawater Potential Density Anomaly Referenced to 4000db Pressure
+- [`swSigmaT()`](https://dankelley.github.io/oce/reference/swSigmaT.md)
+  : Seawater Quasi-Potential Density Anomaly
+- [`swSigmaTheta()`](https://dankelley.github.io/oce/reference/swSigmaTheta.md)
+  : Seawater Potential Density Anomaly
+- [`swSoundAbsorption()`](https://dankelley.github.io/oce/reference/swSoundAbsorption.md)
+  : Seawater Sound Absorption
+- [`swSoundSpeed()`](https://dankelley.github.io/oce/reference/swSoundSpeed.md)
+  : Seawater Sound Speed
+- [`swSpecificHeat()`](https://dankelley.github.io/oce/reference/swSpecificHeat.md)
+  : Seawater Specific Heat
+- [`swSpice()`](https://dankelley.github.io/oce/reference/swSpice.md) :
+  Seawater Spiciness
+- [`swSpiciness0()`](https://dankelley.github.io/oce/reference/swSpiciness0.md)
+  : Spiciness in gsw System, Referenced to Surface Pressure
+- [`swSpiciness1()`](https://dankelley.github.io/oce/reference/swSpiciness1.md)
+  : Spiciness in gsw System, Referenced to 1000 dbar Pressure
+- [`swSpiciness2()`](https://dankelley.github.io/oce/reference/swSpiciness2.md)
+  : Spiciness in gsw System, Referenced to 2000 dbar Pressure
+- [`swSstar()`](https://dankelley.github.io/oce/reference/swSstar.md) :
+  Seawater Preformed Salinity (GSW Formulation)
+- [`swTFreeze()`](https://dankelley.github.io/oce/reference/swTFreeze.md)
+  : Seawater Freezing Temperature
+- [`swTSrho()`](https://dankelley.github.io/oce/reference/swTSrho.md) :
+  Seawater Temperature from Salinity and Density
+- [`swThermalConductivity()`](https://dankelley.github.io/oce/reference/swThermalConductivity.md)
+  : Seawater Thermal Conductivity
+- [`swTheta()`](https://dankelley.github.io/oce/reference/swTheta.md) :
+  Seawater Potential Temperature (UNESCO Version)
+- [`swViscosity()`](https://dankelley.github.io/oce/reference/swViscosity.md)
+  : Seawater Viscosity
+- [`swZ()`](https://dankelley.github.io/oce/reference/swZ.md) : Vertical
+  Coordinate
+
+## Data quality flags
+
+Functions for working with data quality flags
+
+- [`defaultFlags()`](https://dankelley.github.io/oce/reference/defaultFlags.md)
+  : Suggest a Default Flag Vector for Bad or Suspicious Data
+- [`handleFlags(`*`<adp>`*`)`](https://dankelley.github.io/oce/reference/handleFlags-adp-method.md)
+  : Handle Flags in adp Objects
+- [`handleFlags(`*`<argo>`*`)`](https://dankelley.github.io/oce/reference/handleFlags-argo-method.md)
+  : Handle Flags in argo Objects
+- [`handleFlags(`*`<ctd>`*`)`](https://dankelley.github.io/oce/reference/handleFlags-ctd-method.md)
+  : Handle Flags in ctd Objects
+- [`handleFlags(`*`<oce>`*`)`](https://dankelley.github.io/oce/reference/handleFlags-oce-method.md)
+  : Handle Flags in oce Objects
+- [`handleFlags(`*`<section>`*`)`](https://dankelley.github.io/oce/reference/handleFlags-section-method.md)
+  : Handle flags in section Objects
+- [`handleFlags()`](https://dankelley.github.io/oce/reference/handleFlags.md)
+  : Handle Flags in oce Objects (Generic)
+- [`initializeFlagScheme(`*`<ctd>`*`)`](https://dankelley.github.io/oce/reference/initializeFlagScheme-ctd-method.md)
+  : Establish a Data-Quality Scheme for a ctd Object
+- [`initializeFlagScheme(`*`<oce>`*`)`](https://dankelley.github.io/oce/reference/initializeFlagScheme-oce-method.md)
+  : Establish a Data-Quality Scheme for a oce Object
+- [`initializeFlagScheme(`*`<section>`*`)`](https://dankelley.github.io/oce/reference/initializeFlagScheme-section-method.md)
+  : Establish a Data-Quality Scheme for a section Object
+- [`initializeFlagScheme()`](https://dankelley.github.io/oce/reference/initializeFlagScheme.md)
+  : Establish a Data-Quality Scheme for a oce Object
+- [`initializeFlagSchemeInternal()`](https://dankelley.github.io/oce/reference/initializeFlagSchemeInternal.md)
+  : Establish a Data-Quality Scheme for a oce Object
+- [`initializeFlags(`*`<adp>`*`)`](https://dankelley.github.io/oce/reference/initializeFlags-adp-method.md)
+  : Create and Initialize adp Flags
+- [`initializeFlags(`*`<oce>`*`)`](https://dankelley.github.io/oce/reference/initializeFlags-oce-method.md)
+  : Create and Initialize oce Flags
+- [`initializeFlags()`](https://dankelley.github.io/oce/reference/initializeFlags.md)
+  : Create and Initialize oce Flags
+- [`initializeFlagsInternal()`](https://dankelley.github.io/oce/reference/initializeFlagsInternal.md)
+  : Create and Initialize oce Flags
+- [`setFlags(`*`<adp>`*`)`](https://dankelley.github.io/oce/reference/setFlags-adp-method.md)
+  : Set Data-Quality Flags within a adp Object
+- [`setFlags(`*`<ctd>`*`)`](https://dankelley.github.io/oce/reference/setFlags-ctd-method.md)
+  : Set Data-Quality Flags within a ctd Object
+- [`setFlags(`*`<oce>`*`)`](https://dankelley.github.io/oce/reference/setFlags-oce-method.md)
+  : Set Data-Quality Flags within a oce Object
+- [`setFlags()`](https://dankelley.github.io/oce/reference/setFlags.md)
+  : Set Data-Quality Flags within a oce Object
+
+## All functions
+
+- [`CTD_BCD2014666_008_1_DN.ODF.gz`](https://dankelley.github.io/oce/reference/CTD_BCD2014666_008_1_DN.ODF.gz.md)
+  : Sample ctd File in .odf Format
+- [`D4902337_219.nc`](https://dankelley.github.io/oce/reference/D4902337_219.nc.md)
+  : Sample Argo Profile File
+- [`GMTOffsetFromTz()`](https://dankelley.github.io/oce/reference/GMTOffsetFromTz.md)
+  : Determine Time Offset From Timezone
+- [`ODF2oce()`](https://dankelley.github.io/oce/reference/ODF2oce.md) :
+  Create ODF Object From Output of read_ODF in ODF package
+- [`ODFListFromHeader()`](https://dankelley.github.io/oce/reference/ODFListFromHeader.md)
+  : Create a List of odf Header Metadata
+- [`ODFNames2oceNames()`](https://dankelley.github.io/oce/reference/ODFNames2oceNames.md)
+  : Translate ODF CODE Strings to oce Variable Names
+- [`T68fromT90()`](https://dankelley.github.io/oce/reference/T68fromT90.md)
+  : Convert From ITS-90 to IPTS-68 Temperature
+- [`T90fromT48()`](https://dankelley.github.io/oce/reference/T90fromT48.md)
+  : Convert From ITS-48 to ITS-90 Temperature
+- [`T90fromT68()`](https://dankelley.github.io/oce/reference/T90fromT68.md)
+  : Convert From IPTS-68 to ITS-90 Temperature
+- [`abbreviateTimeLabels()`](https://dankelley.github.io/oce/reference/abbreviateTimeLabels.md)
+  : Abbreviate a Vector of Times by Removing Commonalities
+- [`ad2cpCodeToName()`](https://dankelley.github.io/oce/reference/ad2cpCodeToName.md)
+  : Map AD2CP ID Code to oce Name
+- [`ad2cpHeaderValue()`](https://dankelley.github.io/oce/reference/ad2cpHeaderValue.md)
+  : Infer an Item From a Nortek AD2CP File Header
+- [`addSpine()`](https://dankelley.github.io/oce/reference/addSpine.md)
+  : Add a Spine to a section Object
+- [`adp-class`](https://dankelley.github.io/oce/reference/adp-class.md)
+  : Class to Store Acoustic-Doppler Profiler Data
+- [`adp`](https://dankelley.github.io/oce/reference/adp.md) : Sample adp
+  Data
+- [`adpAd2cpFileTrim()`](https://dankelley.github.io/oce/reference/adpAd2cpFileTrim.md)
+  : Trim an AD2CP File
+- [`adpConvertRawToNumeric()`](https://dankelley.github.io/oce/reference/adpConvertRawToNumeric.md)
+  : Convert Raw to Numeric Values in an adp Object
+- [`adpEnsembleAverage()`](https://dankelley.github.io/oce/reference/adpEnsembleAverage.md)
+  : Ensemble Average an adp Object in Time
+- [`adpFlagPastBoundary()`](https://dankelley.github.io/oce/reference/adpFlagPastBoundary.md)
+  : Flag adp Data Past Water Column Boundary
+- [`adpRdiFileTrim()`](https://dankelley.github.io/oce/reference/adpRdiFileTrim.md)
+  : Trim an RDI adp File
+- [`adp_rdi.000`](https://dankelley.github.io/oce/reference/adp_rdi.000.md)
+  : Sample adp File in RDI Format
+- [`adv-class`](https://dankelley.github.io/oce/reference/adv-class.md)
+  : Class to Store Acoustic-Doppler Velocimeter Data
+- [`adv`](https://dankelley.github.io/oce/reference/adv.md) : Sample adv
+  Data
+- [`advSontekAdrFileTrim()`](https://dankelley.github.io/oce/reference/advSontekAdrFileTrim.md)
+  : Trim a Sontek ADR adv File
+- [`airRho()`](https://dankelley.github.io/oce/reference/airRho.md) :
+  Air Density
+- [`amsr-class`](https://dankelley.github.io/oce/reference/amsr-class.md)
+  : Class to Store AMSR-2 Satellite Data
+- [`amsr`](https://dankelley.github.io/oce/reference/amsr.md) : Sample
+  amsr Data (Near Nova Scotia)
+- [`angle2hms()`](https://dankelley.github.io/oce/reference/angle2hms.md)
+  : Convert Astronomical Angle in Degrees to Hours, Minutes and Seconds
+- [`angleRemap()`](https://dankelley.github.io/oce/reference/angleRemap.md)
+  : Convert Angle From 0:360 to -180:180 Convention
+- [`applyMagneticDeclination(`*`<adp>`*`)`](https://dankelley.github.io/oce/reference/applyMagneticDeclination-adp-method.md)
+  : Alter an adp Object to Account for Magnetic Declination
+- [`applyMagneticDeclination(`*`<adv>`*`)`](https://dankelley.github.io/oce/reference/applyMagneticDeclination-adv-method.md)
+  : Alter an adv Object to Account for Magnetic Declination
+- [`applyMagneticDeclination(`*`<cm>`*`)`](https://dankelley.github.io/oce/reference/applyMagneticDeclination-cm-method.md)
+  : Alter a cm Object to Account for Magnetic Declination
+- [`applyMagneticDeclination(`*`<oce>`*`)`](https://dankelley.github.io/oce/reference/applyMagneticDeclination-oce-method.md)
+  : Alter an Object to Account for Magnetic Declination
+- [`applyMagneticDeclination()`](https://dankelley.github.io/oce/reference/applyMagneticDeclination.md)
+  : Alter an Object to Account for Magnetic Declination (Generic)
+- [`approx3d()`](https://dankelley.github.io/oce/reference/approx3d.md)
+  : Trilinear Interpolation in a 3D Array
+- [`argShow()`](https://dankelley.github.io/oce/reference/argShow.md) :
+  Show a Function Argument
+- [`argo-class`](https://dankelley.github.io/oce/reference/argo-class.md)
+  : Class to Store Argo Profiler Data
+- [`argo`](https://dankelley.github.io/oce/reference/argo.md) : Sample
+  argo Data
+- [`argo2ctd()`](https://dankelley.github.io/oce/reference/argo2ctd.md)
+  : Coerce argo Data Into a ctd Object
+- [`argoGrid()`](https://dankelley.github.io/oce/reference/argoGrid.md)
+  : Grid Argo Float Data
+- [`argoJuldToTime()`](https://dankelley.github.io/oce/reference/argoJuldToTime.md)
+  : Convert Argo Julian Day to R Time
+- [`argoNames2oceNames()`](https://dankelley.github.io/oce/reference/argoNames2oceNames.md)
+  : Convert Argo Data Name to Oce Name
+- [`as.adp()`](https://dankelley.github.io/oce/reference/as.adp.md) :
+  Create an adp Object
+- [`as.argo()`](https://dankelley.github.io/oce/reference/as.argo.md) :
+  Coerce Data Into an argo Object
+- [`as.cm()`](https://dankelley.github.io/oce/reference/as.cm.md) :
+  Coerce Data Into a cm Object
+- [`as.coastline()`](https://dankelley.github.io/oce/reference/as.coastline.md)
+  : Coerce Data Into a coastline Object
+- [`as.ctd()`](https://dankelley.github.io/oce/reference/as.ctd.md) :
+  Coerce Data Into a ctd Object
+- [`as.echosounder()`](https://dankelley.github.io/oce/reference/as.echosounder.md)
+  : Coerce Data Into an echosounder Object
+- [`as.gps()`](https://dankelley.github.io/oce/reference/as.gps.md) :
+  Coerce Data Into a gps Object
+- [`as.ladp()`](https://dankelley.github.io/oce/reference/as.ladp.md) :
+  Coerce Data Into an ladp object
+- [`as.lisst()`](https://dankelley.github.io/oce/reference/as.lisst.md)
+  : Coerce Data Into a lisst Object
+- [`as.lobo()`](https://dankelley.github.io/oce/reference/as.lobo.md) :
+  Coerce Data Into a lobo Object
+- [`as.met()`](https://dankelley.github.io/oce/reference/as.met.md) :
+  Coerce Data Into a met Object
+- [`as.oce()`](https://dankelley.github.io/oce/reference/as.oce.md) :
+  Coerce Something Into an oce Object
+- [`as.rsk()`](https://dankelley.github.io/oce/reference/as.rsk.md) :
+  Coerce Data Into a rsk Object
+- [`as.sealevel()`](https://dankelley.github.io/oce/reference/as.sealevel.md)
+  : Coerce Data Into a sealevel Object
+- [`as.section()`](https://dankelley.github.io/oce/reference/as.section.md)
+  : Create a Section
+- [`as.tidem()`](https://dankelley.github.io/oce/reference/as.tidem.md)
+  : Create tidem Object From Fitted Harmonic Data
+- [`as.topo()`](https://dankelley.github.io/oce/reference/as.topo.md) :
+  Coerce Data Into a topo Object
+- [`as.unit()`](https://dankelley.github.io/oce/reference/as.unit.md) :
+  Convert a String to a Unit
+- [`as.windrose()`](https://dankelley.github.io/oce/reference/as.windrose.md)
+  : Create a windrose Object
+- [`as.xbt()`](https://dankelley.github.io/oce/reference/as.xbt.md) :
+  Create an xbt Object
+- [`bcdToInteger()`](https://dankelley.github.io/oce/reference/bcdToInteger.md)
+  : Convert a BCD Value to an Integer Value
+- [`beamName()`](https://dankelley.github.io/oce/reference/beamName.md)
+  : Get Names of Acoustic-Doppler Beams
+- [`beamToXyz()`](https://dankelley.github.io/oce/reference/beamToXyz.md)
+  : Change the Coordinate System in an adv or adp Object
+- [`beamToXyzAdp()`](https://dankelley.github.io/oce/reference/beamToXyzAdp.md)
+  : Convert adp Object From Beam to XYZ Coordinates
+- [`beamToXyzAdpAD2CP()`](https://dankelley.github.io/oce/reference/beamToXyzAdpAD2CP.md)
+  : Convert From Beam to XYZ Coordinates (AD2CP adp Data)
+- [`beamToXyzAdv()`](https://dankelley.github.io/oce/reference/beamToXyzAdv.md)
+  : Convert adv Object from Beam Coordinates to XYZ Coordinates
+- [`beamUnspreadAdp()`](https://dankelley.github.io/oce/reference/beamUnspreadAdp.md)
+  : Adjust adp Object to Account for Spherical Spreading
+- [`bilinearInterp()`](https://dankelley.github.io/oce/reference/bilinearInterp.md)
+  : Bilinear Interpolation Within a Grid
+- [`binApply1D()`](https://dankelley.github.io/oce/reference/binApply1D.md)
+  : Apply a Function to Vector Data
+- [`binApply2D()`](https://dankelley.github.io/oce/reference/binApply2D.md)
+  : Apply a Function to Matrix Data
+- [`binAverage()`](https://dankelley.github.io/oce/reference/binAverage.md)
+  : Bin-average a Vector y, Based on x Values
+- [`binCount1D()`](https://dankelley.github.io/oce/reference/binCount1D.md)
+  : Bin-count Vector Data
+- [`binCount2D()`](https://dankelley.github.io/oce/reference/binCount2D.md)
+  : Bin-count Matrix Data
+- [`binMean1D()`](https://dankelley.github.io/oce/reference/binMean1D.md)
+  : Bin-average f=f(x)
+- [`binMean2D()`](https://dankelley.github.io/oce/reference/binMean2D.md)
+  : Bin-average f=f(x,y)
+- [`binmapAdp()`](https://dankelley.github.io/oce/reference/binmapAdp.md)
+  : Bin-map an adp Object
+- [`bodcNames2oceNames()`](https://dankelley.github.io/oce/reference/bodcNames2oceNames.md)
+  : Determine oce Variable Names from an NERC/BODC Names
+- [`bound125()`](https://dankelley.github.io/oce/reference/bound125.md)
+  : Calculate a Bound, Rounded up to Mantissa 1, 2, or 5
+- [`bremen-class`](https://dankelley.github.io/oce/reference/bremen-class.md)
+  : Class to Store Bremen-formatted Data
+- [`byteToBinary()`](https://dankelley.github.io/oce/reference/byteToBinary.md)
+  : Format Bytes as Binary (Defunct)
+- [`cm-class`](https://dankelley.github.io/oce/reference/cm-class.md) :
+  Class to Store Current Meter Data
+- [`cm`](https://dankelley.github.io/oce/reference/cm.md) : Sample cm
+  Data
+- [`cnvName2oceName()`](https://dankelley.github.io/oce/reference/cnvName2oceName.md)
+  : Infer Variable Name, Units and Scale From a Seabird Header
+- [`coastline-class`](https://dankelley.github.io/oce/reference/coastline-class.md)
+  : Class to Store Coastline Data
+- [`coastlineBest()`](https://dankelley.github.io/oce/reference/coastlineBest.md)
+  : Find the Name of the Best Coastline Object
+- [`coastlineCut()`](https://dankelley.github.io/oce/reference/coastlineCut.md)
+  : Cut a Coastline Object at Specified Longitude
+- [`coastlineWorld`](https://dankelley.github.io/oce/reference/coastlineWorld.md)
+  : Sample coastline Data (Global, at 1:110M scale)
+- [`colormap()`](https://dankelley.github.io/oce/reference/colormap.md)
+  : Calculate a Color Map
+- [`colormapGMT()`](https://dankelley.github.io/oce/reference/colormapGMT.md)
+  : Create a GMT-type (CPT) Colormap
+- [`composite(`*`<amsr>`*`)`](https://dankelley.github.io/oce/reference/composite-amsr-method.md)
+  : Create a Composite of amsr Satellite Data
+- [`composite(`*`<list>`*`)`](https://dankelley.github.io/oce/reference/composite-list-method.md)
+  : Composite by Averaging Across Data
+- [`composite()`](https://dankelley.github.io/oce/reference/composite.md)
+  : Create a Composite Object by Averaging Across Good Data
+- [`computableWaterProperties()`](https://dankelley.github.io/oce/reference/computableWaterProperties.md)
+  : Determine Available Derived Water Properties
+- [`concatenate(`*`<adp>`*`)`](https://dankelley.github.io/oce/reference/concatenate-adp-method.md)
+  : Concatenate adp Objects
+- [`concatenate(`*`<list>`*`)`](https://dankelley.github.io/oce/reference/concatenate-list-method.md)
+  : Concatenate a List of oce Objects
+- [`concatenate(`*`<oce>`*`)`](https://dankelley.github.io/oce/reference/concatenate-oce-method.md)
+  : Concatenate oce Objects (oce-Specific)
+- [`concatenate()`](https://dankelley.github.io/oce/reference/concatenate.md)
+  : Concatenate oce Objects (Generic)
+- [`coriolis()`](https://dankelley.github.io/oce/reference/coriolis.md)
+  : Coriolis Parameter on the Earth
+- [`ctd-class`](https://dankelley.github.io/oce/reference/ctd-class.md)
+  : Class to Store CTD (or general hydrographic) Data
+- [`ctd`](https://dankelley.github.io/oce/reference/ctd.md) : Sample ctd
+  Data
+- [`ctd.cnv.gz`](https://dankelley.github.io/oce/reference/ctd.cnv.gz.md)
+  : Sample ctd File in .cnv Format
+- [`ctdDecimate()`](https://dankelley.github.io/oce/reference/ctdDecimate.md)
+  : Decimate a ctd Profile
+- [`ctdFindProfiles()`](https://dankelley.github.io/oce/reference/ctdFindProfiles.md)
+  : Find Profiles Within a Tow-Yow ctd Record
+- [`ctdFindProfilesRBR()`](https://dankelley.github.io/oce/reference/ctdFindProfilesRBR.md)
+  : Find Profiles Within a ctd Object Read From a RBR File
+- [`ctdRaw`](https://dankelley.github.io/oce/reference/ctdRaw.md) :
+  Sample ctd Data, Not Trimmed of Extraneous Data
+- [`ctdRepair()`](https://dankelley.github.io/oce/reference/ctdRepair.md)
+  : Repair a Malformed ctd Object
+- [`ctdTrim()`](https://dankelley.github.io/oce/reference/ctdTrim.md) :
+  Trim Beginning and Ending of a CTD cast
+- [`ctd_aml_type1.csv.gz`](https://dankelley.github.io/oce/reference/ctd_aml_type1.csv.gz.md)
+  : Sample ctd File in aml Format 1
+- [`ctd_aml_type3.csv.gz`](https://dankelley.github.io/oce/reference/ctd_aml_type3.csv.gz.md)
+  : Sample ctd File in aml Format 3
+- [`ctimeToSeconds()`](https://dankelley.github.io/oce/reference/ctimeToSeconds.md)
+  : Interpret a Character String as a Time Interval
+- [`curl()`](https://dankelley.github.io/oce/reference/curl.md) : Curl
+  of 2D Vector Field
+- [`d200321-001.ctd.gz`](https://dankelley.github.io/oce/reference/d200321-001.ctd.gz.md)
+  : Sample ctd File in .ctd Format
+- [`d201211_0011.cnv.gz`](https://dankelley.github.io/oce/reference/d201211_0011.cnv.gz.md)
+  : Sample ctd File in .cnv Format
+- [`dataLabel()`](https://dankelley.github.io/oce/reference/dataLabel.md)
+  : Associate Data Names With Units
+- [`decimate()`](https://dankelley.github.io/oce/reference/decimate.md)
+  : Smooth and Decimate, or Subsample, an oce Object
+- [`decodeHeaderNortek()`](https://dankelley.github.io/oce/reference/decodeHeaderNortek.md)
+  : Decode a Nortek Header
+- [`decodeTime()`](https://dankelley.github.io/oce/reference/decodeTime.md)
+  : Oce Version of as.POSIXct
+- [`defaultFlags()`](https://dankelley.github.io/oce/reference/defaultFlags.md)
+  : Suggest a Default Flag Vector for Bad or Suspicious Data
+- [`despike()`](https://dankelley.github.io/oce/reference/despike.md) :
+  Remove Spikes From a Time Series
+- [`detrend()`](https://dankelley.github.io/oce/reference/detrend.md) :
+  Detrend a Set of Observations
+- [`download.amsr()`](https://dankelley.github.io/oce/reference/download.amsr.md)
+  : Download and Cache an amsr File
+- [`download.coastline()`](https://dankelley.github.io/oce/reference/download.coastline.md)
+  : Download a coastline File
+- [`download.met()`](https://dankelley.github.io/oce/reference/download.met.md)
+  : Download and Cache a met File
+- [`download.topo()`](https://dankelley.github.io/oce/reference/download.topo.md)
+  : Download and Cache a topo File
+- [`drawDirectionField()`](https://dankelley.github.io/oce/reference/drawDirectionField.md)
+  : Draw a Direction Field
+- [`drawIsopycnals()`](https://dankelley.github.io/oce/reference/drawIsopycnals.md)
+  : Add Isopycnal Curves to a TS Plot
+- [`drawPalette()`](https://dankelley.github.io/oce/reference/drawPalette.md)
+  : Draw a Palette, Leaving Margins Suitable for an Accompanying Plot
+- [`echosounder-class`](https://dankelley.github.io/oce/reference/echosounder-class.md)
+  : Class to Store Echosounder Data
+- [`echosounder`](https://dankelley.github.io/oce/reference/echosounder.md)
+  : Sample echosounder Data
+- [`eclipticalToEquatorial()`](https://dankelley.github.io/oce/reference/eclipticalToEquatorial.md)
+  : Convert Ecliptical Coordinate to Equatorial Coordinate
+- [`enuToOther()`](https://dankelley.github.io/oce/reference/enuToOther.md)
+  : Rotate Acoustic-Doppler Data to a New Coordinate System
+- [`enuToOtherAdp()`](https://dankelley.github.io/oce/reference/enuToOtherAdp.md)
+  : Convert adp Object from ENU Coordinate to Rotated Coordinate
+- [`enuToOtherAdv()`](https://dankelley.github.io/oce/reference/enuToOtherAdv.md)
+  : Convert ENU to Other Coordinate
+- [`equatorialToLocalHorizontal()`](https://dankelley.github.io/oce/reference/equatorialToLocalHorizontal.md)
+  : Convert Equatorial Coordinate to Local Horizontal Coordinate
+- [`errorbars()`](https://dankelley.github.io/oce/reference/errorbars.md)
+  : Draw Error Bars on an Existing xy Diagram
+- [`fillGap()`](https://dankelley.github.io/oce/reference/fillGap.md) :
+  Fill a Gap in an oce Object
+- [`fillGapMatrix()`](https://dankelley.github.io/oce/reference/fillGapMatrix.md)
+  : Fill a Gap in a Matrix
+- [`findBottom()`](https://dankelley.github.io/oce/reference/findBottom.md)
+  : Find the Ocean Bottom in an Echosounder Object
+- [`firstFinite()`](https://dankelley.github.io/oce/reference/firstFinite.md)
+  : Get First Finite Value in a Vector or Array.
+- [`formatCI()`](https://dankelley.github.io/oce/reference/formatCI.md)
+  : Format a Confidence Interval
+- [`formatPosition()`](https://dankelley.github.io/oce/reference/formatPosition.md)
+  : Format Geographical Position in Degrees and Minutes
+- [`fullFilename()`](https://dankelley.github.io/oce/reference/fullFilename.md)
+  : Full Name of File, Including Path
+- [`g1sst-class`](https://dankelley.github.io/oce/reference/g1sst-class.md)
+  : Class to Store G1SST Satellite/Model Data
+- [`gappyIndex()`](https://dankelley.github.io/oce/reference/gappyIndex.md)
+  : Create a Possibly Gappy Indexing Vector
+- [`geodDist()`](https://dankelley.github.io/oce/reference/geodDist.md)
+  : Compute Geodesic Distance on Surface of Earth
+- [`geodGc()`](https://dankelley.github.io/oce/reference/geodGc.md) :
+  Great-circle Segments Between Points on Earth
+- [`geodXy()`](https://dankelley.github.io/oce/reference/geodXy.md) :
+  Convert From Geographical to Geodesic Coordinates
+- [`geodXyInverse()`](https://dankelley.github.io/oce/reference/geodXyInverse.md)
+  : Inverse Geodesic Calculation
+- [`gps-class`](https://dankelley.github.io/oce/reference/gps-class.md)
+  : Class to Store GPS Data
+- [`grad()`](https://dankelley.github.io/oce/reference/grad.md) :
+  Calculate Matrix Gradient
+- [`gravity()`](https://dankelley.github.io/oce/reference/gravity.md) :
+  Acceleration Due to Earth Gravity
+- [`handleFlags(`*`<adp>`*`)`](https://dankelley.github.io/oce/reference/handleFlags-adp-method.md)
+  : Handle Flags in adp Objects
+- [`handleFlags(`*`<argo>`*`)`](https://dankelley.github.io/oce/reference/handleFlags-argo-method.md)
+  : Handle Flags in argo Objects
+- [`handleFlags(`*`<ctd>`*`)`](https://dankelley.github.io/oce/reference/handleFlags-ctd-method.md)
+  : Handle Flags in ctd Objects
+- [`handleFlags(`*`<oce>`*`)`](https://dankelley.github.io/oce/reference/handleFlags-oce-method.md)
+  : Handle Flags in oce Objects
+- [`handleFlags(`*`<section>`*`)`](https://dankelley.github.io/oce/reference/handleFlags-section-method.md)
+  : Handle flags in section Objects
+- [`handleFlags(`*`<vector>`*`)`](https://dankelley.github.io/oce/reference/handleFlags-vector-method.md)
+  : Signal Erroneous Application to non-oce Objects
+- [`handleFlags()`](https://dankelley.github.io/oce/reference/handleFlags.md)
+  : Handle Flags in oce Objects (Generic)
+- [`handleFlagsInternal()`](https://dankelley.github.io/oce/reference/handleFlagsInternal.md)
+  : Low-Level Function for Handling Data-Quality Flags
+- [`head(`*`<oce>`*`)`](https://dankelley.github.io/oce/reference/head.oce.md)
+  : Extract The Start of an Oce Object
+- [`imagep()`](https://dankelley.github.io/oce/reference/imagep.md) :
+  Plot an Image with a Color Palette
+- [`initialize(`*`<ctd>`*`)`](https://dankelley.github.io/oce/reference/initialize-ctd-method.md)
+  : Initialize Storage for a ctd Object
+- [`initializeFlagScheme(`*`<ctd>`*`)`](https://dankelley.github.io/oce/reference/initializeFlagScheme-ctd-method.md)
+  : Establish a Data-Quality Scheme for a ctd Object
+- [`initializeFlagScheme(`*`<oce>`*`)`](https://dankelley.github.io/oce/reference/initializeFlagScheme-oce-method.md)
+  : Establish a Data-Quality Scheme for a oce Object
+- [`initializeFlagScheme(`*`<section>`*`)`](https://dankelley.github.io/oce/reference/initializeFlagScheme-section-method.md)
+  : Establish a Data-Quality Scheme for a section Object
+- [`initializeFlagScheme()`](https://dankelley.github.io/oce/reference/initializeFlagScheme.md)
+  : Establish a Data-Quality Scheme for a oce Object
+- [`initializeFlagSchemeInternal()`](https://dankelley.github.io/oce/reference/initializeFlagSchemeInternal.md)
+  : Establish a Data-Quality Scheme for a oce Object
+- [`initializeFlags(`*`<adp>`*`)`](https://dankelley.github.io/oce/reference/initializeFlags-adp-method.md)
+  : Create and Initialize adp Flags
+- [`initializeFlags(`*`<oce>`*`)`](https://dankelley.github.io/oce/reference/initializeFlags-oce-method.md)
+  : Create and Initialize oce Flags
+- [`initializeFlags()`](https://dankelley.github.io/oce/reference/initializeFlags.md)
+  : Create and Initialize oce Flags
+- [`initializeFlagsInternal()`](https://dankelley.github.io/oce/reference/initializeFlagsInternal.md)
+  : Create and Initialize oce Flags
+- [`integerToAscii()`](https://dankelley.github.io/oce/reference/integerToAscii.md)
+  : Infer ASCII Code From an Integer Value
+- [`integrateTrapezoid()`](https://dankelley.github.io/oce/reference/integrateTrapezoid.md)
+  : Trapezoidal Integration
+- [`interpBarnes()`](https://dankelley.github.io/oce/reference/interpBarnes.md)
+  : Grid Data Using the Barnes Algorithm
+- [`is.ad2cp()`](https://dankelley.github.io/oce/reference/is.ad2cp.md)
+  : Test Whether Item is a ad2cp-Type adp Object
+- [`julianCenturyAnomaly()`](https://dankelley.github.io/oce/reference/julianCenturyAnomaly.md)
+  : Convert Julian-Day-Number to Julian Century
+- [`julianDay()`](https://dankelley.github.io/oce/reference/julianDay.md)
+  : Convert a Time to a Julian Day
+- [`labelWithUnit()`](https://dankelley.github.io/oce/reference/labelWithUnit.md)
+  : Create Label With Unit
+- [`ladp-class`](https://dankelley.github.io/oce/reference/ladp-class.md)
+  : Class to Store Lowered-adp Data
+- [`landsat-class`](https://dankelley.github.io/oce/reference/landsat-class.md)
+  : Class to Store Landsat Satellite Data
+- [`landsat`](https://dankelley.github.io/oce/reference/landsat.md) :
+  Sample landsat Data
+- [`landsatAdd()`](https://dankelley.github.io/oce/reference/landsatAdd.md)
+  : Add a Band to a landsat Object
+- [`landsatTrim()`](https://dankelley.github.io/oce/reference/landsatTrim.md)
+  : Trim a landsat Image to a Geographical Region
+- [`latFormat()`](https://dankelley.github.io/oce/reference/latFormat.md)
+  : Format a Latitude
+- [`latlonFormat()`](https://dankelley.github.io/oce/reference/latlonFormat.md)
+  : Format a Latitude-Longitude Pair
+- [`lisst-class`](https://dankelley.github.io/oce/reference/lisst-class.md)
+  : Class to Store LISST Data
+- [`lisst`](https://dankelley.github.io/oce/reference/lisst.md) : Sample
+  lisst Data
+- [`lobo-class`](https://dankelley.github.io/oce/reference/lobo-class.md)
+  : Class to Store LOBO Data
+- [`lobo`](https://dankelley.github.io/oce/reference/lobo.md) : Sample
+  lobo Data
+- [`locationForGsw()`](https://dankelley.github.io/oce/reference/locationForGsw.md)
+  : Alter Longitude and Latitude for gsw Computations
+- [`lon360()`](https://dankelley.github.io/oce/reference/lon360.md) :
+  Change Longitude From -180:180 to 0:360 Convention
+- [`lonFormat()`](https://dankelley.github.io/oce/reference/lonFormat.md)
+  : Format a Longitude
+- [`longitudeTighten()`](https://dankelley.github.io/oce/reference/longitudeTighten.md)
+  : Try to Reduce Section Longitude Range
+- [`lonlat2map()`](https://dankelley.github.io/oce/reference/lonlat2map.md)
+  : Convert Longitude and Latitude to X and Y
+- [`lonlat2utm()`](https://dankelley.github.io/oce/reference/lonlat2utm.md)
+  : Convert Longitude and Latitude to UTM
+- [`lookWithin()`](https://dankelley.github.io/oce/reference/lookWithin.md)
+  : Look Within the First Element of a List for Replacement Values
+- [`lowpass()`](https://dankelley.github.io/oce/reference/lowpass.md) :
+  Lowpass Digital Filtering
+- [`magneticField()`](https://dankelley.github.io/oce/reference/magneticField.md)
+  : Earth Magnetic Declination, Inclination, and Intensity
+- [`makeFilter()`](https://dankelley.github.io/oce/reference/makeFilter.md)
+  : Make a Digital Filter
+- [`map2lonlat()`](https://dankelley.github.io/oce/reference/map2lonlat.md)
+  : Convert X and Y to Longitude and Latitude
+- [`mapArrows()`](https://dankelley.github.io/oce/reference/mapArrows.md)
+  : Add Arrows to a Map
+- [`mapAxis()`](https://dankelley.github.io/oce/reference/mapAxis.md) :
+  Add Axis Labels to an Existing Map
+- [`mapContour()`](https://dankelley.github.io/oce/reference/mapContour.md)
+  : Add Contours on a Existing map
+- [`mapCoordinateSystem()`](https://dankelley.github.io/oce/reference/mapCoordinateSystem.md)
+  : Draw a Coordinate System
+- [`mapDirectionField()`](https://dankelley.github.io/oce/reference/mapDirectionField.md)
+  : Add a Direction Field to an Existing Map
+- [`mapGrid()`](https://dankelley.github.io/oce/reference/mapGrid.md) :
+  Add a Longitude and Latitude Grid to an Existing Map
+- [`mapImage()`](https://dankelley.github.io/oce/reference/mapImage.md)
+  : Add an Image to a Map
+- [`mapLines()`](https://dankelley.github.io/oce/reference/mapLines.md)
+  : Add Lines to a Map
+- [`mapLocator()`](https://dankelley.github.io/oce/reference/mapLocator.md)
+  : Locate Points on a Map
+- [`mapLongitudeLatitudeXY()`](https://dankelley.github.io/oce/reference/mapLongitudeLatitudeXY.md)
+  : Convert From Longitude and Latitude to X and Y
+- [`mapPlot()`](https://dankelley.github.io/oce/reference/mapPlot.md) :
+  Draw a Map
+- [`mapPoints()`](https://dankelley.github.io/oce/reference/mapPoints.md)
+  : Add Points to a Map
+- [`mapPolygon()`](https://dankelley.github.io/oce/reference/mapPolygon.md)
+  : Add a Polygon to a Map
+- [`mapScalebar()`](https://dankelley.github.io/oce/reference/mapScalebar.md)
+  : Add a Scalebar to a Map
+- [`mapText()`](https://dankelley.github.io/oce/reference/mapText.md) :
+  Add Text to a Map
+- [`mapTissot()`](https://dankelley.github.io/oce/reference/mapTissot.md)
+  : Add Tissot Indicatrices to a Map
+- [`matchBytes()`](https://dankelley.github.io/oce/reference/matchBytes.md)
+  : Locate Byte Sequences in a Raw Vector
+- [`matrixShiftLongitude()`](https://dankelley.github.io/oce/reference/matrixShiftLongitude.md)
+  : Rearrange Areal Matrix so Greenwich is Near the Centre
+- [`matrixSmooth()`](https://dankelley.github.io/oce/reference/matrixSmooth.md)
+  : Smooth a Matrix
+- [`met-class`](https://dankelley.github.io/oce/reference/met-class.md)
+  : Class to Store Meteorological Data
+- [`met`](https://dankelley.github.io/oce/reference/met.md) : Sample met
+  Data
+- [`metNames2oceNames()`](https://dankelley.github.io/oce/reference/metNames2oceNames.md)
+  : Convert met Data Name to oce Name
+- [`moonAngle()`](https://dankelley.github.io/oce/reference/moonAngle.md)
+  : Lunar Angle as Function of Space and Time
+- [`netcdfTOC()`](https://dankelley.github.io/oce/reference/netcdfTOC.md)
+  : Print an overview of the contents of a NetCDF file
+- [`numberAsHMS()`](https://dankelley.github.io/oce/reference/numberAsHMS.md)
+  : Convert a Numeric Time to Hour, Minute, and Second
+- [`numberAsPOSIXct()`](https://dankelley.github.io/oce/reference/numberAsPOSIXct.md)
+  : Convert a Numeric Time to a POSIXct Time
+- [`oce-class`](https://dankelley.github.io/oce/reference/oce-class.md)
+  : Base Class for oce Objects
+- [`oce-deprecated`](https://dankelley.github.io/oce/reference/oce-deprecated.md)
+  [`oce-defunct`](https://dankelley.github.io/oce/reference/oce-deprecated.md)
+  : Deprecated and Defunct Elements of the oce Package
+- [`oce.as.raw()`](https://dankelley.github.io/oce/reference/oce.as.raw.md)
+  : Version of as.raw() That Clips Data
+- [`oce.axis.POSIXct()`](https://dankelley.github.io/oce/reference/oce.axis.POSIXct.md)
+  : Oce Version of axis.POSIXct
+- [`oce.contour()`](https://dankelley.github.io/oce/reference/oce.contour.md)
+  : Oce Variant of contour
+- [`oce.grid()`](https://dankelley.github.io/oce/reference/oce.grid.md)
+  : Add a Grid to an Existing Oce Plot
+- [`oce.plot.ts()`](https://dankelley.github.io/oce/reference/oce.plot.ts.md)
+  : Oce Variant of plot.ts
+- [`oce.write.table()`](https://dankelley.github.io/oce/reference/oce.write.table.md)
+  : Write the Data Portion of Object to a File
+- [`oceApprox()`](https://dankelley.github.io/oce/reference/oceApprox.md)
+  : Interpolate 1D Data with UNESCO or Reiniger-Ross Algorithm
+- [`oceAxis()`](https://dankelley.github.io/oce/reference/oceAxis.md) :
+  Draw an Axis, Possibly with Decade-style Logarithmic Scaling
+- [`oceCRS()`](https://dankelley.github.io/oce/reference/oceCRS.md) :
+  Coordinate Reference System Strings for Some Oceans
+- [`oceColors9B()`](https://dankelley.github.io/oce/reference/oceColors9B.md)
+  : Create Colors in a Red-Yellow-Blue Color Scheme
+- [`oceColorsCDOM()`](https://dankelley.github.io/oce/reference/oceColorsCDOM.md)
+  : Create Colors Suitable for CDOM Fields
+- [`oceColorsChlorophyll()`](https://dankelley.github.io/oce/reference/oceColorsChlorophyll.md)
+  : Create Colors Suitable for chlorophyll Fields
+- [`oceColorsClosure()`](https://dankelley.github.io/oce/reference/oceColorsClosure.md)
+  : Create Color Functions
+- [`oceColorsCubeHelix()`](https://dankelley.github.io/oce/reference/oceColorsCubeHelix.md)
+  : Create Colors in the Cube Helix Style
+- [`oceColorsDensity()`](https://dankelley.github.io/oce/reference/oceColorsDensity.md)
+  : Create Colors Suitable for density Fields
+- [`oceColorsFreesurface()`](https://dankelley.github.io/oce/reference/oceColorsFreesurface.md)
+  : Create Colors Suitable for freesurface Fields
+- [`oceColorsGebco()`](https://dankelley.github.io/oce/reference/oceColorsGebco.md)
+  : Create Colors in a GEBCO-like Scheme
+- [`oceColorsJet()`](https://dankelley.github.io/oce/reference/oceColorsJet.md)
+  : Create Colors Similar to the Matlab Jet Scheme
+- [`oceColorsOxygen()`](https://dankelley.github.io/oce/reference/oceColorsOxygen.md)
+  : Create Colors Suitable for oxygen Fields
+- [`oceColorsPAR()`](https://dankelley.github.io/oce/reference/oceColorsPAR.md)
+  : Create Colors Suitable for PAR Fields
+- [`oceColorsPalette()`](https://dankelley.github.io/oce/reference/oceColorsPalette.md)
+  : Create a Vector of Colors
+- [`oceColorsPhase()`](https://dankelley.github.io/oce/reference/oceColorsPhase.md)
+  : Create Colors Suitable for phase Fields
+- [`oceColorsSalinity()`](https://dankelley.github.io/oce/reference/oceColorsSalinity.md)
+  : Create Colors Suitable for salinity Fields
+- [`oceColorsTemperature()`](https://dankelley.github.io/oce/reference/oceColorsTemperature.md)
+  : Create Colors Suitable for temperature Fields
+- [`oceColorsTurbidity()`](https://dankelley.github.io/oce/reference/oceColorsTurbidity.md)
+  : Create Colors Suitable for turbidity Fields
+- [`oceColorsTurbo()`](https://dankelley.github.io/oce/reference/oceColorsTurbo.md)
+  : Create Colors Similar to the Google Turbo Scheme
+- [`oceColorsTwo()`](https://dankelley.github.io/oce/reference/oceColorsTwo.md)
+  : Create Two-Color Palette
+- [`oceColorsVelocity()`](https://dankelley.github.io/oce/reference/oceColorsVelocity.md)
+  : Create Colors Suitable for velocity Fields
+- [`oceColorsViridis()`](https://dankelley.github.io/oce/reference/oceColorsViridis.md)
+  : Create Colors Similar to the Matlab Viridis Scheme
+- [`oceColorsVorticity()`](https://dankelley.github.io/oce/reference/oceColorsVorticity.md)
+  : Create Colors Suitable for vorticity Fields
+- [`oceConvolve()`](https://dankelley.github.io/oce/reference/oceConvolve.md)
+  : Convolve Two Time Series
+- [`oceDebug()`](https://dankelley.github.io/oce/reference/oceDebug.md)
+  : Print a Debugging Message
+- [`oceDeleteData()`](https://dankelley.github.io/oce/reference/oceDeleteData.md)
+  : Delete Something From the data Slot of an oce Object
+- [`oceDeleteMetadata()`](https://dankelley.github.io/oce/reference/oceDeleteMetadata.md)
+  : Delete Something in an oce metadata Slot
+- [`oceEdit()`](https://dankelley.github.io/oce/reference/oceEdit.md) :
+  Edit an Oce Object
+- [`oceFileTrim()`](https://dankelley.github.io/oce/reference/oceFileTrim.md)
+  : Trim an oce File
+- [`oceFilter()`](https://dankelley.github.io/oce/reference/oceFilter.md)
+  : Filter a Time Series
+- [`oceGetData()`](https://dankelley.github.io/oce/reference/oceGetData.md)
+  : Extract Something From the data Slot of an oce Object
+- [`oceGetMetadata()`](https://dankelley.github.io/oce/reference/oceGetMetadata.md)
+  : Extract Something From the metadata Slot of an oce Object
+- [`oceMagic()`](https://dankelley.github.io/oce/reference/oceMagic.md)
+  : Find the Type of an Oceanographic Data File
+- [`oceNames2whpNames()`](https://dankelley.github.io/oce/reference/oceNames2whpNames.md)
+  : Translate Oce Data Names to WHP Data Names
+- [`ocePmatch()`](https://dankelley.github.io/oce/reference/ocePmatch.md)
+  : Partial Matching of Strings or Numbers
+- [`oceProject()`](https://dankelley.github.io/oce/reference/oceProject.md)
+  : Wrapper to sf::sf_project()
+- [`oceRename()`](https://dankelley.github.io/oce/reference/oceRename.md)
+  : Rename variables according to a specified dictionary
+- [`oceRenameData()`](https://dankelley.github.io/oce/reference/oceRenameData.md)
+  : Rename Something in the data slot of an oce Object
+- [`oceRenameMetadata()`](https://dankelley.github.io/oce/reference/oceRenameMetadata.md)
+  : Rename Something in the metadata Slot of an oce Object
+- [`oceSetData()`](https://dankelley.github.io/oce/reference/oceSetData.md)
+  : Set Something in the data Slot of an oce Object
+- [`oceSetMetadata()`](https://dankelley.github.io/oce/reference/oceSetMetadata.md)
+  : Set Something in the metadata Slot of an oce Object
+- [`oceSmooth()`](https://dankelley.github.io/oce/reference/oceSmooth.md)
+  : Smooth an oce Object
+- [`oceSpectrum()`](https://dankelley.github.io/oce/reference/oceSpectrum.md)
+  : Normalize a Spectrum
+- [`oceUnits2whpUnits()`](https://dankelley.github.io/oce/reference/oceUnits2whpUnits.md)
+  : Translate oce Unit to WHP Unit
+- [`ocecolors`](https://dankelley.github.io/oce/reference/ocecolors.md)
+  : Data That Define Some Color Palettes
+- [`odf-class`](https://dankelley.github.io/oce/reference/odf-class.md)
+  : Class to Store ODF Data
+- [`parseLatLon()`](https://dankelley.github.io/oce/reference/parseLatLon.md)
+  : Parse a Latitude or Longitude String
+- [`plot(`*`<adp>`*`)`](https://dankelley.github.io/oce/reference/plot-adp-method.md)
+  : Plot an adp Object
+- [`plot(`*`<adv>`*`)`](https://dankelley.github.io/oce/reference/plot-adv-method.md)
+  : Plot an adv Object
+- [`plot(`*`<amsr>`*`)`](https://dankelley.github.io/oce/reference/plot-amsr-method.md)
+  : Plot an amsr Object
+- [`plot(`*`<argo>`*`)`](https://dankelley.github.io/oce/reference/plot-argo-method.md)
+  : Plot an argo Object
+- [`plot(`*`<bremen>`*`)`](https://dankelley.github.io/oce/reference/plot-bremen-method.md)
+  : Plot a bremen Object
+- [`plot(`*`<cm>`*`)`](https://dankelley.github.io/oce/reference/plot-cm-method.md)
+  : Plot a cm Object
+- [`plot(`*`<coastline>`*`)`](https://dankelley.github.io/oce/reference/plot-coastline-method.md)
+  : Plot a coastline Object
+- [`plot(`*`<ctd>`*`)`](https://dankelley.github.io/oce/reference/plot-ctd-method.md)
+  : Plot a ctd Object
+- [`plot(`*`<echosounder>`*`)`](https://dankelley.github.io/oce/reference/plot-echosounder-method.md)
+  : Plot an echosounder Object
+- [`plot(`*`<gps>`*`)`](https://dankelley.github.io/oce/reference/plot-gps-method.md)
+  : Plot a gps Object
+- [`plot(`*`<ladp>`*`)`](https://dankelley.github.io/oce/reference/plot-ladp-method.md)
+  : Plot an ladp Object
+- [`plot(`*`<landsat>`*`)`](https://dankelley.github.io/oce/reference/plot-landsat-method.md)
+  : Plot a landsat Object
+- [`plot(`*`<lisst>`*`)`](https://dankelley.github.io/oce/reference/plot-lisst-method.md)
+  : Plot a lisst Object
+- [`plot(`*`<lobo>`*`)`](https://dankelley.github.io/oce/reference/plot-lobo-method.md)
+  : Plot a lobo object
+- [`plot(`*`<met>`*`)`](https://dankelley.github.io/oce/reference/plot-met-method.md)
+  : Plot a met Object
+- [`plot(`*`<oce>`*`)`](https://dankelley.github.io/oce/reference/plot-oce-method.md)
+  : Plot an oce Object
+- [`plot(`*`<odf>`*`)`](https://dankelley.github.io/oce/reference/plot-odf-method.md)
+  : Plot an odf Object
+- [`plot(`*`<rsk>`*`)`](https://dankelley.github.io/oce/reference/plot-rsk-method.md)
+  : Plot a rsk Object
+- [`plot(`*`<satellite>`*`)`](https://dankelley.github.io/oce/reference/plot-satellite-method.md)
+  : Plot a satellite Object
+- [`plot(`*`<sealevel>`*`)`](https://dankelley.github.io/oce/reference/plot-sealevel-method.md)
+  : Plot a sealevel Object
+- [`plot(`*`<section>`*`)`](https://dankelley.github.io/oce/reference/plot-section-method.md)
+  : Plot a section Object
+- [`plot(`*`<tidem>`*`)`](https://dankelley.github.io/oce/reference/plot-tidem-method.md)
+  : Plot a tidem Object
+- [`plot(`*`<topo>`*`)`](https://dankelley.github.io/oce/reference/plot-topo-method.md)
+  : Plot a topo Object
+- [`plot(`*`<windrose>`*`)`](https://dankelley.github.io/oce/reference/plot-windrose-method.md)
+  : Plot a windrose Object
+- [`plot(`*`<xbt>`*`)`](https://dankelley.github.io/oce/reference/plot-xbt-method.md)
+  : Plot an xbt Object
+- [`plotInset()`](https://dankelley.github.io/oce/reference/plotInset.md)
+  : Plot an Inset Diagram
+- [`plotPolar()`](https://dankelley.github.io/oce/reference/plotPolar.md)
+  : Draw a Polar Plot
+- [`plotProfile()`](https://dankelley.github.io/oce/reference/plotProfile.md)
+  : Plot a ctd Profile
+- [`plotScan()`](https://dankelley.github.io/oce/reference/plotScan.md)
+  : Plot a ctd Object in a Low-Level Fashion
+- [`plotSticks()`](https://dankelley.github.io/oce/reference/plotSticks.md)
+  : Draw a Stick Plot
+- [`plotTS()`](https://dankelley.github.io/oce/reference/plotTS.md) :
+  Plot Temperature-Salinity Diagram
+- [`plotTaylor()`](https://dankelley.github.io/oce/reference/plotTaylor.md)
+  : Plot a Model-data Comparison Diagram
+- [`predict(`*`<tidem>`*`)`](https://dankelley.github.io/oce/reference/predict.tidem.md)
+  : Predict a Tidal Signal
+- [`preferAdjusted()`](https://dankelley.github.io/oce/reference/preferAdjusted.md)
+  : Set Preference for Adjusted Values
+- [`presentTime()`](https://dankelley.github.io/oce/reference/presentTime.md)
+  : Get the Present Time, in a Stated Timezone
+- [`prettyPosition()`](https://dankelley.github.io/oce/reference/prettyPosition.md)
+  : Pretty Longitude/Latitude in Degree-Minute-Second Format
+- [`` `processingLog<-`() ``](https://dankelley.github.io/oce/reference/processingLog-set.md)
+  : Add an Item to a Processing Log
+- [`processingLogAppend()`](https://dankelley.github.io/oce/reference/processingLogAppend.md)
+  : Append an Item to a Processing Log
+- [`processingLogItem()`](https://dankelley.github.io/oce/reference/processingLogItem.md)
+  : Create an Item That can be Inserted into a Processing Log
+- [`processingLogShow()`](https://dankelley.github.io/oce/reference/processingLogShow.md)
+  : Show the Processing Log of an oce Object
+- [`pwelch()`](https://dankelley.github.io/oce/reference/pwelch.md) :
+  Welch Periodogram
+- [`rangeExtended()`](https://dankelley.github.io/oce/reference/rangeExtended.md)
+  : Calculate Range, Extended a Little, as is Done for Axes
+- [`rangeLimit()`](https://dankelley.github.io/oce/reference/rangeLimit.md)
+  : Substitute NA for Data Outside a Range
+- [`read.adp()`](https://dankelley.github.io/oce/reference/read.adp.md)
+  : Read an adp File
+- [`read.adp.ad2cp()`](https://dankelley.github.io/oce/reference/read.adp.ad2cp.md)
+  : Read an adp File in Nortek AD2CP Format
+- [`read.adp.nortek()`](https://dankelley.github.io/oce/reference/read.adp.nortek.md)
+  : Read an adp File in Nortek Format
+- [`read.adp.rdi()`](https://dankelley.github.io/oce/reference/read.adp.rdi.md)
+  : Read an adp File in Teledyne/RDI Format
+- [`read.adp.sontek()`](https://dankelley.github.io/oce/reference/read.adp.sontek.md)
+  : Read an adp File in Sontek Format
+- [`read.adp.sontek.serial()`](https://dankelley.github.io/oce/reference/read.adp.sontek.serial.md)
+  : Read an adp File in Serial Sontek Format
+- [`read.adv()`](https://dankelley.github.io/oce/reference/read.adv.md)
+  : Read an adv File
+- [`read.adv.nortek()`](https://dankelley.github.io/oce/reference/read.adv.nortek.md)
+  : Read an adv File
+- [`read.adv.sontek.adr()`](https://dankelley.github.io/oce/reference/read.adv.sontek.adr.md)
+  : Read an adv File
+- [`read.adv.sontek.serial()`](https://dankelley.github.io/oce/reference/read.adv.sontek.serial.md)
+  : Read an adv File
+- [`read.adv.sontek.text()`](https://dankelley.github.io/oce/reference/read.adv.sontek.text.md)
+  : Read an adv File
+- [`read.amsr()`](https://dankelley.github.io/oce/reference/read.amsr.md)
+  : Read an amsr File
+- [`read.aquadopp()`](https://dankelley.github.io/oce/reference/read.aquadopp.md)
+  : Read an adp File in Nortek Aquadopp Format
+- [`read.aquadoppHR()`](https://dankelley.github.io/oce/reference/read.aquadoppHR.md)
+  : Read Nortek Aquadopp-HR File
+- [`read.aquadoppProfiler()`](https://dankelley.github.io/oce/reference/read.aquadoppProfiler.md)
+  : Read an adp File in Nortek Aquadopp Format
+- [`read.argo()`](https://dankelley.github.io/oce/reference/read.argo.md)
+  : Read an Argo Data File
+- [`read.argo.copernicus()`](https://dankelley.github.io/oce/reference/read.argo.copernicus.md)
+  : Read an argo File in Copernicus Format
+- [`read.bremen()`](https://dankelley.github.io/oce/reference/read.bremen.md)
+  : Read a bremen File
+- [`read.cm()`](https://dankelley.github.io/oce/reference/read.cm.md) :
+  Read a cm File
+- [`read.coastline()`](https://dankelley.github.io/oce/reference/read.coastline.md)
+  : Read a coastline File
+- [`read.coastline.openstreetmap()`](https://dankelley.github.io/oce/reference/read.coastline.openstreetmap.md)
+  : Read a coastline File in Openstreetmap Format
+- [`read.coastline.shapefile()`](https://dankelley.github.io/oce/reference/read.coastline.shapefile.md)
+  : Read a coastline File in Shapefile Format
+- [`read.ctd()`](https://dankelley.github.io/oce/reference/read.ctd.md)
+  : Read a ctd File in General Format
+- [`read.ctd.aml()`](https://dankelley.github.io/oce/reference/read.ctd.aml.md)
+  : Read a ctd File in AML Format
+- [`read.ctd.itp()`](https://dankelley.github.io/oce/reference/read.ctd.itp.md)
+  : Read a ctd File in ITP Format
+- [`read.ctd.odf()`](https://dankelley.github.io/oce/reference/read.ctd.odf.md)
+  : Read a ctd File in odf Format
+- [`read.ctd.odv()`](https://dankelley.github.io/oce/reference/read.ctd.odv.md)
+  : Read a "ctd" File in ODV Format
+- [`read.ctd.saiv()`](https://dankelley.github.io/oce/reference/read.ctd.saiv.md)
+  : Read a ctd File in SAIV Format
+- [`read.ctd.sbe()`](https://dankelley.github.io/oce/reference/read.ctd.sbe.md)
+  : Read a ctd File in Seabird Format
+- [`read.ctd.ssda()`](https://dankelley.github.io/oce/reference/read.ctd.ssda.md)
+  : Read a ctd File in SSDA Format
+- [`read.ctd.woce()`](https://dankelley.github.io/oce/reference/read.ctd.woce.md)
+  : Read a ctd File in WOCE-Exchange Format
+- [`read.ctd.woce.other()`](https://dankelley.github.io/oce/reference/read.ctd.woce.other.md)
+  : Read a ctd File in WOCE-Exchange EXPOCODE Format
+- [`read.echosounder()`](https://dankelley.github.io/oce/reference/read.echosounder.md)
+  : Read an echosounder File
+- [`read.g1sst()`](https://dankelley.github.io/oce/reference/read.g1sst.md)
+  : Read a g1sst File
+- [`read.gps()`](https://dankelley.github.io/oce/reference/read.gps.md)
+  : Read a gps File
+- [`read.index()`](https://dankelley.github.io/oce/reference/read.index.md)
+  : Read a NOAA Ocean Index File
+- [`read.landsat()`](https://dankelley.github.io/oce/reference/read.landsat.md)
+  : Read a landsat File Directory
+- [`read.lisst()`](https://dankelley.github.io/oce/reference/read.lisst.md)
+  : Read a lisst File
+- [`read.lobo()`](https://dankelley.github.io/oce/reference/read.lobo.md)
+  : Read a lobo File
+- [`read.met()`](https://dankelley.github.io/oce/reference/read.met.md)
+  : Read a met File
+- [`read.netcdf()`](https://dankelley.github.io/oce/reference/read.netcdf.md)
+  : Read a NetCDF File
+- [`read.oce()`](https://dankelley.github.io/oce/reference/read.oce.md)
+  : Read an Oceanographic Data File
+- [`read.odf()`](https://dankelley.github.io/oce/reference/read.odf.md)
+  : Read an odf File
+- [`read.rsk()`](https://dankelley.github.io/oce/reference/read.rsk.md)
+  : Read a rsk File
+- [`read.sealevel()`](https://dankelley.github.io/oce/reference/read.sealevel.md)
+  : Read a sealevel File
+- [`read.section()`](https://dankelley.github.io/oce/reference/read.section.md)
+  : Read a section File
+- [`read.topo()`](https://dankelley.github.io/oce/reference/read.topo.md)
+  : Read a topo File
+- [`read.woa()`](https://dankelley.github.io/oce/reference/read.woa.md)
+  : Read a World Ocean Atlas NetCDF File
+- [`read.xbt()`](https://dankelley.github.io/oce/reference/read.xbt.md)
+  : Read an xbt file
+- [`read.xbt.edf()`](https://dankelley.github.io/oce/reference/read.xbt.edf.md)
+  : Read an xbt File in Sippican Format Type 1
+- [`read.xbt.edf2()`](https://dankelley.github.io/oce/reference/read.xbt.edf2.md)
+  : Read an xbt File in Sippican Format Type 2
+- [`read.xbt.noaa1()`](https://dankelley.github.io/oce/reference/read.xbt.noaa1.md)
+  : Read an xbt File in NOAA Format
+- [`read.xbt.noaa2()`](https://dankelley.github.io/oce/reference/read.xbt.noaa2.md)
+  : Read an xbt File in UBT (Universal BathyThermograph) Format
+- [`rescale()`](https://dankelley.github.io/oce/reference/rescale.md) :
+  Rescale Values to lie in a Given Range
+- [`resizableLabel()`](https://dankelley.github.io/oce/reference/resizableLabel.md)
+  : Variable Names in Adjustable Sizes
+- [`retime()`](https://dankelley.github.io/oce/reference/retime.md) :
+  Adjust The Time Within an oce Object
+- [`rotateAboutZ()`](https://dankelley.github.io/oce/reference/rotateAboutZ.md)
+  : Rotate Velocity Components Within an oce Object
+- [`rsk-class`](https://dankelley.github.io/oce/reference/rsk-class.md)
+  : Class to Store Rsk Data
+- [`rsk`](https://dankelley.github.io/oce/reference/rsk.md) : Sample rsk
+  Data
+- [`rsk2ctd()`](https://dankelley.github.io/oce/reference/rsk2ctd.md) :
+  Create a ctd Object from an rsk Object
+- [`rskPatm()`](https://dankelley.github.io/oce/reference/rskPatm.md) :
+  Estimate Atmospheric Pressure in an rsk Object
+- [`rskToc()`](https://dankelley.github.io/oce/reference/rskToc.md) :
+  Decode Table-of-Contents From an rsk File
+- [`runlm()`](https://dankelley.github.io/oce/reference/runlm.md) :
+  Calculate Running Linear Models
+- [`satellite-class`](https://dankelley.github.io/oce/reference/satellite-class.md)
+  : Class to Store Satellite Data
+- [`sealevel-class`](https://dankelley.github.io/oce/reference/sealevel-class.md)
+  : Class to Store Sealevel Data
+- [`sealevel`](https://dankelley.github.io/oce/reference/sealevel.md) :
+  Sample sealevel Data (Halifax Harbour)
+- [`sealevelTuktoyaktuk`](https://dankelley.github.io/oce/reference/sealevelTuktoyaktuk.md)
+  : Sample sealevel Data (Tuktoyaktuk)
+- [`secondsToCtime()`](https://dankelley.github.io/oce/reference/secondsToCtime.md)
+  : Express Time Interval as Colon-Separated String
+- [`section-class`](https://dankelley.github.io/oce/reference/section-class.md)
+  : Class to Store Hydrographic Section Data
+- [`section`](https://dankelley.github.io/oce/reference/section.md) :
+  Sample section Data
+- [`sectionAddStation()`](https://dankelley.github.io/oce/reference/sectionAddStation.md)
+  : Add a ctd Profile to a section Object
+- [`sectionGrid()`](https://dankelley.github.io/oce/reference/sectionGrid.md)
+  : Grid a Section in Pressure Space
+- [`sectionSmooth()`](https://dankelley.github.io/oce/reference/sectionSmooth.md)
+  : Smooth a Section
+- [`sectionSort()`](https://dankelley.github.io/oce/reference/sectionSort.md)
+  : Sort a Section
+- [`setFlags(`*`<adp>`*`)`](https://dankelley.github.io/oce/reference/setFlags-adp-method.md)
+  : Set Data-Quality Flags within a adp Object
+- [`setFlags(`*`<ctd>`*`)`](https://dankelley.github.io/oce/reference/setFlags-ctd-method.md)
+  : Set Data-Quality Flags within a ctd Object
+- [`setFlags(`*`<oce>`*`)`](https://dankelley.github.io/oce/reference/setFlags-oce-method.md)
+  : Set Data-Quality Flags within a oce Object
+- [`setFlags()`](https://dankelley.github.io/oce/reference/setFlags.md)
+  : Set Data-Quality Flags within a oce Object
+- [`shiftLongitude()`](https://dankelley.github.io/oce/reference/shiftLongitude.md)
+  : Shift Longitude to Range -180 to 180
+- [`showMetadataItem()`](https://dankelley.github.io/oce/reference/showMetadataItem.md)
+  : Show an Item in the metadata Slot of an oce Object
+- [`siderealTime()`](https://dankelley.github.io/oce/reference/siderealTime.md)
+  : Convert From POSIXt Time to Sidereal Time
+- [`snakeToCamel()`](https://dankelley.github.io/oce/reference/snakeToCamel.md)
+  : Convert From Snake-Case to Camel-Case Notation
+- [`standardDepths()`](https://dankelley.github.io/oce/reference/standardDepths.md)
+  : Standard Oceanographic Depths
+- [`standardizeLongitude()`](https://dankelley.github.io/oce/reference/standardizeLongitude.md)
+  : Put Longitude in the Range From -180 to 180
+- [`` `[[`( ``*`<adp>`*`)`](https://dankelley.github.io/oce/reference/sub-sub-adp-method.md)
+  : Extract Something From an adp Object
+- [`` `[[`( ``*`<adv>`*`)`](https://dankelley.github.io/oce/reference/sub-sub-adv-method.md)
+  : Extract Something from an adv Object
+- [`` `[[`( ``*`<amsr>`*`)`](https://dankelley.github.io/oce/reference/sub-sub-amsr-method.md)
+  : Extract Something From an amsr Object
+- [`` `[[`( ``*`<argo>`*`)`](https://dankelley.github.io/oce/reference/sub-sub-argo-method.md)
+  : Extract Something From an argo Object
+- [`` `[[`( ``*`<bremen>`*`)`](https://dankelley.github.io/oce/reference/sub-sub-bremen-method.md)
+  : Extract Something From a bremen Object
+- [`` `[[`( ``*`<cm>`*`)`](https://dankelley.github.io/oce/reference/sub-sub-cm-method.md)
+  : Extract Something From a cm Object
+- [`` `[[`( ``*`<coastline>`*`)`](https://dankelley.github.io/oce/reference/sub-sub-coastline-method.md)
+  : Extract Something From a coastline Object
+- [`` `[[`( ``*`<ctd>`*`)`](https://dankelley.github.io/oce/reference/sub-sub-ctd-method.md)
+  : Extract Something From a ctd Object
+- [`` `[[`( ``*`<echosounder>`*`)`](https://dankelley.github.io/oce/reference/sub-sub-echosounder-method.md)
+  : Extract Something From an echosounder Object
+- [`` `[[`( ``*`<g1sst>`*`)`](https://dankelley.github.io/oce/reference/sub-sub-g1sst-method.md)
+  : Extract Something From a g1sst Object
+- [`` `[[`( ``*`<gps>`*`)`](https://dankelley.github.io/oce/reference/sub-sub-gps-method.md)
+  : Extract Something From a gps Object
+- [`` `[[`( ``*`<ladp>`*`)`](https://dankelley.github.io/oce/reference/sub-sub-ladp-method.md)
+  : Extract Something From an ladp Object
+- [`` `[[`( ``*`<landsat>`*`)`](https://dankelley.github.io/oce/reference/sub-sub-landsat-method.md)
+  : Extract Something From a landsat Object
+- [`` `[[`( ``*`<lisst>`*`)`](https://dankelley.github.io/oce/reference/sub-sub-lisst-method.md)
+  : Extract Something From a lisst Object
+- [`` `[[`( ``*`<lobo>`*`)`](https://dankelley.github.io/oce/reference/sub-sub-lobo-method.md)
+  : Extract Something From a lobo Object
+- [`` `[[`( ``*`<met>`*`)`](https://dankelley.github.io/oce/reference/sub-sub-met-method.md)
+  : Extract Something From a met Object
+- [`` `[[`( ``*`<oce>`*`)`](https://dankelley.github.io/oce/reference/sub-sub-oce-method.md)
+  : Extract Something From an oce Object
+- [`` `[[`( ``*`<odf>`*`)`](https://dankelley.github.io/oce/reference/sub-sub-odf-method.md)
+  : Extract Something From an odf Object
+- [`` `[[`( ``*`<rsk>`*`)`](https://dankelley.github.io/oce/reference/sub-sub-rsk-method.md)
+  : Extract Something From a rsk Object
+- [`` `[[`( ``*`<sealevel>`*`)`](https://dankelley.github.io/oce/reference/sub-sub-sealevel-method.md)
+  : Extract Something From a sealevel Object
+- [`` `[[`( ``*`<section>`*`)`](https://dankelley.github.io/oce/reference/sub-sub-section-method.md)
+  : Extract Something From a section Object
+- [`` `[[`( ``*`<tidem>`*`)`](https://dankelley.github.io/oce/reference/sub-sub-tidem-method.md)
+  : Extract Something From a tidem Object
+- [`` `[[`( ``*`<topo>`*`)`](https://dankelley.github.io/oce/reference/sub-sub-topo-method.md)
+  : Extract Something From a topo Object
+- [`` `[[`( ``*`<windrose>`*`)`](https://dankelley.github.io/oce/reference/sub-sub-windrose-method.md)
+  : Extract Something From a windrose Object
+- [`` `[[`( ``*`<xbt>`*`)`](https://dankelley.github.io/oce/reference/sub-sub-xbt-method.md)
+  : Extract Something From an xbt Object
+- [`` `[[<-`( ``*`<adp>`*`)`](https://dankelley.github.io/oce/reference/sub-subset-adp-method.md)
+  : Replace Parts of an adp Object
+- [`` `[[<-`( ``*`<adv>`*`)`](https://dankelley.github.io/oce/reference/sub-subset-adv-method.md)
+  : Replace Parts of an adv Object
+- [`` `[[<-`( ``*`<amsr>`*`)`](https://dankelley.github.io/oce/reference/sub-subset-amsr-method.md)
+  : Replace Parts of an amsr Object
+- [`` `[[<-`( ``*`<argo>`*`)`](https://dankelley.github.io/oce/reference/sub-subset-argo-method.md)
+  : Replace Parts of an argo Object
+- [`` `[[<-`( ``*`<bremen>`*`)`](https://dankelley.github.io/oce/reference/sub-subset-bremen-method.md)
+  : Replace Parts of a bremen Object
+- [`` `[[<-`( ``*`<cm>`*`)`](https://dankelley.github.io/oce/reference/sub-subset-cm-method.md)
+  : Replace Parts of a cm Object
+- [`` `[[<-`( ``*`<coastline>`*`)`](https://dankelley.github.io/oce/reference/sub-subset-coastline-method.md)
+  : Replace Parts of a coastline Object
+- [`` `[[<-`( ``*`<ctd>`*`)`](https://dankelley.github.io/oce/reference/sub-subset-ctd-method.md)
+  : Replace Parts of a ctd Object
+- [`` `[[<-`( ``*`<echosounder>`*`)`](https://dankelley.github.io/oce/reference/sub-subset-echosounder-method.md)
+  : Replace Parts of an echosounder Object
+- [`` `[[<-`( ``*`<g1sst>`*`)`](https://dankelley.github.io/oce/reference/sub-subset-g1sst-method.md)
+  : Replace Parts of a g1sst Object
+- [`` `[[<-`( ``*`<gps>`*`)`](https://dankelley.github.io/oce/reference/sub-subset-gps-method.md)
+  : Replace Parts of a gps Object
+- [`` `[[<-`( ``*`<ladp>`*`)`](https://dankelley.github.io/oce/reference/sub-subset-ladp-method.md)
+  : Replace Parts of an ladp Object
+- [`` `[[<-`( ``*`<landsat>`*`)`](https://dankelley.github.io/oce/reference/sub-subset-landsat-method.md)
+  : Replace Parts of a landsat Object
+- [`` `[[<-`( ``*`<lisst>`*`)`](https://dankelley.github.io/oce/reference/sub-subset-lisst-method.md)
+  : Replace Parts of a lisst Object
+- [`` `[[<-`( ``*`<lobo>`*`)`](https://dankelley.github.io/oce/reference/sub-subset-lobo-method.md)
+  : Replace Parts of a lobo Object
+- [`` `[[<-`( ``*`<met>`*`)`](https://dankelley.github.io/oce/reference/sub-subset-met-method.md)
+  : Replace Parts of a met Object
+- [`` `[[<-`( ``*`<oce>`*`)`](https://dankelley.github.io/oce/reference/sub-subset-oce-method.md)
+  : Replace Parts of an oce Object
+- [`` `[[<-`( ``*`<odf>`*`)`](https://dankelley.github.io/oce/reference/sub-subset-odf-method.md)
+  : Replace Parts of an odf Object
+- [`` `[[<-`( ``*`<rsk>`*`)`](https://dankelley.github.io/oce/reference/sub-subset-rsk-method.md)
+  : Replace Parts of an rsk Object
+- [`` `[[<-`( ``*`<sealevel>`*`)`](https://dankelley.github.io/oce/reference/sub-subset-sealevel-method.md)
+  : Replace Parts of a sealevel Object
+- [`` `[[<-`( ``*`<section>`*`)`](https://dankelley.github.io/oce/reference/sub-subset-section-method.md)
+  : Replace Parts of a section Object
+- [`` `[[<-`( ``*`<tidem>`*`)`](https://dankelley.github.io/oce/reference/sub-subset-tidem-method.md)
+  : Replace Parts of a tidem Object
+- [`` `[[<-`( ``*`<topo>`*`)`](https://dankelley.github.io/oce/reference/sub-subset-topo-method.md)
+  : Replace Parts of a topo Object
+- [`` `[[<-`( ``*`<windrose>`*`)`](https://dankelley.github.io/oce/reference/sub-subset-windrose-method.md)
+  : Replace Parts of a windrose Object
+- [`` `[[<-`( ``*`<xbt>`*`)`](https://dankelley.github.io/oce/reference/sub-subset-xbt-method.md)
+  : Replace Parts of an xbt Object
+- [`subset(`*`<adp>`*`)`](https://dankelley.github.io/oce/reference/subset-adp-method.md)
+  : Subset an adp Object
+- [`subset(`*`<adv>`*`)`](https://dankelley.github.io/oce/reference/subset-adv-method.md)
+  : Subset an adv Object
+- [`subset(`*`<amsr>`*`)`](https://dankelley.github.io/oce/reference/subset-amsr-method.md)
+  : Subset an amsr Object
+- [`subset(`*`<argo>`*`)`](https://dankelley.github.io/oce/reference/subset-argo-method.md)
+  : Subset an argo Object
+- [`subset(`*`<cm>`*`)`](https://dankelley.github.io/oce/reference/subset-cm-method.md)
+  : Subset a cm Object
+- [`subset(`*`<coastline>`*`)`](https://dankelley.github.io/oce/reference/subset-coastline-method.md)
+  : Subset a coastline Object
+- [`subset(`*`<ctd>`*`)`](https://dankelley.github.io/oce/reference/subset-ctd-method.md)
+  : Subset a ctd Object
+- [`subset(`*`<echosounder>`*`)`](https://dankelley.github.io/oce/reference/subset-echosounder-method.md)
+  : Subset an echosounder Object
+- [`subset(`*`<lobo>`*`)`](https://dankelley.github.io/oce/reference/subset-lobo-method.md)
+  : Subset a lobo Object
+- [`subset(`*`<met>`*`)`](https://dankelley.github.io/oce/reference/subset-met-method.md)
+  : Subset a met Object
+- [`subset(`*`<oce>`*`)`](https://dankelley.github.io/oce/reference/subset-oce-method.md)
+  : Subset an oce Object
+- [`subset(`*`<odf>`*`)`](https://dankelley.github.io/oce/reference/subset-odf-method.md)
+  : Subset an odf Object
+- [`subset(`*`<rsk>`*`)`](https://dankelley.github.io/oce/reference/subset-rsk-method.md)
+  : Subset a rsk Object
+- [`subset(`*`<sealevel>`*`)`](https://dankelley.github.io/oce/reference/subset-sealevel-method.md)
+  : Subset a sealevel Object
+- [`subset(`*`<section>`*`)`](https://dankelley.github.io/oce/reference/subset-section-method.md)
+  : Subset a section Object
+- [`subset(`*`<topo>`*`)`](https://dankelley.github.io/oce/reference/subset-topo-method.md)
+  : Subset a topo Object
+- [`subset(`*`<xbt>`*`)`](https://dankelley.github.io/oce/reference/subset-xbt-method.md)
+  : Subset an xbt Object
+- [`subtractBottomVelocity()`](https://dankelley.github.io/oce/reference/subtractBottomVelocity.md)
+  : Subtract Bottom Velocity From an adp Object
+- [`summary(`*`<adp>`*`)`](https://dankelley.github.io/oce/reference/summary-adp-method.md)
+  : Summarize an adp Object
+- [`summary(`*`<adv>`*`)`](https://dankelley.github.io/oce/reference/summary-adv-method.md)
+  : Summarize an adv Object
+- [`summary(`*`<amsr>`*`)`](https://dankelley.github.io/oce/reference/summary-amsr-method.md)
+  : Summarize an amsr Object
+- [`summary(`*`<argo>`*`)`](https://dankelley.github.io/oce/reference/summary-argo-method.md)
+  : Summarize an argo Object
+- [`summary(`*`<bremen>`*`)`](https://dankelley.github.io/oce/reference/summary-bremen-method.md)
+  : Summarize a bremen Object
+- [`summary(`*`<cm>`*`)`](https://dankelley.github.io/oce/reference/summary-cm-method.md)
+  : Summarize a cm Object
+- [`summary(`*`<coastline>`*`)`](https://dankelley.github.io/oce/reference/summary-coastline-method.md)
+  : Summarize a coastline Object
+- [`summary(`*`<ctd>`*`)`](https://dankelley.github.io/oce/reference/summary-ctd-method.md)
+  : Summarize a ctd Object
+- [`summary(`*`<echosounder>`*`)`](https://dankelley.github.io/oce/reference/summary-echosounder-method.md)
+  : Summarize an echosounder Object
+- [`summary(`*`<gps>`*`)`](https://dankelley.github.io/oce/reference/summary-gps-method.md)
+  : Summarize a gps Object
+- [`summary(`*`<ladp>`*`)`](https://dankelley.github.io/oce/reference/summary-ladp-method.md)
+  : Summarize an ladp Object
+- [`summary(`*`<landsat>`*`)`](https://dankelley.github.io/oce/reference/summary-landsat-method.md)
+  : Summarize a landsat Object
+- [`summary(`*`<lisst>`*`)`](https://dankelley.github.io/oce/reference/summary-lisst-method.md)
+  : Summarize a lisst Object
+- [`summary(`*`<lobo>`*`)`](https://dankelley.github.io/oce/reference/summary-lobo-method.md)
+  : Summarize a lobo Object
+- [`summary(`*`<met>`*`)`](https://dankelley.github.io/oce/reference/summary-met-method.md)
+  : Summarize a met Object
+- [`summary(`*`<oce>`*`)`](https://dankelley.github.io/oce/reference/summary-oce-method.md)
+  : Summarize an oce Object
+- [`summary(`*`<odf>`*`)`](https://dankelley.github.io/oce/reference/summary-odf-method.md)
+  : Summarize an odf Object
+- [`summary(`*`<rsk>`*`)`](https://dankelley.github.io/oce/reference/summary-rsk-method.md)
+  : Summarize a rsk Object
+- [`summary(`*`<satellite>`*`)`](https://dankelley.github.io/oce/reference/summary-satellite-method.md)
+  : Summarize a satellite Object
+- [`summary(`*`<sealevel>`*`)`](https://dankelley.github.io/oce/reference/summary-sealevel-method.md)
+  : Summarize a sealevel Object
+- [`summary(`*`<section>`*`)`](https://dankelley.github.io/oce/reference/summary-section-method.md)
+  : Summarize a section Object
+- [`summary(`*`<tidem>`*`)`](https://dankelley.github.io/oce/reference/summary-tidem-method.md)
+  : Summarize a tidem Object
+- [`summary(`*`<topo>`*`)`](https://dankelley.github.io/oce/reference/summary-topo-method.md)
+  : Summarize a topo Object
+- [`summary(`*`<windrose>`*`)`](https://dankelley.github.io/oce/reference/summary-windrose-method.md)
+  : Summarize a windrose Object
+- [`summary(`*`<xbt>`*`)`](https://dankelley.github.io/oce/reference/summary-xbt-method.md)
+  : Summarize an xbt Object
+- [`sunAngle()`](https://dankelley.github.io/oce/reference/sunAngle.md)
+  : Solar Angle as Function of Space and Time
+- [`sunDeclinationRightAscension()`](https://dankelley.github.io/oce/reference/sunDeclinationRightAscension.md)
+  : Sun Declination and Right Ascension
+- [`swAbsoluteSalinity()`](https://dankelley.github.io/oce/reference/swAbsoluteSalinity.md)
+  : Seawater Absolute Salinity (GSW Formulation)
+- [`swAlpha()`](https://dankelley.github.io/oce/reference/swAlpha.md) :
+  Seawater Thermal Expansion Coefficient
+- [`swAlphaOverBeta()`](https://dankelley.github.io/oce/reference/swAlphaOverBeta.md)
+  : Ratio of Seawater Thermal Expansion Coefficient to Haline
+  Contraction Coefficient
+- [`swBeta()`](https://dankelley.github.io/oce/reference/swBeta.md) :
+  Seawater Haline Contraction Coefficient
+- [`swCSTp()`](https://dankelley.github.io/oce/reference/swCSTp.md) :
+  Electrical Conductivity Ratio From Salinity, Temperature and Pressure
+- [`swConservativeTemperature()`](https://dankelley.github.io/oce/reference/swConservativeTemperature.md)
+  : Seawater Conservative Temperature (GSW Formulation)
+- [`swDepth()`](https://dankelley.github.io/oce/reference/swDepth.md) :
+  Water Depth
+- [`swDynamicHeight()`](https://dankelley.github.io/oce/reference/swDynamicHeight.md)
+  : Dynamic Height of a Seawater Profile
+- [`swLapseRate()`](https://dankelley.github.io/oce/reference/swLapseRate.md)
+  : Seawater Lapse Rate
+- [`swN2()`](https://dankelley.github.io/oce/reference/swN2.md) :
+  Squared Buoyancy Frequency for Seawater
+- [`swPressure()`](https://dankelley.github.io/oce/reference/swPressure.md)
+  : Water Pressure
+- [`swRho()`](https://dankelley.github.io/oce/reference/swRho.md) :
+  Seawater Density
+- [`swRrho()`](https://dankelley.github.io/oce/reference/swRrho.md) :
+  Density Ratio
+- [`swSCTp()`](https://dankelley.github.io/oce/reference/swSCTp.md) :
+  Practical Salinity From Electrical Conductivity, Temperature and
+  Pressure
+- [`swSR()`](https://dankelley.github.io/oce/reference/swSR.md) :
+  Seawater Reference Salinity (GSW Formulation)
+- [`swSTrho()`](https://dankelley.github.io/oce/reference/swSTrho.md) :
+  Seawater Salinity From Temperature and Density
+- [`swSigma()`](https://dankelley.github.io/oce/reference/swSigma.md) :
+  Seawater Density Anomaly
+- [`swSigma0()`](https://dankelley.github.io/oce/reference/swSigma0.md)
+  : Seawater Potential Density Anomaly Referenced to Surface Pressure
+- [`swSigma1()`](https://dankelley.github.io/oce/reference/swSigma1.md)
+  : Seawater Potential Density Anomaly Referenced to 1000db Pressure
+- [`swSigma2()`](https://dankelley.github.io/oce/reference/swSigma2.md)
+  : Seawater Potential Density Anomaly Referenced to 2000db Pressure
+- [`swSigma3()`](https://dankelley.github.io/oce/reference/swSigma3.md)
+  : Seawater Potential Density Anomaly Referenced to 3000db Pressure
+- [`swSigma4()`](https://dankelley.github.io/oce/reference/swSigma4.md)
+  : Seawater Potential Density Anomaly Referenced to 4000db Pressure
+- [`swSigmaT()`](https://dankelley.github.io/oce/reference/swSigmaT.md)
+  : Seawater Quasi-Potential Density Anomaly
+- [`swSigmaTheta()`](https://dankelley.github.io/oce/reference/swSigmaTheta.md)
+  : Seawater Potential Density Anomaly
+- [`swSoundAbsorption()`](https://dankelley.github.io/oce/reference/swSoundAbsorption.md)
+  : Seawater Sound Absorption
+- [`swSoundSpeed()`](https://dankelley.github.io/oce/reference/swSoundSpeed.md)
+  : Seawater Sound Speed
+- [`swSpecificHeat()`](https://dankelley.github.io/oce/reference/swSpecificHeat.md)
+  : Seawater Specific Heat
+- [`swSpice()`](https://dankelley.github.io/oce/reference/swSpice.md) :
+  Seawater Spiciness
+- [`swSpiciness0()`](https://dankelley.github.io/oce/reference/swSpiciness0.md)
+  : Spiciness in gsw System, Referenced to Surface Pressure
+- [`swSpiciness1()`](https://dankelley.github.io/oce/reference/swSpiciness1.md)
+  : Spiciness in gsw System, Referenced to 1000 dbar Pressure
+- [`swSpiciness2()`](https://dankelley.github.io/oce/reference/swSpiciness2.md)
+  : Spiciness in gsw System, Referenced to 2000 dbar Pressure
+- [`swSstar()`](https://dankelley.github.io/oce/reference/swSstar.md) :
+  Seawater Preformed Salinity (GSW Formulation)
+- [`swTFreeze()`](https://dankelley.github.io/oce/reference/swTFreeze.md)
+  : Seawater Freezing Temperature
+- [`swTSrho()`](https://dankelley.github.io/oce/reference/swTSrho.md) :
+  Seawater Temperature from Salinity and Density
+- [`swThermalConductivity()`](https://dankelley.github.io/oce/reference/swThermalConductivity.md)
+  : Seawater Thermal Conductivity
+- [`swTheta()`](https://dankelley.github.io/oce/reference/swTheta.md) :
+  Seawater Potential Temperature (UNESCO Version)
+- [`swViscosity()`](https://dankelley.github.io/oce/reference/swViscosity.md)
+  : Seawater Viscosity
+- [`swZ()`](https://dankelley.github.io/oce/reference/swZ.md) : Vertical
+  Coordinate
+- [`tail(`*`<oce>`*`)`](https://dankelley.github.io/oce/reference/tail.oce.md)
+  : Extract the End of an Oce Object
+- [`threenum()`](https://dankelley.github.io/oce/reference/threenum.md)
+  : Calculate Minimum, Mean, and Maximum Values
+- [`tidalCurrent`](https://dankelley.github.io/oce/reference/tidalCurrent.md)
+  : Tidal Current Dataset
+- [`tidedata`](https://dankelley.github.io/oce/reference/tidedata.md) :
+  Tidal Constituent Information
+- [`tidem-class`](https://dankelley.github.io/oce/reference/tidem-class.md)
+  : Class to Store Tidal Models
+- [`tidem()`](https://dankelley.github.io/oce/reference/tidem.md) : Fit
+  a Tidal Model to a Timeseries
+- [`tidemAstron()`](https://dankelley.github.io/oce/reference/tidemAstron.md)
+  : Astronomical Calculations for tidem
+- [`tidemConstituentNameFix()`](https://dankelley.github.io/oce/reference/tidemConstituentNameFix.md)
+  : Change Tidal Constituent Name from T-TIDE to Foreman Convention
+- [`tidemVuf()`](https://dankelley.github.io/oce/reference/tidemVuf.md)
+  : Nodal Modulation Calculations for Tidal Analyses
+- [`timeToArgoJuld()`](https://dankelley.github.io/oce/reference/timeToArgoJuld.md)
+  : Convert Time to Argo Julian Day (juld)
+- [`titleCase()`](https://dankelley.github.io/oce/reference/titleCase.md)
+  : Capitalize First Letter of Each of a Vector of Words
+- [`toEnu()`](https://dankelley.github.io/oce/reference/toEnu.md) :
+  Rotate Acoustic-Doppler Data to the ENU Coordinate System
+- [`toEnuAdp()`](https://dankelley.github.io/oce/reference/toEnuAdp.md)
+  : Convert an adp Object to ENU Coordinates
+- [`toEnuAdv()`](https://dankelley.github.io/oce/reference/toEnuAdv.md)
+  : Convert an adv Object to ENU Coordinates
+- [`topo-class`](https://dankelley.github.io/oce/reference/topo-class.md)
+  : Class to Store Topographic Data
+- [`topoInterpolate()`](https://dankelley.github.io/oce/reference/topoInterpolate.md)
+  : Interpolate Within a topo Object
+- [`topoWorld`](https://dankelley.github.io/oce/reference/topoWorld.md)
+  : Global Topographic Data (at Half-degree Resolution)
+- [`unabbreviateYear()`](https://dankelley.github.io/oce/reference/unabbreviateYear.md)
+  : Determine Year From Various Abbreviations
+- [`undriftTime()`](https://dankelley.github.io/oce/reference/undriftTime.md)
+  : Correct for Drift in an Instrument Clock
+- [`unduplicateNames()`](https://dankelley.github.io/oce/reference/unduplicateNames.md)
+  : Rename Duplicated Character Strings
+- [`ungrid()`](https://dankelley.github.io/oce/reference/ungrid.md) :
+  Extract (x, y, z) From (x, y, grid)
+- [`unitFromString()`](https://dankelley.github.io/oce/reference/unitFromString.md)
+  : Decode Units From Strings
+- [`unitFromStringRsk()`](https://dankelley.github.io/oce/reference/unitFromStringRsk.md)
+  : Infer rsk Units From a Vector of Strings
+- [`unwrapAngle()`](https://dankelley.github.io/oce/reference/unwrapAngle.md)
+  : Unwrap an Angle That Suffers Modulo-360 Problems
+- [`useHeading()`](https://dankelley.github.io/oce/reference/useHeading.md)
+  : Replace the Heading for One Instrument With That of Another
+- [`usrLonLat()`](https://dankelley.github.io/oce/reference/usrLonLat.md)
+  : Calculate Geographic Coordinates of Plot Box
+- [`utm2lonlat()`](https://dankelley.github.io/oce/reference/utm2lonlat.md)
+  : Convert UTM to Longitude and Latitude
+- [`vectorShow()`](https://dankelley.github.io/oce/reference/vectorShow.md)
+  : Show Some Values From a List, Vector or Matrix
+- [`velocityStatistics()`](https://dankelley.github.io/oce/reference/velocityStatistics.md)
+  : Report Statistics of adp or adv Velocities
+- [`webtide()`](https://dankelley.github.io/oce/reference/webtide.md) :
+  Get a Tidal Prediction From a WebTide Database
+- [`wind`](https://dankelley.github.io/oce/reference/wind.md) : Sample
+  Wind Data
+- [`window(`*`<oce>`*`)`](https://dankelley.github.io/oce/reference/window.oce.md)
+  : Window an oce Object by Time or Distance
+- [`windrose-class`](https://dankelley.github.io/oce/reference/windrose-class.md)
+  : Class to Store windrose Data
+- [`woceNames2oceNames()`](https://dankelley.github.io/oce/reference/woceNames2oceNames.md)
+  : Translate WOCE Data Names to Oce Data Names
+- [`woceUnit2oceUnit()`](https://dankelley.github.io/oce/reference/woceUnit2oceUnit.md)
+  : Translate WOCE Units to oce Units
+- [`write.ctd()`](https://dankelley.github.io/oce/reference/write.ctd.md)
+  : Save a ctd Object in a CSV File
+- [`xbt-class`](https://dankelley.github.io/oce/reference/xbt-class.md)
+  : Class to Store XBT (Expendable Bathythermograph) Data
+- [`xbt`](https://dankelley.github.io/oce/reference/xbt.md) : Sample xbt
+  Data
+- [`xbt.edf`](https://dankelley.github.io/oce/reference/xbt.edf.md) :
+  Sample xbt File in space-separated .edf Format
+- [`xbt2.edf`](https://dankelley.github.io/oce/reference/xbt2.edf.md) :
+  Sample xbt File in tab-separated .edf Format
+- [`xyzToEnu()`](https://dankelley.github.io/oce/reference/xyzToEnu.md)
+  : Convert Acoustic-Doppler Data From XYZ to ENU Coordinates
+- [`xyzToEnuAdp()`](https://dankelley.github.io/oce/reference/xyzToEnuAdp.md)
+  : Convert adp Object From XYZ to ENU Coordinates
+- [`xyzToEnuAdpAD2CP()`](https://dankelley.github.io/oce/reference/xyzToEnuAdpAD2CP.md)
+  : Convert adp Object of AD2CP type From XYZ to ENU Coordinates
+- [`xyzToEnuAdv()`](https://dankelley.github.io/oce/reference/xyzToEnuAdv.md)
+  : Convert an adv Object From XYZ to ENU Coordinates
