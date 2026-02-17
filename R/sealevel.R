@@ -607,9 +607,12 @@ setMethod(
                 to <- from + 28 * 86400 # 28 days
                 look <- from <= x@data$time & x@data$time <= to
                 xx <- x
-                for (i in seq_along(x@data)) {
-                    xx@data[[i]] <- x@data[[i]][look]
-                }
+                oceDebug(debug, "  for which2[", w, "]==2, subsetting to ", sum(look), " points\n", sep="")
+                xx@data <- x@data[look, ]
+                #for (i in seq_along(x@data)) {
+                #    oceDebug(debug, "  subsetting field number ", i, "\n", sep="")
+                #    xx@data[[i]] <- x@data[[i]][look]
+                #}
                 if (any(is.finite(xx@data$elevation))) {
                     xlim <- if (xlimGiven) xlim else (range(xx@data$time, na.rm = TRUE))
                     ylim <- if (ylimGiven) ylim else (range(xx@data$elevation, na.rm = TRUE))
