@@ -27,24 +27,24 @@
 #' @family things related to sealevel data
 read.sealevel.gc2026 <- function(file, debug = 0) {
     if (2 != length(file)) stop("'file' should be of length 2")
-    if (grepl("metadata", file[1])) {
+    if (grepl("metadata", basename(file[1]))) {
         mf <- file[1]
         df <- file[2]
-    } else {
+    } else if (grepl("metadata", basename(file[2]))) {
         mf <- file[2]
         df <- file[1]
+    } else {
+        stop("One of the elements of 'file' must contain the pattern 'metadata'")
     }
     lines <- readLines(mf)
     commaLines <- lines[grepl(",", lines)]
     keys <- NULL
     values <- NULL
+    metadata <- list()
     for (line in commaLines) {
         kv <- strsplit(line, ",")[[1]]
-        keys <- c(keys, kv[1])
-        values <- c(values, kv[2])
+        metadata[kv[1]] <- kv[2]
     }
-    metadata <- as.list(values)
-    names(metadata) <- keys
     d <- readLines(df)
     headerLines <- grep(" - ", d)
     header <- d[headerLines]
