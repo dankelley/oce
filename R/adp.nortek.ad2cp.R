@@ -2828,9 +2828,9 @@ xyzToEnuAdpAD2CP <- function(x, declination = 0, debug = getOption("oceDebug")) 
     if (!is.ad2cp(x)) {
         stop("this function only works for adp objects created by read.adp.ad2cp()")
     }
-    if (0 != declination) { # FIXME: use the declination
-        stop("nonzero declination is not handled yet; please contact the author if you need this")
-    }
+    # issue 2364: if (0 != declination) { # FIXME: use the declination
+    # issue 2364:     stop("nonzero declination is not handled yet; please contact the author if you need this")
+    # issue 2364: }
     if (!"v" %in% names(x@data)) {
         stop("this ad2cp object lacks a \"v\" entry in its data slot")
     }
@@ -2872,7 +2872,7 @@ xyzToEnuAdpAD2CP <- function(x, declination = 0, debug = getOption("oceDebug")) 
         oceDebug(debug, "case 2: use (heading,pitch,roll) to convert velocity to ENU\n")
         radPerDegree <- atan2(1.0, 1.0) / 45.0
         # see eq 4, 5, 6 and 7 in ref 3
-        heading <- radPerDegree * (x@data$heading - 90)
+        heading <- radPerDegree * ((x@data$heading + declination) - 90.0) # issue 2364
         pitch <- radPerDegree * x@data$pitch
         roll <- radPerDegree * x@data$roll
         N <- length(heading)
