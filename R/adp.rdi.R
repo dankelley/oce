@@ -1497,8 +1497,9 @@ read.adp.rdi <- function(
                     } else if (buf[o] == 0x80 && buf[1 + o] == 0x00) {
                         ensembleNumber[i] <- readBin(buf[o + 2:3], "integer",
                             n = 1, size = 2,
-                            endian = "little", signed = TRUE
+                            endian = "little", signed = FALSE
                         ) + as.integer(buf[o + 11]) * 65535L
+                        #message("o=",o,", got ensembleNumber[",i,"] as ", ensembleNumber[i])
                     } else if (buf[o] == 0x00 && buf[1 + o] == 0x01) {
                         #<> if (debug > 0 && i == 1) {
                         #<>     cat("  buf[", o + 2, "]: ", buf[o + 2], " (this starts v[1,1,1]) NOTE: o=", o, "\n", sep = "")
