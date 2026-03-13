@@ -676,3 +676,21 @@ if (file.exists(f)) { # not run on CRAN since local_data are not in package
         )
     })
 }
+
+f <- "tests/testthat/local_data/ctd/demo_CTD_001.btl"
+if (file.exists(f)) { # not run on CRAN since local_data are not in package
+    correct_colnames <- c("Bottle", "Potemp090C", "Potemp190C", "Sal00", "Sal11", "Sigma.t00",
+                          "Sigma.t11", "Sbeox0ML.L", "Sbox0Mm.Kg", "Sbeox0PS", "Sbeox1ML.L",
+                          "Sbox1Mm.Kg", "Sbeox1PS", "Longitude", "Latitude", "DepSM", "PrDM",
+                          "T090C", "T190C", "C0S.m", "C1S.m", "CStarAt0", "CStarTr0", "FlECO.AFL",
+                          "TurbWETntu0", "Par", "Longitude_sdev", "Latitude_sdev", "DepSM_sdev",
+                          "PrDM_sdev", "T090C_sdev", "T190C_sdev", "C0S.m_sdev", "C1S.m_sdev",
+                          "CStarAt0_sdev", "CStarTr0_sdev", "FlECO.AFL_sdev", "TurbWETntu0_sdev",
+                          "Par_sdev", "time")
+    test_that("read.ctd.sbe() btl correctly reads column names", {
+        expect_warning(expect_warning(d <- read.ctd.sbe2(f, btl=TRUE, requireSalinity = FALSE)))
+        expect_contains(colnames(d@data), "TurbWETntu0")
+        expect_identical(colnames(d@data), correct_colnames)
+        expect_equal(sd(d@data$Par_sdev), 0)
+    })
+}
