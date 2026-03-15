@@ -56,9 +56,9 @@
 * Change `read.adp.rdi(..., which="??")` to return a data frame that includes
   ensemble size (issue #2329).
 * Change `read.ctd.sbe()` to
-  * handle files that lack salinity and conductivity (issues #2279 and #2282)
-    and
-  * handle time-related header elements better (issues #2280 and #2281).
+  * Handle fixed-width column names (pull request #2365, kindly provided by William Kumler, github user @wkumler),
+  * handle files that lack salinity and conductivity (issues #2279 and #2282),
+  * handle time-related header elements better (issues #2280 and #2281), and
   * handle "new" format CNV files, at least provisionally (issue #2328).
 * Change `read.ctd.aml()` to handle "type 3" format (issue #2247).
 * Change `read.coastline()` to handle `file` in "shapefile" format (issue
