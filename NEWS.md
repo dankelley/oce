@@ -85,6 +85,8 @@
   #2269).
 * Change `vectorShow()` to obey "digits" parameter for list arguments (issue
   #2313).
+* Fix bug in `read.sbe.ctd` when `btl=TRUE` that was incorrectly parsing files
+  with long column names (#2365)
 
 # oce 1.8.3 (ON CRAN)
 

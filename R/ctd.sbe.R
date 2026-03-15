@@ -1310,7 +1310,9 @@ read.ctd.sbe <- function(
         if (!length(dataHeaderStartLine)) {
             stop("cannot find the start of .btl data")
         }
-        colNames <- tail(strsplit(lines[dataHeaderStartLine], "[ ]+")[[1]], -1)
+        firstDataLine <- lines[dataHeaderStartLine]
+        starts <- seq(1, nchar(firstDataLine), by = 11)
+        colNames <- trimws(substring(firstDataLine, starts, starts + 11 - 1))
         colNames <- c(colNames, "type") # tack on col for "(avg)" or "(sdev)"
         oceDebug(debug, "colNames=c(\"", paste(colNames, collapse = "\", \""), "\")\n", sep = "")
         lastLine <- length(lines)
