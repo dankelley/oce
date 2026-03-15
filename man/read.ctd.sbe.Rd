@@ -358,7 +358,7 @@ Other functions that read ctd data:
 \code{\link{read.ctd.woce.other}()}
 }
 \author{
-Dan Kelley and Clark Richards
+Dan Kelley and Clark Richards, along with William Kumler.
 }
 \concept{functions that read ctd data}
 \concept{things related to ctd data}

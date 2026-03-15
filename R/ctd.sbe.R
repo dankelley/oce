@@ -880,7 +880,7 @@ cnvName2oceName <- function(h, columns = NULL, newNameFormat = FALSE, debug = ge
 #' `SBEDataProcessing_7.26.4.pdf` and had release date 12/08/2017,
 #' and this was the reference version used in coding `oce`.
 #'
-#' @author Dan Kelley and Clark Richards
+#' @author Dan Kelley and Clark Richards, along with William Kumler.
 #'
 #' @family functions that read ctd data
 read.ctd.sbe <- function(
