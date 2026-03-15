@@ -79,3 +79,5 @@ tests/testthat/valgrind_tests.*
 tests_private
 typescript
 SECURITY.md
+^\.positai$
+^\.claude$
