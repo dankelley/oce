@@ -65,7 +65,7 @@ method does not reveal much:
 summary(o)
 #> * Processing Log
 #> 
-#>     - 2026-03-16 12:27:38 UTC: `Create oce object`
+#>     - 2026-03-16 15:50:55 UTC: `Create oce object`
 ```
 
 but if we populate the object with some data and metadata
@@ -91,11 +91,11 @@ summary(o)
 #> 
 #> * Processing Log
 #> 
-#>     - 2026-03-16 12:27:38 UTC: `Create oce object`
-#>     - 2026-03-16 12:27:38 UTC: `oceSetData(object = o, name = "time", value = db$t)`
-#>     - 2026-03-16 12:27:38 UTC: `oceSetData(object = o, name = "longitude", value = db$lon)`
-#>     - 2026-03-16 12:27:38 UTC: `oceSetData(object = o, name = "latitude", value = db$lat)`
-#>     - 2026-03-16 12:27:38 UTC: `oceSetMetadata(object = o, name = "ID", value = 4201703)`
+#>     - 2026-03-16 15:50:55 UTC: `Create oce object`
+#>     - 2026-03-16 15:50:56 UTC: `oceSetData(object = o, name = "time", value = db$t)`
+#>     - 2026-03-16 15:50:56 UTC: `oceSetData(object = o, name = "longitude", value = db$lon)`
+#>     - 2026-03-16 15:50:56 UTC: `oceSetData(object = o, name = "latitude", value = db$lat)`
+#>     - 2026-03-16 15:50:56 UTC: `oceSetMetadata(object = o, name = "ID", value = 4201703)`
 ```
 
 Note, however, that the `ID` is not listed by
@@ -291,7 +291,7 @@ summary(d)
 #> 
 #> * Processing Log
 #> 
-#>     - 2026-03-16 12:27:38 UTC: `create 'drifter' object`
+#>     - 2026-03-16 15:50:56 UTC: `create 'drifter' object`
 ```
 
 ### Specializing the `[[` accessor

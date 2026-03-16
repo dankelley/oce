@@ -73,7 +73,7 @@ summary(xbt2)
 #> xbt summary
 #> -----------
 #> 
-#> * File source:        "/private/var/folders/8b/l4h64m1j22v5pb7vj049ff140000gn/T/RtmpTjm9p9/temp_libpath77d475e60f70/oce/extdata/xbt2.edf"
+#> * File source:        "/private/var/folders/8b/l4h64m1j22v5pb7vj049ff140000gn/T/RtmpROJlPr/temp_libpathe75375ad9206/oce/extdata/xbt2.edf"
 #> * Instrument type:    T-xx
 #> * Serial Number:      1
 #> * Longitude:          -50.5
@@ -90,5 +90,5 @@ summary(xbt2)
 #> 
 #> * Processing Log
 #> 
-#>     - 2026-03-16 12:26:43 UTC: `create 'xbt' object`
+#>     - 2026-03-16 15:50:02 UTC: `create 'xbt' object`
 ```

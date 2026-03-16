@@ -78,8 +78,8 @@ also use the more development-oriented package repository of
 conda-forge).
 
 Whenever I am setting up a new miniconda install, I use the instructions
-provided by the University of Hawaii Currents group, found
-[here](https://currents.soest.hawaii.edu/ocn_data_analysis/installation.html).
+provided by the University of Hawaii Currents group, found at
+`https://currents.soest.hawaii.edu/ocn_data_analysis/installation.html`.
 For completeness here I’ll just repeat the steps as I have followed
 them. The install is nearly identical on both MacOS and Linux. I have
 not had the opportunity to try the full install on a normal Windows OS,
