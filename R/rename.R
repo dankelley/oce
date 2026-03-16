@@ -238,7 +238,8 @@ renameInternal <- function(names, dictionary = "ioos.csv", debug = 0) {
 #' @references
 #'
 #' 1. CODAS naming convention
-#' <https://currents.soest.hawaii.edu/docs/adcp_doc/UHDAS_OPERATIONS/UHDAS_atsea/adcp_access/read_netCDF.html>
+# 2026-03-16: remote-build tests often fail on this UHDAS link.
+#' `https://currents.soest.hawaii.edu/docs/adcp_doc/UHDAS_OPERATIONS/UHDAS_atsea/adcp_access/read_netCDF.html`
 #'
 #' 2. IOOS naming convention
 #'    <https://cfconventions.org/Data/cf-standard-names/78/build/cf-standard-name-table.html>

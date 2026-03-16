@@ -397,8 +397,8 @@ summary(tide)
 #> Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 #> * Processing Log
 #> 
-#>     - 2026-02-17 20:58:38 UTC: `create 'tidem' object`
-#>     - 2026-02-17 20:58:38 UTC: `tidem(t = sealevelTuktoyaktuk)`
+#>     - 2026-03-16 12:27:16 UTC: `create 'tidem' object`
+#>     - 2026-03-16 12:27:16 UTC: `tidem(t = sealevelTuktoyaktuk)`
 
 # AIC analysis
 extractAIC(tide[["model"]])
@@ -437,6 +437,6 @@ summary(m)
 #> Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 #> * Processing Log
 #> 
-#>     - 2026-02-17 20:58:38 UTC: `create 'tidem' object`
-#>     - 2026-02-17 20:58:38 UTC: `tidem(t = sl)`
+#>     - 2026-03-16 12:27:16 UTC: `create 'tidem' object`
+#>     - 2026-03-16 12:27:16 UTC: `tidem(t = sl)`
 ```

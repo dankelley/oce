@@ -148,12 +148,16 @@
 - Change
   [`read.ctd.sbe()`](https://dankelley.github.io/oce/reference/read.ctd.sbe.md)
   to
+  - Handle fixed-width column names (pull request
+    [\#2365](https://github.com/dankelley/oce/issues/2365), kindly
+    provided by William Kumler, github user
+    [@wkumler](https://github.com/wkumler)),
   - handle files that lack salinity and conductivity (issues
     [\#2279](https://github.com/dankelley/oce/issues/2279) and
-    [\#2282](https://github.com/dankelley/oce/issues/2282)) and
+    [\#2282](https://github.com/dankelley/oce/issues/2282)),
   - handle time-related header elements better (issues
     [\#2280](https://github.com/dankelley/oce/issues/2280) and
-    [\#2281](https://github.com/dankelley/oce/issues/2281)).
+    [\#2281](https://github.com/dankelley/oce/issues/2281)), and
   - handle “new” format CNV files, at least provisionally (issue
     [\#2328](https://github.com/dankelley/oce/issues/2328)).
 - Change
@@ -204,6 +208,9 @@
   [`vectorShow()`](https://dankelley.github.io/oce/reference/vectorShow.md)
   to obey “digits” parameter for list arguments (issue
   [\#2313](https://github.com/dankelley/oce/issues/2313)).
+- Fix bug in `read.sbe.ctd` when `btl=TRUE` that was incorrectly parsing
+  files with long column names
+  ([\#2365](https://github.com/dankelley/oce/issues/2365))
 
 ## oce 1.8.3 (ON CRAN)
 

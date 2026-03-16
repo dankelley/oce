@@ -96,8 +96,9 @@
 </ul></li>
 <li>Change <code>read.adp.rdi(..., which="??")</code> to return a data frame that includes ensemble size (issue <a href="https://github.com/dankelley/oce/issues/2329" class="external-link">#2329</a>).</li>
 <li>Change <code><a href="../reference/read.ctd.sbe.html">read.ctd.sbe()</a></code> to
-<ul><li>handle files that lack salinity and conductivity (issues <a href="https://github.com/dankelley/oce/issues/2279" class="external-link">#2279</a> and <a href="https://github.com/dankelley/oce/issues/2282" class="external-link">#2282</a>) and</li>
-<li>handle time-related header elements better (issues <a href="https://github.com/dankelley/oce/issues/2280" class="external-link">#2280</a> and <a href="https://github.com/dankelley/oce/issues/2281" class="external-link">#2281</a>).</li>
+<ul><li>Handle fixed-width column names (pull request <a href="https://github.com/dankelley/oce/issues/2365" class="external-link">#2365</a>, kindly provided by William Kumler, github user <a href="https://github.com/wkumler" class="external-link">@wkumler</a>),</li>
+<li>handle files that lack salinity and conductivity (issues <a href="https://github.com/dankelley/oce/issues/2279" class="external-link">#2279</a> and <a href="https://github.com/dankelley/oce/issues/2282" class="external-link">#2282</a>),</li>
+<li>handle time-related header elements better (issues <a href="https://github.com/dankelley/oce/issues/2280" class="external-link">#2280</a> and <a href="https://github.com/dankelley/oce/issues/2281" class="external-link">#2281</a>), and</li>
 <li>handle “new” format CNV files, at least provisionally (issue <a href="https://github.com/dankelley/oce/issues/2328" class="external-link">#2328</a>).</li>
 </ul></li>
 <li>Change <code><a href="../reference/read.ctd.aml.html">read.ctd.aml()</a></code> to handle “type 3” format (issue <a href="https://github.com/dankelley/oce/issues/2247" class="external-link">#2247</a>).</li>
@@ -119,6 +120,7 @@
 <li>Change <code><a href="../reference/swSoundAbsorption.html">swSoundAbsorption()</a></code> to handle three more parameterizations (code and documentation contributed by João Resende via pull request 2345).</li>
 <li>Change <code><a href="../reference/tidem.html">tidem()</a></code> to stop if there are any non-finite time values (issue <a href="https://github.com/dankelley/oce/issues/2269" class="external-link">#2269</a>).</li>
 <li>Change <code><a href="../reference/vectorShow.html">vectorShow()</a></code> to obey “digits” parameter for list arguments (issue <a href="https://github.com/dankelley/oce/issues/2313" class="external-link">#2313</a>).</li>
+<li>Fix bug in <code>read.sbe.ctd</code> when <code>btl=TRUE</code> that was incorrectly parsing files with long column names (<a href="https://github.com/dankelley/oce/issues/2365" class="external-link">#2365</a>)</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.8.3" id="oce-183-on-cran">oce 1.8.3 (ON CRAN)<a class="anchor" aria-label="anchor" href="#oce-183-on-cran"></a></h2>

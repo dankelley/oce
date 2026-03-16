@@ -142,7 +142,7 @@ if (requireNamespace("curl")) {
 \references{
 \enumerate{
 \item CODAS naming convention
-\url{https://currents.soest.hawaii.edu/docs/adcp_doc/UHDAS_OPERATIONS/UHDAS_atsea/adcp_access/read_netCDF.html}
+\verb{https://currents.soest.hawaii.edu/docs/adcp_doc/UHDAS_OPERATIONS/UHDAS_atsea/adcp_access/read_netCDF.html}
 \item IOOS naming convention
 \url{https://cfconventions.org/Data/cf-standard-names/78/build/cf-standard-name-table.html}
 \item The SBE names come from a processing manual that was once at

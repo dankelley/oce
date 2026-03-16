@@ -112,7 +112,7 @@ the developers.
 ## References
 
 1.  CODAS naming convention
-    <https://currents.soest.hawaii.edu/docs/adcp_doc/UHDAS_OPERATIONS/UHDAS_atsea/adcp_access/read_netCDF.html>
+    `https://currents.soest.hawaii.edu/docs/adcp_doc/UHDAS_OPERATIONS/UHDAS_atsea/adcp_access/read_netCDF.html`
 
 2.  IOOS naming convention
     <https://cfconventions.org/Data/cf-standard-names/78/build/cf-standard-name-table.html>
@@ -212,8 +212,8 @@ if (requireNamespace("curl")) {
 #> 
 #> * Processing Log
 #> 
-#>     - 2026-02-17 20:57:34 UTC: `Create oce object`
-#>     - 2026-02-17 20:57:34 UTC: `read.netcdf("/var/folders/8b/l4h64m1j22v5pb7vj049ff140000gn/T//RtmpDk8HXN/file32e77d0a1f46.nc")`
+#>     - 2026-03-16 12:26:20 UTC: `Create oce object`
+#>     - 2026-03-16 12:26:20 UTC: `read.netcdf("/var/folders/8b/l4h64m1j22v5pb7vj049ff140000gn/T//Rtmpr3xzwx/file788a4f2ef868.nc")`
 #> * Time: 2023-01-05 13:14:45
 #> * Data Overview
 #> 
@@ -257,7 +257,7 @@ if (requireNamespace("curl")) {
 #> 
 #> * Processing Log
 #> 
-#>     - 2026-02-17 20:57:34 UTC: `Create oce object`
-#>     - 2026-02-17 20:57:34 UTC: `read.netcdf("/var/folders/8b/l4h64m1j22v5pb7vj049ff140000gn/T//RtmpDk8HXN/file32e77d0a1f46.nc")`
-#>     - 2026-02-17 20:57:34 UTC: `oceRename(..., "/private/var/folders/8b/l4h64m1j22v5pb7vj049ff140000gn/T/RtmpdNg0iG/temp_libpath32578b0e13b/oce/extdata/dictionary_ioos.csv")`
+#>     - 2026-03-16 12:26:20 UTC: `Create oce object`
+#>     - 2026-03-16 12:26:20 UTC: `read.netcdf("/var/folders/8b/l4h64m1j22v5pb7vj049ff140000gn/T//Rtmpr3xzwx/file788a4f2ef868.nc")`
+#>     - 2026-03-16 12:26:20 UTC: `oceRename(..., "/private/var/folders/8b/l4h64m1j22v5pb7vj049ff140000gn/T/RtmpTjm9p9/temp_libpath77d475e60f70/oce/extdata/dictionary_ioos.csv")`
 ```

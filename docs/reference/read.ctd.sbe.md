@@ -380,7 +380,7 @@ Other functions that read ctd data:
 
 ## Author
 
-Dan Kelley and Clark Richards
+Dan Kelley and Clark Richards, along with William Kumler.
 
 ## Examples
 
