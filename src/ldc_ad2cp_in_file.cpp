@@ -180,13 +180,13 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, NumericVector from,
   std::string fn = Rcpp::as<std::string>(filename(0));
   FILE *fp = fopen(fn.c_str(), "rb");
   if (!fp)
-    ::Rf_error("cannot open file '%s'\n", fn.c_str());
+    Rcpp::stop("cannot open file '%s'\n", fn.c_str());
   if (From < 0)
-    ::Rf_error("'from' must be positive but it is %ld", From);
+    Rcpp::stop("'from' must be positive but it is %ld", From);
   if (To < 0)
-    ::Rf_error("'to' must be positive but it is %ld", To);
+    Rcpp::stop("'to' must be positive but it is %ld", To);
   if (By < 0)
-    ::Rf_error("'by' must be positive but it is %ld", By);
+    Rcpp::stop("'by' must be positive but it is %ld", By);
 
   // Find file size, and return to start
   fseek(fp, 0L, SEEK_END);
@@ -214,7 +214,7 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, NumericVector from,
   while (1) {
     c = getc(fp);
     if (c == EOF) {
-      ::Rf_error("this file does not contain a single 0x%02x byte", SYNC);
+      Rcpp::stop("this file does not contain a single 0x%02x byte", SYNC);
       break;
     }
     if (SYNC == c) {
@@ -257,7 +257,7 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, NumericVector from,
                         // after a bad checksum
   while (chunk < To && cindex < filesize) { // FIXME: use whole file here
     if (checksum_failures > 100)
-      ::Rf_error("more than 100 checksum errors");
+      Rcpp::stop("more than 100 checksum errors");
     if (chunk > nchunk - 1) {
       if (Debug)
         Rprintf("  increasing 'index_buf' size from %d ", nchunk);
@@ -279,14 +279,14 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, NumericVector from,
     size_t bytes_read;
     // Return 2 of these bytes later, if the header length is 10.
     if (12 != fread(&header_bytes, 1, 12, fp))
-      ::Rf_error("cannot read header_bytes at cindex=%ld of %ld byte file\n",
+      Rcpp::stop("cannot read header_bytes at cindex=%ld of %ld byte file\n",
                  cindex, filesize);
     // if (1 != fread(&header.sync, 1, 1, fp))
-    //   ::Rf_error("cannot read header.sync at cindex=%ld of %ld byte file\n",
+    //   Rcpp::stop("cannot read header.sync at cindex=%ld of %ld byte file\n",
     //   cindex, filesize);
     header.sync = header_bytes[0];
     if (header.sync != SYNC)
-      ::Rf_error(
+      Rcpp::stop(
           "expected header.sync to be 0x%02x but it was 0x%02x at cindex=%ld "
           "(%7.4f%% through file) ... skipping to next 0x%02x character...\n",
           SYNC, header.sync, cindex, 100.0 * cindex / filesize, SYNC);
@@ -309,7 +309,7 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, NumericVector from,
       header.data_checksum = header_bytes[8] + 256 * header_bytes[9];
       header.header_checksum = header_bytes[10] + 256 * header_bytes[11];
     } else {
-      ::Rf_error("invalid header.header_size %d (must be 10 or 12) at "
+      Rcpp::stop("invalid header.header_size %d (must be 10 or 12) at "
                  "cindex=%ld (%7.4f%% through file)\n",
                  header.header_size, cindex, 100.0 * (cindex) / filesize);
     }

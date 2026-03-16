@@ -1,14 +1,12 @@
 /* vim: set expandtab shiftwidth=2 softtabstop=2 tw=70: */
 
-//#define USE_CLONE 1
-//#define USE_APPROX_EXP 1
+// #define USE_CLONE 1
+// #define USE_APPROX_EXP 1
 
 // Comments like //t3 refer to trial t3 in git/oce-issues/18xx/1880/README.md
 
-
 #include <Rcpp.h>
 using namespace Rcpp;
-
 
 // Cross-reference work:
 // 1. update ../src/registerDynamicSymbol.c with an item for this
@@ -20,43 +18,49 @@ using namespace Rcpp;
 //
 // TO DO: test speed, to decide how many Taylor terms to retain.
 double exp_approx(double x) {
-    double rval;
-    double ei[] = { // 51 entries, for i=0, -1, -2, ... -50
-        1.00000000000000e+00, 3.67879441171442e-01, 1.35335283236613e-01,
-        4.97870683678639e-02, 1.83156388887342e-02, 6.73794699908547e-03,
-        2.47875217666636e-03, 9.11881965554516e-04, 3.35462627902512e-04,
-        1.23409804086680e-04, 4.53999297624849e-05, 1.67017007902457e-05,
-        6.14421235332821e-06, 2.26032940698105e-06, 8.31528719103568e-07,
-        3.05902320501826e-07, 1.12535174719259e-07, 4.13993771878517e-08,
-        1.52299797447126e-08, 5.60279643753727e-09, 2.06115362243856e-09,
-        7.58256042791191e-10, 2.78946809286892e-10, 1.02618796317019e-10,
-        3.77513454427910e-11, 1.38879438649640e-11, 5.10908902806333e-12,
-        1.87952881653908e-12, 6.91440010694020e-13, 2.54366564737692e-13,
-        9.35762296884017e-14, 3.44247710846998e-14, 1.26641655490942e-14,
-        4.65888614510340e-15, 1.71390843154201e-15, 6.30511676014699e-16,
-        2.31952283024357e-16, 8.53304762574407e-17, 3.13913279204803e-17,
-        1.15482241730158e-17, 4.24835425529159e-18, 1.56288218933499e-18,
-        5.74952226429356e-19, 2.11513103759108e-19, 7.78113224113380e-20,
-        2.86251858054939e-20, 1.05306173575538e-20, 3.87399762868719e-21,
-        1.42516408274094e-21, 5.24288566336346e-22, 1.92874984796392e-22};
-    int i = (int)(floor(x));
-    if (i > -51) {
-        double I = ei[-i];
-        double f = x - i;
-        // Use Horner's rule for speed (and perhaps accuracy). Test
-        // separately, over range e^(-50) to 1.
-        // Order:        4     5          6        7
-        // Max % error:  ?.??? ?.???      0.008273 ?.???
-        double F = 1.0+f*(1.0+f*(1.0/2.0+f*(1.0/6.0+f*(1.0/24.0+f/120.0))));               // 5
-        //. double F = 1.0+f*(1.0+f*(1.0/2.0+f*(1.0/6.0+f*(1.0/24.0+f*(1.0/120.0+f/720.0))))); // 6
-        //. double F = 1.0+f*(1.0+f*(1.0/2.0+f*(1.0/6.0+f*(1.0/24.0+f*(1.0/120.0+f*(1/720.0+f/5040.0)))))); // 7
-        //printf("i=%d I=%.4f F=%.4f\n",i,I,F);
-        rval = I * F;
-    } else {
-        //printf("using built-in exp()\n");
-        rval = exp(x);
-    }
-    return rval;
+  double rval;
+  double ei[] = {
+      // 51 entries, for i=0, -1, -2, ... -50
+      1.00000000000000e+00, 3.67879441171442e-01, 1.35335283236613e-01,
+      4.97870683678639e-02, 1.83156388887342e-02, 6.73794699908547e-03,
+      2.47875217666636e-03, 9.11881965554516e-04, 3.35462627902512e-04,
+      1.23409804086680e-04, 4.53999297624849e-05, 1.67017007902457e-05,
+      6.14421235332821e-06, 2.26032940698105e-06, 8.31528719103568e-07,
+      3.05902320501826e-07, 1.12535174719259e-07, 4.13993771878517e-08,
+      1.52299797447126e-08, 5.60279643753727e-09, 2.06115362243856e-09,
+      7.58256042791191e-10, 2.78946809286892e-10, 1.02618796317019e-10,
+      3.77513454427910e-11, 1.38879438649640e-11, 5.10908902806333e-12,
+      1.87952881653908e-12, 6.91440010694020e-13, 2.54366564737692e-13,
+      9.35762296884017e-14, 3.44247710846998e-14, 1.26641655490942e-14,
+      4.65888614510340e-15, 1.71390843154201e-15, 6.30511676014699e-16,
+      2.31952283024357e-16, 8.53304762574407e-17, 3.13913279204803e-17,
+      1.15482241730158e-17, 4.24835425529159e-18, 1.56288218933499e-18,
+      5.74952226429356e-19, 2.11513103759108e-19, 7.78113224113380e-20,
+      2.86251858054939e-20, 1.05306173575538e-20, 3.87399762868719e-21,
+      1.42516408274094e-21, 5.24288566336346e-22, 1.92874984796392e-22};
+  int i = (int)(floor(x));
+  if (i > -51) {
+    double I = ei[-i];
+    double f = x - i;
+    // Use Horner's rule for speed (and perhaps accuracy). Test
+    // separately, over range e^(-50) to 1.
+    // Order:        4     5          6        7
+    // Max % error:  ?.??? ?.???      0.008273 ?.???
+    double F =
+        1.0 +
+        f * (1.0 + f * (1.0 / 2.0 +
+                        f * (1.0 / 6.0 + f * (1.0 / 24.0 + f / 120.0)))); // 5
+    //. double F
+    //= 1.0+f*(1.0+f*(1.0/2.0+f*(1.0/6.0+f*(1.0/24.0+f*(1.0/120.0+f/720.0)))));
+    //// 6 . double F
+    //= 1.0+f*(1.0+f*(1.0/2.0+f*(1.0/6.0+f*(1.0/24.0+f*(1.0/120.0+f*(1/720.0+f/5040.0))))));
+    //// 7 printf("i=%d I=%.4f F=%.4f\n",i,I,F);
+    rval = I * F;
+  } else {
+    // printf("using built-in exp()\n");
+    rval = exp(x);
+  }
+  return rval;
 }
 #endif
 
@@ -66,21 +70,21 @@ double exp_approx(double x) {
 // of factor of 3 speedup, with 1000 column data and a
 // 10 by 10 grid, and demonstration that the
 // error is < 0.1% in the final grid.
-inline double exp_approx(double x)
-{
-  return 1.0 / (0.999448
-      + x * (1.023820
-        + x * (0.3613967
-          + x * (0.4169646
-            + x * (-0.1292509
-              + x * 0.0499565)))));
+inline double exp_approx(double x) {
+  return 1.0 / (0.999448 +
+                x * (1.023820 +
+                     x * (0.3613967 +
+                          x * (0.4169646 + x * (-0.1292509 + x * 0.0499565)))));
 }
 #endif
 
-static double interpolate_barnes(double xx, double yy, double zz, /* interpolate to get zz value at (xx,yy) */
-    int skip, /* value in (x,y,z) to skip, or -1 if no skipping */
-    unsigned int nx, double *x, double *y, double *z, double *w, /* data num, locations, values, weights */
-    double *z_last, /* last estimate of z at (x,y) */
+static double interpolate_barnes(
+    double xx, double yy,
+    double zz, /* interpolate to get zz value at (xx,yy) */
+    int skip,  /* value in (x,y,z) to skip, or -1 if no skipping */
+    unsigned int nx, double *x, double *y, double *z,
+    double *w,            /* data num, locations, values, weights */
+    double *z_last,       /* last estimate of z at (x,y) */
     double xr, double yr) /* influence radii */
 {
   double sum_w = 0.0, sum = 0.0;
@@ -90,9 +94,9 @@ static double interpolate_barnes(double xx, double yy, double zz, /* interpolate
       double dx = (xx - x[k]) / xr;
       double dy = (yy - y[k]) / yr;
 #ifdef USE_APPROX_EXP
-      double weight = w[k] * exp_approx(-(dx*dx+dy*dy));
+      double weight = w[k] * exp_approx(-(dx * dx + dy * dy));
 #else
-      double weight = w[k] * exp(-(dx*dx + dy*dy));
+      double weight = w[k] * exp(-(dx * dx + dy * dy));
 #endif
       sum_w += weight;
       sum += weight * (z[k] - z_last[k]);
@@ -102,20 +106,18 @@ static double interpolate_barnes(double xx, double yy, double zz, /* interpolate
 }
 
 // next is modelled on interpolate_barnes()
-static double weight_barnes(double xx, double yy,
-    int skip,
-    unsigned int n, double *x, double *y, double *z, double *w,
-    double xr, double yr)
-{
+static double weight_barnes(double xx, double yy, int skip, unsigned int n,
+                            double *x, double *y, double *z, double *w,
+                            double xr, double yr) {
   double sum_w = 0.0;
   for (unsigned int k = 0; k < n; k++) {
     if ((int)k != skip) {
       double dx = (xx - x[k]) / xr;
       double dy = (yy - y[k]) / yr;
 #ifdef USE_APPROX_EXP
-      double weight = w[k] * exp_approx(-(dx*dx+dy*dy));
+      double weight = w[k] * exp_approx(-(dx * dx + dy * dy));
 #else
-      double weight = w[k] * exp(-(dx*dx+dy*dy));
+      double weight = w[k] * exp(-(dx * dx + dy * dy));
 #endif
       sum_w += weight;
     }
@@ -123,28 +125,26 @@ static double weight_barnes(double xx, double yy,
   return ((sum_w > 0.0) ? sum_w : NA_REAL);
 }
 
-
 // [[Rcpp::export]]
-List do_interp_barnes(NumericVector x, NumericVector y, NumericVector z, NumericVector w,
-    NumericVector xg, NumericVector yg,
-    NumericVector xr, NumericVector yr,
-    NumericVector gamma, NumericVector iterations)
-{
+List do_interp_barnes(NumericVector x, NumericVector y, NumericVector z,
+                      NumericVector w, NumericVector xg, NumericVector yg,
+                      NumericVector xr, NumericVector yr, NumericVector gamma,
+                      NumericVector iterations) {
   int nx = x.size();
   int nxg = xg.size();
   int nyg = yg.size();
   double rgamma = gamma[0]; // gamma
   if (rgamma < 0.0)
-    ::Rf_error("cannot have gamma < 0, but got gamma=%f", rgamma);
+    Rcpp::stop("cannot have gamma < 0, but got gamma=%f", rgamma);
   int niter = floor(0.5 + iterations[0]); // number of iterations
   if (niter < 1)
-    ::Rf_error("cannot have fewer than 1 iteration, but got niter=%d ", niter);
+    Rcpp::stop("cannot have fewer than 1 iteration, but got niter=%d ", niter);
   if (niter > 20)
-    ::Rf_error("cannot have more than 20 iterations, but got niter=%d ", niter);
+    Rcpp::stop("cannot have more than 20 iterations, but got niter=%d ", niter);
   if (xr[0] <= 0)
-    ::Rf_error("cannot have xr<=0 but got xr=%f", xr[0]);
+    Rcpp::stop("cannot have xr<=0 but got xr=%f", xr[0]);
   if (yr[0] <= 0)
-    ::Rf_error("cannot have yr<=0 but got yr=%f", yr[0]);
+    Rcpp::stop("cannot have yr<=0 but got yr=%f", yr[0]);
   double xr2 = xr[0]; // local radius, which will vary with iteration
   double yr2 = yr[0]; // local radius, which will vary with iteration
   // Get storage
@@ -159,28 +159,26 @@ List do_interp_barnes(NumericVector x, NumericVector y, NumericVector z, Numeric
   std::fill(zz.begin(), zz.end(), 0.0);
   std::fill(z_last.begin(), z_last.end(), 0.0);
 
-  //t3 double *zzp = &zz[0];
+  // t3 double *zzp = &zz[0];
   for (int iter = 0; iter < niter; iter++) {
-    //Rprintf("iter=%d xr2=%f yr2=%f\n", iter, xr2, yr2);
+    // Rprintf("iter=%d xr2=%f yr2=%f\n", iter, xr2, yr2);
     /* update grid */
     for (int i = 0; i < nxg; i++) {
       for (int j = 0; j < nyg; j++) {
-        //t3 *(zzp+i+j*nxg) = interpolate_barnes(xg[i], yg[j], *(zzp+i+j*nxg),
-        zz(i, j) = interpolate_barnes(xg[i], yg[j], zz(i, j),
-            -1, /* no skip */
-            nx, &x[0], &y[0], &z[0], &w[0], &z_last(0),
-            xr2, yr2);
+        // t3 *(zzp+i+j*nxg) = interpolate_barnes(xg[i], yg[j], *(zzp+i+j*nxg),
+        zz(i, j) = interpolate_barnes(xg[i], yg[j], zz(i, j), -1, /* no skip */
+                                      nx, &x[0], &y[0], &z[0], &w[0],
+                                      &z_last(0), xr2, yr2);
       }
       R_CheckUserInterrupt();
     }
     /* interpolate grid back to data locations */
     for (int k = 0; k < nx; k++) {
-      //Rprintf("  zd[%d] = %f (iter %d)\n", k, zd[k], iter);
-      zd[k] = interpolate_barnes(x[k], y[k], z_last[k],
-          -1, /* BUG: why not skip? */
-          nx, &x[0], &y[0], &z[0], &w[0], &z_last(0),
-          xr2, yr2);
-      //Rprintf("  -> zd[%d] = %f (iter %d)\n", k, zd[k], iter);
+      // Rprintf("  zd[%d] = %f (iter %d)\n", k, zd[k], iter);
+      zd[k] = interpolate_barnes(
+          x[k], y[k], z_last[k], -1, /* BUG: why not skip? */
+          nx, &x[0], &y[0], &z[0], &w[0], &z_last(0), xr2, yr2);
+      // Rprintf("  -> zd[%d] = %f (iter %d)\n", k, zd[k], iter);
     }
     R_CheckUserInterrupt();
     // Note that we have to clone, or the final z_last results will be wrong.
@@ -211,12 +209,10 @@ List do_interp_barnes(NumericVector x, NumericVector y, NumericVector z, Numeric
   // weights at final region-of-influence radii
   for (int i = 0; i < nxg; i++) {
     for (int j = 0; j < nyg; j++) {
-      wg(i, j) = weight_barnes(xg[i], yg[j],
-          -1, /* no skip */
-          nx, &x[0], &y[0], &z[0], &w[0],
-          xr2, yr2);
+      wg(i, j) = weight_barnes(xg[i], yg[j], -1, /* no skip */
+                               nx, &x[0], &y[0], &z[0], &w[0], xr2, yr2);
     }
     R_CheckUserInterrupt();
   }
-  return(List::create(Named("zg")=zg, Named("wg")=wg, Named("zd")=zd));
+  return (List::create(Named("zg") = zg, Named("wg") = wg, Named("zd") = zd));
 }

@@ -33,7 +33,7 @@ NumericVector do_gappy_index(NumericVector starts, NumericVector offset,
       }
     }
     if (Length > minspan) {
-      ::Rf_error("'length' (%ld) exceeds minimum span between 'starts' "
+      Rcpp::stop("'length' (%ld) exceeds minimum span between 'starts' "
                  "elements (%ld); note: n=%ld, nstarts=%ld)",
                  Length, minspan, n, nstarts);
     }

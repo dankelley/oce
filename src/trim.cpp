@@ -20,13 +20,13 @@ List trimTs(NumericVector x, NumericVector xlim, NumericVector extra) {
   int nx = x.size();
   int nxlim = xlim.size();
   if (nxlim != 2)
-    ::Rf_error("In trim_ts(), length of xlim must be 2 but it is %d\n", nxlim);
+    Rcpp::stop("In trim_ts(), length of xlim must be 2 but it is %d\n", nxlim);
   if (xlim[1] < xlim[0])
-    ::Rf_error("In trim_ts(), xlim must be ordered but it is (%g, %g)\n",
+    Rcpp::stop("In trim_ts(), xlim must be ordered but it is (%g, %g)\n",
                xlim[0], xlim[1]);
   for (int i = 1; i < nx; i++) {
     if (x[i] < x[i - 1]) {
-      ::Rf_error(
+      Rcpp::stop(
           "In trim_ts(), x must be ordered but x[%d]=%.10g and x[%d]=%.10g\n",
           i - 1, x[i - 1], i, x[i]);
     }

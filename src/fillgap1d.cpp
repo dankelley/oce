@@ -55,7 +55,7 @@ NumericVector do_fill_gap_1d(NumericVector x, NumericVector rule) {
       }
     }
   } else {
-    ::Rf_error("'rule' must be 1 or 2");
+    Rcpp::stop("'rule' must be 1 or 2");
   }
   // Interior points: linear interpolation
   // Rprintf("first_good=%d last_good=%d\n", first_good, last_good);

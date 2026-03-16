@@ -49,7 +49,7 @@ NumericVector locateByteSequences(RawVector buf, RawVector match,
   long long int lbuf = buf.size();  // LENGTH(buf);
   int lkey = key.size();            // LENGTH(key);
   if (lkey != 2) {
-    ::Rf_error("key length must be 2, but it is %d", lkey);
+    Rcpp::stop("key length must be 2, but it is %d", lkey);
   }
   // get some extra space; fill some with NA
   long long int ires = 0;
