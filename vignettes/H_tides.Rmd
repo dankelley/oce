@@ -87,7 +87,7 @@ Due to the use of `lm()`, the `oce` package is not able to perform a complex ana
 
 There are many different ways to set up and configure a python environment for doing oceanography. I am not a python expert, so take any of my advice with a grain of salt, but other competent oceanographers that I know that use python seem to prefer the "miniconda" distribution, which uses conda as a package manager (and can also use the more development-oriented package repository of conda-forge).
 
-Whenever I am setting up a new miniconda install, I use the instructions provided by the University of Hawaii Currents group, found at https://currents.soest.hawaii.edu/ocn_data_analysis/installation.html. For completeness here I'll just repeat the steps as I have followed them. The install is nearly identical on both MacOS and Linux. I have not had the opportunity to try the full install on a normal Windows OS, because even on Windows I use the Windows Subsystem for Linux (WSL) for all my scientific coding (essentially just a terminal Ubuntu installation embedded in Windows).
+Whenever I am setting up a new miniconda install, I use the instructions provided by the University of Hawaii Currents group, found at `https://currents.soest.hawaii.edu/ocn_data_analysis/installation.html`. For completeness here I'll just repeat the steps as I have followed them. The install is nearly identical on both MacOS and Linux. I have not had the opportunity to try the full install on a normal Windows OS, because even on Windows I use the Windows Subsystem for Linux (WSL) for all my scientific coding (essentially just a terminal Ubuntu installation embedded in Windows).
 
 Copied directly from the above UH page, follow below to install the python miniconda environment:
 
