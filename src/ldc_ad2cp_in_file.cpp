@@ -200,7 +200,7 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, NumericVector from,
     // Rprintf("  ignoreChecksums[0]=%d\n", ignoreChecksums[0]);
     Rprintf("  filesize=%ld bytes\n", filesize);
   }
-  long int chunk = 0;
+  unsigned long int chunk = 0;
   long int cindex = 0; //, cindex_last_good = 0;
   long int checksum_failures = 0;
 
@@ -242,7 +242,7 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, NumericVector from,
   unsigned int dbuflen = 10000; // may be increased later
   unsigned char *dbuf =
       (unsigned char *)R_Calloc((size_t)dbuflen, unsigned char);
-  unsigned int nchunk = 100000;
+  unsigned long int nchunk = 100000;
   unsigned long int *start_buf =
       (unsigned long int *)R_Calloc((size_t)nchunk, unsigned long int);
   unsigned long int *index_buf =
@@ -260,7 +260,7 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, NumericVector from,
       Rcpp::stop("more than 100 checksum errors");
     if (chunk > nchunk - 1) {
       if (Debug)
-        Rprintf("  increasing 'index_buf' size from %d ", nchunk);
+        Rprintf("  increasing 'index_buf' size from %lu ", nchunk);
       nchunk = static_cast<unsigned int>(
           floor(chunk * 1.4)); // increase buffer size by sqrt(2)
       start_buf = static_cast<unsigned long int *>(
@@ -274,7 +274,7 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, NumericVector from,
       id_buf =
           static_cast<unsigned int *>(R_Realloc(id_buf, nchunk, unsigned int));
       if (Debug)
-        Rprintf("to %d\n", nchunk);
+        Rprintf("to %lu\n", nchunk);
     }
     size_t bytes_read;
     // Return 2 of these bytes later, if the header length is 10.
