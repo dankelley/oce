@@ -11,14 +11,6 @@ using namespace Rcpp;
 List do_gradient(NumericMatrix m, NumericVector x, NumericVector y) {
   int nx = x.size();
   int ny = y.size();
-  if (ny < 3)
-    Rcpp::stop("cannot handle case with ny < 3 (FIXME)");
-  if (nx < 3)
-    Rcpp::stop("cannot handle case with nx < 3 (FIXME)");
-  if (m.nrow() != nx)
-    Rcpp::stop("matrix has %d rows, but length(x) is %d", m.nrow(), nx);
-  if (m.ncol() != ny)
-    Rcpp::stop("matrix has %d cols, but length(y) is %d", m.ncol(), ny);
   NumericMatrix gx(nx, ny);
   for (int j = 0; j < ny; j++) {
     gx(0, j) = (m(1, j) - m(0, j)) / (x[1] - x[0]);

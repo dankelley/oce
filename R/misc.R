@@ -4832,6 +4832,10 @@ grad <- function(h, x = seq(0, 1, length.out = nrow(h)), y = seq(0, 1, length.ou
     if (missing(h)) {
         stop("must give h")
     }
+    if (length(x) < 3)
+        stop("length of x must exceed 3, but it is ", length(x))
+    if (length(y) < 3)
+        stop("length of y must exceed 3, but it is ", length(y))
     if (length(x) != nrow(h)) {
         stop("length of x (", length(x), ") must equal number of rows in h (", nrow(h), ")")
     }
