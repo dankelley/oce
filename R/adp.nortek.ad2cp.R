@@ -477,10 +477,10 @@ ad2cpCodeToName <- function(code = NULL, prefix = TRUE) {
 # the most common plan in the requested subset of the data.
 #'
 #- @param type optional character value indicating the type of Nortek -
-#instrument.  Normally, this is inferred from the file contents, but - if an
-#error is reported that no header is found, the user may - find it useful to set
-#the `type` argument. The permitted choices are - `"Signature100"`,
-#`"Signature250"`, `"Signature500"`, and - `"Signature1000"`.
+# instrument.  Normally, this is inferred from the file contents, but - if an
+# error is reported that no header is found, the user may - find it useful to set
+# the `type` argument. The permitted choices are - `"Signature100"`,
+# `"Signature250"`, `"Signature500"`, and - `"Signature1000"`.
 #'
 #' @param TOC a logical value.  If this is FALSE (the default) then the other
 #' parameters of the function are used to select data from the indicated
@@ -593,7 +593,7 @@ read.adp.ad2cp <- function(
         "echosounderRaw" = 0x23,
         "echosounderRawTx" = 0x24, # maybe handled (the docs are unclear how different from 0x23)
         "waveData" = 0x30 # not handled
-        #"format8" = 0xC0 # not handled
+        # "format8" = 0xC0 # not handled
     )
     dataTypeOrig <- dataType
     if (!is.null(dataType)) {
@@ -1273,7 +1273,7 @@ read.adp.ad2cp <- function(
         echosounderRawTx = which(d$id == 0x24), # not handled yet
         waves = which(d$id == 0x30), # not handled yet
         text = which(d$id == 0xa0)
-        #format8 = which(d$id == 0xc0) # not handled yet
+        # format8 = which(d$id == 0xc0) # not handled yet
     )
 
     # x Try to retrieved a named item from the data buffer.
@@ -1925,31 +1925,34 @@ read.adp.ad2cp <- function(
         type <- gsub(".*=", "", ad2cpCodeToName(id))
         oceDebug(debug, "readTrack(id=0x", id, ") # i.e. type=", type, "\n")
         look <- which(d$id == id)
+        oceDebug(debug, vectorShow(look))
         lookIndex <- d$index[look]
-        offsetOfData <- as.integer(d$buf[d$index[look[1]] + 2L])
-        oceDebug(debug, "bottom-track (is this 79+1?)", vectorShow(offsetOfData))
         oceDebug(debug, vectorShow(lookIndex))
+        offsetOfData <- as.integer(d$buf[d$index[look[1]] + 2L])
+        oceDebug(debug, vectorShow(offsetOfData))
         configuration0 <- configuration[look[1], ]
+        oceDebug(debug, vectorShow(configuration0))
         velocityIncluded <- configuration0[6]
+        oceDebug(debug, vectorShow(velocityIncluded))
         amplitudeIncluded <- configuration0[7]
+        oceDebug(debug, vectorShow(amplitudeIncluded))
         correlationIncluded <- configuration0[8]
+        oceDebug(debug, vectorShow(correlationIncluded))
         altimeterIncluded <- configuration0[9]
+        oceDebug(debug, vectorShow(altimeterIncluded))
         # nolint start object_useage_linter
         altimeterRawIncluded <- configuration0[10]
+        oceDebug(debug, vectorShow(altimeterRawIncluded))
         # nolint end object_useage_linter
         ASTIncluded <- configuration0[11]
-        echosounderIncluded <- configuration0[12]
-        AHRSIncluded <- configuration0[13]
-        percentGoodIncluded <- configuration0[14]
-        stdDevIncluded <- configuration0[15]
-        oceDebug(debug, vectorShow(velocityIncluded))
-        oceDebug(debug, vectorShow(amplitudeIncluded))
-        oceDebug(debug, vectorShow(correlationIncluded))
-        oceDebug(debug, vectorShow(altimeterIncluded))
         oceDebug(debug, vectorShow(ASTIncluded))
+        echosounderIncluded <- configuration0[12]
         oceDebug(debug, vectorShow(echosounderIncluded))
+        AHRSIncluded <- configuration0[13]
         oceDebug(debug, vectorShow(AHRSIncluded))
+        percentGoodIncluded <- configuration0[14]
         oceDebug(debug, vectorShow(percentGoodIncluded))
+        stdDevIncluded <- configuration0[15]
         oceDebug(debug, vectorShow(stdDevIncluded))
         rval <- list(
             configuration = configuration0,
@@ -2027,6 +2030,9 @@ read.adp.ad2cp <- function(
             # ! i0v <- i0v - 2L # test (gives v ~ -14,000 m/s)
             # ! i0v <- i0v + 2L # test (gives v ~ -1,500 and -15,000 m/s)
             oceDebug(debug, "reading bottom-track v with velocityFactor=", rval$velocityFactor, ":", vectorShow(i0v))
+            if (NB < 3) {
+                stop("#beams has been read as ", NB, ", indicating a problem with the file or with oce")
+            }
             iv <- gappyIndex(i, i0v, 4L * NB)
             tmp <- readBin(d$buf[iv], "integer", size = 4L, n = NB * NP, endian = "little")
             rval$v <- rval$velocityFactor * matrix(tmp, ncol = NB, byrow = FALSE)
@@ -2597,9 +2603,9 @@ read.adp.ad2cp <- function(
         stop("dataType waves (0x30) is not handled yet")
     } # 0x30=waves (not handled yet)
 
-    #if (0xc0 == dataType) { # 0xc0=format8 not handled yet
+    # if (0xc0 == dataType) { # 0xc0=format8 not handled yet
     #    stop("dataType format8 (0x30) is not handled yet")
-    #} # 0xc0=format8 (not handled yet)
+    # } # 0xc0=format8 (not handled yet)
 
     # Use header as the final word, if it contradicts what we inferred above.
     if (!is.null(header)) {
