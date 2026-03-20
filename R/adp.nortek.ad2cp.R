@@ -1154,6 +1154,12 @@ read.adp.ad2cp <- function(
     # nolint start commas_linter
     ncells <- BCC[, 1] + 2 * (BCC[, 2] + 2 * (BCC[, 3] + 2 * (BCC[, 4] + 2 * (BCC[, 5] + 2 * (BCC[, 6] + 2 * (BCC[, 7] + 2 * (BCC[, 8] + 2 * (BCC[, 9] + 2 * BCC[, 10]))))))))
     nbeams <- BCC[, 13] + 2L * (BCC[, 14L] + 2L * (BCC[, 15L] + 2L * BCC[, 16L]))
+    if (debug > 1) {
+        message("nbeams: (line 1156)")
+        print(nbeams)
+        message("BCC[,13:16 (i.e. 15-12 in Nortek manual, for number of beams):")
+        print(BCC[,13:16])
+    }
     # nolint end commas_linter
     # b00=enu, b01=xyz, b10=beam, b11=- [1 page 49]
     coordinateSystem <- c("enu", "xyz", "beam", "?")[1 + BCC[, 11] + 2 * BCC[, 12]]
@@ -2031,6 +2037,11 @@ read.adp.ad2cp <- function(
             # ! i0v <- i0v + 2L # test (gives v ~ -1,500 and -15,000 m/s)
             oceDebug(debug, "reading bottom-track v with velocityFactor=", rval$velocityFactor, ":", vectorShow(i0v))
             if (NB < 3) {
+                if (debug > 0) {
+                    message("#beams has been read as ", NB, ", indicating a problem with the file or with oce")
+                    message(vectorShow(configuration0, n = 100))
+                    browser()
+                }
                 stop("#beams has been read as ", NB, ", indicating a problem with the file or with oce")
             }
             iv <- gappyIndex(i, i0v, 4L * NB)
