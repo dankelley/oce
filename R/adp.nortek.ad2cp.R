@@ -1923,7 +1923,7 @@ read.adp.ad2cp <- function(
     {
         # id will be 0x17 for bottomTrack
         type <- gsub(".*=", "", ad2cpCodeToName(id))
-        oceDebug(debug, "readTrack(id=0x", id, ") # i.e. type=", type, "\n")
+        oceDebug(debug, "readTrack(id=0x", as.raw(id), " or ", id, " decimal) # i.e. type=", type, "\n")
         look <- which(d$id == id)
         oceDebug(debug, vectorShow(look))
         lookIndex <- d$index[look]
