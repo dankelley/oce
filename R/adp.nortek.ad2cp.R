@@ -63,8 +63,7 @@ adpAd2cpFileTrim <- function(infile, n = 100L, outfile, debug = getOption("oceDe
 }
 
 # private function
-ad2cpDefaultDataItem <- function(x, j = NULL,
-                                 order = c(
+ad2cpDefaultDataItem <- function(x, j = NULL, order = c(
                                      "burst", "average",
                                      "bottomTrack", "interleavedBurst", "burstAltimeterRaw",
                                      "DVLBottomTrack", "DVLWaterTrack", "echosounder", "echosounderRaw",
@@ -660,17 +659,20 @@ read.adp.ad2cp <- function(
         stop("require from<to but got from=", from, " and to=", to)
     }
 
-    oceDebug(debug, "read.adp.ad2cp(filename",
-        ", dataType=0x", as.raw(dataType), " (original was ", dataTypeOrig, ")",
+    oceDebug(debug, "read.adp.ad2cp(file",
+        ", dataType=0x", as.raw(dataType), " (i.e. ", dataTypeOrig, ")",
         ", from=", if (fromGiven) format(from) else "(missing)",
         ", to=", if (toGiven) to else "(missing)",
         ", by=", if (byGiven) by else "(missing)",
         "  plan=", if (planGiven) plan else "(missing)",
-        ", debug=", debug,
         # ", ignoreChecksums=", ignoreChecksums,
         ", ...) START\n",
         sep = "", unindent = 1
     )
+    if (is.character(file)) {
+        oceDebug(debug, vectorShow(file))
+    }
+
     #- if (typeGiven) {
     #-     typeAllowed <- c("Signature100", "Signature250", "Signature500", "Signature1000")
     #-     typei <- pmatch(type, typeAllowed)
@@ -758,7 +760,7 @@ read.adp.ad2cp <- function(
     serialNumber <- readBin(d$buf[d$index[firstData] + 5:8], "integer", size = 4L, endian = "little")
     oceDebug(debug, vectorShow(serialNumber))
     # Create pointers for accessing 1-byte, 2-byte, and 4-byte chunks
-    oceDebug(debug, "focussing on ", length(d$index), " data records\n")
+    oceDebug(debug, "Focussing on ", length(d$index), " data records\n")
     # .pointer2 <- as.vector(t(cbind(pointer1, 1 + pointer1))) # rbind() would be fine, too.
     # .pointer4 <- as.vector(t(cbind(pointer1, 1 + pointer1, 2 + pointer1, 3 + pointer1)))
     # Below indicates that gappyIndex() is about 6 times faster on a small file
@@ -926,9 +928,10 @@ read.adp.ad2cp <- function(
                 }
             }
         }
+        oceDebug(debug, "Returning TOC\n")
         return(rval)
     } # TOC
-    oceDebug(debug, "this is not a TOC call\n")
+    oceDebug(debug, "This is not a TOC call\n")
     if (dataSet > numberOfDataSets) {
         stop(
             "cannot access dataSet=", dataSet, " because this file contains only ",
@@ -966,7 +969,10 @@ read.adp.ad2cp <- function(
     keep <- planKeep & dataSetKeep & dataTypeKeep
     #-print(table(keep))
     if (sum(keep) < length(keep)) {
-        oceDebug(debug, "retaining ", sum(keep), " records, or ", round(100 * sum(keep) / length(keep), 4), "% of file\n")
+        oceDebug(debug, "Focussing on plan=", plan, ", dataSet=", dataSet, ", and dataType=", dataType, ")\n",
+            sep = ""
+        )
+        oceDebug(debug, "Retained ", sum(keep), " records, or ", round(100 * sum(keep) / length(keep), 4), "% of file\n")
         keep2 <- which(keep)
         if (sum(keep2) == 0) {
             warning("no \"", originalParameters$dataType, "\" data in file")
@@ -998,10 +1004,6 @@ read.adp.ad2cp <- function(
         if (!all.equal(pointer4, pointer4NEW)) {
             warning("DEVELOPER NOTE: pointer4NEW != pointer4 at spot 2")
         }
-        oceDebug(debug, "focussing on ", length(pointer1), " records (after subsetting for plan=", plan,
-            ", dataSet=", dataSet, ", and dataType=", dataType, ")\n",
-            sep = ""
-        )
     }
     # if (debug > 0) {
     #    oceDebug(debug, "below is table() of the 'plan' values in this subset of the file:\n")
@@ -1042,12 +1044,12 @@ read.adp.ad2cp <- function(
         for (id in as.raw(unique(d$id))) {
             config <- commonData$configuration[d$id == id, ]
             if (is.matrix(config)) {
-                oceDebug(debug, "    checking id ", ad2cpCodeToName(id), "\n")
+                oceDebug(debug, "Checking id ", ad2cpCodeToName(id), "\n")
                 badColumn <- 0L
                 for (column in seq(2L, ncol(config))) {
                     numberDifferent <- sum(config[, column] != config[1, column])
                     if (numberDifferent > 0L) {
-                        oceDebug(debug, "        column ", column, " has inconsistencies in ", numberDifferent,
+                        oceDebug(debug, "column ", column, " has inconsistencies in ", numberDifferent,
                             " of the ", nrow(config), " rows\n",
                             sep = ""
                         )
@@ -1061,7 +1063,7 @@ read.adp.ad2cp <- function(
                     }
                 }
                 if (badColumn == 0L) {
-                    oceDebug(debug, "        no inconsistencies in any column\n")
+                    oceDebug(debug, "No inconsistencies in 'configuration' values\n")
                 } else {
                     badID <- badID + 1L
                     warning("In read.adp.ad2cp() : id ", ad2cpCodeToName(id),
@@ -1072,14 +1074,13 @@ read.adp.ad2cp <- function(
             }
         }
         if (badID > 0L) {
-            oceDebug(debug, "    summary: commonData$configuration inconsistencies for ", badID, " ID type(s)\n")
+            oceDebug(debug, "Summary: commonData$configuration inconsistencies for ", badID, " ID type(s)\n")
             warning("In read.adp.adp2cp() : found commonData$configuration inconsistencies for ", badID, " ID type(s)\n",
                 sep = "", call. = FALSE
             )
         } else {
-            oceDebug(debug, "no ID types had inconsistencies\n")
+            oceDebug(debug, "No ID types had inconsistencies in 'configuration'\n")
         }
-        oceDebug(debug, "finished checking commonData$configuration consistency\n")
     })
     # Extract columns as simply-named flags, for convenience. The variable
     # names to which the assignments are made apply to average/burst data.
@@ -1091,29 +1092,30 @@ read.adp.ad2cp <- function(
 
     # BOOKMARK 1 define *Included, used later in reading
     configuration <- commonData$configuration # FIXME: remove this later
-    velocityIncluded <- configuration[, 6]
-    amplitudeIncluded <- configuration[, 7]
-    correlationIncluded <- configuration[, 8]
-    altimeterIncluded <- configuration[, 9]
-    altimeterRawIncluded <- configuration[, 10]
-    ASTIncluded <- configuration[, 11]
-    echosounderIncluded <- configuration[, 12]
-    AHRSIncluded <- configuration[, 13]
-    percentGoodIncluded <- configuration[, 14]
-    stdDevIncluded <- configuration[, 15]
+    velocityIncluded <- configuration[1, 6]
+    amplitudeIncluded <- configuration[1, 7]
+    correlationIncluded <- configuration[1, 8]
+    altimeterIncluded <- configuration[1, 9]
+    altimeterRawIncluded <- configuration[1, 10]
+    ASTIncluded <- configuration[1, 11]
+    echosounderIncluded <- configuration[1, 12]
+    AHRSIncluded <- configuration[1, 13]
+    percentGoodIncluded <- configuration[1, 14]
+    stdDevIncluded <- configuration[1, 15]
     # We skip bit 16, which  is called 'unused' in Nortek AS. \dQuote{Signature
     # Integration 55|250|500|1000kHz.} Nortek AS, 2017.
     # configuration[, 16] "Unused" in 2017 Signature
-    oceDebug(debug, vectorShow(velocityIncluded))
-    oceDebug(debug, vectorShow(amplitudeIncluded))
-    oceDebug(debug, vectorShow(correlationIncluded))
-    oceDebug(debug, vectorShow(altimeterIncluded))
-    oceDebug(debug, vectorShow(altimeterRawIncluded))
-    oceDebug(debug, vectorShow(ASTIncluded))
-    oceDebug(debug, vectorShow(echosounderIncluded))
-    oceDebug(debug, vectorShow(AHRSIncluded))
-    oceDebug(debug, vectorShow(percentGoodIncluded))
-    oceDebug(debug, vectorShow(stdDevIncluded))
+    oceDebug(debug, vectorShow(ifelse(configuration[1, ], "T", "F"), "configuration", n = 30))
+    oceDebug(debug, vectorShow(velocityIncluded, postscript = "based on configuration[6]"))
+    oceDebug(debug, vectorShow(amplitudeIncluded, postscript = "based on configuration[7]"))
+    oceDebug(debug, vectorShow(correlationIncluded, postscript = "based on configuration[8]"))
+    oceDebug(debug, vectorShow(altimeterIncluded, postscript = "based on configuration[9]"))
+    oceDebug(debug, vectorShow(altimeterRawIncluded, postscript = "based on configuration[10]"))
+    oceDebug(debug, vectorShow(ASTIncluded, postscript = "based on configuration[11]"))
+    oceDebug(debug, vectorShow(echosounderIncluded, postscript = "based on configuration[12]2"))
+    oceDebug(debug, vectorShow(AHRSIncluded, postscript = "based on configuration[13]"))
+    oceDebug(debug, vectorShow(percentGoodIncluded, postscript = "based on configuration[14]"))
+    oceDebug(debug, vectorShow(stdDevIncluded, postscript = "based on configuration[15]"))
     # Now, start decoding actual data.
     #
     # Decode time. Note that the 100usec part sometimes exceeds 1s, when
@@ -1154,12 +1156,7 @@ read.adp.ad2cp <- function(
     # nolint start commas_linter
     ncells <- BCC[, 1] + 2 * (BCC[, 2] + 2 * (BCC[, 3] + 2 * (BCC[, 4] + 2 * (BCC[, 5] + 2 * (BCC[, 6] + 2 * (BCC[, 7] + 2 * (BCC[, 8] + 2 * (BCC[, 9] + 2 * BCC[, 10]))))))))
     nbeams <- BCC[, 13] + 2L * (BCC[, 14L] + 2L * (BCC[, 15L] + 2L * BCC[, 16L]))
-    if (debug > 1) {
-        message("nbeams: (line 1156)")
-        print(nbeams)
-        message("BCC[,13:16 (i.e. 15-12 in Nortek manual, for number of beams):")
-        print(BCC[,13:16])
-    }
+    oceDebug(debug, vectorShow(nbeams))
     # nolint end commas_linter
     # b00=enu, b01=xyz, b10=beam, b11=- [1 page 49]
     coordinateSystem <- c("enu", "xyz", "beam", "?")[1 + BCC[, 11] + 2 * BCC[, 12]]
@@ -1192,10 +1189,10 @@ read.adp.ad2cp <- function(
     blankingDistanceFactor <- ifelse(blankingDistanceInCm == 1, 1e-2, 1e-3)
     blankingDistance <- blankingDistanceFactor * tmp
     oceDebug(debug, "Steps in the computation of blanking distance\n")
-    oceDebug(debug, "    ", vectorShow(tmp, n = 10))
-    oceDebug(debug, "    ", vectorShow(blankingDistanceInCm, n = 10))
-    oceDebug(debug, "    ", vectorShow(blankingDistanceFactor, n = 10))
-    oceDebug(debug, "    ", vectorShow(blankingDistance, n = 10))
+    oceDebug(debug, vectorShow(tmp, n = 10))
+    oceDebug(debug, vectorShow(blankingDistanceInCm, n = 10))
+    oceDebug(debug, vectorShow(blankingDistanceFactor, n = 10))
+    oceDebug(debug, vectorShow(blankingDistance, n = 10))
     nominalCorrelation <- readBin(d$buf[pointer1 + 37], "integer", size = 1L, n = N, signed = FALSE, endian = "little")
     # Magnetometer (Table 6.2, page 82, ref 1b)
     magnetometer <- matrix(0.0, nrow = N, ncol = 3)
@@ -1313,18 +1310,19 @@ read.adp.ad2cp <- function(
         NB <- object$numberOfBeams
         NC <- object$numberOfCells
         NP <- length(object$time) # already defined
-        # oceDebug(debug, "  ... NP=",NP,", NB=", NB, ", NC=", NC, "\n")
+        # oceDebug(debug, "NP=",NP,", NB=", NB, ", NC=", NC, "\n")
         NBC <- NB * NC
-        oceDebug(debug, "getItemFromBuf: NB=", NB, ", NC=", NC, ", NBC=", NBC, ", NP=", NP, "\n")
-        oceDebug(debug, "   ", vectorShow(i, n = min(20, NP)))
+        oceDebug(debug, "getItemFromBuf() START\n", unindent = 1)
+        oceDebug(debug, "NB=", NB, ", NC=", NC, ", NBC=", NBC, ", NP=", NP, "\n")
+        oceDebug(debug, vectorShow(i, n = min(20, NP)))
         if (name == "v") {
-            oceDebug(debug, "START of 'v' part (at i0v=", i0v, ")\n")
+            oceDebug(debug, "Handling", name, "\n")
             velocityFactor <- velocityFactor[p[[type]][1]]
-            oceDebug(debug, "   velocityFactor=", velocityFactor, " for type=", type, "\n")
+            oceDebug(debug, vectorShow(velocityFactor))
             if (NBC > 0L) {
                 iv <- gappyIndex(i, i0v, 2L * NBC)
-                oceDebug(debug, "  ", vectorShow(i))
-                oceDebug(debug, "  ", vectorShow(i0v))
+                oceDebug(debug, vectorShow(i))
+                oceDebug(debug, vectorShow(i0v))
                 v <- velocityFactor * readBin(d$buf[iv], "integer", size = 2L, n = NP * NBC, endian = "little")
                 object$v <- array(double(), dim = c(NP, NC, NB))
                 for (ip in 1:NP) {
@@ -1335,9 +1333,8 @@ read.adp.ad2cp <- function(
                 }
                 i0v <<- i0v + 2L * NBC
             }
-            oceDebug(debug, "END of 'v' part (set i0v=", i0v, ")\n")
         } else if (name == "a") {
-            oceDebug(debug, "START of 'a' part (at i0v=", i0v, ")\n")
+            oceDebug(debug, "Handling", name, "\n")
             if (NBC > 0L) {
                 iv <- gappyIndex(i, i0v, NBC)
                 a <- readBin(d$buf[iv], "raw", size = 1L, n = NP * NBC, endian = "little")
@@ -1348,9 +1345,8 @@ read.adp.ad2cp <- function(
                 }
                 i0v <<- i0v + NBC
             }
-            oceDebug(debug, "END of 'a' part (set i0v=", i0v, ")\n")
         } else if (name == "q") {
-            oceDebug(debug, "START of 'q' part (at i0v=", i0v, ")\n")
+            oceDebug(debug, "Handling", name, "\n")
             if (NBC > 0L) {
                 iv <- gappyIndex(i, i0v, NBC)
                 q <- readBin(d$buf[iv], "raw", size = 1L, n = NP * NBC, endian = "little")
@@ -1363,12 +1359,11 @@ read.adp.ad2cp <- function(
                 }
                 i0v <<- i0v + NBC
             }
-            oceDebug(debug, "END of 'q' part (set i0v=", i0v, ")\n")
         } else if (name == "altimeter") {
             # Nortek 2022 p89 (top) states altimeterDistance is int32, but the
             # values obtained with that setting ar crazy (e.g. 1109925788 m),
             # and Nortek 2017 p51 bottom states that it is a float value.
-            oceDebug(debug, "START of 'altimeter' part (at i0v=", i0v, ")\n")
+            oceDebug(debug, "Handling", name, "\n")
             iv <- gappyIndex(i, i0v, 4L)
             object$altimeterDistance <- readBin(buf[iv], "numeric", size = 4L, n = NP, endian = "little", signed = TRUE)
             # message(vectorShow(object$altimeterDistance))
@@ -1380,9 +1375,8 @@ read.adp.ad2cp <- function(
             object$altimeterStatus <- readBin(buf[iv], "integer", size = 2L, n = NP, endian = "little", signed = FALSE)
             i0v <<- i0v + 2L
             # end of altimeter part
-            oceDebug(debug, "END of 'altimeter' part (set i0v=", i0v, ")\n", sep = "")
         } else if (name == "AST") {
-            oceDebug(debug, "START of AST (at i0v=", i0v, ")\n")
+            oceDebug(debug, "Handling", name, "\n")
             iv <- gappyIndex(i, i0v, 4L)
             object$ASTDistance <- readBin(buf[iv], "numeric", size = 4L, n = NP, endian = "little")
             # message(vectorShow(object$ASTDistance))
@@ -1401,15 +1395,14 @@ read.adp.ad2cp <- function(
             # the 2022 manual agrees that there is an 8-byte spacer, by stating
             # that the next occurs at ALTIRAW+8).
             i0v <<- i0v + 8L
-            oceDebug(debug, "END of 'AST' part (set i0v=", i0v, ")\n", sep = "")
         } else if (name == "altimeterRaw") {
-            oceDebug(debug, "START of 'altimeterRaw' part (at i0v=", i0v, ")\n", sep = "")
+            oceDebug(debug, "Handling", name, "\n")
             # sampling characteristics
             #<<issue2323>>iv <- gappyIndex(i, i0v, 2L)
             iv <- gappyIndex(i, i0v, 4L)
             NS <- readBin(buf[iv], "integer", size = 4L, n = NP, endian = "little") # no. samples (tmp var)
             #<<issue2323>>NS <- readBin(buf[iv], "integer", size = 2L, n = NP, endian = "little", signed = FALSE) # no. samples (tmp var)
-            oceDebug(debug, "  ", vectorShow(NS))
+            oceDebug(debug, vectorShow(NS))
             # does this match the value in the header?
             # https://github.com/dankelley/oce/issues/2326
             NSAMP <- ad2cpHeaderValue(header, key = "READALTIAVG", item = "NSAMP", plan = plan)
@@ -1424,13 +1417,13 @@ read.adp.ad2cp <- function(
             NS <- NS[1]
             object$altimeterRawNumberOfSamples <- NS
             object$altimeterRawBlankingDistance <- object$blankingDistance
-            oceDebug(debug, "  ", vectorShow(object$altimeterRawBlankingDistance))
+            oceDebug(debug, vectorShow(object$altimeterRawBlankingDistance))
             i0v <<- i0v + 4L # skip the 4 bytes we just read
             #<<issue2323>>i0v <<- i0v + 2L # skip the bytes we just read
             iv <- gappyIndex(i, i0v, 2L)
             # next should be 0.024 m for test file for issue 2323
             object$altimeterRawSampleDistance <- 1e-4 * readBin(buf[iv], "integer", size = 2L, n = NP, endian = "little", signed = FALSE)[1]
-            oceDebug(debug, "  ", vectorShow(object$altimeterRawSampleDistance))
+            oceDebug(debug, vectorShow(object$altimeterRawSampleDistance))
             if (object$altimeterRawSampleDistance == 0.0) {
                 warning("altimeterRawSampleDistance is 0 ... suspect a problem reading the file (issue 2323)")
             }
@@ -1449,20 +1442,19 @@ read.adp.ad2cp <- function(
             object$altimeterRawDistance <-
                 object$blankingDistance + object$altimeterRawSampleDistance * seq_len(object$altimeterRawNumberOfSamples)
             # end of altimeterRaw part
-            oceDebug(debug, "END of 'altimeterRaw' part (set i0v=", i0v, ")\n", sep = "")
         } else if (name == "echosounder") {
+            oceDebug(debug, "Handling", name, "\n")
             # Nortek (2017 p52): each profile has NC*16 bits
-            oceDebug(debug, "START of 'echosounder' part (at i0v=", i0v, ")\n", sep = "")
-            oceDebug(debug, "   NC=", NC, ", NP=", NP, "\n")
+            oceDebug(debug, "'echosounder' part (at i0v=", i0v, ") START\n", sep = "")
+            oceDebug(debug, " NC=", NC, ", NP=", NP, "\n")
             iv <- gappyIndex(i, i0v, 2L * NC)
             # iv <- gappyIndex(i, i0v, 2L*NC)
             tmp <- readBin(buf[iv], "integer", size = 2L, endian = "little", signed = FALSE, n = NP * NC)
             dim(tmp) <- c(NC, NP)
             object$echosounder <- t(tmp)
             i0v <<- i0v + 2L * NC
-            oceDebug(debug, "END of 'echosounder' part (set i0v=", i0v, ")\n", sep = "")
         } else if (name == "AHRS") {
-            oceDebug(debug, "START of 'AHRS' part (at i0v=", i0v, ")\n", sep = "")
+            oceDebug(debug, "Handling", name, "\n")
             # AHRSRotationMatrix
             object$AHRSRotationMatrix <- array(double(), dim = c(NP, 3L, 3L))
             iv <- gappyIndex(i, i0v, 9L * 4L)
@@ -1496,17 +1488,15 @@ read.adp.ad2cp <- function(
             iv <- gappyIndex(i, i0v, 4L)
             object$AHRSGyroZ <- readBin(buf[iv], "numeric", size = 4L, endian = "little", n = NP)
             i0v <<- i0v + 4L
-            oceDebug(debug, "END of 'AHRS' part (set i0v=", i0v, ")\n", sep = "")
         } else if (name == "percentgood") {
             # Nortek (2017) page 53: 8 bits, unsigned, appears after AHRS gyro z
-            oceDebug(debug, "START of 'percentgood' part (at i0v=", i0v, ")\n", sep = "")
+            oceDebug(debug, "Handling", name, "\n")
             iv <- gappyIndex(i, i0v, 4L)
             object$percentgood <- as.integer(buf[iv])
             i0v <<- i0v + 4L
-            oceDebug(debug, "END of 'percentgood' part (set i0v=", i0v, ")\n", sep = "")
         } else if (name == "stdDev") {
             # Nortek (2017) page 53-54: appears after percentgood
-            oceDebug(debug, "START of 'stdDev' part (at i0v=", i0v, ")\n", sep = "")
+            oceDebug(debug, "Handling", name, "\n")
             iv <- gappyIndex(i, i0v, 2L)
             object$stdDevPitch <- 0.01 * readBin(buf[iv], "integer", size = 2L, endian = "little", n = NP)
             i0v <<- i0v + 2L # advance for next subitem
@@ -1523,11 +1513,10 @@ read.adp.ad2cp <- function(
             object$stdDev <- 0.01 * readBin(buf[iv], "integer", size = 2L, endian = "little", n = NP)
             i0v <<- i0v + 2L # advance for next subitem
             i0v <<- i0v + 24 # skip over "dummy" (last item listed in N2017 p54)
-            oceDebug(debug, "END of 'stdDev' part (set i0v=", i0v, ")\n", sep = "")
         } else {
             stop("unknown item, name=\"", name, "\"")
         }
-        # oceDebug(debug, "    after handling \"", name, "\", i0v=", i0v, "\n")
+        oceDebug(debug, "END getItemFromBuf()\n", unindent = 1)
         object
     } # getItemFromBuf()
 
@@ -1609,7 +1598,7 @@ read.adp.ad2cp <- function(
         if (configuration0[15]) {
             rval <- getItemFromBuf(rval, "stdDev", i = i, type = type, debug = debug - 1)
         }
-        oceDebug(debug, "END readBurstAltimeterRaw(id=0x", as.raw(id), ") [type=", type, "]\n", sep = "", unindent = 1)
+        oceDebug(debug, "END readBurstAltimeterRaw\n", unindent = 1)
         rval
     } # readBurstAltimeterRaw
 
@@ -1709,7 +1698,7 @@ read.adp.ad2cp <- function(
             samplesRe = samplesRe,
             samplesIm = samplesIm
         )
-        oceDebug(debug, "END readEchosounderRaw(id=0x", as.raw(id), ") [type=", type, "]\n", sep = "", unindent = 1)
+        oceDebug(debug, "END readEchosounderRaw()\n", unindent = 1)
         rval
     } # readEchosounderRaw
 
@@ -1808,13 +1797,13 @@ read.adp.ad2cp <- function(
             samplesRe = samplesRe,
             samplesIm = samplesIm
         )
-        oceDebug(debug, "END readEchosounderRawTX(id=0x", id, ") [type=", type, "]\n", sep = "", unindent = 1)
+        oceDebug(debug, "END readEchosounderRawTX()\n", unindent = 1)
         rval
     } # readEchosounderRawTX
 
 
-    # This is intended to handle burst, average, altimeter, ... records:
-    # anything but bottom-track.
+    # This handles burst, average, altimeter, etc., but NOT
+    # bottomTrack.
     readProfile <- function(id, debug = getOption("oceDebug")) # uses global 'd' and 'configuration'
     {
         type <- gsub(".*=", "", ad2cpCodeToName(id))
@@ -1830,9 +1819,8 @@ read.adp.ad2cp <- function(
         lookIndex <- d$index[look]
         # nolint end object_useage_linter
         # message("burstOrAverage: offsetOfData=", vectorShow(as.integer(d$buf[d$index[look[1]] + 2L])))
-        oceDebug(debug, "  ", vectorShow(look))
+        oceDebug(debug, vectorShow(look))
         configuration0 <- configuration[look[1], ]
-        oceDebug(debug, "  ", vectorShow(configuration0))
         velocityIncluded <- configuration0[6]
         amplitudeIncluded <- configuration0[7]
         correlationIncluded <- configuration0[8]
@@ -1845,15 +1833,17 @@ read.adp.ad2cp <- function(
         AHRSIncluded <- configuration0[13]
         percentGoodIncluded <- configuration0[14]
         stdDevIncluded <- configuration0[15]
-        oceDebug(debug, "  ", vectorShow(velocityIncluded))
-        oceDebug(debug, "  ", vectorShow(amplitudeIncluded))
-        oceDebug(debug, "  ", vectorShow(correlationIncluded))
-        oceDebug(debug, "  ", vectorShow(altimeterIncluded))
-        oceDebug(debug, "  ", vectorShow(ASTIncluded))
-        oceDebug(debug, "  ", vectorShow(echosounderIncluded))
-        oceDebug(debug, "  ", vectorShow(AHRSIncluded))
-        oceDebug(debug, "  ", vectorShow(percentGoodIncluded))
-        oceDebug(debug, "  ", vectorShow(stdDevIncluded))
+        oceDebug(debug, vectorShow(ifelse(configuration0, "T", "F"), "configuration", n = 30))
+        oceDebug(debug, vectorShow(velocityIncluded, postscript = "based on configuration[6]"))
+        oceDebug(debug, vectorShow(amplitudeIncluded, postscript = "based on configuration[7]"))
+        oceDebug(debug, vectorShow(correlationIncluded, postscript = "based on configuration[8]"))
+        oceDebug(debug, vectorShow(altimeterIncluded, postscript = "based on configuration[9]"))
+        oceDebug(debug, vectorShow(altimeterRawIncluded, postscript = "based on configuration[10]"))
+        oceDebug(debug, vectorShow(ASTIncluded, postscript = "based on configuration[11]"))
+        oceDebug(debug, vectorShow(echosounderIncluded, postscript = "based on configuration[12]"))
+        oceDebug(debug, vectorShow(AHRSIncluded, postscript = "based on configuration[13]"))
+        oceDebug(debug, vectorShow(percentGoodIncluded, postscript = "based on configuration[14]"))
+        oceDebug(debug, vectorShow(stdDevIncluded, postscript = "based on configuration[15]"))
 
         rval <- list(
             configuration = configuration0,
@@ -1920,16 +1910,16 @@ read.adp.ad2cp <- function(
         if (configuration0[15]) {
             rval <- getItemFromBuf(rval, "stdDev", i = i, type = type, debug = debug - 1)
         }
-        oceDebug(debug, "END vector-read for type=", type, "\n")
+        oceDebug(debug, "END readProfile\n", unindent = 1)
         rval
     } # readProfile
 
     # Nortek (2022 page 93 ) "6.7 _DF20BottomTrack"
-    readTrack <- function(id, debug = getOption("oceDebug")) # uses global 'd' and 'configuration'
+    readBottomTrack <- function(id, debug = getOption("oceDebug")) # uses global 'd' and 'configuration'
     {
         # id will be 0x17 for bottomTrack
         type <- gsub(".*=", "", ad2cpCodeToName(id))
-        oceDebug(debug, "readTrack(id=0x", as.raw(id), " or ", id, " decimal) # i.e. type=", type, "\n")
+        oceDebug(debug, "readBottomTrack(id=0x", as.raw(id), " or ", id, " decimal) # i.e. type=", type, " START\n", unindent = 1)
         look <- which(d$id == id)
         oceDebug(debug, vectorShow(look))
         lookIndex <- d$index[look]
@@ -1937,29 +1927,29 @@ read.adp.ad2cp <- function(
         offsetOfData <- as.integer(d$buf[d$index[look[1]] + 2L])
         oceDebug(debug, vectorShow(offsetOfData))
         configuration0 <- configuration[look[1], ]
-        oceDebug(debug, vectorShow(configuration0))
         velocityIncluded <- configuration0[6]
-        oceDebug(debug, vectorShow(velocityIncluded))
         amplitudeIncluded <- configuration0[7]
-        oceDebug(debug, vectorShow(amplitudeIncluded))
         correlationIncluded <- configuration0[8]
-        oceDebug(debug, vectorShow(correlationIncluded))
         altimeterIncluded <- configuration0[9]
-        oceDebug(debug, vectorShow(altimeterIncluded))
         # nolint start object_useage_linter
         altimeterRawIncluded <- configuration0[10]
-        oceDebug(debug, vectorShow(altimeterRawIncluded))
         # nolint end object_useage_linter
         ASTIncluded <- configuration0[11]
-        oceDebug(debug, vectorShow(ASTIncluded))
         echosounderIncluded <- configuration0[12]
-        oceDebug(debug, vectorShow(echosounderIncluded))
         AHRSIncluded <- configuration0[13]
-        oceDebug(debug, vectorShow(AHRSIncluded))
         percentGoodIncluded <- configuration0[14]
-        oceDebug(debug, vectorShow(percentGoodIncluded))
         stdDevIncluded <- configuration0[15]
-        oceDebug(debug, vectorShow(stdDevIncluded))
+        oceDebug(debug, vectorShow(ifelse(configuration0, "T", "F"), "configuration", n = 30))
+        oceDebug(debug, vectorShow(velocityIncluded, postscript = "based on configuration[6]"))
+        oceDebug(debug, vectorShow(amplitudeIncluded, postscript = "based on configuration[7]"))
+        oceDebug(debug, vectorShow(correlationIncluded, postscript = "based on configuration[8]"))
+        oceDebug(debug, vectorShow(altimeterIncluded, postscript = "based on configuration[9]"))
+        oceDebug(debug, vectorShow(altimeterRawIncluded, postscript = "based on configuration[10]"))
+        oceDebug(debug, vectorShow(ASTIncluded, postscript = "based on configuration[11]"))
+        oceDebug(debug, vectorShow(echosounderIncluded, postscript = "based on configuration[12]"))
+        oceDebug(debug, vectorShow(AHRSIncluded, postscript = "based on configuration[13]"))
+        oceDebug(debug, vectorShow(percentGoodIncluded, postscript = "based on configuration[14]"))
+        oceDebug(debug, vectorShow(stdDevIncluded, postscript = "based on configuration[15]"))
         rval <- list(
             configuration = configuration0,
             numberOfBeams = nbeams[look[1]],
@@ -1985,7 +1975,7 @@ read.adp.ad2cp <- function(
             powerLevel = powerLevel[look]
         )
         i <- d$index[look] # pointers to "average" chunks in buf
-        oceDebug(debug, "in readTrack: ", vectorShow(i))
+        oceDebug(debug, vectorShow(i))
         # message(vectorShow(commonData$offsetOfData))
         # IMOS https://github.com/aodn/imos-toolbox/blob/e19c8c604cd062a7212cdedafe11436209336ba5/Parser/readAD2CPBinary.m#L561
         #  IMOS_pointer = oce_pointer - 3
@@ -2009,8 +1999,8 @@ read.adp.ad2cp <- function(
         # NOTE: pointer is 2 bytes past pointer for e.g. burst/average
         NP <- length(i) # number of profiles of this type
         NB <- rval$numberOfBeams # number of beams for v,a,q
-        oceDebug(debug, "  NP=", NP, ", NB=", NB, "\n", sep = "")
-        oceDebug(debug, "configuration0=", paste(ifelse(configuration0, "T", "F"), collapse = ", "), "\n")
+        oceDebug(debug, vectorShow(NP))
+        oceDebug(debug, vectorShow(NB))
         # NOTE: imos uses idx+72 for ensembleCounter
         # https://github.com/aodn/imos-toolbox/blob/e19c8c604cd062a7212cdedafe11436209336ba5/Parser/readAD2CPBinary.m#L567
         # oce_pointer = imos_pointer - 3
@@ -2029,20 +2019,22 @@ read.adp.ad2cp <- function(
         i0v <<- i0v + 4L
         # velocity [Nortek 2017 p60 table 6.1.3]
         if (configuration0[6]) {
+            oceDebug(debug, "configuration[6] is non-zero, meaning that velocity is included in this dataset")
             # message("reading v with i0v=", i0v, " (NB=", NB, ")")
             # message("FIXME: only read velo if flag is set")
             # message("about to read velo with i[1]=", i[1], ", i0v=",i0v,", NB=", NB)
             # message("configuration0: ", paste(configuration0, collapse=" "))
             # ! i0v <- i0v - 2L # test (gives v ~ -14,000 m/s)
             # ! i0v <- i0v + 2L # test (gives v ~ -1,500 and -15,000 m/s)
-            oceDebug(debug, "reading bottom-track v with velocityFactor=", rval$velocityFactor, ":", vectorShow(i0v))
+            oceDebug(debug, vectorShow(rval$velocityFactor))
+            oceDebug(debug, vectorShow(i0v))
             if (NB < 3) {
-                if (debug > 0) {
-                    message("#beams has been read as ", NB, ", indicating a problem with the file or with oce")
-                    message(vectorShow(configuration0, n = 100))
-                    browser()
-                }
-                stop("#beams has been read as ", NB, ", indicating a problem with the file or with oce")
+                # if (debug > 0) {
+                #    message("#beams has been read as ", NB, ", indicating a problem with the file or with oce; below is configuration")
+                #    message(vectorShow(configuration0, n = 100))
+                #    browser()
+                # }
+                stop("#beams inferred as ", NB, ", but configuration[6] says that the file has velocity data")
             }
             iv <- gappyIndex(i, i0v, 4L * NB)
             tmp <- readBin(d$buf[iv], "integer", size = 4L, n = NB * NP, endian = "little")
@@ -2054,7 +2046,7 @@ read.adp.ad2cp <- function(
         if (configuration0[8]) {
             # message("read distance with i0v=", i0v)
             iv <- gappyIndex(i, i0v, 4L * NB)
-            oceDebug(debug, "reading bottom-track distance: ", vectorShow(i0v))
+            oceDebug(debug, "reading bottom-track distance\n")
             tmp <- readBin(d$buf[iv], "integer", size = 4L, n = NB * NP, endian = "little")
             rval$distance <- 1e-3 * matrix(tmp, ncol = NB, byrow = FALSE)
             # message("FIXME DAN 2")
@@ -2069,8 +2061,9 @@ read.adp.ad2cp <- function(
             rval$figureOfMerit <- matrix(tmp, ncol = NB, byrow = FALSE)
             i0v <<- i0v + 2L * NB
         }
+        oceDebug(debug, "readBottomTrack() END\n", unindent = 1)
         rval
-    } # readTrack
+    } # readBottomTrack
 
     # nolint start object_useage_linter
     readInterleavedBurst <- function(id, debug=getOption("oceDebug")) # uses global 'd' and 'configuration'
@@ -2150,7 +2143,7 @@ read.adp.ad2cp <- function(
         i0v <<- 77 # pointer to data (incremented by getItemFromBuf() later).
         NP <- length(i) # number of profiles of this type
         NB <- rval$numberOfBeams # number of beams for v,a,q
-        oceDebug(debug, "  NP=", NP, ", NB=", NB, "\n", sep = "")
+        oceDebug(debug, "NP=", NP, ", NB=", NB, "\n", sep = "")
         oceDebug(debug, "configuration0=", paste(ifelse(configuration0, "T", "F"), collapse = ", "), "\n")
         # NOTE: imos uses idx+72 for ensembleCounter
         # https://github.com/aodn/imos-toolbox/blob/e19c8c604cd062a7212cdedafe11436209336ba5/Parser/readAD2CPBinary.m#L567
@@ -2259,7 +2252,7 @@ read.adp.ad2cp <- function(
         if (configuration0[12]) { # read echosounder, if included
             rval <- getItemFromBuf(rval, "echosounder", i = i, type = type, debug = debug - 1)
         }
-        oceDebug(debug, "END vector-read for type=", type, "\n")
+        oceDebug(debug, "END readEchosounder()\n", unindent = 1)
         rval
     } # readEchosounder
 
@@ -2267,10 +2260,10 @@ read.adp.ad2cp <- function(
 
     # Major and minor version number of firmware, FW and FWMINOR
     FW <- ad2cpHeaderValue(header, key = "GETHW", item = "FW", plan = plan)
-    oceDebug(debug, "FW=", vectorShow(FW))
+    oceDebug(debug, vectorShow(FW))
     res@metadata$firmwareVersionMajor <- FW
     FWMINOR <- ad2cpHeaderValue(header, key = "GETHW", item = "FWMINOR", plan = plan)
-    oceDebug(debug, "FWMINOR=", vectorShow(FWMINOR))
+    oceDebug(debug, vectorShow(FWMINOR))
     res@metadata$firmwareVersionMinor <- FWMINOR
     # The following conditional blocks handle the vectorized reading of various
     # data ID classes.  Although the data format is described in many manuals,
@@ -2292,17 +2285,17 @@ read.adp.ad2cp <- function(
             return(NULL)
         }
         data <- readProfile(id = as.raw(dataType), debug = debug)
-        oceDebug(debug, "dataType=", dataType, "(burst): move some things from data to metadata\n")
+        oceDebug(debug, "Moving some things from data to metadata\n")
         for (name in c(
             "blankingDistance", "cellSize", "configuration", "datasetDescription",
             "frequency", "numberOfBeams", "numberOfCells", "oceCoordinate",
             "orientation", "originalCoordinate"
         )) {
             if (name %in% names(data)) {
-                oceDebug(debug, "  transferring ", name, " from data to metadata\n")
+                oceDebug(debug, "transferring ", name, " from data to metadata\n")
                 res@metadata[name] <- data[name]
             } else {
-                oceDebug(debug, "  deleting ", name, " from data, without moving to metadata\n")
+                oceDebug(debug, "deleting ", name, " from data, without moving to metadata\n")
             }
             data[name] <- NULL
         }
@@ -2320,22 +2313,22 @@ read.adp.ad2cp <- function(
             "orientation", "originalCoordinate"
         )) {
             if (name %in% names(data)) {
-                oceDebug(debug, "  transferring ", name, " from data to metadata\n")
+                oceDebug(debug, "transferring ", name, " from data to metadata\n")
                 res@metadata[name] <- data[name]
             } else {
-                oceDebug(debug, "  deleting ", name, " from data, without moving to metadata\n")
+                oceDebug(debug, "deleting ", name, " from data, without moving to metadata\n")
             }
             data[name] <- NULL
         }
     } # 0x16=average
     #<FIXME> # Nortek (2017 p60) "6.1.3 Bottom Track Data Record Definition (DF20)"
     #<FIXME> if ("bottomTrack" %in% dataType && length(p$bottomTrack) > 0) # 0x17
-    #<FIXME>     data$bottomTrack <- readTrack(id=as.raw(0x17), debug=debug)
+    #<FIXME>     data$bottomTrack <- readBottomTrack(id=as.raw(0x17), debug=debug)
     if (0x17 == dataType) { # 0x17=bottomTrack
         if (length(p$bottomTrack) < 1L) {
             stop("no dataType=", as.raw(dataTypeOrig), " (bottomTrack) in file")
         }
-        data <- readTrack(id = dataType, debug = debug)
+        data <- readBottomTrack(id = dataType, debug = debug - 1)
         oceDebug(debug, "dataType=", as.raw(dataType), "(bottomTrack): move some things from data to metadata\n")
         for (name in c(
             "blankingDistance", "cellSize", "configuration", "datasetDescription",
@@ -2343,10 +2336,10 @@ read.adp.ad2cp <- function(
             "orientation", "originalCoordinate"
         )) {
             if (name %in% names(data)) {
-                oceDebug(debug, "  transferring ", name, " from data to metadata\n")
+                oceDebug(debug, "transferring ", name, " from data to metadata\n")
                 res@metadata[name] <- data[name]
             } else {
-                oceDebug(debug, "  deleting ", name, " from data, without moving to metadata\n")
+                oceDebug(debug, "deleting ", name, " from data, without moving to metadata\n")
             }
             data[name] <- NULL
         }
@@ -2363,10 +2356,10 @@ read.adp.ad2cp <- function(
             "orientation", "originalCoordinate"
         )) {
             if (name %in% names(data)) {
-                oceDebug(debug, "  transferring ", name, " from data to metadata\n")
+                oceDebug(debug, "transferring ", name, " from data to metadata\n")
                 res@metadata[name] <- data[name]
             } else {
-                oceDebug(debug, "  deleting ", name, " from data, without moving to metadata\n")
+                oceDebug(debug, "deleting ", name, " from data, without moving to metadata\n")
             }
             data[name] <- NULL
         }
@@ -2383,10 +2376,10 @@ read.adp.ad2cp <- function(
             "orientation", "originalCoordinate"
         )) {
             if (name %in% names(data)) {
-                oceDebug(debug, "  transferring ", name, " from data to metadata\n")
+                oceDebug(debug, "transferring ", name, " from data to metadata\n")
                 res@metadata[name] <- data[name]
             } else {
-                oceDebug(debug, "  deleting ", name, " from data, without moving to metadata\n")
+                oceDebug(debug, "deleting ", name, " from data, without moving to metadata\n")
             }
             data[name] <- NULL
         }
@@ -2395,7 +2388,7 @@ read.adp.ad2cp <- function(
         if (length(p$DVLBottomTrack) < 1L) {
             stop("no dataType=", as.raw(dataTypeOrig), " (DVLBottomTrack) in file")
         }
-        data <- readTrack(id = dataType, debug = debug)
+        data <- readBottomTrack(id = dataType, debug = debug - 1)
         oceDebug(debug, "dataType=", as.raw(dataType), "(DVLBottomTrack): move some things from data to metadata\n")
         for (name in c(
             "blankingDistance", "cellSize", "configuration", "datasetDescription",
@@ -2403,10 +2396,10 @@ read.adp.ad2cp <- function(
             "orientation", "originalCoordinate"
         )) {
             if (name %in% names(data)) {
-                oceDebug(debug, "  moving ", name, " from data to metadata\n")
+                oceDebug(debug, "moving ", name, " from data to metadata\n")
                 res@metadata[name] <- data[name]
             } else {
-                oceDebug(debug, "  deleting ", name, " from data, without moving to metadata\n")
+                oceDebug(debug, "deleting ", name, " from data, without moving to metadata\n")
             }
             data[name] <- NULL
         }
@@ -2422,10 +2415,10 @@ read.adp.ad2cp <- function(
             "frequency", "numberOfBeams", "numberOfCells", "orientation"
         )) { # not same as above
             if (name %in% names(data)) {
-                oceDebug(debug, "  moving ", name, " from data to metadata\n")
+                oceDebug(debug, "moving ", name, " from data to metadata\n")
                 res@metadata[name] <- data[name]
             } else {
-                oceDebug(debug, "  deleting ", name, " from data, without moving to metadata\n")
+                oceDebug(debug, "deleting ", name, " from data, without moving to metadata\n")
             }
             data[name] <- NULL
         }
@@ -2441,10 +2434,10 @@ read.adp.ad2cp <- function(
             "frequency", "numberOfBeams", "numberOfCells", "orientation"
         )) { # not same as above
             if (name %in% names(data)) {
-                oceDebug(debug, "  moving ", name, " from data to metadata\n")
+                oceDebug(debug, "moving ", name, " from data to metadata\n")
                 res@metadata[name] <- data[name]
             } else {
-                oceDebug(debug, "  deleting ", name, " from data, without moving to metadata\n")
+                oceDebug(debug, "deleting ", name, " from data, without moving to metadata\n")
             }
             data[name] <- NULL
         }
@@ -2460,10 +2453,10 @@ read.adp.ad2cp <- function(
             "frequency", "numberOfBeams", "numberOfCells", "orientation"
         )) { # not same as above
             if (name %in% names(data)) {
-                oceDebug(debug, "  moving ", name, " from data to metadata\n")
+                oceDebug(debug, "moving ", name, " from data to metadata\n")
                 res@metadata[name] <- data[name]
             } else {
-                oceDebug(debug, "  deleting ", name, " from data, without moving to metadata\n")
+                oceDebug(debug, "deleting ", name, " from data, without moving to metadata\n")
             }
             data[name] <- NULL
         }
@@ -2479,10 +2472,10 @@ read.adp.ad2cp <- function(
             "frequency", "numberOfBeams", "numberOfCells", "orientation"
         )) { # not same as above
             if (name %in% names(data)) {
-                oceDebug(debug, "  moving ", name, " from data to metadata\n")
+                oceDebug(debug, "moving ", name, " from data to metadata\n")
                 res@metadata[name] <- data[name]
             } else {
-                oceDebug(debug, "  deleting ", name, " from data, without moving to metadata\n")
+                oceDebug(debug, "deleting ", name, " from data, without moving to metadata\n")
             }
             data[name] <- NULL
         }
@@ -2798,7 +2791,7 @@ beamToXyzAdpAD2CP <- function(x, debug = getOption("oceDebug")) {
     res@data$v[, , 3] <- tm[3, 1] * v1 + tm[3, 2] * v2 + tm[3, 3] * v3 + tm[3, 4] * v4
     res@data$v[, , 4] <- tm[4, 1] * v1 + tm[4, 2] * v2 + tm[4, 3] * v3 + tm[4, 4] * v4
     res@metadata$oceCoordinate <- "xyz"
-    oceDebug(debug, "  converted from 'beam' to 'xyz'\n")
+    oceDebug(debug, "converted from 'beam' to 'xyz'\n")
     res@processingLog <- processingLogAppend(
         res@processingLog, paste("beamToXyzAdpAD2CP(x", ", debug=", debug, ")", sep = "")
     )
@@ -2936,6 +2929,6 @@ xyzToEnuAdpAD2CP <- function(x, declination = 0, debug = getOption("oceDebug")) 
             sep = ""
         )
     )
-    oceDebug(debug, "END xyzToEnuAdpAD2CP()\n", sep = "", unindent = 1)
+    oceDebug(debug, "END xyzToEnuAdpAD2CP()\n", unindent = 1)
     res
 }
