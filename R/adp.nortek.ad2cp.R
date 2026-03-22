@@ -1,5 +1,18 @@
 # vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
+# Check that all rows in configuration matrix ("BCC") are identical.
+# Returns number of rows that don't match the first row.
+checkRowConsistency <- function(m) {
+    bad <- 0
+    n <- nrow(m)
+    if (n > 1) {
+        for (i in 2:nrow(m)) {
+            bad <- bad + any(m[i, ] != m[1, ])
+        }
+    }
+    bad
+}
+
 #' Trim an AD2CP File
 #'
 #' Create an AD2CP file by copying the first `n` data chunks (regions starting
@@ -1062,8 +1075,9 @@ read.adp.ad2cp <- function(
                         badColumn <- badColumn + 1L
                     }
                 }
+                # FIXME: use checkRowConsistency() here
                 if (badColumn == 0L) {
-                    oceDebug(debug, "No inconsistencies in 'configuration' values\n")
+                    oceDebug(debug, "No inconsistencies in 'configuration' matrix\n")
                 } else {
                     badID <- badID + 1L
                     warning("In read.adp.ad2cp() : id ", ad2cpCodeToName(id),
@@ -1105,6 +1119,7 @@ read.adp.ad2cp <- function(
     # We skip bit 16, which  is called 'unused' in Nortek AS. \dQuote{Signature
     # Integration 55|250|500|1000kHz.} Nortek AS, 2017.
     # configuration[, 16] "Unused" in 2017 Signature
+    oceDebug(debug, "Results from 'configuration' matrix ad read.adp.ad2cp() level:\n")
     oceDebug(debug, vectorShow(ifelse(configuration[1, ], "T", "F"), "configuration", n = 30))
     oceDebug(debug, vectorShow(velocityIncluded, postscript = "based on configuration[6]"))
     oceDebug(debug, vectorShow(amplitudeIncluded, postscript = "based on configuration[7]"))
@@ -1152,6 +1167,13 @@ read.adp.ad2cp <- function(
     BCC <- ifelse(0x01 == rawToBits(d$buf[pointer2 + 31]), 1L, 0L)
     dim(BCC) <- c(16, N)
     BCC <- t(BCC)
+    oceDebug(debug, vectorShow(BCC[1, ], n = 30))
+    badRowCount <- checkRowConsistency(BCC)
+    if (badRowCount > 0) {
+        stop("Problem with 'BCC' matrix: ", badRowCount, " rows do not match row #1")
+    } else {
+        oceDebug(debug, "No inconsistencies between rows in 'BCC' matrix\n")
+    }
     # Use Horner's rule for clarity (for lispers, anyway!)
     # nolint start commas_linter
     ncells <- BCC[, 1] + 2 * (BCC[, 2] + 2 * (BCC[, 3] + 2 * (BCC[, 4] + 2 * (BCC[, 5] + 2 * (BCC[, 6] + 2 * (BCC[, 7] + 2 * (BCC[, 8] + 2 * (BCC[, 9] + 2 * BCC[, 10]))))))))
@@ -1833,6 +1855,7 @@ read.adp.ad2cp <- function(
         AHRSIncluded <- configuration0[13]
         percentGoodIncluded <- configuration0[14]
         stdDevIncluded <- configuration0[15]
+        oceDebug(debug, "readProfile() analysis of 'configuration' matrix yields:\n")
         oceDebug(debug, vectorShow(ifelse(configuration0, "T", "F"), "configuration", n = 30))
         oceDebug(debug, vectorShow(velocityIncluded, postscript = "based on configuration[6]"))
         oceDebug(debug, vectorShow(amplitudeIncluded, postscript = "based on configuration[7]"))
@@ -1926,30 +1949,41 @@ read.adp.ad2cp <- function(
         oceDebug(debug, vectorShow(lookIndex))
         offsetOfData <- as.integer(d$buf[d$index[look[1]] + 2L])
         oceDebug(debug, vectorShow(offsetOfData))
-        configuration0 <- configuration[look[1], ]
+        oceDebug(debug, vectorShow(configuration[look[1], ], n = 30))
+        badRowCount <- checkRowConsistency(configuration[look, ])
+        if (badRowCount > 0) {
+            stop("Problem with bottomTrack 'configuration' matrix: ", badRowCount, " rows do not match row #1")
+        } else {
+            oceDebug(debug, "No inconsistencies between rows in 'configuration' matrix\n")
+        }
+        configuration0 <- configuration[1, ]
         velocityIncluded <- configuration0[6]
-        amplitudeIncluded <- configuration0[7]
-        correlationIncluded <- configuration0[8]
-        altimeterIncluded <- configuration0[9]
+        amplitudeIncluded <- FALSE # configuration0[7] for !bottomTrack (2017 manual p60)
+        correlationIncluded <- FALSE # configuration0[8] for !bottomTrack (2017 manual p60)
+        altimeterIncluded <- FALSE # configuration0[9] for !bottomTrack (2017 manual p60)
+        distanceIncluded <- configuration0[9] # this means altimeterIncluded for other data types
         # nolint start object_useage_linter
-        altimeterRawIncluded <- configuration0[10]
+        # altimeterRawIncluded <- configuration0[10]
+        figureOfMeritIncluded <- configuration0[10] # means altimeterRawIncluded for other data types
         # nolint end object_useage_linter
-        ASTIncluded <- configuration0[11]
-        echosounderIncluded <- configuration0[12]
-        AHRSIncluded <- configuration0[13]
-        percentGoodIncluded <- configuration0[14]
-        stdDevIncluded <- configuration0[15]
-        oceDebug(debug, vectorShow(ifelse(configuration0, "T", "F"), "configuration", n = 30))
+        ASTIncluded <- FALSE # configuration0[11]
+        echosounderIncluded <- FALSE # configuration0[12]
+        AHRSIncluded <- FALSE # configuration0[13]
+        percentGoodIncluded <- FALSE # configuration0[14]
+        stdDevIncluded <- FALSE # configuration0[15]
+        oceDebug(debug, "readBottomTrack() analysis of 'configuration' matrix yields:\n")
         oceDebug(debug, vectorShow(velocityIncluded, postscript = "based on configuration[6]"))
-        oceDebug(debug, vectorShow(amplitudeIncluded, postscript = "based on configuration[7]"))
-        oceDebug(debug, vectorShow(correlationIncluded, postscript = "based on configuration[8]"))
-        oceDebug(debug, vectorShow(altimeterIncluded, postscript = "based on configuration[9]"))
-        oceDebug(debug, vectorShow(altimeterRawIncluded, postscript = "based on configuration[10]"))
-        oceDebug(debug, vectorShow(ASTIncluded, postscript = "based on configuration[11]"))
-        oceDebug(debug, vectorShow(echosounderIncluded, postscript = "based on configuration[12]"))
-        oceDebug(debug, vectorShow(AHRSIncluded, postscript = "based on configuration[13]"))
-        oceDebug(debug, vectorShow(percentGoodIncluded, postscript = "based on configuration[14]"))
-        oceDebug(debug, vectorShow(stdDevIncluded, postscript = "based on configuration[15]"))
+        oceDebug(debug, vectorShow(distanceIncluded, postscript = "based on configuration[9]"))
+        oceDebug(debug, vectorShow(figureOfMeritIncluded, postscript = "based on configuration[10]"))
+        # oceDebug(debug, vectorShow(amplitudeIncluded, postscript = "based on configuration[7]"))
+        # oceDebug(debug, vectorShow(correlationIncluded, postscript = "based on configuration[8]"))
+        # oceDebug(debug, vectorShow(altimeterIncluded, postscript = "based on configuration[9]"))
+        # oceDebug(debug, vectorShow(altimeterRawIncluded, postscript = "based on configuration[10]"))
+        # oceDebug(debug, vectorShow(ASTIncluded, postscript = "based on configuration[11]"))
+        # oceDebug(debug, vectorShow(echosounderIncluded, postscript = "based on configuration[12]"))
+        # oceDebug(debug, vectorShow(AHRSIncluded, postscript = "based on configuration[13]"))
+        # oceDebug(debug, vectorShow(percentGoodIncluded, postscript = "based on configuration[14]"))
+        # oceDebug(debug, vectorShow(stdDevIncluded, postscript = "based on configuration[15]"))
         rval <- list(
             configuration = configuration0,
             numberOfBeams = nbeams[look[1]],
@@ -2325,6 +2359,7 @@ read.adp.ad2cp <- function(
     #<FIXME> if ("bottomTrack" %in% dataType && length(p$bottomTrack) > 0) # 0x17
     #<FIXME>     data$bottomTrack <- readBottomTrack(id=as.raw(0x17), debug=debug)
     if (0x17 == dataType) { # 0x17=bottomTrack
+            oceDebug(debug, "START of 0x17=23=bottomTrack code block\n")
         if (length(p$bottomTrack) < 1L) {
             stop("no dataType=", as.raw(dataTypeOrig), " (bottomTrack) in file")
         }
@@ -2343,6 +2378,7 @@ read.adp.ad2cp <- function(
             }
             data[name] <- NULL
         }
+        oceDebug(debug, "END of 0x17=23=bottomTrack code block\n")
     } # 0x17=bottomTrack
     if (0x18 == dataType) { # 0x18=interleavedBurst
         if (length(p$interleavedBurst) < 1L) {
