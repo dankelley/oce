@@ -2102,7 +2102,7 @@ read.adp.ad2cp <- function(
                 # }
                 NB <- findInConfig(configText[[1]], "GETBT", "NB")
                 if (is.finite(NB)) {
-                    warning("nbeams is zero according to the Nortek 2017 file format, so we are reading it (as", NB, ") from the TEXT block instead")
+                    warning("nbeams is zero according to the Nortek 2017 file format, so we are reading it (as ", NB, ") from the TEXT block instead")
                 } else {
                     stop("cannot infer `nbeams` from the data chunks or the TEXT block")
                 }
