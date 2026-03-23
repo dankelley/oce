@@ -2109,7 +2109,8 @@ read.adp.ad2cp <- function(
             }
             iv <- gappyIndex(i, i0v, 4L * NB)
             tmp <- readBin(d$buf[iv], "integer", size = 4L, n = NB * NP, endian = "little")
-            rval$v <- rval$velocityFactor * matrix(tmp, ncol = NB, byrow = FALSE)
+            #rval$v <- rval$velocityFactor * matrix(tmp, ncol = NB, byrow = FALSE)
+            rval$v <- rval$velocityFactor * matrix(tmp, ncol = NB, byrow = TRUE)
             i0v <<- i0v + 4L * NB
         }
         # distance.  See configuration information at Nortek (2017, Table 6.1.3,
