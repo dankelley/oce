@@ -13,6 +13,33 @@ checkRowConsistency <- function(m) {
     bad
 }
 
+
+# I think this might be nearly the same as findInHeader, but I
+# don't see much harm in that.  This is only used in one spot,
+# to get `nbeams` for bottom-track data that (for some reason)
+# do not have number-of-beams specified in the place documented in
+# the 2017 Nortek manual.  It's a long story, but see
+# https://github.com/dankelley/oce/issues/2368
+# if you're interested.
+findInConfig <- function(ct, type, property, numeric = TRUE) {
+    line <- grep(paste0("^", type, ","), ct)
+    if (1 != length(line)) {
+        return(NA)
+    } else {
+        values <- strsplit(ct[line], ",")[[1]]
+        w <- grep(paste0(property, "="), values)
+        if (1 != length(w)) {
+            return(NA)
+        } else {
+            if (numeric) {
+                return(as.numeric(strsplit(values[w], "=")[[1]][2]))
+            } else {
+                return(strsplit(values[w], "=")[[1]][2])
+            }
+        }
+    }
+}
+
 #' Trim an AD2CP File
 #'
 #' Create an AD2CP file by copying the first `n` data chunks (regions starting
@@ -710,7 +737,7 @@ read.adp.ad2cp <- function(
     }
     if (to == 0) {
         to <- 1e9
-    } # this should be enough to read any file
+    } # this should be enough to read any file, since chunks are typically of order 1e3 bytes
     if (!byGiven) {
         by <- 1L
     }
@@ -748,17 +775,16 @@ read.adp.ad2cp <- function(
     headerSize <- as.integer(buf[2])
     oceDebug(debug, "headerSize:", headerSize, "\n")
     ID <- buf[3]
-    oceDebug(debug, "ID: 0x", ID, " (NB: 0x15=burst data record; 0x16=avg data record; 0x17=bottom ",
-        "track record; 0x18=interleaved data record; 0xa0=string data record, e.g. GPS NMEA, ",
+    oceDebug(debug, "First ID in file: 0x", ID, " (NB: 0x15=burst data record; 0x16=avg data record; 0x17=bottom ",
+        "track record; 0x18=interleaved data record; 0xa0=string data record (e.g. GPS NMEA or",
         "comment from the FWRITE command)\n",
         sep = ""
     )
     dataSize <- readBin(buf[5:6], what = "integer", n = 1L, size = 2L, endian = "little", signed = FALSE)
     oceDebug(debug, "dataSize:", dataSize, "\n")
     oceDebug(debug, "buf[1+headerSize+dataSize=", 1 + headerSize + dataSize, "]=0x", buf[1 + headerSize + dataSize], " (expect 0xa5)\n", sep = "")
-    # Note that we read the *whole* file; from, to and by are used later, for
-    # the particular plan,dataSet,dataType value that is the focus here.  We use
-    # from, to and by in a few lines, when focusIndex is defined.
+    # Note that we read the *whole* file. We may use `from`, `to` and `by`
+    # later, though.
     nav <- do_ldc_ad2cp_in_file(filename, from = 1L, to = 1e9, by = 1L, debug = if (debug > 4) 1 else 0)
     d <- list(buf = buf, index = nav$index, headerLength = nav$headerLength, dataLength = nav$dataLength, id = nav$id)
     oceDebug(debug, vectorShow(length(d$index)))
@@ -900,6 +926,12 @@ read.adp.ad2cp <- function(
     if (identical("text", dataType) || identical(dataType, 0xa0)) { # text (header)
         return(configText[[1]]) # FIXME: what if there are multiple datasets?
     }
+    # if (debug > 0) {
+    #     #oceDebug(debug, "Next is configText:\n")
+    #     #print(configText[[1]])
+    #     message("FIXME: see exported variable 'DAN', which is configText[[1]]")
+    #     DAN<<-configText[[1]]
+    # }
     numberOfDataSets <- length(configText)
     oceDebug(debug, "This file has ", pluralize(numberOfDataSets, "data set"), "\n")
     # nolint start object_usage_linter
@@ -1119,7 +1151,7 @@ read.adp.ad2cp <- function(
     # We skip bit 16, which  is called 'unused' in Nortek AS. \dQuote{Signature
     # Integration 55|250|500|1000kHz.} Nortek AS, 2017.
     # configuration[, 16] "Unused" in 2017 Signature
-    oceDebug(debug, "Results from 'configuration' matrix ad read.adp.ad2cp() level:\n")
+    oceDebug(debug, "read.adp.ad2cp() found as below for profile data (see later, if we seek bottom-track data.)\n")
     oceDebug(debug, vectorShow(ifelse(configuration[1, ], "T", "F"), "configuration", n = 30))
     oceDebug(debug, vectorShow(velocityIncluded, postscript = "based on configuration[6]"))
     oceDebug(debug, vectorShow(amplitudeIncluded, postscript = "based on configuration[7]"))
@@ -2053,7 +2085,7 @@ read.adp.ad2cp <- function(
         i0v <<- i0v + 4L
         # velocity [Nortek 2017 p60 table 6.1.3]
         if (configuration0[6]) {
-            oceDebug(debug, "configuration[6] is non-zero, meaning that velocity is included in this dataset")
+            oceDebug(debug, "configuration[6] is non-zero, meaning that dataset has velocity\n")
             # message("reading v with i0v=", i0v, " (NB=", NB, ")")
             # message("FIXME: only read velo if flag is set")
             # message("about to read velo with i[1]=", i[1], ", i0v=",i0v,", NB=", NB)
@@ -2068,7 +2100,12 @@ read.adp.ad2cp <- function(
                 #    message(vectorShow(configuration0, n = 100))
                 #    browser()
                 # }
-                stop("#beams inferred as ", NB, ", but configuration[6] says that the file has velocity data")
+                NB <- findInConfig(configText[[1]], "GETBT", "NB")
+                if (is.finite(NB)) {
+                    warning("nbeams is zero according to the Nortek 2017 file format, so we are reading it (as", NB, ") from the TEXT block instead")
+                } else {
+                    stop("cannot infer `nbeams` from the data chunks or the TEXT block")
+                }
             }
             iv <- gappyIndex(i, i0v, 4L * NB)
             tmp <- readBin(d$buf[iv], "integer", size = 4L, n = NB * NP, endian = "little")
@@ -2359,11 +2396,11 @@ read.adp.ad2cp <- function(
     #<FIXME> if ("bottomTrack" %in% dataType && length(p$bottomTrack) > 0) # 0x17
     #<FIXME>     data$bottomTrack <- readBottomTrack(id=as.raw(0x17), debug=debug)
     if (0x17 == dataType) { # 0x17=bottomTrack
-            oceDebug(debug, "START of 0x17=23=bottomTrack code block\n")
+        oceDebug(debug, "START of 0x17=23=bottomTrack code block\n")
         if (length(p$bottomTrack) < 1L) {
             stop("no dataType=", as.raw(dataTypeOrig), " (bottomTrack) in file")
         }
-        data <- readBottomTrack(id = dataType, debug = debug - 1)
+        data <- readBottomTrack(id = dataType, debug = debug - 1) # id is 0x17
         oceDebug(debug, "dataType=", as.raw(dataType), "(bottomTrack): move some things from data to metadata\n")
         for (name in c(
             "blankingDistance", "cellSize", "configuration", "datasetDescription",
@@ -2424,7 +2461,7 @@ read.adp.ad2cp <- function(
         if (length(p$DVLBottomTrack) < 1L) {
             stop("no dataType=", as.raw(dataTypeOrig), " (DVLBottomTrack) in file")
         }
-        data <- readBottomTrack(id = dataType, debug = debug - 1)
+        data <- readBottomTrack(id = dataType, debug = debug - 1) # id is 0x1b
         oceDebug(debug, "dataType=", as.raw(dataType), "(DVLBottomTrack): move some things from data to metadata\n")
         for (name in c(
             "blankingDistance", "cellSize", "configuration", "datasetDescription",
