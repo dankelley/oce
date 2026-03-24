@@ -1,4 +1,4 @@
-# vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
+# vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4:foldmethod=marker
 
 # Check that all rows in configuration matrix ("BCC") are identical.
 # Returns number of rows that don't match the first row.
@@ -1856,8 +1856,7 @@ read.adp.ad2cp <- function(
     } # readEchosounderRawTX
 
 
-    # This handles burst, average, altimeter, etc., but NOT
-    # bottomTrack.
+    # This handles burst, average, altimeter, etc., but NOT bottomTrack.
     readProfile <- function(id, debug = getOption("oceDebug")) # uses global 'd' and 'configuration'
     {
         type <- gsub(".*=", "", ad2cpCodeToName(id))
@@ -1981,41 +1980,114 @@ read.adp.ad2cp <- function(
         oceDebug(debug, vectorShow(lookIndex))
         offsetOfData <- as.integer(d$buf[d$index[look[1]] + 2L])
         oceDebug(debug, vectorShow(offsetOfData))
-        oceDebug(debug, vectorShow(configuration[look[1], ], n = 30))
         badRowCount <- checkRowConsistency(configuration[look, ])
         if (badRowCount > 0) {
             stop("Problem with bottomTrack 'configuration' matrix: ", badRowCount, " rows do not match row #1")
-        } else {
-            oceDebug(debug, "No inconsistencies between rows in 'configuration' matrix\n")
         }
+        oceDebug(debug, "configuration: ", paste(ifelse(configuration[look[1], ], "1", "0"), collapse = ""), " (shown as a bitmask)\n")
+        # {{{ interpretation of configuration START
+        # Determine what is included. The variables with names ending in
+        # 'Included' are taken from the bits withing configuration0, following
+        # the C code Nortek sent on 2026-03-24 to CR and DK.
         configuration0 <- configuration[1, ]
+        pressureIncluded <- configuration0[1] # NOTE: Nortek code calls this bit 0, etc for rest
+        temperatureIncluded <- configuration0[2]
+        compassIncluded <- configuration0[3]
+        tiltIncluded <- configuration0[4]
+        # bit 5 (called bit 4 in Nortek code) is empty
         velocityIncluded <- configuration0[6]
-        amplitudeIncluded <- FALSE # configuration0[7] for !bottomTrack (2017 manual p60)
-        correlationIncluded <- FALSE # configuration0[8] for !bottomTrack (2017 manual p60)
-        altimeterIncluded <- FALSE # configuration0[9] for !bottomTrack (2017 manual p60)
-        distanceIncluded <- configuration0[9] # this means altimeterIncluded for other data types
-        # nolint start object_useage_linter
-        # altimeterRawIncluded <- configuration0[10]
-        figureOfMeritIncluded <- configuration0[10] # means altimeterRawIncluded for other data types
-        # nolint end object_useage_linter
-        ASTIncluded <- FALSE # configuration0[11]
-        echosounderIncluded <- FALSE # configuration0[12]
-        AHRSIncluded <- FALSE # configuration0[13]
-        percentGoodIncluded <- FALSE # configuration0[14]
-        stdDevIncluded <- FALSE # configuration0[15]
-        oceDebug(debug, "readBottomTrack() analysis of 'configuration' matrix yields:\n")
-        oceDebug(debug, vectorShow(velocityIncluded, postscript = "based on configuration[6]"))
-        oceDebug(debug, vectorShow(distanceIncluded, postscript = "based on configuration[9]"))
-        oceDebug(debug, vectorShow(figureOfMeritIncluded, postscript = "based on configuration[10]"))
-        # oceDebug(debug, vectorShow(amplitudeIncluded, postscript = "based on configuration[7]"))
-        # oceDebug(debug, vectorShow(correlationIncluded, postscript = "based on configuration[8]"))
-        # oceDebug(debug, vectorShow(altimeterIncluded, postscript = "based on configuration[9]"))
-        # oceDebug(debug, vectorShow(altimeterRawIncluded, postscript = "based on configuration[10]"))
-        # oceDebug(debug, vectorShow(ASTIncluded, postscript = "based on configuration[11]"))
-        # oceDebug(debug, vectorShow(echosounderIncluded, postscript = "based on configuration[12]"))
-        # oceDebug(debug, vectorShow(AHRSIncluded, postscript = "based on configuration[13]"))
-        # oceDebug(debug, vectorShow(percentGoodIncluded, postscript = "based on configuration[14]"))
-        # oceDebug(debug, vectorShow(stdDevIncluded, postscript = "based on configuration[15]"))
+        amplitudeIncluded <- configuration0[7]
+        correlationIncluded <- configuration0[8]
+        distanceIncluded <- configuration0[9]
+        figureOfMeritIncluded <- configuration0[10]
+        AHRSIncluded <- configuration0[11]
+        auxIncluded <- configuration0[12]
+        # Last 4 bits of this 16-bit cluster are ignored
+        oceDebug(debug, "Analysis of 'configuration' bits, proceeding left-to-right:\n")
+        oceDebug(debug, "  ", vectorShow(pressureIncluded, postscript = "based on configuration[1]"))
+        oceDebug(debug, "  ", vectorShow(temperatureIncluded, postscript = "based on configuration[2]"))
+        oceDebug(debug, "  ", vectorShow(compassIncluded, postscript = "based on configuration[3]"))
+        oceDebug(debug, "  ", vectorShow(tiltIncluded, postscript = "based on configuration[4]"))
+        oceDebug(debug, "  ", vectorShow(velocityIncluded, postscript = "based on configuration[6]"))
+        oceDebug(debug, "  ", vectorShow(amplitudeIncluded, postscript = "based on configuration[7]"))
+        oceDebug(debug, "  ", vectorShow(correlationIncluded, postscript = "based on configuration[8]"))
+        oceDebug(debug, "  ", vectorShow(distanceIncluded, postscript = "based on configuration[9]"))
+        oceDebug(debug, "  ", vectorShow(figureOfMeritIncluded, postscript = "based on configuration[10]"))
+        oceDebug(debug, "  ", vectorShow(AHRSIncluded, postscript = "based on configuration[11]"))
+        oceDebug(debug, "  ", vectorShow(auxIncluded, postscript = "based on configuration[12]"))
+        # }}} END interpretation of configuration
+        # The serial number is already known from calling code, but let's read it again
+        # so we can isolate this function better
+        oceDebug(debug, vectorShow(serialNumber))
+        serialNumberTEST <- readBin(buf[d$index[look[1]] + 5:8], "integer", size = 4L, endian = "little")
+        stopifnot(serialNumber == serialNumberTEST)
+        # {{{ FIXME: send these as function parameters
+        pointer1 <- d$index
+        pointer2 <- gappyIndex(d$index, 0, 2)
+        pointer4 <- gappyIndex(d$index, 0, 4)
+        # }}}
+
+        year <- 1900 + as.integer(buf[pointer1 + 9])
+        oceDebug(debug, vectorShow(year))
+        month <- 1 + as.integer(buf[pointer1 + 10])
+        oceDebug(debug, vectorShow(month))
+        day <- as.integer(buf[pointer1 + 11])
+        oceDebug(debug, vectorShow(day))
+        hour <- as.integer(buf[pointer1 + 12])
+        oceDebug(debug, vectorShow(hour))
+        min <- as.integer(buf[pointer1 + 13])
+        oceDebug(debug, vectorShow(min))
+        sec <- as.integer(buf[pointer1 + 14])
+        oceDebug(debug, vectorShow(sec))
+        hsec <- 1e-4 * readBin(buf[pointer2 + 15], "integer", size = 2L, n = N, signed = FALSE, endian = "little")
+        oceDebug(debug, vectorShow(hsec))
+        time <- ISOdatetime(year, month, day, hour, min, sec + 0.01 * hsec, tz = "UTC")
+        oceDebug(debug, vectorShow(time))
+        soundSpeed <- 0.1 * readBin(d$buf[pointer2 + 17], "integer", size = 2L, n = N, signed = FALSE, endian = "little")
+        oceDebug(debug, vectorShow(soundSpeed))
+        temperature <- 0.01 * readBin(d$buf[pointer2 + 19], "integer", size = 2L, n = N, signed = TRUE, endian = "little")
+        oceDebug(debug, vectorShow(temperature))
+        pressure <- 0.001 * readBin(d$buf[pointer4 + 21L], "integer", size = 4L, n = N, endian = "little")
+        oceDebug(debug, vectorShow(pressure))
+        heading <- 0.01 * readBin(d$buf[pointer2 + 25L], "integer", size = 2L, n = N, signed = FALSE, endian = "little")
+        oceDebug(debug, vectorShow(heading))
+        pitch <- 0.01 * readBin(d$buf[pointer2 + 27L], "integer", size = 2L, n = N, signed = TRUE, endian = "little")
+        oceDebug(debug, vectorShow(pitch))
+        roll <- 0.01 * readBin(d$buf[pointer2 + 29L], "integer", size = 2L, n = N, signed = TRUE, endian = "little")
+        oceDebug(debug, vectorShow(roll))
+        par(mfrow=c(3,1))
+        oce.plot.ts(time, heading)
+        oce.plot.ts(time, pitch); abline(h=0, col=2)
+        oce.plot.ts(time, roll); abline(h=0, col=2)
+        beamsCoords <- d$buf[pointer1[1] + 31] # this ought never to change
+        beamsCoordsBits <- as.integer(strsplit(byteToBinary(beamsCoords[1]), "")[[1]])
+        nbeamsTEST <- beamsCoordsBits[3] + 2 * beamsCoordsBits[2] + 4 * beamsCoordsBits[1]
+        oceDebug(debug, vectorShow(nbeamsTEST))
+        stop("EARLY STOP DURING DEVELOPMENT")
+        # Questions for nortek:
+        #   1. Please document bottom-track as the others. Otherwise we cannot know units and scale factors.
+        #   2. Please tell us more about that block at the end (window-start etc). Are all fields always present?
+
+        # {{{ FIXME: remove next
+        temperature <- 0.1 * readBin(buf[d$index + 20:23], "integer", size = 2L, endian = "little")
+        oceDebug(debug, vectorShow(temperature))
+        pressure <- 0.1 * readBin(buf[d$index + 24:27], "integer", size = 4L, endian = "little")
+        oceDebug(debug, vectorShow(pressure))
+        heading <- 0.01 * readBin(buf[d$index + 28:31], "integer", size = 2L, endian = "little")
+        oceDebug(debug, vectorShow(heading))
+        pitch <- 0.01 * readBin(buf[d$index + 32:35], "integer", size = 4L, endian = "little")
+        oceDebug(debug, vectorShow(pitch))
+        roll <- 0.01 * readBin(buf[d$index + 36:39], "integer", size = 2L, endian = "little")
+        oceDebug(debug, vectorShow(roll))
+        beamsCoords <- buf[d$index + 40]
+        print(byteToBinary(beamsCoords))
+        # }}}
+
+
+        message("FIXME: here in new bottomTrack code")
+
+        browser()
+
         rval <- list(
             configuration = configuration0,
             numberOfBeams = nbeams[look[1]],
@@ -2109,7 +2181,7 @@ read.adp.ad2cp <- function(
             }
             iv <- gappyIndex(i, i0v, 4L * NB)
             tmp <- readBin(d$buf[iv], "integer", size = 4L, n = NB * NP, endian = "little")
-            #rval$v <- rval$velocityFactor * matrix(tmp, ncol = NB, byrow = FALSE)
+            # rval$v <- rval$velocityFactor * matrix(tmp, ncol = NB, byrow = FALSE)
             rval$v <- rval$velocityFactor * matrix(tmp, ncol = NB, byrow = TRUE)
             i0v <<- i0v + 4L * NB
         }
