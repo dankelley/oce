@@ -2473,6 +2473,10 @@ read.adp.ad2cp <- function(
         if (length(p$bottomTrack) < 1L) {
             stop("no dataType=", as.raw(dataTypeOrig), " (bottomTrack) in file")
         }
+        # {{{ FIXME: trying new way
+        d$configuration <- configuration
+        FIXME_DAN <- readBottomTrackNEW(d, debug=2)
+        # }}}
         data <- readBottomTrack(id = dataType, debug = debug - 1) # id is 0x17
         oceDebug(debug, "dataType=", as.raw(dataType), "(bottomTrack): move some things from data to metadata\n")
         for (name in c(
