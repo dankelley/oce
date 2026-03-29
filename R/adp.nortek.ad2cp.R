@@ -787,6 +787,13 @@ read.adp.ad2cp <- function(
     # later, though.
     nav <- do_ldc_ad2cp_in_file(filename, from = 1L, to = 1e9, by = 1L, debug = if (debug > 4) 1 else 0)
     d <- list(buf = buf, index = nav$index, headerLength = nav$headerLength, dataLength = nav$dataLength, id = nav$id)
+    #FIXME: DELETE
+    #FIXME: DELETE # {{{ Extract a single sample FIXME: delete this!!
+    #FIXME: DELETE return(d)
+    #FIXME: DELETE # }}}
+    #FIXME: DELETE
+    cat("FIXME ad2cp main L790 table(d$id):\n")
+    print(table(d$id))
     oceDebug(debug, vectorShow(length(d$index)))
     N <- length(d$index)
     #-message("L635 N=",N,", to=", to)
@@ -2055,10 +2062,12 @@ read.adp.ad2cp <- function(
         oceDebug(debug, vectorShow(pitch))
         roll <- 0.01 * readBin(d$buf[pointer2 + 29L], "integer", size = 2L, n = N, signed = TRUE, endian = "little")
         oceDebug(debug, vectorShow(roll))
-        par(mfrow=c(3,1))
+        par(mfrow = c(3, 1))
         oce.plot.ts(time, heading)
-        oce.plot.ts(time, pitch); abline(h=0, col=2)
-        oce.plot.ts(time, roll); abline(h=0, col=2)
+        oce.plot.ts(time, pitch)
+        abline(h = 0, col = 2)
+        oce.plot.ts(time, roll)
+        abline(h = 0, col = 2)
         beamsCoords <- d$buf[pointer1[1] + 31] # this ought never to change
         beamsCoordsBits <- as.integer(strsplit(byteToBinary(beamsCoords[1]), "")[[1]])
         nbeamsTEST <- beamsCoordsBits[3] + 2 * beamsCoordsBits[2] + 4 * beamsCoordsBits[1]
@@ -2475,7 +2484,7 @@ read.adp.ad2cp <- function(
         }
         # {{{ FIXME: trying new way
         d$configuration <- configuration
-        FIXME_DAN <- readBottomTrackNEW(d, debug=2)
+        FIXME_DAN <- readBottomTrackNEW(d, debug = 2)
         # }}}
         data <- readBottomTrack(id = dataType, debug = debug - 1) # id is 0x17
         oceDebug(debug, "dataType=", as.raw(dataType), "(bottomTrack): move some things from data to metadata\n")
