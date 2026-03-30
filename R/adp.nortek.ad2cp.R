@@ -1976,7 +1976,7 @@ read.adp.ad2cp <- function(
     } # readProfile
 
     # Nortek (2022 page 93 ) "6.7 _DF20BottomTrack"
-    readBottomTrack <- function(id, debug = getOption("oceDebug")) # uses global 'd' and 'configuration'
+    readBottomTrack_OLD_UNUSED <- function(id, debug = getOption("oceDebug")) # uses global 'd' and 'configuration'
     {
         # id will be 0x17 for bottomTrack
         type <- gsub(".*=", "", ad2cpCodeToName(id))
@@ -2483,11 +2483,13 @@ read.adp.ad2cp <- function(
             stop("no dataType=", as.raw(dataTypeOrig), " (bottomTrack) in file")
         }
         # {{{ FIXME: trying new way
-        d$configuration <- configuration
-        FIXME_DAN <- readBottomTrackNEW(d, debug = 2)
+        d$configuration <- configuration # FIXME: remove -- handled by readBottomTrack()
+        data <- readBottomTrack(d, debug = 2)
+        message("examine data (and add new items to reading, as needed)")
+        browser()
         # }}}
-        data <- readBottomTrack(id = dataType, debug = debug - 1) # id is 0x17
-        oceDebug(debug, "dataType=", as.raw(dataType), "(bottomTrack): move some things from data to metadata\n")
+        #OLDdata <- readBottomTrack(id = dataType, debug = debug - 1) # id is 0x17
+        #OLDoceDebug(debug, "dataType=", as.raw(dataType), "(bottomTrack): move some things from data to metadata\n")
         for (name in c(
             "blankingDistance", "cellSize", "configuration", "datasetDescription",
             "frequency", "numberOfBeams", "numberOfCells", "oceCoordinate",
