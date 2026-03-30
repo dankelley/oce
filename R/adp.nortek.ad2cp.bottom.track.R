@@ -155,27 +155,48 @@ readBottomTrack <- function(d, debug = getOption("oceDebug")) # uses global 'd' 
         size = 4L, n = nprofiles, endian = "little"
     )
     # }}}
-    str(v)
+    oceDebug(debug, vectorShow(v))
+    distance <- matrix(nrow = nprofiles, ncol = nbeams)
     message("The 'distance' value seems wrong")
     tmp <- readBin(d$buf[pointer4 + 95:98],
         "integer",
         size = 4L, n = nprofiles, endian = "little"
     )
-    # FIXME: I think we must be reading wrong, to get first bit = 1, thus
-    # requiring conversion.  (R does not have an unsigned 4-byte integer type).
     tmp <- ifelse(tmp < 0.0, 2^32 + abs(tmp), tmp)
-    distance <- 0.001 * tmp
-    oceDebug(debug, vectorShow(d$buf[pointer4 + 95:98]))
+    distance[,1] <- 0.001 * tmp
+
+    tmp <- readBin(d$buf[pointer4 + 99:102],
+        "integer",
+        size = 4L, n = nprofiles, endian = "little"
+    )
+    tmp <- ifelse(tmp < 0.0, 2^32 + abs(tmp), tmp)
+    distance[,2] <- 0.001 * tmp
+
+    tmp <- readBin(d$buf[pointer4 + 103:106],
+        "integer",
+        size = 4L, n = nprofiles, endian = "little"
+    )
+    tmp <- ifelse(tmp < 0.0, 2^32 + abs(tmp), tmp)
+    distance[,3] <- 0.001 * tmp
+
+    tmp <- readBin(d$buf[pointer4 + 107:120],
+        "integer",
+        size = 4L, n = nprofiles, endian = "little"
+    )
+    tmp <- ifelse(tmp < 0.0, 2^32 + abs(tmp), tmp)
+    distance[,4] <- 0.001 * tmp
     oceDebug(debug, vectorShow(distance))
+
+
     message("The 'figureOfMerit' value seems wrong")
-    figureOfMerit <- readBin(d$buf[pointer2 + 99], "integer", size = 2L, endian = "little", n = nprofiles, signed = FALSE)
-    oceDebug(debug, vectorShow(d$buf[pointer2 + 99]))
+    figureOfMerit <- readBin(d$buf[pointer2 + 121], "integer", size = 2L, endian = "little", n = nprofiles, signed = FALSE)
+    oceDebug(debug, vectorShow(d$buf[pointer2 + 121]))
     oceDebug(debug, vectorShow(figureOfMerit))
 
     if (debug) {
         par(mfrow = c(2, 1))
         oce.plot.ts(time, v[, 1])
-        oce.plot.ts(time, distance, drawTimeRange = FALSE)
+        oce.plot.ts(time, distance[, 1], drawTimeRange = FALSE)
     }
     # FIXME: add coordinates, orientation, magnetometer, accelerometer, etc
     rval <- list(

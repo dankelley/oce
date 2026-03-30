@@ -787,11 +787,11 @@ read.adp.ad2cp <- function(
     # later, though.
     nav <- do_ldc_ad2cp_in_file(filename, from = 1L, to = 1e9, by = 1L, debug = if (debug > 4) 1 else 0)
     d <- list(buf = buf, index = nav$index, headerLength = nav$headerLength, dataLength = nav$dataLength, id = nav$id)
-    #FIXME: DELETE
-    #FIXME: DELETE # {{{ Extract a single sample FIXME: delete this!!
-    #FIXME: DELETE return(d)
-    #FIXME: DELETE # }}}
-    #FIXME: DELETE
+    # FIXME: DELETE
+    # FIXME: DELETE # {{{ Extract a single sample FIXME: delete this!!
+    # FIXME: DELETE return(d)
+    # FIXME: DELETE # }}}
+    # FIXME: DELETE
     cat("FIXME ad2cp main L790 table(d$id):\n")
     print(table(d$id))
     oceDebug(debug, vectorShow(length(d$index)))
@@ -2486,10 +2486,22 @@ read.adp.ad2cp <- function(
         d$configuration <- configuration # FIXME: remove -- handled by readBottomTrack()
         data <- readBottomTrack(d, debug = 2)
         message("examine data (and add new items to reading, as needed)")
+        if (!interactive()) pdf("bt.pdf")
+        par(mfrow = c(4, 2))
+        oce.plot.ts(data$time, data$v[, 1], type = "o", cex = 0.5)
+        oce.plot.ts(data$time, data$distance[, 1], type = "o", cex = 0.5)
+        oce.plot.ts(data$time, data$v[, 2], type = "o", cex = 0.5)
+        oce.plot.ts(data$time, data$distance[, 2], type = "o", cex = 0.5)
+        oce.plot.ts(data$time, data$v[, 3], type = "o", cex = 0.5)
+        oce.plot.ts(data$time, data$distance[, 3], type = "o", cex = 0.5)
+        oce.plot.ts(data$time, data$v[, 4], type = "o", cex = 0.5)
+        oce.plot.ts(data$time, data$distance[, 4], type = "o", cex = 0.5)
+        message("FIXME: dk still fiddling with code!")
+        if (!interactive()) dev.off()
         browser()
         # }}}
-        #OLDdata <- readBottomTrack(id = dataType, debug = debug - 1) # id is 0x17
-        #OLDoceDebug(debug, "dataType=", as.raw(dataType), "(bottomTrack): move some things from data to metadata\n")
+        # OLDdata <- readBottomTrack(id = dataType, debug = debug - 1) # id is 0x17
+        # OLDoceDebug(debug, "dataType=", as.raw(dataType), "(bottomTrack): move some things from data to metadata\n")
         for (name in c(
             "blankingDistance", "cellSize", "configuration", "datasetDescription",
             "frequency", "numberOfBeams", "numberOfCells", "oceCoordinate",
