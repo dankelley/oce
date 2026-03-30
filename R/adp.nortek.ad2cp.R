@@ -2486,7 +2486,7 @@ read.adp.ad2cp <- function(
         d$configuration <- configuration # FIXME: remove -- handled by readBottomTrack()
         data <- readBottomTrack(d, debug = 2)
         message("examine data (and add new items to reading, as needed)")
-        if (!interactive()) pdf("bt.pdf")
+        if (!interactive()) png("bt.png", units="in", width=7, height=7, res=200)
         par(mfrow = c(4, 2))
         oce.plot.ts(data$time, data$v[, 1], type = "o", cex = 0.5)
         oce.plot.ts(data$time, data$distance[, 1], type = "o", cex = 0.5)

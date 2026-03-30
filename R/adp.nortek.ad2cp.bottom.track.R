@@ -179,7 +179,7 @@ readBottomTrack <- function(d, debug = getOption("oceDebug")) # uses global 'd' 
     tmp <- ifelse(tmp < 0.0, 2^32 + abs(tmp), tmp)
     distance[,3] <- 0.001 * tmp
 
-    tmp <- readBin(d$buf[pointer4 + 107:120],
+    tmp <- readBin(d$buf[pointer4 + 107:110],
         "integer",
         size = 4L, n = nprofiles, endian = "little"
     )
@@ -189,8 +189,8 @@ readBottomTrack <- function(d, debug = getOption("oceDebug")) # uses global 'd' 
 
 
     message("The 'figureOfMerit' value seems wrong")
-    figureOfMerit <- readBin(d$buf[pointer2 + 121], "integer", size = 2L, endian = "little", n = nprofiles, signed = FALSE)
-    oceDebug(debug, vectorShow(d$buf[pointer2 + 121]))
+    figureOfMerit <- readBin(d$buf[pointer2 + 111], "integer", size = 2L, endian = "little", n = nprofiles, signed = FALSE)
+    oceDebug(debug, vectorShow(d$buf[pointer2 + 111]))
     oceDebug(debug, vectorShow(figureOfMerit))
 
     if (debug) {
