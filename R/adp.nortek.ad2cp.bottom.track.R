@@ -132,10 +132,11 @@ readBottomTrack <- function(d, debug = getOption("oceDebug")) # uses global 'd' 
 
     oceDebug(debug, "offsetOfData: ", offsetOfData, ", is this 78?\n")
 
-    # iv <- gappyIndex(lookIndex, offsetOfData[1] + 1L, 4L * nbeams) # 4 bytes per beam entry
-    # Trial near offsetOfData
-    oceDebug(debug, vectorShow(nbeams * nprofiles))
-    oceDebug(debug, vectorShow(pointer1[1:4]))
+    ensembleCounter <- readBin(d$buf[pointer4 + 75L],
+        "integer",
+        size = 4L, n = nprofiles, endian = "little"
+    )
+
     # {{{ read velocities, beam by beam (FIXME: hard-wired for 4 beams, at the moment)
     v <- matrix(nrow = nprofiles, ncol = nbeams)
     v[, 1] <- velocityFactor * readBin(d$buf[pointer4 + 79L],
@@ -162,6 +163,7 @@ readBottomTrack <- function(d, debug = getOption("oceDebug")) # uses global 'd' 
         "integer",
         size = 4L, n = nprofiles, endian = "little"
     )
+    if (any(tmp<0.0)) message("NEGATIVE distances.......")
     tmp <- ifelse(tmp < 0.0, 2^32 + abs(tmp), tmp)
     distance[, 1] <- 0.001 * tmp
 
@@ -204,7 +206,9 @@ readBottomTrack <- function(d, debug = getOption("oceDebug")) # uses global 'd' 
         blankingDistance = blankingDistance,
         soundSpeed = soundSpeed,
         time = time, pressure = pressure, temperature = temperature,
-        heading = heading, pitch = pitch, roll = roll, v = v, distance = distance,
+        heading = heading, pitch = pitch, roll = roll,
+        ensembleCounter = ensembleCounter,
+        v = v, distance = distance,
         figureOfMerit = figureOfMerit
     )
     rval

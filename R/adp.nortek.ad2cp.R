@@ -2488,6 +2488,16 @@ read.adp.ad2cp <- function(
         message("examine data (and add new items to reading, as needed)")
 
         if (debug) {
+            if (!interactive()) png("bt_ensemble.png", units = "in", width = 7, height = 7, res = 200)
+            oce.plot.ts(data$time, data$ensembleCounter, type = "o", cex = 0.5)
+            if (!interactive()) dev.off()
+            if (!interactive()) png("bt_pressure_and_angles.png", units = "in", width = 7, height = 7, res = 200)
+            par(mfrow = c(4, 1))
+            oce.plot.ts(data$time, data$pressure, type = "o", cex = 0.5)
+            oce.plot.ts(data$time, data$heading, type = "o", cex = 0.5)
+            oce.plot.ts(data$time, data$pitch, type = "o", cex = 0.5)
+            oce.plot.ts(data$time, data$roll, type = "o", cex = 0.5)
+            if (!interactive()) dev.off()
             if (!interactive()) png("bt_v.png", units = "in", width = 7, height = 7, res = 200)
             par(mfrow = c(4, 1))
             oce.plot.ts(data$time, data$v[, 1], type = "o", cex = 0.5)
