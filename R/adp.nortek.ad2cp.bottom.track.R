@@ -163,28 +163,28 @@ readBottomTrack <- function(d, debug = getOption("oceDebug")) # uses global 'd' 
         size = 4L, n = nprofiles, endian = "little"
     )
     tmp <- ifelse(tmp < 0.0, 2^32 + abs(tmp), tmp)
-    distance[,1] <- 0.001 * tmp
+    distance[, 1] <- 0.001 * tmp
 
     tmp <- readBin(d$buf[pointer4 + 99:102],
         "integer",
         size = 4L, n = nprofiles, endian = "little"
     )
     tmp <- ifelse(tmp < 0.0, 2^32 + abs(tmp), tmp)
-    distance[,2] <- 0.001 * tmp
+    distance[, 2] <- 0.001 * tmp
 
     tmp <- readBin(d$buf[pointer4 + 103:106],
         "integer",
         size = 4L, n = nprofiles, endian = "little"
     )
     tmp <- ifelse(tmp < 0.0, 2^32 + abs(tmp), tmp)
-    distance[,3] <- 0.001 * tmp
+    distance[, 3] <- 0.001 * tmp
 
     tmp <- readBin(d$buf[pointer4 + 107:110],
         "integer",
         size = 4L, n = nprofiles, endian = "little"
     )
     tmp <- ifelse(tmp < 0.0, 2^32 + abs(tmp), tmp)
-    distance[,4] <- 0.001 * tmp
+    distance[, 4] <- 0.001 * tmp
     oceDebug(debug, vectorShow(distance))
 
 
@@ -204,7 +204,8 @@ readBottomTrack <- function(d, debug = getOption("oceDebug")) # uses global 'd' 
         blankingDistance = blankingDistance,
         soundSpeed = soundSpeed,
         time = time, pressure = pressure, temperature = temperature,
-        heading = heading, pitch = pitch, roll = roll, v = v, distance = distance
+        heading = heading, pitch = pitch, roll = roll, v = v, distance = distance,
+        figureOfMerit = figureOfMerit
     )
     rval
 } # readBottomTrack

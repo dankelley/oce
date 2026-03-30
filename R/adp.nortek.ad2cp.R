@@ -1976,247 +1976,247 @@ read.adp.ad2cp <- function(
     } # readProfile
 
     # Nortek (2022 page 93 ) "6.7 _DF20BottomTrack"
-    readBottomTrack_OLD_UNUSED <- function(id, debug = getOption("oceDebug")) # uses global 'd' and 'configuration'
-    {
-        # id will be 0x17 for bottomTrack
-        type <- gsub(".*=", "", ad2cpCodeToName(id))
-        oceDebug(debug, "readBottomTrack(id=0x", as.raw(id), " or ", id, " decimal) # i.e. type=", type, " START\n", unindent = 1)
-        look <- which(d$id == id)
-        oceDebug(debug, vectorShow(look))
-        lookIndex <- d$index[look]
-        oceDebug(debug, vectorShow(lookIndex))
-        offsetOfData <- as.integer(d$buf[d$index[look[1]] + 2L])
-        oceDebug(debug, vectorShow(offsetOfData))
-        badRowCount <- checkRowConsistency(configuration[look, ])
-        if (badRowCount > 0) {
-            stop("Problem with bottomTrack 'configuration' matrix: ", badRowCount, " rows do not match row #1")
-        }
-        oceDebug(debug, "configuration: ", paste(ifelse(configuration[look[1], ], "1", "0"), collapse = ""), " (shown as a bitmask)\n")
-        # {{{ interpretation of configuration START
-        # Determine what is included. The variables with names ending in
-        # 'Included' are taken from the bits withing configuration0, following
-        # the C code Nortek sent on 2026-03-24 to CR and DK.
-        configuration0 <- configuration[1, ]
-        pressureIncluded <- configuration0[1] # NOTE: Nortek code calls this bit 0, etc for rest
-        temperatureIncluded <- configuration0[2]
-        compassIncluded <- configuration0[3]
-        tiltIncluded <- configuration0[4]
-        # bit 5 (called bit 4 in Nortek code) is empty
-        velocityIncluded <- configuration0[6]
-        amplitudeIncluded <- configuration0[7]
-        correlationIncluded <- configuration0[8]
-        distanceIncluded <- configuration0[9]
-        figureOfMeritIncluded <- configuration0[10]
-        AHRSIncluded <- configuration0[11]
-        auxIncluded <- configuration0[12]
-        # Last 4 bits of this 16-bit cluster are ignored
-        oceDebug(debug, "Analysis of 'configuration' bits, proceeding left-to-right:\n")
-        oceDebug(debug, "  ", vectorShow(pressureIncluded, postscript = "based on configuration[1]"))
-        oceDebug(debug, "  ", vectorShow(temperatureIncluded, postscript = "based on configuration[2]"))
-        oceDebug(debug, "  ", vectorShow(compassIncluded, postscript = "based on configuration[3]"))
-        oceDebug(debug, "  ", vectorShow(tiltIncluded, postscript = "based on configuration[4]"))
-        oceDebug(debug, "  ", vectorShow(velocityIncluded, postscript = "based on configuration[6]"))
-        oceDebug(debug, "  ", vectorShow(amplitudeIncluded, postscript = "based on configuration[7]"))
-        oceDebug(debug, "  ", vectorShow(correlationIncluded, postscript = "based on configuration[8]"))
-        oceDebug(debug, "  ", vectorShow(distanceIncluded, postscript = "based on configuration[9]"))
-        oceDebug(debug, "  ", vectorShow(figureOfMeritIncluded, postscript = "based on configuration[10]"))
-        oceDebug(debug, "  ", vectorShow(AHRSIncluded, postscript = "based on configuration[11]"))
-        oceDebug(debug, "  ", vectorShow(auxIncluded, postscript = "based on configuration[12]"))
-        # }}} END interpretation of configuration
-        # The serial number is already known from calling code, but let's read it again
-        # so we can isolate this function better
-        oceDebug(debug, vectorShow(serialNumber))
-        serialNumberTEST <- readBin(buf[d$index[look[1]] + 5:8], "integer", size = 4L, endian = "little")
-        stopifnot(serialNumber == serialNumberTEST)
-        # {{{ FIXME: send these as function parameters
-        pointer1 <- d$index
-        pointer2 <- gappyIndex(d$index, 0, 2)
-        pointer4 <- gappyIndex(d$index, 0, 4)
-        # }}}
+    #<OLD> readBottomTrack_OLD_UNUSED <- function(id, debug = getOption("oceDebug")) # uses global 'd' and 'configuration'
+    #<OLD> {
+    #<OLD>     # id will be 0x17 for bottomTrack
+    #<OLD>     type <- gsub(".*=", "", ad2cpCodeToName(id))
+    #<OLD>     oceDebug(debug, "readBottomTrack(id=0x", as.raw(id), " or ", id, " decimal) # i.e. type=", type, " START\n", unindent = 1)
+    #<OLD>     look <- which(d$id == id)
+    #<OLD>     oceDebug(debug, vectorShow(look))
+    #<OLD>     lookIndex <- d$index[look]
+    #<OLD>     oceDebug(debug, vectorShow(lookIndex))
+    #<OLD>     offsetOfData <- as.integer(d$buf[d$index[look[1]] + 2L])
+    #<OLD>     oceDebug(debug, vectorShow(offsetOfData))
+    #<OLD>     badRowCount <- checkRowConsistency(configuration[look, ])
+    #<OLD>     if (badRowCount > 0) {
+    #<OLD>         stop("Problem with bottomTrack 'configuration' matrix: ", badRowCount, " rows do not match row #1")
+    #<OLD>     }
+    #<OLD>     oceDebug(debug, "configuration: ", paste(ifelse(configuration[look[1], ], "1", "0"), collapse = ""), " (shown as a bitmask)\n")
+    #<OLD>     # {{{ interpretation of configuration START
+    #<OLD>     # Determine what is included. The variables with names ending in
+    #<OLD>     # 'Included' are taken from the bits withing configuration0, following
+    #<OLD>     # the C code Nortek sent on 2026-03-24 to CR and DK.
+    #<OLD>     configuration0 <- configuration[1, ]
+    #<OLD>     pressureIncluded <- configuration0[1] # NOTE: Nortek code calls this bit 0, etc for rest
+    #<OLD>     temperatureIncluded <- configuration0[2]
+    #<OLD>     compassIncluded <- configuration0[3]
+    #<OLD>     tiltIncluded <- configuration0[4]
+    #<OLD>     # bit 5 (called bit 4 in Nortek code) is empty
+    #<OLD>     velocityIncluded <- configuration0[6]
+    #<OLD>     amplitudeIncluded <- configuration0[7]
+    #<OLD>     correlationIncluded <- configuration0[8]
+    #<OLD>     distanceIncluded <- configuration0[9]
+    #<OLD>     figureOfMeritIncluded <- configuration0[10]
+    #<OLD>     AHRSIncluded <- configuration0[11]
+    #<OLD>     auxIncluded <- configuration0[12]
+    #<OLD>     # Last 4 bits of this 16-bit cluster are ignored
+    #<OLD>     oceDebug(debug, "Analysis of 'configuration' bits, proceeding left-to-right:\n")
+    #<OLD>     oceDebug(debug, "  ", vectorShow(pressureIncluded, postscript = "based on configuration[1]"))
+    #<OLD>     oceDebug(debug, "  ", vectorShow(temperatureIncluded, postscript = "based on configuration[2]"))
+    #<OLD>     oceDebug(debug, "  ", vectorShow(compassIncluded, postscript = "based on configuration[3]"))
+    #<OLD>     oceDebug(debug, "  ", vectorShow(tiltIncluded, postscript = "based on configuration[4]"))
+    #<OLD>     oceDebug(debug, "  ", vectorShow(velocityIncluded, postscript = "based on configuration[6]"))
+    #<OLD>     oceDebug(debug, "  ", vectorShow(amplitudeIncluded, postscript = "based on configuration[7]"))
+    #<OLD>     oceDebug(debug, "  ", vectorShow(correlationIncluded, postscript = "based on configuration[8]"))
+    #<OLD>     oceDebug(debug, "  ", vectorShow(distanceIncluded, postscript = "based on configuration[9]"))
+    #<OLD>     oceDebug(debug, "  ", vectorShow(figureOfMeritIncluded, postscript = "based on configuration[10]"))
+    #<OLD>     oceDebug(debug, "  ", vectorShow(AHRSIncluded, postscript = "based on configuration[11]"))
+    #<OLD>     oceDebug(debug, "  ", vectorShow(auxIncluded, postscript = "based on configuration[12]"))
+    #<OLD>     # }}} END interpretation of configuration
+    #<OLD>     # The serial number is already known from calling code, but let's read it again
+    #<OLD>     # so we can isolate this function better
+    #<OLD>     oceDebug(debug, vectorShow(serialNumber))
+    #<OLD>     serialNumberTEST <- readBin(buf[d$index[look[1]] + 5:8], "integer", size = 4L, endian = "little")
+    #<OLD>     stopifnot(serialNumber == serialNumberTEST)
+    #<OLD>     # {{{ FIXME: send these as function parameters
+    #<OLD>     pointer1 <- d$index
+    #<OLD>     pointer2 <- gappyIndex(d$index, 0, 2)
+    #<OLD>     pointer4 <- gappyIndex(d$index, 0, 4)
+    #<OLD>     # }}}
 
-        year <- 1900 + as.integer(buf[pointer1 + 9])
-        oceDebug(debug, vectorShow(year))
-        month <- 1 + as.integer(buf[pointer1 + 10])
-        oceDebug(debug, vectorShow(month))
-        day <- as.integer(buf[pointer1 + 11])
-        oceDebug(debug, vectorShow(day))
-        hour <- as.integer(buf[pointer1 + 12])
-        oceDebug(debug, vectorShow(hour))
-        min <- as.integer(buf[pointer1 + 13])
-        oceDebug(debug, vectorShow(min))
-        sec <- as.integer(buf[pointer1 + 14])
-        oceDebug(debug, vectorShow(sec))
-        hsec <- 1e-4 * readBin(buf[pointer2 + 15], "integer", size = 2L, n = N, signed = FALSE, endian = "little")
-        oceDebug(debug, vectorShow(hsec))
-        time <- ISOdatetime(year, month, day, hour, min, sec + 0.01 * hsec, tz = "UTC")
-        oceDebug(debug, vectorShow(time))
-        soundSpeed <- 0.1 * readBin(d$buf[pointer2 + 17], "integer", size = 2L, n = N, signed = FALSE, endian = "little")
-        oceDebug(debug, vectorShow(soundSpeed))
-        temperature <- 0.01 * readBin(d$buf[pointer2 + 19], "integer", size = 2L, n = N, signed = TRUE, endian = "little")
-        oceDebug(debug, vectorShow(temperature))
-        pressure <- 0.001 * readBin(d$buf[pointer4 + 21L], "integer", size = 4L, n = N, endian = "little")
-        oceDebug(debug, vectorShow(pressure))
-        heading <- 0.01 * readBin(d$buf[pointer2 + 25L], "integer", size = 2L, n = N, signed = FALSE, endian = "little")
-        oceDebug(debug, vectorShow(heading))
-        pitch <- 0.01 * readBin(d$buf[pointer2 + 27L], "integer", size = 2L, n = N, signed = TRUE, endian = "little")
-        oceDebug(debug, vectorShow(pitch))
-        roll <- 0.01 * readBin(d$buf[pointer2 + 29L], "integer", size = 2L, n = N, signed = TRUE, endian = "little")
-        oceDebug(debug, vectorShow(roll))
-        par(mfrow = c(3, 1))
-        oce.plot.ts(time, heading)
-        oce.plot.ts(time, pitch)
-        abline(h = 0, col = 2)
-        oce.plot.ts(time, roll)
-        abline(h = 0, col = 2)
-        beamsCoords <- d$buf[pointer1[1] + 31] # this ought never to change
-        beamsCoordsBits <- as.integer(strsplit(byteToBinary(beamsCoords[1]), "")[[1]])
-        nbeamsTEST <- beamsCoordsBits[3] + 2 * beamsCoordsBits[2] + 4 * beamsCoordsBits[1]
-        oceDebug(debug, vectorShow(nbeamsTEST))
-        stop("EARLY STOP DURING DEVELOPMENT")
-        # Questions for nortek:
-        #   1. Please document bottom-track as the others. Otherwise we cannot know units and scale factors.
-        #   2. Please tell us more about that block at the end (window-start etc). Are all fields always present?
+    #<OLD>     year <- 1900 + as.integer(buf[pointer1 + 9])
+    #<OLD>     oceDebug(debug, vectorShow(year))
+    #<OLD>     month <- 1 + as.integer(buf[pointer1 + 10])
+    #<OLD>     oceDebug(debug, vectorShow(month))
+    #<OLD>     day <- as.integer(buf[pointer1 + 11])
+    #<OLD>     oceDebug(debug, vectorShow(day))
+    #<OLD>     hour <- as.integer(buf[pointer1 + 12])
+    #<OLD>     oceDebug(debug, vectorShow(hour))
+    #<OLD>     min <- as.integer(buf[pointer1 + 13])
+    #<OLD>     oceDebug(debug, vectorShow(min))
+    #<OLD>     sec <- as.integer(buf[pointer1 + 14])
+    #<OLD>     oceDebug(debug, vectorShow(sec))
+    #<OLD>     hsec <- 1e-4 * readBin(buf[pointer2 + 15], "integer", size = 2L, n = N, signed = FALSE, endian = "little")
+    #<OLD>     oceDebug(debug, vectorShow(hsec))
+    #<OLD>     time <- ISOdatetime(year, month, day, hour, min, sec + 0.01 * hsec, tz = "UTC")
+    #<OLD>     oceDebug(debug, vectorShow(time))
+    #<OLD>     soundSpeed <- 0.1 * readBin(d$buf[pointer2 + 17], "integer", size = 2L, n = N, signed = FALSE, endian = "little")
+    #<OLD>     oceDebug(debug, vectorShow(soundSpeed))
+    #<OLD>     temperature <- 0.01 * readBin(d$buf[pointer2 + 19], "integer", size = 2L, n = N, signed = TRUE, endian = "little")
+    #<OLD>     oceDebug(debug, vectorShow(temperature))
+    #<OLD>     pressure <- 0.001 * readBin(d$buf[pointer4 + 21L], "integer", size = 4L, n = N, endian = "little")
+    #<OLD>     oceDebug(debug, vectorShow(pressure))
+    #<OLD>     heading <- 0.01 * readBin(d$buf[pointer2 + 25L], "integer", size = 2L, n = N, signed = FALSE, endian = "little")
+    #<OLD>     oceDebug(debug, vectorShow(heading))
+    #<OLD>     pitch <- 0.01 * readBin(d$buf[pointer2 + 27L], "integer", size = 2L, n = N, signed = TRUE, endian = "little")
+    #<OLD>     oceDebug(debug, vectorShow(pitch))
+    #<OLD>     roll <- 0.01 * readBin(d$buf[pointer2 + 29L], "integer", size = 2L, n = N, signed = TRUE, endian = "little")
+    #<OLD>     oceDebug(debug, vectorShow(roll))
+    #<OLD>     par(mfrow = c(3, 1))
+    #<OLD>     oce.plot.ts(time, heading)
+    #<OLD>     oce.plot.ts(time, pitch)
+    #<OLD>     abline(h = 0, col = 2)
+    #<OLD>     oce.plot.ts(time, roll)
+    #<OLD>     abline(h = 0, col = 2)
+    #<OLD>     beamsCoords <- d$buf[pointer1[1] + 31] # this ought never to change
+    #<OLD>     beamsCoordsBits <- as.integer(strsplit(byteToBinary(beamsCoords[1]), "")[[1]])
+    #<OLD>     nbeamsTEST <- beamsCoordsBits[3] + 2 * beamsCoordsBits[2] + 4 * beamsCoordsBits[1]
+    #<OLD>     oceDebug(debug, vectorShow(nbeamsTEST))
+    #<OLD>     stop("EARLY STOP DURING DEVELOPMENT")
+    #<OLD>     # Questions for nortek:
+    #<OLD>     #   1. Please document bottom-track as the others. Otherwise we cannot know units and scale factors.
+    #<OLD>     #   2. Please tell us more about that block at the end (window-start etc). Are all fields always present?
 
-        # {{{ FIXME: remove next
-        temperature <- 0.1 * readBin(buf[d$index + 20:23], "integer", size = 2L, endian = "little")
-        oceDebug(debug, vectorShow(temperature))
-        pressure <- 0.1 * readBin(buf[d$index + 24:27], "integer", size = 4L, endian = "little")
-        oceDebug(debug, vectorShow(pressure))
-        heading <- 0.01 * readBin(buf[d$index + 28:31], "integer", size = 2L, endian = "little")
-        oceDebug(debug, vectorShow(heading))
-        pitch <- 0.01 * readBin(buf[d$index + 32:35], "integer", size = 4L, endian = "little")
-        oceDebug(debug, vectorShow(pitch))
-        roll <- 0.01 * readBin(buf[d$index + 36:39], "integer", size = 2L, endian = "little")
-        oceDebug(debug, vectorShow(roll))
-        beamsCoords <- buf[d$index + 40]
-        print(byteToBinary(beamsCoords))
-        # }}}
+    #<OLD>     # {{{ FIXME: remove next
+    #<OLD>     temperature <- 0.1 * readBin(buf[d$index + 20:23], "integer", size = 2L, endian = "little")
+    #<OLD>     oceDebug(debug, vectorShow(temperature))
+    #<OLD>     pressure <- 0.1 * readBin(buf[d$index + 24:27], "integer", size = 4L, endian = "little")
+    #<OLD>     oceDebug(debug, vectorShow(pressure))
+    #<OLD>     heading <- 0.01 * readBin(buf[d$index + 28:31], "integer", size = 2L, endian = "little")
+    #<OLD>     oceDebug(debug, vectorShow(heading))
+    #<OLD>     pitch <- 0.01 * readBin(buf[d$index + 32:35], "integer", size = 4L, endian = "little")
+    #<OLD>     oceDebug(debug, vectorShow(pitch))
+    #<OLD>     roll <- 0.01 * readBin(buf[d$index + 36:39], "integer", size = 2L, endian = "little")
+    #<OLD>     oceDebug(debug, vectorShow(roll))
+    #<OLD>     beamsCoords <- buf[d$index + 40]
+    #<OLD>     print(byteToBinary(beamsCoords))
+    #<OLD>     # }}}
 
 
-        message("FIXME: here in new bottomTrack code")
+    #<OLD>     message("FIXME: here in new bottomTrack code")
 
-        browser()
+    #<OLD>     browser()
 
-        rval <- list(
-            configuration = configuration0,
-            numberOfBeams = nbeams[look[1]],
-            numberOfCells = ncells[look[1]],
-            originalCoordinate = coordinateSystem[look[1]],
-            oceCoordinate = coordinateSystem[look[1]],
-            cellSize = cellSize[look[1]],
-            nominalCorrelation = nominalCorrelation[look],
-            blankingDistance = blankingDistance[look[1]],
-            ensemble = ensemble[look],
-            time = time[look],
-            orientation = orientation[look],
-            soundSpeed = soundSpeed[look],
-            temperature = temperature[look], # "temperature pressure sensor"
-            pressure = pressure[look],
-            heading = heading[look], pitch = pitch[look], roll = roll[look],
-            magnetometer = magnetometer[look, ],
-            accelerometer = accelerometer[look, ],
-            datasetDescription = datasetDescription[look],
-            temperatureMagnetometer = temperatureMagnetometer[look],
-            temperatureRTC = temperatureRTC[look],
-            transmitEnergy = transmitEnergy[look],
-            powerLevel = powerLevel[look]
-        )
-        i <- d$index[look] # pointers to "average" chunks in buf
-        oceDebug(debug, vectorShow(i))
-        # message(vectorShow(commonData$offsetOfData))
-        # IMOS https://github.com/aodn/imos-toolbox/blob/e19c8c604cd062a7212cdedafe11436209336ba5/Parser/readAD2CPBinary.m#L561
-        #  IMOS_pointer = oce_pointer - 3
-        #  Q: is IMOS taking ambiguity-velocity to
-        #  be 2 bytes, as for currents?  My reading
-        #  of Nortek (2022 page 80) is that for
-        #  _DF20BottomTrack, ambiguity-velocity is 4 bytes, whereas it is 2
-        #  bytes for _currentProfileData.  See
-        # https://github.com/dankelley/oce/issues/1980#issuecomment-1188992788
-        # for more context on this.
-        rval$velocityFactor <- 10^readBin(d$buf[lookIndex[1] + 61L], "integer", size = 1L, n = N, signed = TRUE, endian = "little")
-        oceDebug(debug, vectorShow(rval$velocityFactor))
-        # message(vectorShow(rval$velocityFactor))
-        # Nortek (2022 page 94, 52 in zero-indexed notation)
-        # IMOS uses idx+52 for ambiguityVelocity
-        #   https://github.com/aodn/imos-toolbox/blob/e19c8c604cd062a7212cdedafe11436209336ba5/Parser/readAD2CPBinary.m#L558
-        #   IMOS_pointer = oce_pointer - 1
-        rval$ambiguityVelocity <- rval$velocityFactor * readBin(d$buf[lookIndex[1] + 53:56], "integer", size = 4L, n = 1)
-        oceDebug(debug, vectorShow(rval$ambiguityVelocity))
-        # message(vectorShow(rval$ambiguityVelocity))
-        # NOTE: pointer is 2 bytes past pointer for e.g. burst/average
-        NP <- length(i) # number of profiles of this type
-        NB <- rval$numberOfBeams # number of beams for v,a,q
-        oceDebug(debug, vectorShow(NP))
-        oceDebug(debug, vectorShow(NB))
-        # NOTE: imos uses idx+72 for ensembleCounter
-        # https://github.com/aodn/imos-toolbox/blob/e19c8c604cd062a7212cdedafe11436209336ba5/Parser/readAD2CPBinary.m#L567
-        # oce_pointer = imos_pointer - 3
-        i0v <<- 75L
-        # ensemble counter Nortek (2017) p62
-        iv <- gappyIndex(i, i0v, 4L)
-        rval$ensemble <- readBin(d$buf[iv], "integer", size = 4L, n = NP, endian = "little")
-        # message(vectorShow(rval$ensemble))
-        #<> #message(vectorShow(commonData$offsetOfData[look]))
-        #<> offsetOfData <- commonData$offsetOfData[look]
-        #<> #message(vectorShow(offsetOfData))
-        #<> if (any(offsetOfData != offsetOfData[1])) {
-        #<>     print(offsetOfData)
-        #<>     stop("offsetOfData for bottom-track (printed above) are non-uniform")
-        #<> }
-        i0v <<- i0v + 4L
-        # velocity [Nortek 2017 p60 table 6.1.3]
-        if (configuration0[6]) {
-            oceDebug(debug, "configuration[6] is non-zero, meaning that dataset has velocity\n")
-            # message("reading v with i0v=", i0v, " (NB=", NB, ")")
-            # message("FIXME: only read velo if flag is set")
-            # message("about to read velo with i[1]=", i[1], ", i0v=",i0v,", NB=", NB)
-            # message("configuration0: ", paste(configuration0, collapse=" "))
-            # ! i0v <- i0v - 2L # test (gives v ~ -14,000 m/s)
-            # ! i0v <- i0v + 2L # test (gives v ~ -1,500 and -15,000 m/s)
-            oceDebug(debug, vectorShow(rval$velocityFactor))
-            oceDebug(debug, vectorShow(i0v))
-            if (NB < 3) {
-                # if (debug > 0) {
-                #    message("#beams has been read as ", NB, ", indicating a problem with the file or with oce; below is configuration")
-                #    message(vectorShow(configuration0, n = 100))
-                #    browser()
-                # }
-                NB <- findInConfig(configText[[1]], "GETBT", "NB")
-                if (is.finite(NB)) {
-                    warning("nbeams is zero according to the Nortek 2017 file format, so we are reading it (as ", NB, ") from the TEXT block instead")
-                } else {
-                    stop("cannot infer `nbeams` from the data chunks or the TEXT block")
-                }
-            }
-            iv <- gappyIndex(i, i0v, 4L * NB)
-            tmp <- readBin(d$buf[iv], "integer", size = 4L, n = NB * NP, endian = "little")
-            # rval$v <- rval$velocityFactor * matrix(tmp, ncol = NB, byrow = FALSE)
-            rval$v <- rval$velocityFactor * matrix(tmp, ncol = NB, byrow = TRUE)
-            i0v <<- i0v + 4L * NB
-        }
-        # distance.  See configuration information at Nortek (2017, Table 6.1.3,
-        # p60-62) and Nortek (2022, Table 6.7, p93-94).
-        if (configuration0[8]) {
-            # message("read distance with i0v=", i0v)
-            iv <- gappyIndex(i, i0v, 4L * NB)
-            oceDebug(debug, "reading bottom-track distance\n")
-            tmp <- readBin(d$buf[iv], "integer", size = 4L, n = NB * NP, endian = "little")
-            rval$distance <- 1e-3 * matrix(tmp, ncol = NB, byrow = FALSE)
-            # message("FIXME DAN 2")
-            i0v <<- i0v + 4L * NB
-        }
-        # figure-of-merit [Nortek 2017, Table 6.1.3, pages 60 and 62]
-        if (configuration0[9]) {
-            # message("read figure-of-merit with i0v=", i0v)
-            iv <- gappyIndex(i, i0v, 2L * NB)
-            oceDebug(debug, "reading bottom-track figureOfMerit: ", vectorShow(i0v))
-            tmp <- readBin(d$buf[iv], "integer", size = 2L, n = NB * NP, endian = "little", signed = FALSE)
-            rval$figureOfMerit <- matrix(tmp, ncol = NB, byrow = FALSE)
-            i0v <<- i0v + 2L * NB
-        }
-        oceDebug(debug, "readBottomTrack() END\n", unindent = 1)
-        rval
-    } # readBottomTrack
+    #<OLD>     rval <- list(
+    #<OLD>         configuration = configuration0,
+    #<OLD>         numberOfBeams = nbeams[look[1]],
+    #<OLD>         numberOfCells = ncells[look[1]],
+    #<OLD>         originalCoordinate = coordinateSystem[look[1]],
+    #<OLD>         oceCoordinate = coordinateSystem[look[1]],
+    #<OLD>         cellSize = cellSize[look[1]],
+    #<OLD>         nominalCorrelation = nominalCorrelation[look],
+    #<OLD>         blankingDistance = blankingDistance[look[1]],
+    #<OLD>         ensemble = ensemble[look],
+    #<OLD>         time = time[look],
+    #<OLD>         orientation = orientation[look],
+    #<OLD>         soundSpeed = soundSpeed[look],
+    #<OLD>         temperature = temperature[look], # "temperature pressure sensor"
+    #<OLD>         pressure = pressure[look],
+    #<OLD>         heading = heading[look], pitch = pitch[look], roll = roll[look],
+    #<OLD>         magnetometer = magnetometer[look, ],
+    #<OLD>         accelerometer = accelerometer[look, ],
+    #<OLD>         datasetDescription = datasetDescription[look],
+    #<OLD>         temperatureMagnetometer = temperatureMagnetometer[look],
+    #<OLD>         temperatureRTC = temperatureRTC[look],
+    #<OLD>         transmitEnergy = transmitEnergy[look],
+    #<OLD>         powerLevel = powerLevel[look]
+    #<OLD>     )
+    #<OLD>     i <- d$index[look] # pointers to "average" chunks in buf
+    #<OLD>     oceDebug(debug, vectorShow(i))
+    #<OLD>     # message(vectorShow(commonData$offsetOfData))
+    #<OLD>     # IMOS https://github.com/aodn/imos-toolbox/blob/e19c8c604cd062a7212cdedafe11436209336ba5/Parser/readAD2CPBinary.m#L561
+    #<OLD>     #  IMOS_pointer = oce_pointer - 3
+    #<OLD>     #  Q: is IMOS taking ambiguity-velocity to
+    #<OLD>     #  be 2 bytes, as for currents?  My reading
+    #<OLD>     #  of Nortek (2022 page 80) is that for
+    #<OLD>     #  _DF20BottomTrack, ambiguity-velocity is 4 bytes, whereas it is 2
+    #<OLD>     #  bytes for _currentProfileData.  See
+    #<OLD>     # https://github.com/dankelley/oce/issues/1980#issuecomment-1188992788
+    #<OLD>     # for more context on this.
+    #<OLD>     rval$velocityFactor <- 10^readBin(d$buf[lookIndex[1] + 61L], "integer", size = 1L, n = N, signed = TRUE, endian = "little")
+    #<OLD>     oceDebug(debug, vectorShow(rval$velocityFactor))
+    #<OLD>     # message(vectorShow(rval$velocityFactor))
+    #<OLD>     # Nortek (2022 page 94, 52 in zero-indexed notation)
+    #<OLD>     # IMOS uses idx+52 for ambiguityVelocity
+    #<OLD>     #   https://github.com/aodn/imos-toolbox/blob/e19c8c604cd062a7212cdedafe11436209336ba5/Parser/readAD2CPBinary.m#L558
+    #<OLD>     #   IMOS_pointer = oce_pointer - 1
+    #<OLD>     rval$ambiguityVelocity <- rval$velocityFactor * readBin(d$buf[lookIndex[1] + 53:56], "integer", size = 4L, n = 1)
+    #<OLD>     oceDebug(debug, vectorShow(rval$ambiguityVelocity))
+    #<OLD>     # message(vectorShow(rval$ambiguityVelocity))
+    #<OLD>     # NOTE: pointer is 2 bytes past pointer for e.g. burst/average
+    #<OLD>     NP <- length(i) # number of profiles of this type
+    #<OLD>     NB <- rval$numberOfBeams # number of beams for v,a,q
+    #<OLD>     oceDebug(debug, vectorShow(NP))
+    #<OLD>     oceDebug(debug, vectorShow(NB))
+    #<OLD>     # NOTE: imos uses idx+72 for ensembleCounter
+    #<OLD>     # https://github.com/aodn/imos-toolbox/blob/e19c8c604cd062a7212cdedafe11436209336ba5/Parser/readAD2CPBinary.m#L567
+    #<OLD>     # oce_pointer = imos_pointer - 3
+    #<OLD>     i0v <<- 75L
+    #<OLD>     # ensemble counter Nortek (2017) p62
+    #<OLD>     iv <- gappyIndex(i, i0v, 4L)
+    #<OLD>     rval$ensemble <- readBin(d$buf[iv], "integer", size = 4L, n = NP, endian = "little")
+    #<OLD>     # message(vectorShow(rval$ensemble))
+    #<OLD>     #<> #message(vectorShow(commonData$offsetOfData[look]))
+    #<OLD>     #<> offsetOfData <- commonData$offsetOfData[look]
+    #<OLD>     #<> #message(vectorShow(offsetOfData))
+    #<OLD>     #<> if (any(offsetOfData != offsetOfData[1])) {
+    #<OLD>     #<>     print(offsetOfData)
+    #<OLD>     #<>     stop("offsetOfData for bottom-track (printed above) are non-uniform")
+    #<OLD>     #<> }
+    #<OLD>     i0v <<- i0v + 4L
+    #<OLD>     # velocity [Nortek 2017 p60 table 6.1.3]
+    #<OLD>     if (configuration0[6]) {
+    #<OLD>         oceDebug(debug, "configuration[6] is non-zero, meaning that dataset has velocity\n")
+    #<OLD>         # message("reading v with i0v=", i0v, " (NB=", NB, ")")
+    #<OLD>         # message("FIXME: only read velo if flag is set")
+    #<OLD>         # message("about to read velo with i[1]=", i[1], ", i0v=",i0v,", NB=", NB)
+    #<OLD>         # message("configuration0: ", paste(configuration0, collapse=" "))
+    #<OLD>         # ! i0v <- i0v - 2L # test (gives v ~ -14,000 m/s)
+    #<OLD>         # ! i0v <- i0v + 2L # test (gives v ~ -1,500 and -15,000 m/s)
+    #<OLD>         oceDebug(debug, vectorShow(rval$velocityFactor))
+    #<OLD>         oceDebug(debug, vectorShow(i0v))
+    #<OLD>         if (NB < 3) {
+    #<OLD>             # if (debug > 0) {
+    #<OLD>             #    message("#beams has been read as ", NB, ", indicating a problem with the file or with oce; below is configuration")
+    #<OLD>             #    message(vectorShow(configuration0, n = 100))
+    #<OLD>             #    browser()
+    #<OLD>             # }
+    #<OLD>             NB <- findInConfig(configText[[1]], "GETBT", "NB")
+    #<OLD>             if (is.finite(NB)) {
+    #<OLD>                 warning("nbeams is zero according to the Nortek 2017 file format, so we are reading it (as ", NB, ") from the TEXT block instead")
+    #<OLD>             } else {
+    #<OLD>                 stop("cannot infer `nbeams` from the data chunks or the TEXT block")
+    #<OLD>             }
+    #<OLD>         }
+    #<OLD>         iv <- gappyIndex(i, i0v, 4L * NB)
+    #<OLD>         tmp <- readBin(d$buf[iv], "integer", size = 4L, n = NB * NP, endian = "little")
+    #<OLD>         # rval$v <- rval$velocityFactor * matrix(tmp, ncol = NB, byrow = FALSE)
+    #<OLD>         rval$v <- rval$velocityFactor * matrix(tmp, ncol = NB, byrow = TRUE)
+    #<OLD>         i0v <<- i0v + 4L * NB
+    #<OLD>     }
+    #<OLD>     # distance.  See configuration information at Nortek (2017, Table 6.1.3,
+    #<OLD>     # p60-62) and Nortek (2022, Table 6.7, p93-94).
+    #<OLD>     if (configuration0[8]) {
+    #<OLD>         # message("read distance with i0v=", i0v)
+    #<OLD>         iv <- gappyIndex(i, i0v, 4L * NB)
+    #<OLD>         oceDebug(debug, "reading bottom-track distance\n")
+    #<OLD>         tmp <- readBin(d$buf[iv], "integer", size = 4L, n = NB * NP, endian = "little")
+    #<OLD>         rval$distance <- 1e-3 * matrix(tmp, ncol = NB, byrow = FALSE)
+    #<OLD>         # message("FIXME DAN 2")
+    #<OLD>         i0v <<- i0v + 4L * NB
+    #<OLD>     }
+    #<OLD>     # figure-of-merit [Nortek 2017, Table 6.1.3, pages 60 and 62]
+    #<OLD>     if (configuration0[9]) {
+    #<OLD>         # message("read figure-of-merit with i0v=", i0v)
+    #<OLD>         iv <- gappyIndex(i, i0v, 2L * NB)
+    #<OLD>         oceDebug(debug, "reading bottom-track figureOfMerit: ", vectorShow(i0v))
+    #<OLD>         tmp <- readBin(d$buf[iv], "integer", size = 2L, n = NB * NP, endian = "little", signed = FALSE)
+    #<OLD>         rval$figureOfMerit <- matrix(tmp, ncol = NB, byrow = FALSE)
+    #<OLD>         i0v <<- i0v + 2L * NB
+    #<OLD>     }
+    #<OLD>     oceDebug(debug, "readBottomTrack() END\n", unindent = 1)
+    #<OLD>     rval
+    #<OLD> } # readBottomTrack_OLD_UNUSED
 
     # nolint start object_useage_linter
     readInterleavedBurst <- function(id, debug=getOption("oceDebug")) # uses global 'd' and 'configuration'
@@ -2486,19 +2486,33 @@ read.adp.ad2cp <- function(
         d$configuration <- configuration # FIXME: remove -- handled by readBottomTrack()
         data <- readBottomTrack(d, debug = 2)
         message("examine data (and add new items to reading, as needed)")
-        if (!interactive()) png("bt.png", units="in", width=7, height=7, res=200)
-        par(mfrow = c(4, 2))
-        oce.plot.ts(data$time, data$v[, 1], type = "o", cex = 0.5)
-        oce.plot.ts(data$time, data$distance[, 1], type = "o", cex = 0.5)
-        oce.plot.ts(data$time, data$v[, 2], type = "o", cex = 0.5)
-        oce.plot.ts(data$time, data$distance[, 2], type = "o", cex = 0.5)
-        oce.plot.ts(data$time, data$v[, 3], type = "o", cex = 0.5)
-        oce.plot.ts(data$time, data$distance[, 3], type = "o", cex = 0.5)
-        oce.plot.ts(data$time, data$v[, 4], type = "o", cex = 0.5)
-        oce.plot.ts(data$time, data$distance[, 4], type = "o", cex = 0.5)
-        message("FIXME: dk still fiddling with code!")
-        if (!interactive()) dev.off()
-        browser()
+
+        if (debug) {
+            if (!interactive()) png("bt_v.png", units = "in", width = 7, height = 7, res = 200)
+            par(mfrow = c(4, 1))
+            oce.plot.ts(data$time, data$v[, 1], type = "o", cex = 0.5)
+            oce.plot.ts(data$time, data$v[, 2], type = "o", cex = 0.5)
+            oce.plot.ts(data$time, data$v[, 3], type = "o", cex = 0.5)
+            oce.plot.ts(data$time, data$v[, 4], type = "o", cex = 0.5)
+            if (!interactive()) dev.off()
+            if (!interactive()) png("bt_distance.png", units = "in", width = 7, height = 7, res = 200)
+            par(mfrow = c(4, 1))
+            oce.plot.ts(data$time, data$distance[, 1], type = "o", cex = 0.5)
+            oce.plot.ts(data$time, data$distance[, 2], type = "o", cex = 0.5)
+            oce.plot.ts(data$time, data$distance[, 3], type = "o", cex = 0.5)
+            oce.plot.ts(data$time, data$distance[, 4], type = "o", cex = 0.5)
+            if (!interactive()) dev.off()
+            if (!interactive()) png("bt_figure_of_merit.png", units = "in", width = 7, height = 7, res = 200)
+            par(mfrow = c(1, 1))
+            oce.plot.ts(data$time, data$figureOfMerit, type = "o", cex = 0.5)
+            if (!interactive()) dev.off()
+            if (interactive()) {
+                message("FIXME: add more reading and saving, then stitch into calling fcn")
+                browser()
+            } else {
+                stop("EARLY (debugging) STOP")
+            }
+        }
         # }}}
         # OLDdata <- readBottomTrack(id = dataType, debug = debug - 1) # id is 0x17
         # OLDoceDebug(debug, "dataType=", as.raw(dataType), "(bottomTrack): move some things from data to metadata\n")
