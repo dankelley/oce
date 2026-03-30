@@ -157,38 +157,14 @@ readBottomTrack <- function(d, debug = getOption("oceDebug")) # uses global 'd' 
     )
     # }}}
     oceDebug(debug, vectorShow(v))
-    distance <- matrix(nrow = nprofiles, ncol = nbeams)
+    distance <- matrix(0.0, nrow = nprofiles, ncol = nbeams)
     message("The 'distance' value seems wrong")
-    tmp <- readBin(d$buf[pointer4 + 95:98],
-        "integer",
-        size = 4L, n = nprofiles, endian = "little"
-    )
-    if (any(tmp<0.0)) message("NEGATIVE distances.......")
-    tmp <- ifelse(tmp < 0.0, 2^32 + abs(tmp), tmp)
-    distance[, 1] <- 0.001 * tmp
-
-    tmp <- readBin(d$buf[pointer4 + 99:102],
-        "integer",
-        size = 4L, n = nprofiles, endian = "little"
-    )
-    tmp <- ifelse(tmp < 0.0, 2^32 + abs(tmp), tmp)
-    distance[, 2] <- 0.001 * tmp
-
-    tmp <- readBin(d$buf[pointer4 + 103:106],
-        "integer",
-        size = 4L, n = nprofiles, endian = "little"
-    )
-    tmp <- ifelse(tmp < 0.0, 2^32 + abs(tmp), tmp)
-    distance[, 3] <- 0.001 * tmp
-
-    tmp <- readBin(d$buf[pointer4 + 107:110],
-        "integer",
-        size = 4L, n = nprofiles, endian = "little"
-    )
-    tmp <- ifelse(tmp < 0.0, 2^32 + abs(tmp), tmp)
-    distance[, 4] <- 0.001 * tmp
+    distance[, 1] <- 0.001 * readBin(d$buf[pointer4 + 95], "integer", size = 4L, n = nprofiles, endian = "little")
+    distance[, 2] <- 0.001 * readBin(d$buf[pointer4 + 99], "integer", size = 4L, n = nprofiles, endian = "little")
+    distance[, 3] <- 0.001 * readBin(d$buf[pointer4 + 103], "integer", size = 4L, n = nprofiles, endian = "little")
+    distance[, 4] <- 0.001 * readBin(d$buf[pointer4 + 107], "integer", size = 4L, n = nprofiles, endian = "little")
+    distance <- distance * 0.001
     oceDebug(debug, vectorShow(distance))
-
 
     message("The 'figureOfMerit' value seems wrong")
     figureOfMerit <- readBin(d$buf[pointer2 + 111], "integer", size = 2L, endian = "little", n = nprofiles, signed = FALSE)
