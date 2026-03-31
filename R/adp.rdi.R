@@ -283,6 +283,10 @@ decodeHeaderRDI <- function(buf, debug = getOption("oceDebug"), tz = getOption("
     # real.sim.flag <- readBin(FLD[7], "integer", n=1, size=1)
     # lagLength <- readBin(FLD[8], "integer", n=1, size=1, signed=FALSE) # unused
     numberOfBeams <- readBin(FLD[9], "integer", n = 1, size = 1, signed = FALSE)
+    nbeam <- 4 # setting this to use for properly reading p file format (Issue 2639)
+    if (numberOfBeams == 3) {
+        oceDebug(debug, "3 beam (HADCP) detected, setting nbeam=", nbeam, "\n")
+    }
     oceDebug(debug, "numberOfBeams", numberOfBeams, "\n")
     numberOfCells <- abs(readBin(FLD[10], "integer", n = 1, size = 1, signed = FALSE)) # WN
     oceDebug(debug, "numberOfCells", numberOfCells, "\n")
@@ -468,6 +472,7 @@ decodeHeaderRDI <- function(buf, debug = getOption("oceDebug"), tz = getOption("
         dataOffset = dataOffset,
         codes = codes,
         numberOfBeams = numberOfBeams,
+        nbeam = nbeam,
         numberOfCells = numberOfCells,
         pingsPerEnsemble = pingsPerEnsemble,
         cellSize = cellSize,
@@ -954,6 +959,7 @@ read.adp.rdi <- function(
     oceDebug(debug, "have Binary Fixed Attitude Header: ", header$haveBinaryFixedAttitudeHeader, "\n")
     if (header$haveActualData) {
         numberOfBeams <- header$numberOfBeams
+        nbeam <- header$nbeam
         numberOfCells <- header$numberOfCells
         bin1Distance <- header$bin1Distance
         xmitPulseLength <- header$xmitPulseLength
@@ -1130,7 +1136,8 @@ read.adp.rdi <- function(
             oceDebug(debug, "profilesToRead: ", profilesToRead, "\n")
             oceDebug(debug, "numberOfBeams: ", numberOfBeams, "\n")
             oceDebug(debug, "numberOfCells: ", numberOfCells, "\n")
-            items <- numberOfBeams * numberOfCells
+            # items <- numberOfBeams * numberOfCells
+            items <- nbeam * numberOfCells
             codes <- header$codes
             oceDebug(debug, "codes[,1]=", paste("0x", paste(codes[, 1], sep = ""), collapse = " "), "\n")
             oceDebug(debug, "codes[,2]=", paste("0x", paste(codes[, 2], sep = ""), collapse = " "), "\n")
@@ -1185,7 +1192,8 @@ read.adp.rdi <- function(
                 ISMmag <- NULL
             }
             if (vFound) {
-                v <- array(numeric(), dim = c(profilesToRead, numberOfCells, numberOfBeams))
+                # v <- array(numeric(), dim = c(profilesToRead, numberOfCells, numberOfBeams))
+                v <- array(numeric(), dim = c(profilesToRead, numberOfCells, nbeam))
                 oceDebug(
                     debug, "set up 'v' (velocity) storage for ", profilesToRead, " profiles,",
                     numberOfCells, " cells, and ", numberOfBeams, " beams\n"
@@ -1194,7 +1202,8 @@ read.adp.rdi <- function(
                 v <- NULL
             }
             if (qFound) {
-                q <- array(raw(), dim = c(profilesToRead, numberOfCells, numberOfBeams))
+                # q <- array(raw(), dim = c(profilesToRead, numberOfCells, numberOfBeams))
+                q <- array(raw(), dim = c(profilesToRead, numberOfCells, nbeam))
                 oceDebug(
                     debug, "set up 'q' (correlation) storage for ", profilesToRead, " profiles, ",
                     numberOfCells, " cells, and ", numberOfBeams, " beams\n"
@@ -1203,7 +1212,8 @@ read.adp.rdi <- function(
                 q <- NULL
             }
             if (aFound) {
-                a <- array(raw(), dim = c(profilesToRead, numberOfCells, numberOfBeams))
+                # a <- array(raw(), dim = c(profilesToRead, numberOfCells, numberOfBeams))
+                a <- array(raw(), dim = c(profilesToRead, numberOfCells, nbeam))
                 oceDebug(
                     debug, "set up 'a' (echo intensity) storage for ", profilesToRead, " profiles, ",
                     numberOfCells, " cells, and ", numberOfBeams, " beams\n"
@@ -1212,7 +1222,8 @@ read.adp.rdi <- function(
                 a <- NULL
             }
             if (gFound) {
-                g <- array(raw(), dim = c(profilesToRead, numberOfCells, numberOfBeams))
+                # g <- array(raw(), dim = c(profilesToRead, numberOfCells, numberOfBeams))
+                g <- array(raw(), dim = c(profilesToRead, numberOfCells, nbeam))
                 oceDebug(
                     debug, "set up 'g' (percent good) storage for ", profilesToRead, " profiles, ",
                     numberOfCells, " cells, and ", numberOfBeams, " beams\n"
@@ -1433,12 +1444,18 @@ read.adp.rdi <- function(
                 }
             }
             if (bFound) {
-                br <- array(double(), dim = c(profilesToRead, numberOfBeams))
-                bv <- array(double(), dim = c(profilesToRead, numberOfBeams))
+                # br <- array(double(), dim = c(profilesToRead, numberOfBeams))
+                # bv <- array(double(), dim = c(profilesToRead, numberOfBeams))
+                # # bq called bc until 2023-02-09 https://github.com/dankelley/oce/issues/2039
+                # bq <- array(double(), dim = c(profilesToRead, numberOfBeams)) # correlation
+                # ba <- array(double(), dim = c(profilesToRead, numberOfBeams)) # amplitude
+                # bg <- array(double(), dim = c(profilesToRead, numberOfBeams)) # percent good
+                br <- array(double(), dim = c(profilesToRead, nbeam))
+                bv <- array(double(), dim = c(profilesToRead, nbeam))
                 # bq called bc until 2023-02-09 https://github.com/dankelley/oce/issues/2039
-                bq <- array(double(), dim = c(profilesToRead, numberOfBeams)) # correlation
-                ba <- array(double(), dim = c(profilesToRead, numberOfBeams)) # amplitude
-                bg <- array(double(), dim = c(profilesToRead, numberOfBeams)) # percent good
+                bq <- array(double(), dim = c(profilesToRead, nbeam)) # correlation
+                ba <- array(double(), dim = c(profilesToRead, nbeam)) # amplitude
+                bg <- array(double(), dim = c(profilesToRead, nbeam)) # percent good
                 oceDebug(
                     debug, "set up 'br', etc. (bottom data) storage for ", profilesToRead, " profiles, ",
                     numberOfCells, " cells, and ", numberOfBeams, " beams\n"
@@ -1509,7 +1526,8 @@ read.adp.rdi <- function(
                         #<> }
                         vtmp <- readBin(buf[o + 1 + seq(1, 2 * items)], "integer", n = items, size = 2, endian = "little", signed = TRUE)
                         vtmp[-32768 == vtmp] <- NA # blank out bad data
-                        v[i, , ] <- matrix(velocityScale * vtmp, ncol = numberOfBeams, byrow = TRUE)
+                        # v[i, , ] <- matrix(velocityScale * vtmp, ncol = numberOfBeams, byrow = TRUE)
+                        v[i, , ] <- matrix(velocityScale * vtmp, ncol = nbeam, byrow = TRUE)
                     } else if (buf[o] == 0x00 && buf[1 + o] == 0x02) {
                         #<> if (debug > 0 && i == 1) {
                         #<>     cat("  buf[", o + 2, "]: ", buf[o + 2], " (this is q[1,1,1]) NOTE: o=", o, "\n", sep = "")
@@ -1517,7 +1535,8 @@ read.adp.rdi <- function(
                         #<>         cat("  buf[", o + 2 + jjj, "]: ", buf[o + 2 + jjj], "\n", sep = "")
                         #<>     }
                         #<> }
-                        q[i, , ] <- matrix(buf[o + 1 + seq(1, items)], ncol = numberOfBeams, byrow = TRUE)
+                        # q[i, , ] <- matrix(buf[o + 1 + seq(1, items)], ncol = numberOfBeams, byrow = TRUE)
+                        q[i, , ] <- matrix(buf[o + 1 + seq(1, items)], ncol = nbeam, byrow = TRUE)
                     } else if (buf[o] == 0x00 && buf[1 + o] == 0x03) {
                         #<> if (debug > 0 && i == 1) {
                         #<>     cat("  buf[", o + 2, "]: ", buf[o + 2], " (this is a[1,1,1]) NOTE: o=", o, "\n", sep = "")
@@ -1525,9 +1544,11 @@ read.adp.rdi <- function(
                         #<>         cat("  buf[", o + 2 + jjj, "]: ", buf[o + 2 + jjj], "\n", sep = "")
                         #<>     }
                         #<> }
-                        a[i, , ] <- matrix(buf[o + 1 + seq(1, items)], ncol = numberOfBeams, byrow = TRUE)
+                        # a[i, , ] <- matrix(buf[o + 1 + seq(1, items)], ncol = numberOfBeams, byrow = TRUE)
+                        a[i, , ] <- matrix(buf[o + 1 + seq(1, items)], ncol = nbeam, byrow = TRUE)
                     } else if (buf[o] == 0x00 && buf[1 + o] == 0x04) {
-                        g[i, , ] <- matrix(buf[o + 1 + seq(1, items)], ncol = numberOfBeams, byrow = TRUE)
+                        # g[i, , ] <- matrix(buf[o + 1 + seq(1, items)], ncol = numberOfBeams, byrow = TRUE)
+                        g[i, , ] <- matrix(buf[o + 1 + seq(1, items)], ncol = nbeam, byrow = TRUE)
                     } else if (buf[o] == 0x00 && buf[1 + o] == 0x05) {
                         # FIXME: do something here (what is code 0x00 0x05?)
                     } else if (buf[o] == 0x00 && buf[1 + o] == 0x06) {
