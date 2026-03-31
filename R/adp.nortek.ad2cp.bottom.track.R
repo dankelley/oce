@@ -21,7 +21,19 @@ dataAvailableBottomTrack <- function(twoBytes) {
     valid
 }
 
-# Nortek (2022 page 93 ) "6.7 _DF20BottomTrack"
+# Read bottom-track AD2CP data
+#
+# The code follows section 6.1.3 of Ref 1. I think Nortek
+# also released a similar document in 2018, but the manual
+# I have for 2026 has nothing about the format. Therefore,
+# this code may be somewhat brittle.
+#
+# @references
+# 1. Nortek AS. "Signature Integration 55|250|500|1000kHz (2017)."
+# Nortek AS, February 10, 2017.
+# https://www.nortekgroup.com/assets/software/N3015-007-Integrators-Guide-AD2CP_1018.pdf.
+#
+# @author Dan Kelley
 readBottomTrack <- function(d, debug = getOption("oceDebug")) # uses global 'd' and 'configuration'
 {
     id <- 0x17 # bottomTrack
@@ -106,23 +118,57 @@ readBottomTrack <- function(d, debug = getOption("oceDebug")) # uses global 'd' 
     abline(h = 0, col = 2)
     dev.off()
     # }}}
-    beamsCoords <- d$buf[pointer1[1] + 31] # this ought never to change
-    oceDebug(debug, vectorShow(beamsCoords))
-    # FIXME use
-    beamsCoordsBits <- as.integer(strsplit(byteToBinary(beamsCoords[1]), "")[[1]])
-    oceDebug(debug, vectorShow(beamsCoordsBits, n = 16))
-    beamsCoordsBitsNEW <- ifelse(rawToBits(beamsCoords[1]) == 0x01, 1, 0)
-    oceDebug(debug, vectorShow(beamsCoordsBitsNEW, n = 16))
-    # Called bits 15-13 in Ref. 1
-    nbeams <- beamsCoordsBits[3] + 2 * beamsCoordsBits[2] + 4 * beamsCoordsBits[1]
+    # {{{ #beams,coord-sys,#cells
+    #beamsCoords <- d$buf[pointer1[1] + 31] # this ought never to change
+    #oceDebug(debug, vectorShow(beamsCoords))
+    # Decode a 2-byte sequence. Note that some items cross
+    # byte boundaries, so we cannot simply read with readBin(),
+    # and must instead expand bit by bit.
+    BCCraw <- readBin(d$buf[pointer1[1] + 31:32], "raw", size = 1, n = 2, endian = "little")
+    print(BCCraw)
+    BCC <- ifelse(rawToBits(BCCraw) == 0x01, 1, 0)
+    #print(BCC)
+    #print(BCC[10:1])
+    ncells <- sum(BCC[10:1] * 2^(9:0))
+    oceDebug(debug, "perhaps this is ncells: ", ncells, "\n")
+    ncellsAlternate <- sum(BCC[1:10] * 2^(9:0))
+    oceDebug(debug, "or maybe this is: ", ncellsAlternate, "; we pick the first value but this is NOT checked\n")
+    #print(BCC[12:11])
+    #cat("above:coordSys?\n")
+    b <- 2 * BCC[12] + BCC[11]
+    coordinateSystem <- switch(b + 1L,
+                               "enu",
+                               "xyz",
+                               "beam"
+    )
+    if (is.null(coordinateSystem)) {
+        coordinateSystem <- "?"
+        warning("cannot determine velocity coordinate system; defaulting to '?'")
+    }
+    oceDebug(debug, vectorShow(coordinateSystem))
+    # print(BCC[16:13])
+    # cat("above:nbeams?\n")
+    nbeams <- 8 * BCC[16] + 4 * BCC[15] + 1 * BCC[14] + BCC[13]
     oceDebug(debug, vectorShow(nbeams))
+    stopifnot(nbeams == 4L)
+    #stop("CHOP next few lines of old (broken) BCC decoding")
+    #beamsCoordsBits <- as.integer(strsplit(byteToBinary(beamsCoords[1]), "")[[1]])
+    #oceDebug(debug, vectorShow(beamsCoordsBits, n = 16))
+    #beamsCoordsBitsNEW <- ifelse(rawToBits(beamsCoords[1]) == 0x01, 1, 0)
+    #oceDebug(debug, vectorShow(beamsCoordsBitsNEW, n = 16))
+    #browser()
+    # Called bits 15-13 in Ref. 1
+    # OLD    nbeams <- beamsCoordsBits[3] + 2 * beamsCoordsBits[2] + 4 * beamsCoordsBits[1]
+    #oceDebug(debug, vectorShow(nbeams))
     # pad1 32
     # ncells 33:34
-    ncells <- readBin(d$buf[pointer2[1:2] + 33L], "integer", size = 2L, n = 1, signed = FALSE, endian = "little")
-    oceDebug(debug, vectorShow(ncells))
-    cellSize <- 1.0e-3 * readBin(d$buf[pointer2[1:2] + 35L], "integer", size = 2L, n = 1, signed = FALSE, endian = "little")
+    #
+    #ncells <- readBin(d$buf[pointer2[1:2] + 33L], "integer", size = 2L, n = 1, signed = FALSE, endian = "little")
+    #oceDebug(debug, vectorShow(ncells))
+    # }}}
+    cellSize <- 1.0e-3 * readBin(d$buf[pointer2[1] + 33L], "integer", size = 2L, n = 1, signed = FALSE, endian = "little")
     oceDebug(debug, vectorShow(cellSize))
-    blankingDistance <- 1.0e-3 * readBin(d$buf[pointer2[1:2] + 37L], "integer", size = 2L, n = 1, signed = FALSE, endian = "little")
+    blankingDistance <- 1.0e-3 * readBin(d$buf[pointer2[1:2] + 35L], "integer", size = 2L, n = 1, signed = FALSE, endian = "little")
     oceDebug(debug, vectorShow(blankingDistance))
 
     velocityScaling <- readBin(d$buf[pointer1[1] + 61], "integer", size = 1L, endian = "little", signed = TRUE)
@@ -137,7 +183,7 @@ readBottomTrack <- function(d, debug = getOption("oceDebug")) # uses global 'd' 
         size = 4L, n = nprofiles, endian = "little"
     )
 
-    # {{{ read velocities, beam by beam (FIXME: hard-wired for 4 beams, at the moment)
+    # {{{ Velocity. (FIXME: hard-wired for 4 beams, at the moment)
     v <- matrix(nrow = nprofiles, ncol = nbeams)
     v[, 1] <- velocityFactor * readBin(d$buf[pointer4 + 79L],
         "integer",
@@ -155,17 +201,16 @@ readBottomTrack <- function(d, debug = getOption("oceDebug")) # uses global 'd' 
         "integer",
         size = 4L, n = nprofiles, endian = "little"
     )
-    # }}}
     oceDebug(debug, vectorShow(v))
+    # }}}
+    # {{{ Distance.
     distance <- matrix(0.0, nrow = nprofiles, ncol = nbeams)
-    message("The 'distance' value seems wrong")
     distance[, 1] <- 0.001 * readBin(d$buf[pointer4 + 95], "integer", size = 4L, n = nprofiles, endian = "little")
     distance[, 2] <- 0.001 * readBin(d$buf[pointer4 + 99], "integer", size = 4L, n = nprofiles, endian = "little")
     distance[, 3] <- 0.001 * readBin(d$buf[pointer4 + 103], "integer", size = 4L, n = nprofiles, endian = "little")
     distance[, 4] <- 0.001 * readBin(d$buf[pointer4 + 107], "integer", size = 4L, n = nprofiles, endian = "little")
     oceDebug(debug, vectorShow(distance))
-
-    message("The 'figureOfMerit' value seems wrong")
+    # }}}
     figureOfMerit <- readBin(d$buf[pointer2 + 111], "integer", size = 2L, endian = "little", n = nprofiles, signed = FALSE)
     oceDebug(debug, vectorShow(d$buf[pointer2 + 111]))
     oceDebug(debug, vectorShow(figureOfMerit))

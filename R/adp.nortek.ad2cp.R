@@ -787,13 +787,8 @@ read.adp.ad2cp <- function(
     # later, though.
     nav <- do_ldc_ad2cp_in_file(filename, from = 1L, to = 1e9, by = 1L, debug = if (debug > 4) 1 else 0)
     d <- list(buf = buf, index = nav$index, headerLength = nav$headerLength, dataLength = nav$dataLength, id = nav$id)
-    # FIXME: DELETE
-    # FIXME: DELETE # {{{ Extract a single sample FIXME: delete this!!
-    # FIXME: DELETE return(d)
-    # FIXME: DELETE # }}}
-    # FIXME: DELETE
-    cat("FIXME ad2cp main L790 table(d$id):\n")
-    print(table(d$id))
+    #cat("FIXME ad2cp main L790 table(d$id):\n")
+    #print(table(d$id))
     oceDebug(debug, vectorShow(length(d$index)))
     N <- length(d$index)
     #-message("L635 N=",N,", to=", to)
@@ -933,12 +928,6 @@ read.adp.ad2cp <- function(
     if (identical("text", dataType) || identical(dataType, 0xa0)) { # text (header)
         return(configText[[1]]) # FIXME: what if there are multiple datasets?
     }
-    # if (debug > 0) {
-    #     #oceDebug(debug, "Next is configText:\n")
-    #     #print(configText[[1]])
-    #     message("FIXME: see exported variable 'DAN', which is configText[[1]]")
-    #     DAN<<-configText[[1]]
-    # }
     numberOfDataSets <- length(configText)
     oceDebug(debug, "This file has ", pluralize(numberOfDataSets, "data set"), "\n")
     # nolint start object_usage_linter
