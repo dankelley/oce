@@ -125,7 +125,6 @@ readBottomTrack <- function(d, debug = getOption("oceDebug")) # uses global 'd' 
     # byte boundaries, so we cannot simply read with readBin(),
     # and must instead expand bit by bit.
     BCCraw <- readBin(d$buf[pointer1[1] + 31:32], "raw", size = 1, n = 2, endian = "little")
-    print(BCCraw)
     BCC <- ifelse(rawToBits(BCCraw) == 0x01, 1, 0)
     # print(BCC)
     # print(BCC[10:1])
@@ -239,9 +238,13 @@ readBottomTrack <- function(d, debug = getOption("oceDebug")) # uses global 'd' 
         oce.plot.ts(time, distance[, 1], drawTimeRange = FALSE)
     }
     rval <- list(
-        nbeams = nbeams, ncells = ncells, cellSize = cellSize,
-        oceCoordinate = coordinateSystem,
+        # Scalars
+        numberOfBeams = nbeams, # renaming so calling function can move to metadata
+        numberOfCells = ncells, # renaming so calling function can move to metadata
+        oceCoordinate = coordinateSystem, # renaming so calling function can move to metadata
+        cellSize = cellSize,
         blankingDistance = blankingDistance,
+        # Vectors
         soundSpeed = soundSpeed,
         time = time, pressure = pressure, temperature = temperature,
         heading = heading, pitch = pitch, roll = roll,
@@ -249,8 +252,10 @@ readBottomTrack <- function(d, debug = getOption("oceDebug")) # uses global 'd' 
         magnetometer = magnetometer,
         accelerometer = accelerometer,
         ensembleCounter = ensembleCounter,
-        v = v, distance = distance,
-        figureOfMerit = figureOfMerit
+        figureOfMerit = figureOfMerit,
+        # arrays
+        v = v,
+        distance = distance
     )
     rval
 } # readBottomTrack

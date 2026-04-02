@@ -588,6 +588,12 @@ setMethod(
         #             1 / subsampleDeltat))
         #-metadataNames <- names(object@metadata)
         cat("* Frequency:        ", object[["frequency"]], "kHz\n", ...)
+        if ("oceCoordinate" %in% mnames) {
+            cat(paste("* Coordinate System: \"", object@metadata$oceCoordinate[1], "\"\n", sep = ""), ...)
+        }
+        if ("orientation" %in% mnames) {
+            cat(paste("* Orientation:       \"", object@metadata$orientation[1], "\"\n", sep = ""), ...)
+        }
         if ("ensembleNumber" %in% names(object@metadata)) {
             en <- object@metadata$ensembleNumber
             nen <- length(en)

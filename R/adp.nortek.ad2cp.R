@@ -2461,10 +2461,8 @@ read.adp.ad2cp <- function(
             if (name %in% names(data)) {
                 oceDebug(debug, "transferring ", name, " from data to metadata\n")
                 res@metadata[name] <- data[name]
-            } else {
-                oceDebug(debug, "deleting ", name, " from data, without moving to metadata\n")
+                data[name] <- NULL
             }
-            data[name] <- NULL
         }
     } # 0x16=average
     #<FIXME> # Nortek (2017 p60) "6.1.3 Bottom Track Data Record Definition (DF20)"
@@ -2830,17 +2828,19 @@ read.adp.ad2cp <- function(
     }
     # FIXME: I bet some other types should not be getting distance defined.
     oceDebug(debug, vectorShow(dataType))
-    oceDebug(debug, vectorShow(res@metadata$distance))
-    if (!length(res@metadata$distance)) {
-        if (!is.null(res@metadata$numberOfCells) && res@metadata$numberOfCells > 1L) {
-            oceDebug(
-                debug, "about to compute data$distance from blankingDistance=",
-                res@metadata$blankingDistance, ", cellSize=",
-                res@metadata$cellSize, ", and numberOfCells=",
-                res@metadata$numberOfCells, "\n"
-            )
-            data$distance <- res@metadata$blankingDistance +
-                seq(1L, by = res@metadata$cellSize, length.out = res@metadata$numberOfCells)
+    if (dataType != 0x17) { # don't do this for bottomTrack, since it measures distance directly
+        oceDebug(debug, vectorShow(res@metadata$distance))
+        if (!length(res@metadata$distance)) {
+            if (!is.null(res@metadata$numberOfCells) && res@metadata$numberOfCells > 1L) {
+                oceDebug(
+                         debug, "about to compute data$distance from blankingDistance=",
+                         res@metadata$blankingDistance, ", cellSize=",
+                         res@metadata$cellSize, ", and numberOfCells=",
+                         res@metadata$numberOfCells, "\n"
+                )
+                data$distance <- res@metadata$blankingDistance +
+                    seq(1L, by = res@metadata$cellSize, length.out = res@metadata$numberOfCells)
+            }
         }
     }
     # 2022-08-29 BOOKMARK-blankingDistance-03
