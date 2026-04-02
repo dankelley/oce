@@ -34,7 +34,7 @@ dataAvailableBottomTrack <- function(twoBytes) {
 # https://www.nortekgroup.com/assets/software/N3015-007-Integrators-Guide-AD2CP_1018.pdf.
 #
 # @author Dan Kelley
-readBottomTrack <- function(d, debug = getOption("oceDebug")) # uses global 'd' and 'configuration'
+readBottomTrack <- function(d, configText, debug = getOption("oceDebug")) # uses global 'd' and 'configuration'
 {
     id <- 0x17 # bottomTrack
     if (any(d$id != id)) {
@@ -148,6 +148,11 @@ readBottomTrack <- function(d, debug = getOption("oceDebug")) # uses global 'd' 
     # cat("above:nbeams?\n")
     nbeams <- 8 * BCC[16] + 4 * BCC[15] + 1 * BCC[14] + BCC[13]
     oceDebug(debug, vectorShow(nbeams))
+    if (nbeams < 4) {
+        nbeamsOld <- nbeams
+        nbeams <- findInConfig(configText[[1]], "GETBT", "NB")
+        warning("the bottomTrack records suggest nbeams=", nbeamsOld, ", but this makes no sense, so using nbeams=", nbeams, ", based on the TEXT record")
+    }
     stopifnot(nbeams == 4L)
     # stop("CHOP next few lines of old (broken) BCC decoding")
     # beamsCoordsBits <- as.integer(strsplit(byteToBinary(beamsCoords[1]), "")[[1]])

@@ -2181,6 +2181,7 @@ read.adp.ad2cp <- function(
                 } else {
                     stop("cannot infer `nbeams` from the data chunks or the TEXT block")
                 }
+                message("DAN DAN DAN DAN DAN DAN NB=",NB)
             }
             iv <- gappyIndex(i, i0v, 4L * NB)
             tmp <- readBin(d$buf[iv], "integer", size = 4L, n = NB * NP, endian = "little")
@@ -2474,61 +2475,8 @@ read.adp.ad2cp <- function(
         if (length(p$bottomTrack) < 1L) {
             stop("no dataType=", as.raw(dataTypeOrig), " (bottomTrack) in file")
         }
-        # {{{ FIXME: trying new way
         d$configuration <- configuration # FIXME: remove -- handled by readBottomTrack()
-        data <- readBottomTrack(d, debug = debug)
-        #<debug> if (debug) {
-        #<debug>     if (!interactive()) png("bt_ensemble.png", units = "in", width = 7, height = 7, res = 200)
-        #<debug>     oce.plot.ts(data$time, data$ensembleCounter, type = "o", cex = 0.5)
-        #<debug>     if (!interactive()) dev.off()
-        #<debug>     if (!interactive()) png("bt_pressure_and_angles.png", units = "in", width = 7, height = 7, res = 200)
-        #<debug>     par(mfrow = c(4, 1))
-        #<debug>     oce.plot.ts(data$time, data$pressure, type = "o", cex = 0.5)
-        #<debug>     oce.plot.ts(data$time, data$heading, type = "o", cex = 0.5)
-        #<debug>     oce.plot.ts(data$time, data$pitch, type = "o", cex = 0.5)
-        #<debug>     oce.plot.ts(data$time, data$roll, type = "o", cex = 0.5)
-        #<debug>     if (!interactive()) dev.off()
-        #<debug>     if (!interactive()) png("bt_magnetometer_and_heading.png", units = "in", width = 7, height = 7, res = 200)
-        #<debug>     par(mfrow = c(3, 1))
-        #<debug>     oce.plot.ts(data$time, data$heading)
-        #<debug>     oce.plot.ts(data$time, data$magnetometer[, 1])
-        #<debug>     oce.plot.ts(data$time, data$magnetometer[, 2])
-        #<debug>     if (!interactive()) dev.off()
-
-        #<debug>     if (!interactive()) png("bt_v.png", units = "in", width = 7, height = 7, res = 200)
-        #<debug>     par(mfrow = c(4, 1))
-        #<debug>     oce.plot.ts(data$time, data$v[, 1], type = "o", cex = 0.5)
-        #<debug>     oce.plot.ts(data$time, data$v[, 2], type = "o", cex = 0.5)
-        #<debug>     oce.plot.ts(data$time, data$v[, 3], type = "o", cex = 0.5)
-        #<debug>     oce.plot.ts(data$time, data$v[, 4], type = "o", cex = 0.5)
-        #<debug>     if (!interactive()) dev.off()
-        #<debug>     if (!interactive()) png("bt_distance.png", units = "in", width = 7, height = 7, res = 200)
-        #<debug>     par(mfrow = c(4, 1))
-        #<debug>     oce.plot.ts(data$time, data$distance[, 1], type = "o", cex = 0.5)
-        #<debug>     abline(h = 15000, col = "magenta")
-        #<debug>     oce.plot.ts(data$time, data$distance[, 2], type = "o", cex = 0.5)
-        #<debug>     abline(h = 15000, col = "magenta")
-        #<debug>     oce.plot.ts(data$time, data$distance[, 3], type = "o", cex = 0.5)
-        #<debug>     abline(h = 15000, col = "magenta")
-        #<debug>     oce.plot.ts(data$time, data$distance[, 4], type = "o", cex = 0.5)
-        #<debug>     abline(h = 15000, col = "magenta")
-        #<debug>     if (!interactive()) dev.off()
-        #<debug>     if (!interactive()) png("bt_figure_of_merit.png", units = "in", width = 7, height = 7, res = 200)
-        #<debug>     par(mfrow = c(1, 1))
-        #<debug>     oce.plot.ts(data$time, data$figureOfMerit, type = "o", cex = 0.5)
-        #<debug>     if (!interactive()) dev.off()
-        #<debug>     if (debug > 2) {
-        #<debug>         if (interactive()) {
-        #<debug>             message("FIXME: add more reading and saving, then stitch into calling fcn")
-        #<debug>             browser()
-        #<debug>         } else {
-        #<debug>             stop("EARLY (debugging) STOP")
-        #<debug>         }
-        #<debug>     }
-        #<debug> }
-        # }}}
-        # OLDdata <- readBottomTrack(id = dataType, debug = debug - 1) # id is 0x17
-        # OLDoceDebug(debug, "dataType=", as.raw(dataType), "(bottomTrack): move some things from data to metadata\n")
+        data <- readBottomTrack(d, configText, debug = debug)
         for (name in c(
             "blankingDistance", "cellSize", "configuration", "datasetDescription",
             "frequency", "numberOfBeams", "numberOfCells", "oceCoordinate",
