@@ -240,7 +240,7 @@ readBottomTrack <- function(d, debug = getOption("oceDebug")) # uses global 'd' 
     }
     rval <- list(
         nbeams = nbeams, ncells = ncells, cellSize = cellSize,
-        coordinateSystem = coordinateSystem,
+        oceCoordinate = coordinateSystem,
         blankingDistance = blankingDistance,
         soundSpeed = soundSpeed,
         time = time, pressure = pressure, temperature = temperature,
