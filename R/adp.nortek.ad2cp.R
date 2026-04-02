@@ -787,8 +787,8 @@ read.adp.ad2cp <- function(
     # later, though.
     nav <- do_ldc_ad2cp_in_file(filename, from = 1L, to = 1e9, by = 1L, debug = if (debug > 4) 1 else 0)
     d <- list(buf = buf, index = nav$index, headerLength = nav$headerLength, dataLength = nav$dataLength, id = nav$id)
-    #cat("FIXME ad2cp main L790 table(d$id):\n")
-    #print(table(d$id))
+    # cat("FIXME ad2cp main L790 table(d$id):\n")
+    # print(table(d$id))
     oceDebug(debug, vectorShow(length(d$index)))
     N <- length(d$index)
     #-message("L635 N=",N,", to=", to)
@@ -1216,6 +1216,8 @@ read.adp.ad2cp <- function(
     # nolint end object_useage_linter
     # cell size is recorded in mm [1, table 6.1.2, page 49]
     cellSize <- 0.001 * readBin(d$buf[pointer2 + 33], "integer", size = 2L, n = N, signed = FALSE, endian = "little")
+    oceDebug(debug, "before calling readBottomTrack() ", vectorShow(pointer2 + 33))
+    oceDebug(debug, "before calling readBottomTrack ", vectorShow(cellSize))
     # BOOKMARK-blankingDistance-1 (see also BOOKMARK-blankingDistance-2 and -3, below)
     #
     # Update 2022-08-29 Nortek informs me that the factor is always 1e-3
@@ -1244,6 +1246,7 @@ read.adp.ad2cp <- function(
     oceDebug(debug, vectorShow(blankingDistanceFactor, n = 10))
     oceDebug(debug, vectorShow(blankingDistance, n = 10))
     nominalCorrelation <- readBin(d$buf[pointer1 + 37], "integer", size = 1L, n = N, signed = FALSE, endian = "little")
+    batteryVoltage <- 0.1 * readBin(d$buf[pointer2 + 39], "integer", size = 2L, n = N, signed = FALSE, endian = "little")
     # Magnetometer (Table 6.2, page 82, ref 1b)
     magnetometer <- matrix(0.0, nrow = N, ncol = 3)
     magnetometer[, 1] <- readBin(d$buf[pointer2 + 41], "integer", size = 2L, n = N, signed = TRUE, endian = "little")
@@ -1593,6 +1596,7 @@ read.adp.ad2cp <- function(
             temperature = temperature[look], # "temperature pressure sensor"
             pressure = pressure[look],
             heading = heading[look], pitch = pitch[look], roll = roll[look],
+            batteryVoltage = batteryVoltage[look],
             magnetometer = magnetometer[look, ],
             accelerometer = accelerometer[look, ],
             datasetDescription = datasetDescription[look],
@@ -2473,9 +2477,7 @@ read.adp.ad2cp <- function(
         }
         # {{{ FIXME: trying new way
         d$configuration <- configuration # FIXME: remove -- handled by readBottomTrack()
-        data <- readBottomTrack(d, debug = 2)
-        message("examine data (and add new items to reading, as needed)")
-
+        data <- readBottomTrack(d, debug = debug)
         if (debug) {
             if (!interactive()) png("bt_ensemble.png", units = "in", width = 7, height = 7, res = 200)
             oce.plot.ts(data$time, data$ensembleCounter, type = "o", cex = 0.5)
@@ -2487,6 +2489,13 @@ read.adp.ad2cp <- function(
             oce.plot.ts(data$time, data$pitch, type = "o", cex = 0.5)
             oce.plot.ts(data$time, data$roll, type = "o", cex = 0.5)
             if (!interactive()) dev.off()
+            if (!interactive()) png("bt_magnetometer_and_heading.png", units = "in", width = 7, height = 7, res = 200)
+            par(mfrow = c(3, 1))
+            oce.plot.ts(data$time, data$heading)
+            oce.plot.ts(data$time, data$magnetometer[, 1])
+            oce.plot.ts(data$time, data$magnetometer[, 2])
+            if (!interactive()) dev.off()
+
             if (!interactive()) png("bt_v.png", units = "in", width = 7, height = 7, res = 200)
             par(mfrow = c(4, 1))
             oce.plot.ts(data$time, data$v[, 1], type = "o", cex = 0.5)
@@ -2497,23 +2506,25 @@ read.adp.ad2cp <- function(
             if (!interactive()) png("bt_distance.png", units = "in", width = 7, height = 7, res = 200)
             par(mfrow = c(4, 1))
             oce.plot.ts(data$time, data$distance[, 1], type = "o", cex = 0.5)
-            abline(h=15000, col="magenta")
+            abline(h = 15000, col = "magenta")
             oce.plot.ts(data$time, data$distance[, 2], type = "o", cex = 0.5)
-            abline(h=15000, col="magenta")
+            abline(h = 15000, col = "magenta")
             oce.plot.ts(data$time, data$distance[, 3], type = "o", cex = 0.5)
-            abline(h=15000, col="magenta")
+            abline(h = 15000, col = "magenta")
             oce.plot.ts(data$time, data$distance[, 4], type = "o", cex = 0.5)
-            abline(h=15000, col="magenta")
+            abline(h = 15000, col = "magenta")
             if (!interactive()) dev.off()
             if (!interactive()) png("bt_figure_of_merit.png", units = "in", width = 7, height = 7, res = 200)
             par(mfrow = c(1, 1))
             oce.plot.ts(data$time, data$figureOfMerit, type = "o", cex = 0.5)
             if (!interactive()) dev.off()
-            if (interactive()) {
-                message("FIXME: add more reading and saving, then stitch into calling fcn")
-                browser()
-            } else {
-                stop("EARLY (debugging) STOP")
+            if (debug > 2) {
+                if (interactive()) {
+                    message("FIXME: add more reading and saving, then stitch into calling fcn")
+                    browser()
+                } else {
+                    stop("EARLY (debugging) STOP")
+                }
             }
         }
         # }}}

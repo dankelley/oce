@@ -119,27 +119,27 @@ readBottomTrack <- function(d, debug = getOption("oceDebug")) # uses global 'd' 
     dev.off()
     # }}}
     # {{{ #beams,coord-sys,#cells
-    #beamsCoords <- d$buf[pointer1[1] + 31] # this ought never to change
-    #oceDebug(debug, vectorShow(beamsCoords))
+    # beamsCoords <- d$buf[pointer1[1] + 31] # this ought never to change
+    # oceDebug(debug, vectorShow(beamsCoords))
     # Decode a 2-byte sequence. Note that some items cross
     # byte boundaries, so we cannot simply read with readBin(),
     # and must instead expand bit by bit.
     BCCraw <- readBin(d$buf[pointer1[1] + 31:32], "raw", size = 1, n = 2, endian = "little")
     print(BCCraw)
     BCC <- ifelse(rawToBits(BCCraw) == 0x01, 1, 0)
-    #print(BCC)
-    #print(BCC[10:1])
+    # print(BCC)
+    # print(BCC[10:1])
     ncells <- sum(BCC[10:1] * 2^(9:0))
     oceDebug(debug, "perhaps this is ncells: ", ncells, "\n")
     ncellsAlternate <- sum(BCC[1:10] * 2^(9:0))
     oceDebug(debug, "or maybe this is: ", ncellsAlternate, "; we pick the first value but this is NOT checked\n")
-    #print(BCC[12:11])
-    #cat("above:coordSys?\n")
+    # print(BCC[12:11])
+    # cat("above:coordSys?\n")
     b <- 2 * BCC[12] + BCC[11]
     coordinateSystem <- switch(b + 1L,
-                               "enu",
-                               "xyz",
-                               "beam"
+        "enu",
+        "xyz",
+        "beam"
     )
     if (is.null(coordinateSystem)) {
         coordinateSystem <- "?"
@@ -151,25 +151,43 @@ readBottomTrack <- function(d, debug = getOption("oceDebug")) # uses global 'd' 
     nbeams <- 8 * BCC[16] + 4 * BCC[15] + 1 * BCC[14] + BCC[13]
     oceDebug(debug, vectorShow(nbeams))
     stopifnot(nbeams == 4L)
-    #stop("CHOP next few lines of old (broken) BCC decoding")
-    #beamsCoordsBits <- as.integer(strsplit(byteToBinary(beamsCoords[1]), "")[[1]])
-    #oceDebug(debug, vectorShow(beamsCoordsBits, n = 16))
-    #beamsCoordsBitsNEW <- ifelse(rawToBits(beamsCoords[1]) == 0x01, 1, 0)
-    #oceDebug(debug, vectorShow(beamsCoordsBitsNEW, n = 16))
-    #browser()
+    # stop("CHOP next few lines of old (broken) BCC decoding")
+    # beamsCoordsBits <- as.integer(strsplit(byteToBinary(beamsCoords[1]), "")[[1]])
+    # oceDebug(debug, vectorShow(beamsCoordsBits, n = 16))
+    # beamsCoordsBitsNEW <- ifelse(rawToBits(beamsCoords[1]) == 0x01, 1, 0)
+    # oceDebug(debug, vectorShow(beamsCoordsBitsNEW, n = 16))
+    # browser()
     # Called bits 15-13 in Ref. 1
     # OLD    nbeams <- beamsCoordsBits[3] + 2 * beamsCoordsBits[2] + 4 * beamsCoordsBits[1]
-    #oceDebug(debug, vectorShow(nbeams))
+    # oceDebug(debug, vectorShow(nbeams))
     # pad1 32
     # ncells 33:34
     #
-    #ncells <- readBin(d$buf[pointer2[1:2] + 33L], "integer", size = 2L, n = 1, signed = FALSE, endian = "little")
-    #oceDebug(debug, vectorShow(ncells))
+    # ncells <- readBin(d$buf[pointer2[1:2] + 33L], "integer", size = 2L, n = 1, signed = FALSE, endian = "little")
+    # oceDebug(debug, vectorShow(ncells))
     # }}}
-    cellSize <- 1.0e-3 * readBin(d$buf[pointer2[1] + 33L], "integer", size = 2L, n = 1, signed = FALSE, endian = "little")
-    oceDebug(debug, vectorShow(cellSize))
+    cellSize <- 1.0e-3 * readBin(d$buf[pointer2[1:2] + 33L], "integer", size = 2L, n = 1, signed = FALSE, endian = "little")
+    oceDebug(debug, "in readBottomTrack() ", vectorShow(pointer2[1:2] + 33))
+    oceDebug(debug, "in readBottomTrack() ", vectorShow(cellSize))
     blankingDistance <- 1.0e-3 * readBin(d$buf[pointer2[1:2] + 35L], "integer", size = 2L, n = 1, signed = FALSE, endian = "little")
     oceDebug(debug, vectorShow(blankingDistance))
+    batteryVoltage <- 0.1 * readBin(d$buf[pointer2 + 39L], "integer", size = 2L, n = nprofiles, signed = FALSE, endian = "little")
+    oceDebug(debug, vectorShow(batteryVoltage))
+    # {{{ magnetometer FIXME: is there a factor to get to physical units?
+    magnetometer <- matrix(0.0, nrow = nprofiles, ncol = 3)
+    magnetometer[, 1] <- readBin(d$buf[pointer2 + 41L], "integer", size = 2L, n = nprofiles, signed = TRUE, endian = "little")
+    oceDebug(debug, vectorShow(magnetometer[, 1]))
+    magnetometer[, 2] <- readBin(d$buf[pointer2 + 43L], "integer", size = 2L, n = nprofiles, signed = TRUE, endian = "little")
+    oceDebug(debug, vectorShow(magnetometer[, 2]))
+    magnetometer[, 3] <- readBin(d$buf[pointer2 + 45L], "integer", size = 2L, n = nprofiles, signed = TRUE, endian = "little")
+    oceDebug(debug, vectorShow(magnetometer[, 3]))
+    # }}}
+    # {{{ accelerometer
+    accelerometer <- matrix(0.0, nrow = nprofiles, ncol = 3L)
+    accelerometer[, 1] <- 1.0 / 16384.0 * readBin(d$buf[pointer2 + 47], "integer", size = 2L, n = nprofiles, signed = TRUE, endian = "little")
+    accelerometer[, 2] <- 1.0 / 16384.0 * readBin(d$buf[pointer2 + 49], "integer", size = 2L, n = nprofiles, signed = TRUE, endian = "little")
+    accelerometer[, 3] <- 1.0 / 16384.0 * readBin(d$buf[pointer2 + 51], "integer", size = 2L, n = nprofiles, signed = TRUE, endian = "little")
+    # }}}
 
     velocityScaling <- readBin(d$buf[pointer1[1] + 61], "integer", size = 1L, endian = "little", signed = TRUE)
     oceDebug(debug, vectorShow(velocityScaling))
@@ -220,13 +238,16 @@ readBottomTrack <- function(d, debug = getOption("oceDebug")) # uses global 'd' 
         oce.plot.ts(time, v[, 1])
         oce.plot.ts(time, distance[, 1], drawTimeRange = FALSE)
     }
-    # FIXME: add coordinates, orientation, magnetometer, accelerometer, etc
     rval <- list(
         nbeams = nbeams, ncells = ncells, cellSize = cellSize,
+        coordinateSystem = coordinateSystem,
         blankingDistance = blankingDistance,
         soundSpeed = soundSpeed,
         time = time, pressure = pressure, temperature = temperature,
         heading = heading, pitch = pitch, roll = roll,
+        batteryVoltage = batteryVoltage,
+        magnetometer = magnetometer,
+        accelerometer = accelerometer,
         ensembleCounter = ensembleCounter,
         v = v, distance = distance,
         figureOfMerit = figureOfMerit
