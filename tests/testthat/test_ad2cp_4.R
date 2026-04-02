@@ -125,7 +125,7 @@ if (file.exists(file)) {
             "setting plan=0"
         )
         expect_equal(c(259, 4), dim(d[["v"]]))
-        expect_equal(c(259, 4), dim(d[["figureOfMerit"]]))
+        expect_equal(259, length(d[["figureOfMerit"]]))
     })
 
     test_that("dataSet 4 from, to, by", {

@@ -37,12 +37,11 @@ dataAvailableBottomTrack <- function(twoBytes) {
 readBottomTrack <- function(d, debug = getOption("oceDebug")) # uses global 'd' and 'configuration'
 {
     id <- 0x17 # bottomTrack
-
     if (any(d$id != id)) {
         stop("the 'id' field varies -- have the data been seived in the calling function?")
     }
     type <- gsub(".*=", "", ad2cpCodeToName(id))
-    oceDebug(debug, "\n\n\nreadBottomTrackNEW(id=0x", as.raw(id), " or ", id, " decimal) # i.e. type=", type, " START\n", unindent = 1)
+    oceDebug(debug, "readBottomTrack(id=0x", as.raw(id), " or ", id, " decimal) # i.e. type=", type, " START\n", unindent = 1)
     look <- which(d$id == id)
     if (length(look) < 1) {
         stop("There are no records with id=0x", as.raw(a), " (i.e. with id=", a, " base 10)")
@@ -257,5 +256,6 @@ readBottomTrack <- function(d, debug = getOption("oceDebug")) # uses global 'd' 
         v = v,
         distance = distance
     )
+    oceDebug(debug, "END readBottomTrack()\n", unindent=1)
     rval
 } # readBottomTrack
