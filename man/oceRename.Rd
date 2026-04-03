@@ -144,7 +144,7 @@ if (requireNamespace("curl")) {
 \item CODAS naming convention
 \verb{https://currents.soest.hawaii.edu/docs/adcp_doc/UHDAS_OPERATIONS/UHDAS_atsea/adcp_access/read_netCDF.html}
 \item IOOS naming convention
-\url{https://cfconventions.org/Data/cf-standard-names/78/build/cf-standard-name-table.html}
+\verb{https://cfconventions.org/Data/cf-standard-names/78/build/cf-standard-name-table.html}
 \item The SBE names come from a processing manual that was once at
 \verb{http://www.seabird.com/document/sbe-data-processing-manual}, but as of
 summer 2018, this no longer seems to be provided by SeaBird. A web search
