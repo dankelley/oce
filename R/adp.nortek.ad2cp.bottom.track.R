@@ -43,41 +43,34 @@ readBottomTrack <- function(d, configText, debug = getOption("oceDebug")) # uses
         #stop("all d$id values must equal 0x17 or 0x1d -- there is a problem with read.adp.nortek.ad2cp().")
         stop("all d$id values must equal 0x17 -- there is a problem with read.adp.nortek.ad2cp().")
     }
-    type <- gsub(".*=", "", ad2cpCodeToName(id))
-    oceDebug(debug, "readBottomTrack(id=0x", as.raw(id), " or ", id, " decimal) # i.e. type=", type, " START\n", unindent = 1)
-    look <- which(d$id == id)
-    if (length(look) < 1) {
-        stop("There are no records with id=0x", as.raw(a), " (i.e. with id=", a, " base 10)")
-    }
-    oceDebug(debug, vectorShow(look))
-    lookIndex <- d$index[look]
-    oceDebug(debug, vectorShow(lookIndex))
-    offsetOfData <- as.integer(d$buf[d$index[look[1]] + 2L])
-    oceDebug(debug, vectorShow(offsetOfData))
-    badRowCount <- checkRowConsistency(d$configuration[look, ])
+    type <- gsub(".*=", "", ad2cpCodeToName(d$id[1]))
+    oceDebug(debug, "readBottomTrack(id=0x", as.raw(d$id[1]), " or ", d$id[1], " decimal) # i.e. type=", type, " START\n", unindent = 1)
+    offsetOfData <- as.integer(d$buf[d$index[1] + 2L])
+oceDebug(debug, vectorShow(offsetOfData))
+    badRowCount <- checkRowConsistency(d$configuration)
     if (badRowCount > 0) {
         stop("Problem with bottomTrack 'configuration' matrix: ", badRowCount, " rows do not match row #1")
     }
-    oceDebug(debug, "d$configuration: ", paste(ifelse(d$configuration[look[1], ], "1", "0"), collapse = ""), " (shown as a bitmask)\n")
+    oceDebug(debug, "d$configuration: ", paste(ifelse(d$configuration[1, ], "1", "0"), collapse = ""), " (shown as a bitmask)\n")
 
     # Determine which data types are recorded. Nortek indicates that
     # bottom-track data should always have `v` (reflecter velocity), `distance`
     # ( distance to reflecter) and `figureOfMerit` (a measure of data quality, I
     # assume), and so we issue a warning if these are not all present.
-    dataAvailable <- dataAvailableBottomTrack(d$buf[d$index[look[1]] + 3:4])
+    dataAvailable <- dataAvailableBottomTrack(d$buf[d$index[1] + 3:4])
     oceDebug(debug, vectorShow(dataAvailable))
     if (!dataAvailable$velocity) warning("no velocity data found -- this is likely an error")
     if (!dataAvailable$distance) warning("no velocity data found -- this is likely an error")
     if (!dataAvailable$figureOfMerit) warning("no velocity data found -- this is likely an error")
-    serialNumber <- readBin(d$buf[d$index[look[1]] + 5:8], "integer", size = 4L, endian = "little")
+    serialNumber <- readBin(d$buf[d$index[1] + 5:8], "integer", size = 4L, endian = "little")
     oceDebug(debug, vectorShow(serialNumber))
     # {{{ FIXME: these would be useful generally, so maybe compute at higher level
-    pointer1 <- d$index[look] # FIXME: shouldn't we be using look here?
-    pointer2 <- gappyIndex(d$index[look], 0, 2)
-    pointer4 <- gappyIndex(d$index[look], 0, 4)
-    oceDebug(debug, vectorShow(pointer1[1:8], n = 8))
-    oceDebug(debug, vectorShow(pointer2[1:8], n = 8))
-    oceDebug(debug, vectorShow(pointer4[1:8], n = 8))
+    pointer1 <- d$index
+    pointer2 <- gappyIndex(d$index, 0, 2)
+    pointer4 <- gappyIndex(d$index, 0, 4)
+    oceDebug(debug, vectorShow(pointer1, n = 8))
+    oceDebug(debug, vectorShow(pointer2, n = 8))
+    oceDebug(debug, vectorShow(pointer4, n = 8))
     nprofiles <- length(pointer1)
     oceDebug(debug, vectorShow(nprofiles))
     year <- 1900 + as.integer(d$buf[pointer1 + 9])
@@ -109,17 +102,6 @@ readBottomTrack <- function(d, configText, debug = getOption("oceDebug")) # uses
     oceDebug(debug, vectorShow(pitch))
     roll <- 0.01 * readBin(d$buf[pointer2 + 29L], "integer", size = 2L, n = nprofiles, signed = TRUE, endian = "little")
     oceDebug(debug, vectorShow(roll))
-    # {{{ FIXME remove these trial sample plots
-    pdf("~/ad2cp_teaching.pdf")
-    par(mfrow = c(4, 1))
-    oce.plot.ts(time, pressure)
-    oce.plot.ts(time, heading, drawTimeRange = FALSE)
-    oce.plot.ts(time, pitch, drawTimeRange = FALSE)
-    abline(h = 0, col = 2)
-    oce.plot.ts(time, roll, drawTimeRange = FALSE)
-    abline(h = 0, col = 2)
-    dev.off()
-    # }}}
     # {{{ #beams,coord-sys,#cells
     # beamsCoords <- d$buf[pointer1[1] + 31] # this ought never to change
     # oceDebug(debug, vectorShow(beamsCoords))
@@ -238,12 +220,10 @@ readBottomTrack <- function(d, configText, debug = getOption("oceDebug")) # uses
     figureOfMerit <- readBin(d$buf[pointer2 + 111], "integer", size = 2L, endian = "little", n = nprofiles, signed = FALSE)
     oceDebug(debug, vectorShow(d$buf[pointer2 + 111]))
     oceDebug(debug, vectorShow(figureOfMerit))
-
-    if (debug) {
-        par(mfrow = c(2, 1))
-        oce.plot.ts(time, v[, 1])
-        oce.plot.ts(time, distance[, 1], drawTimeRange = FALSE)
-    }
+    oceDebug(debug, "hm...", vectorShow(nprofiles))
+    oceDebug(debug, "hm...", vectorShow(pointer1))
+    oceDebug(debug, "hm...", vectorShow(pointer2))
+    oceDebug(debug, "hm...", vectorShow(pointer4))
     rval <- list(
         # Scalars
         numberOfBeams = nbeams, # renaming so calling function can move to metadata

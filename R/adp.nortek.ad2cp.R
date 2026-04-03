@@ -2536,7 +2536,7 @@ read.adp.ad2cp <- function(
         if (length(p$DVLBottomTrack) < 1L) {
             stop("no dataType=", as.raw(dataTypeOrig), " (DVLBottomTrack) in file")
         }
-        data <- readBottomTrackOLD(d = d, debug = debug) # id is 0x1b
+        data <- readBottomTrack_OLD(d = d, debug = debug) # id is 0x1b
         oceDebug(debug, "dataType=", as.raw(dataType), "(DVLBottomTrack): move some things from data to metadata\n")
         for (name in c(
             "blankingDistance", "cellSize", "configuration", "datasetDescription",
