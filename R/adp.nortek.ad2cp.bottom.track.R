@@ -36,9 +36,12 @@ dataAvailableBottomTrack <- function(twoBytes) {
 # @author Dan Kelley
 readBottomTrack <- function(d, configText, debug = getOption("oceDebug")) # uses global 'd' and 'configuration'
 {
-    id <- 0x17 # bottomTrack
-    if (any(d$id != id)) {
-        stop("the 'id' field varies -- have the data been seived in the calling function?")
+    if (any(d$id != d$id[1])) {
+        stop("the 'id' field varies -- did read.adp.nortek.ad2cp() sieve the data?")
+    }
+    if (!(d$id[1] %in% c(0x17, 0x1d))) { # FIXME: check whether this code could work for 0x1d
+        #stop("all d$id values must equal 0x17 or 0x1d -- there is a problem with read.adp.nortek.ad2cp().")
+        stop("all d$id values must equal 0x17 -- there is a problem with read.adp.nortek.ad2cp().")
     }
     type <- gsub(".*=", "", ad2cpCodeToName(id))
     oceDebug(debug, "readBottomTrack(id=0x", as.raw(id), " or ", id, " decimal) # i.e. type=", type, " START\n", unindent = 1)
