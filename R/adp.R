@@ -462,6 +462,9 @@ setMethod(
         if ("filename" %in% mnames) {
             cat(paste("* Filename:          \"", object@metadata$filename, "\"\n", sep = ""), ...)
         }
+        if ("fileType" %in% mnames) {
+            cat(paste("* File type:         ", object@metadata$fileType, "\n", sep = ""), ...)
+        }
         if ("instrumentType" %in% mnames) {
             cat(paste("* Instrument:        ", object@metadata$instrumentType, "\n", sep = ""), ...)
         }
@@ -473,9 +476,6 @@ setMethod(
         }
         if ("serialNumber" %in% mnames) {
             cat(paste("* Serial number:     ", object@metadata$serialNumber, "\n", sep = ""), ...)
-        }
-        if ("fileType" %in% mnames) {
-            cat(paste("* File type:         ", object@metadata$fileType, "\n", sep = ""), ...)
         }
         if ("firmwareVersionMajor" %in% mnames && "firmwareVersionMinor" %in% mnames) {
             cat(paste("* Firmware:          ", object@metadata$firmwareVersionMajor, " (major), ",
@@ -1881,7 +1881,7 @@ setMethod(
         }
         if (missing(which)) {
             # Note that j is ignored for e.g. RDI adp.
-            which <- seq_len(dim(x[["v"]])[3])
+            which <- seq_len(tail(dim(x[["v"]]), 1))
             oceDebug(debug, "setting which=c(", paste(which, collapse = ","), "), based on the data\n", sep = "")
         }
         colGiven <- !missing(col)
@@ -2150,31 +2150,47 @@ setMethod(
                             max(abs(x@data$vDia[, y.look, which[w]]), na.rm = TRUE) * c(-1, 1)
                         }
                     } else {
-                        oceDebug(debug, "a velocity component image/timeseries\n")
-                        z <- x[["v", j]][, , which[w]]
-                        oceDebug(debug, "class(z) after subsetting for 3rd dimension:: ", class(z), "\n")
-                        # oceDebug(debug, "dim(z): ", paste(dim(z), collapse="x"), "\n")
-                        zlab <- if (missing(titles)) beamName(x, which[w]) else titles[w]
-                        oceDebug(debug, "zlab:", zlab, "\n")
-                        xdistance <- x[["distance", j]]
-                        oceDebug(debug, vectorShow(xdistance))
-                        y.look <- if (ylimGiven) ylimAsGiven[w, 1] <= xdistance & xdistance <= ylimAsGiven[w, 2] else rep(TRUE, length(xdistance))
-                        oceDebug(debug, vectorShow(y.look))
-                        if (0 == sum(y.look)) {
-                            stop("no data in the provided ylim=c(", paste(ylimAsGiven[w, ], collapse = ","), ")")
-                        }
-                        zlim <- if (zlimGiven) {
-                            zlimAsGiven[w, ]
-                        } else {
-                            if (breaksGiven) {
-                                NULL
+                        rank <- length(dim(v))
+                        oceDebug(debug, vectorShow(rank))
+                        if (rank == 3) {
+                            oceDebug(debug, "plot.adp(): plotting velocity component ", which[w], " as an image\n")
+                            z <- x[["v", j]][, , which[w]]
+                            oceDebug(debug, "class(z) after subsetting for 3rd dimension:: ", class(z), "\n")
+                            # oceDebug(debug, "dim(z): ", paste(dim(z), collapse="x"), "\n")
+                            zlab <- if (missing(titles)) beamName(x, which[w]) else titles[w]
+                            oceDebug(debug, "zlab:", zlab, "\n")
+                            xdistance <- x[["distance", j]]
+                            oceDebug(debug, vectorShow(xdistance))
+                            y.look <- if (ylimGiven) ylimAsGiven[w, 1] <= xdistance & xdistance <= ylimAsGiven[w, 2] else rep(TRUE, length(xdistance))
+                            oceDebug(debug, vectorShow(y.look))
+                            if (0 == sum(y.look)) {
+                                stop("no data in the provided ylim=c(", paste(ylimAsGiven[w, ], collapse = ","), ")")
+                            }
+                            zlim <- if (zlimGiven) {
+                                zlimAsGiven[w, ]
                             } else {
-                                if (is.array(z)) {
-                                    max(abs(z[, y.look]), na.rm = TRUE) * c(-1, 1)
+                                if (breaksGiven) {
+                                    NULL
                                 } else {
-                                    max(abs(z), na.rm = TRUE) * c(-1, 1)
+                                    if (is.array(z)) {
+                                        max(abs(z[, y.look]), na.rm = TRUE) * c(-1, 1)
+                                    } else {
+                                        max(abs(z), na.rm = TRUE) * c(-1, 1)
+                                    }
                                 }
                             }
+                        } else if (rank == 2) {
+                            oceDebug(debug, "plot.adp(): plotting velocity component ", which[w], " as a time-series\n")
+                            z <- v[, which[w]]
+                            oceDebug(debug, vectorShow(z))
+                            #oceDebug(debug, vectorShow(y))
+                            zlab <- if (missing(titles)) beamName(x, which[w]) else titles[w]
+                            oceDebug(debug, vectorShow(zlab))
+                            #oce.plot.ts(x[["time"]], y)
+                            #oceDebug(debug, vectorShow(ylimGiven))
+                            #y.look <- if (ylimGiven) ylimAsGiven[w, 1] <= xdistance & xdistance <= ylimAsGiven[w, 2] else rep(TRUE, length(xdistance))
+                        } else {
+                            stop("data rank (", rank, ") is neither 2 (for time-series plot) nor 3 (for image plot)")
                         }
                     }
                 } else if (which[w] %in% 5:8) {
@@ -2320,6 +2336,7 @@ setMethod(
                     skip <- TRUE
                 }
                 if (!skip) {
+                    oceDebug(debug, vectorShow(numberOfCells))
                     if (numberOfCells > 1) {
                         if (xlimGiven) {
                             oceDebug(debug, "about to call imagep() with xlim given and par(\"cex\")=", par("cex"), ", cex=", cex, "\n", sep = "")
@@ -3517,7 +3534,7 @@ beamToXyzAdp <- function(x, debug = getOption("oceDebug")) {
 #' ship-coordinate velocities, and (H, P, R) denote heading, pitch, and roll.
 #'
 #' \tabular{rrrrrrrrrrrr}{
-#'**Case** \tab **Mfr.** \tab **Instr.** \tab **Orient.** \tab **H** \tab **P** \tab  **R** \tab  **S** \tab  **F** \tab  **M**\cr
+#'** Case** \tab **Mfr.** \tab **Instr.** \tab **Orient.** \tab **H** \tab **P** \tab  **R** \tab  **S** \tab  **F** \tab  **M**\cr
 #'    1 \tab RDI    \tab ADCP   \tab up      \tab H    \tab arctan(tan(P)*cos(R)) \tab  R \tab -X \tab  Y \tab -Z\cr
 #'    2 \tab RDI    \tab ADCP   \tab down    \tab H    \tab arctan(tan(P)*cos(R)) \tab -R \tab  X \tab  Y \tab  Z\cr
 #'    3 \tab Nortek \tab ADP    \tab up      \tab H-90 \tab R                     \tab -P \tab  X \tab  Y \tab  Z\cr

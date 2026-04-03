@@ -2910,7 +2910,7 @@ beamToXyzAdpAD2CP <- function(x, debug = getOption("oceDebug")) {
     if (!"v" %in% names(x@data)) {
         stop("cannot change to xyz coordinates because there is no \"v\" in this ad2cp object")
     }
-    if (!identical(4L, x@metadata$numberOfBeams)) {
+    if (4 != x@metadata$numberOfBeams) {
         stop("cannot change to xyz coordinates because the number of beams is not 4")
     }
     beamAngle <- x@metadata$beamAngle

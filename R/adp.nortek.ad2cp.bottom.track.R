@@ -131,7 +131,7 @@ oceDebug(debug, vectorShow(offsetOfData))
     oceDebug(debug, vectorShow(coordinateSystem))
     # print(BCC[16:13])
     # cat("above:nbeams?\n")
-    nbeams <- 8 * BCC[16] + 4 * BCC[15] + 1 * BCC[14] + BCC[13]
+    nbeams <- as.integer(8 * BCC[16] + 4 * BCC[15] + 1 * BCC[14] + BCC[13])
     oceDebug(debug, vectorShow(nbeams))
     if (nbeams < 4) {
         nbeamsOld <- nbeams
@@ -227,7 +227,7 @@ oceDebug(debug, vectorShow(offsetOfData))
     rval <- list(
         # Scalars
         numberOfBeams = nbeams, # renaming so calling function can move to metadata
-        numberOfCells = ncells, # renaming so calling function can move to metadata
+        numberOfCells = 1, # I don't know why value read above is not 1means, but plot.adp() needs 1 to plot timeseries
         oceCoordinate = coordinateSystem, # renaming so calling function can move to metadata
         cellSize = cellSize,
         blankingDistance = blankingDistance,
