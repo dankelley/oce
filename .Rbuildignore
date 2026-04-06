@@ -1,4 +1,5 @@
 .RData
+.DS_Store
 .Rhistory
 .gitignore
 .lintr
