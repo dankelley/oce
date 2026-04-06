@@ -1168,6 +1168,9 @@ imagep <- function(
         }
     }
     z[!is.finite(z)] <- NA # so range(z, na.rm=TRUE) will not be thwarted Inf
+    if (!any(is.finite(z))) {
+        stop("need some finite 'z' values")
+    }
     oceDebug(debug, "range(z):", paste(range(z, na.rm = TRUE), collapse = " to "), "\n")
     xIsTime <- inherits(x, "POSIXt") || inherits(x, "POSIXct") || inherits(x, "POSIXlt")
     # Handle TRUE/FALSE decimation
