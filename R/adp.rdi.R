@@ -556,14 +556,15 @@ decodeHeaderRDI <- function(buf, debug = getOption("oceDebug"), tz = getOption("
 #' as through there are four beams worth of data. The exact meaning of each of
 #' the "beams" in the data file depends on the coordinate system of the
 #' intstrument (e.g. beam, xyz, sfm, or enu), with the RDI data format manual
-#' indicating how to interpret the resulting arrays.
+#' indicating how to interpret the resulting arrays, as follows (a dash means
+#' that the field holds no data, and in oce this is repersented with NA values).
 #'
 #' \tabular{lllll}{
-#'   **Coordinate System** \tab **Vel1**   \tab **Vel2**   \tab **Vel3**     \tab **Vel4***                   \cr
-#'   Beam                  \tab beam1      \tab beam2      \tab beam3        \tab 0                            \cr
-#'   Instrument            \tab x          \tab y          \tab 0            \tab error                        \cr
-#'   Ship                  \tab x          \tab y          \tab vertical     \tab error (tilt applied)         \cr
-#'   Earth                 \tab east       \tab north      \tab vertical     \tab error (heading applied)      \cr
+#'   **Coordinate System** \tab **Vel1** \tab **Vel2** \tab **Vel3** \tab **Vel4**                \cr
+#'   Beam                  \tab beam1    \tab beam2    \tab beam3    \tab -                       \cr
+#'   Instrument            \tab x        \tab y        \tab -        \tab error                   \cr
+#'   Ship                  \tab x        \tab y        \tab vertical \tab error (tilt applied)    \cr
+#'   Earth                 \tab east     \tab north    \tab vertical \tab error (heading applied) \cr
 #' }
 #'
 #' @template adpTemplate
