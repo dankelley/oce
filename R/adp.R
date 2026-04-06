@@ -1476,125 +1476,119 @@ read.adp <- function(file, from, to, by, tz = getOption("oceTz"), longitude = NA
 #- differently than is the case here.
 #'
 #' The plot may have one or more panels, with the content being controlled by
-#' the `which` argument.
+#' the `which` argument. Note that all of the descriptions below apply to
+#' profile-based data (that is, data that have multiple distance cells). For
+#' bottom-track data (which have only a single cell), time-series plots are
+#' used in place of image plots, as appropriate.
 #'
-#' * `which=1:4` (or `which="u1"` to `"u4"`) yield a
-#' distance-time image plot of a velocity component.  If `x` is in
-#' `beam` coordinates (signalled by
-#' `metadata$oce.coordinate=="beam"`), this will be the beam velocity,
-#' labelled `b[1]` etc.  If `x` is in xyz coordinates (sometimes
-#' called frame coordinates, or ship coordinates), it will be the velocity
-#' component to the right of the frame or ship (labelled `u` etc).
-#' Finally, if `x` is in `"enu"` coordinates, the image will show the
-#' the eastward component (labelled `east`).  If `x` is in
-#' `"other"` coordinates, it will be component corresponding to east,
-#' after rotation (labelled `u\'`).  Note that the coordinate is set by
-#' [read.adp()], or by [beamToXyzAdp()],
-#' [xyzToEnuAdp()], or [enuToOtherAdp()].
+#' * `which=1:4` (or `which="u1"` to `"u4"`) yield a distance-time image plot of
+#' a velocity component. If `x` is in `beam` coordinates (signalled by
+#' `metadata$oce.coordinate=="beam"`), this will be the beam velocity, labelled
+#' `b[1]` etc.  If `x` is in xyz coordinates (sometimes called frame
+#' coordinates, or ship coordinates), it will be the velocity component to the
+#' right of the frame or ship (labelled `u` etc). Finally, if `x` is in `"enu"`
+#' coordinates, the image will show the the eastward component (labelled
+#' `east`).  If `x` is in `"other"` coordinates, it will be component
+#' corresponding to east, after rotation (labelled `u\'`).  Note that the
+#' coordinate is set by [read.adp()], or by [beamToXyzAdp()], [xyzToEnuAdp()],
+#' or [enuToOtherAdp()].
 #'
-#' * `which=5:8` (or `which="a1"` to `"a4"`) yield
-#' distance-time images of backscatter intensity of the respective beams.  (For
-#' data derived from Teledyne-RDI instruments, this is the item called ``echo
-#' intensity.'')
+#' * `which=5:8` (or `which="a1"` to `"a4"`) yield distance-time images of
+#' backscatter intensity of the respective beams.  (For data derived from
+#' Teledyne-RDI instruments, this is the item called ``echo intensity.'')
 #'
-#' * `which=9:12` (or `which="q1"` to `"q4"`) yield
-#' distance-time images of signal quality for the respective beams.  (For RDI
-#' data derived from instruments, this is the item called ``correlation
-#' magnitude.'')
+#' * `which=9:12` (or `which="q1"` to `"q4"`) yield distance-time images of
+#' signal quality for the respective beams.  (For RDI data derived from
+#' instruments, this is the item called ``correlation magnitude.'')
 #'
 #' * `which=60` or `which="map"` draw a map of location(s).
 #'
-#' * `which=70:73` (or `which="g1"` to `"g4"`) yield
-#' distance-time images of percent-good for the respective beams.  (For data
-#' derived from Teledyne-RDI instruments, which are the only instruments that
-#' yield this item, it is called ``percent good.'')
+#' * `which=70:73` (or `which="g1"` to `"g4"`) yield distance-time images of
+#' percent-good for the respective beams.  (For data derived from Teledyne-RDI
+#' instruments, which are the only instruments that yield this item, it is
+#' called ``percent good.'')
 #'
-#' * `which=80:83` (or `which="vv"`, `which="va"`,
-#' `which="vq"`, and `which="vg"`) yield distance-time
-#' images of the vertical beam fields for a 5 beam "SentinelV" ADCP
-#' from Teledyne RDI.
+#' * `which=80:83` (or `which="vv"`, `which="va"`, `which="vq"`, and
+#' `which="vg"`) yield distance-time images of the vertical beam fields for a 5
+#' beam "SentinelV" ADCP from Teledyne RDI.
 #'
-#' * `which="vertical"` yields a two panel distance-time
-#' image of vertical beam velocity and amplitude.
+#' * `which="vertical"` yields a two panel distance-time image of vertical beam
+#' velocity and amplitude.
 #'
-#' * `which=13` (or `which="salinity"`) yields a time-series plot
-#' of salinity.
+#' * `which=13` (or `which="salinity"`) yields a time-series plot of salinity.
 #'
-#' * `which=14` (or `which="temperature"`) yields a time-series
-#' plot of temperature.
+#' * `which=14` (or `which="temperature"`) yields a time-series plot of
+#' temperature.
 #'
-#' * `which=15` (or `which="pressure"`) yields a time-series plot
-#' of pressure.
+#' * `which=15` (or `which="pressure"`) yields a time-series plot of pressure.
 #'
-#' * `which=16` (or `which="heading"`) yields a time-series plot
-#' of instrument heading.
+#' * `which=16` (or `which="heading"`) yields a time-series plot of instrument
+#' heading.
 #'
-#' * `which=17` (or `which="pitch"`) yields a time-series plot of
-#' instrument pitch.
+#' * `which=17` (or `which="pitch"`) yields a time-series plot of instrument
+#' pitch.
 #'
-#' * `which=18` (or `which="roll"`) yields a time-series plot of
-#' instrument roll.
+#' * `which=18` (or `which="roll"`) yields a time-series plot of instrument
+#' roll.
 #'
-#' * `which=19` yields a time-series plot of distance-averaged
-#' velocity for beam 1, rightward velocity, eastward velocity, or
-#' rotated-eastward velocity, depending on the coordinate system.
-#'
-#' * `which=20` yields a time-series of distance-averaged velocity for
-#' beam 2, foreward velocity, northward velocity, or rotated-northward
-#' velocity, depending on the coordinate system.
-#'
-#' * `which=21` yields a time-series of distance-averaged velocity for
-#' beam 3, up-frame velocity, upward velocity, or rotated-upward velocity,
+#' * `which=19` yields a time-series plot of distance-averaged velocity for beam
+#' 1, rightward velocity, eastward velocity, or rotated-eastward velocity,
 #' depending on the coordinate system.
 #'
-#' * `which=22` yields a time-series of distance-averaged velocity for
-#' beam 4, for `beam` coordinates, or velocity estimate, for other
-#' coordinates.  (This is ignored for 3-beam data.)
+#' * `which=20` yields a time-series of distance-averaged velocity for beam 2,
+#' foreward velocity, northward velocity, or rotated-northward velocity,
+#' depending on the coordinate system.
 #'
-#' * `which="progressiveVector"` (or `which=23`) yields a progressive-vector diagram in the horizontal
-#' plane, plotted with `asp=1`.  Normally, the depth-averaged velocity
-#' components are used, but if the `control` list contains an item named
-#' `bin`, then the depth bin will be used (with an error resulting if the
-#' bin is out of range).
+#' * `which=21` yields a time-series of distance-averaged velocity for beam 3,
+#' up-frame velocity, upward velocity, or rotated-upward velocity, depending on
+#' the coordinate system.
 #'
-#' * `which=24` yields a time-averaged profile of the first component
-#' of velocity (see `which=19` for the meaning of the component, in
-#' various coordinate systems).
+#' * `which=22` yields a time-series of distance-averaged velocity for beam 4,
+#' for `beam` coordinates, or velocity estimate, for other coordinates.  (This
+#' is ignored for 3-beam data.)
+#'
+#' * `which="progressiveVector"` (or `which=23`) yields a progressive-vector
+#' diagram in the horizontal plane, plotted with `asp=1`.  Normally, the
+#' depth-averaged velocity components are used, but if the `control` list
+#' contains an item named `bin`, then the depth bin will be used (with an error
+#' resulting if the bin is out of range).
+#'
+#' * `which=24` yields a time-averaged profile of the first component of
+#' velocity (see `which=19` for the meaning of the component, in various
+#' coordinate systems).
 #'
 #' * `which=25` as for 24, but the second component.
 #'
 #' * `which=26` as for 24, but the third component.
 #'
-#' * `which=27` as for 24, but the fourth component (if that makes
-#' sense, for the given instrument).
+#' * `which=27` as for 24, but the fourth component (if that makes sense, for
+#' the given instrument).
 #'
-#' * `which=28` or `"uv"` yields velocity plot in the horizontal
-#' plane, i.e. `u[2]` versus `u[1]`.  If the number of data points is small, a
-#' scattergraph is used, but if it is large, [smoothScatter()] is
-#' used.
+#' * `which=28` or `"uv"` yields velocity plot in the horizontal plane, i.e.
+#' `u[2]` versus `u[1]`.  If the number of data points is small, a scattergraph
+#' is used, but if it is large, [smoothScatter()] is used.
 #'
-#' * `which=29` or `"uv+ellipse"` as the `"uv"` case, but
-#' with an added indication of the tidal ellipse, calculated from the eigen
-#' vectors of the covariance matrix.
+#' * `which=29` or `"uv+ellipse"` as the `"uv"` case, but with an added
+#' indication of the tidal ellipse, calculated from the eigen vectors of the
+#' covariance matrix.
 #'
-#' * `which=30` or `"uv+ellipse+arrow"` as the
-#' `"uv+ellipse"` case, but with an added arrow indicating the mean
-#' current.
+#' * `which=30` or `"uv+ellipse+arrow"` as the `"uv+ellipse"` case, but with an
+#' added arrow indicating the mean current.
 #'
-#' * `which=40` or `"bottomRange"` for average bottom range from
-#' all beams of the instrument.
+#' * `which=40` or `"bottomRange"` for average bottom range from all beams of
+#' the instrument.
 #'
-#' * `which=41` to `44` (or `"bottomRange1"` to
-#' `"bottomRange4"`) for bottom range from beams 1 to 4.
+#' * `which=41` to `44` (or `"bottomRange1"` to `"bottomRange4"`) for bottom
+#' range from beams 1 to 4.
 #'
-#' * `which=50` or `"bottomVelocity"` for average bottom velocity
-#' from all beams of the instrument.
+#' * `which=50` or `"bottomVelocity"` for average bottom velocity from all beams
+#' of the instrument.
 #'
-#' * `which=51` to `54` (or `"bottomVelocity1"` to
-#' `"bottomVelocity4"`) for bottom velocity from beams 1 to 4.
+#' * `which=51` to `54` (or `"bottomVelocity1"` to `"bottomVelocity4"`) for
+#' bottom velocity from beams 1 to 4.
 #'
-#' * `which=55` (or `"heaving"`) for time-integrated,
-#' depth-averaged, vertical velocity, i.e. a time series of heaving.
+#' * `which=55` (or `"heaving"`) for time-integrated, depth-averaged, vertical
+#' velocity, i.e. a time series of heaving.
 #'
 #' * `which=60` (or `"map"`) for a map.
 #'
@@ -1618,6 +1612,11 @@ read.adp <- function(file, from, to, by, tz = getOption("oceTz"), longitude = NA
 #' * `which=212` (or `"magnetometerz"`) for a time-series of the z component of
 #' the magnetometer reading.
 #'
+#' * `which=221:224` (or `which="distance1"` to `"distance4"`) yield
+#' a time-series plot of distance to the bottom (or surface, if the
+#' adp is mounted vertically. At the moment, this only works for AD2CP
+#' devices.
+#'
 #' In addition to the above, the following shortcuts are defined:
 #'
 #' * `which="velocity"` equivalent to `which=1:3` or `1:4`
@@ -1638,6 +1637,11 @@ read.adp <- function(file, from, to, by, tz = getOption("oceTz"), longitude = NA
 #'
 #' * `which="accelerometer"` to plot a 3-panel timeseries
 #' of acceleration, equivalent to `which=110:102`.
+#'
+#' * `which="distance"` equivalent to `which=c("distance1",
+#' "distance2", "distance3", "distance4")`, for the distance
+#' to the bottom (or surface) for the bottom-track
+#' record of AD2CP data.
 #'
 #' The color scheme for image plots (`which` in 1:12) is provided by the
 #' `col` argument, which is passed to [image()] to do the actual
@@ -1664,7 +1668,7 @@ read.adp <- function(file, from, to, by, tz = getOption("oceTz"), longitude = NA
 #'
 #' @param x an [adp-class] object.
 #'
-#' @param which list of desired plot types.  These are graphed in panels
+#' @param which a list of desired plot types.  These are graphed in panels
 #' running down from the top of the page.  If `which` is not given,
 #' the plot will show images of the distance-time dependence of velocity
 #' for each beam. See \dQuote{Details} for the meanings of various values of `which`.
@@ -1919,7 +1923,7 @@ setMethod(
         if (nw == 1) {
             pm <- pmatch(which, c(
                 "velocity", "amplitude", "quality", "hydrography", "angles",
-                "accelerometer", "magnetometer"
+                "accelerometer", "magnetometer", "distance"
             ))
             # FIXME: decide what to do about 5-beam ADCPs
             if (!is.na(pm)) {
@@ -1929,14 +1933,16 @@ setMethod(
                     which <- 4 + seq(1, min(4, numberOfBeams)) # 5th beam not included
                 } else if (pm == 3) {
                     which <- 8 + seq(1, min(4, numberOfBeams)) # 5th beam not included
-                } else if (pm == 4) {
+                } else if (pm == 4) { # hydrography
                     which <- 14:15
-                } else if (pm == 5) {
+                } else if (pm == 5) { # angles
                     which <- 16:18
                 } else if (pm == 6) { # accelerometer
                     which <- 200:202
                 } else if (pm == 7) { # magnetometer
                     which <- 210:212
+                } else if (pm == 8) { # distance
+                    which <- 221:224
                 }
                 nw <- length(which)
             }
@@ -2047,12 +2053,9 @@ setMethod(
                 angles = 16:18,
                 vertical = 80:81,
                 vv = 80, va = 81, vq = 82, vg = 83,
-                accelerationx = 200,
-                accelerationy = 201,
-                accelerationz = 202,
-                magnetometerx = 210,
-                magnetometery = 211,
-                magnetometerz = 212
+                accelerationx = 200, accelerationy = 201, accelerationz = 202,
+                magnetometerx = 210, magnetometery = 211, magnetometerz = 212,
+                distance1 = 221, distance2 = 222, distance3 = 223, distance4 = 224
             )
         )
         nw <- length(which) # may be longer with e.g. which="velocity"
@@ -2061,7 +2064,7 @@ setMethod(
         }
         oceDebug(debug, "which:", paste(which, collapse = ","), "(after conversion to numerical codes)\n")
         images <- c(1:12, 70:73, 80:83)
-        timeseries <- c(13:22, 40:44, 50:54, 55, 100, 200:202, 210:212)
+        timeseries <- c(13:22, 40:44, 50:54, 55, 100, 200:202, 210:212, 221:224)
         spatial <- 23:27
         # speed <- 28
         tt <- x[["time", j]]
@@ -2917,6 +2920,16 @@ setMethod(
                         ylim = if (ylimGiven) ylim[w, ],
                         xaxs = "i", col = col[w], lwd = lwd[w], cex = 1, cex.axis = 1, cex.lab = 1,
                         main = main[w], ylab = "Magnetometer z", type = type, mgp = mgp,
+                        mar = omar, drawTimeRange = drawTimeRange, tformat = tformat,
+                        debug = debug - 1
+                    )
+                } else if (which[w] %in% 221:224) { # bottom-track distance
+                    oceDebug(debug, "which=", which[w], "\n", sep = "")
+                    ats <- oce.plot.ts(x@data$time, x@data$distance[, which[w]-220],
+                        xlim = if (xlimGiven) xlim[w, ] else tlim,
+                        ylim = if (ylimGiven) ylim[w, ],
+                        xaxs = "i", col = col[w], lwd = lwd[w], cex = 1, cex.axis = 1, cex.lab = 1,
+                        main = main[w], ylab = paste("Distance", which[w]-220), type = type, mgp = mgp,
                         mar = omar, drawTimeRange = drawTimeRange, tformat = tformat,
                         debug = debug - 1
                     )
