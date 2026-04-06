@@ -141,13 +141,13 @@ Even if not, the method should not cause problems for a long time.
 
 While most RDI ADCPs contain 4 beams (with the exception of some SentinelV
 ADCPs, which stores the vertical beam data in a separate data structure), the
-HADCP (which is a discontinued product in 2026) only has 3 beams. Depsite the
+HADCP (which is a discontinued product in 2026) only has 3 beams. Despite the
 fact that there are only 3 beams, the pd0 data file format is still written
 as through there are four beams worth of data. The exact meaning of each of
 the "beams" in the data file depends on the coordinate system of the
-intstrument (e.g. beam, xyz, sfm, or enu), with the RDI data format manual
+instrument (e.g. beam, xyz, sfm, or enu), with the RDI data format manual
 indicating how to interpret the resulting arrays, as follows (a dash means
-that the field holds no data, and in oce this is repersented with NA values).
+that the field holds no data, and in oce this is represented with NA values).
 
 \tabular{lllll}{
 \strong{Coordinate System} \tab \strong{Vel1} \tab \strong{Vel2} \tab \strong{Vel3} \tab \strong{Vel4}                \cr
