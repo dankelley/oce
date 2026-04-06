@@ -136,6 +136,19 @@ century offset is required, then a change will be made to the code.
 Even if not, the method should not cause problems for a long time.
 }
 
+\section{Handling of 3-beam Horizontal ADCP (HADCP) files}{
+
+
+While most RDI ADCPs contain 4 beams (with the exception of some SentinelV
+ADCPs, which stores the vertical beam data in a separate data structure), the
+HADCP (which is a discontinued product in 2026) only has 3 beams. Depsite the
+fact that there are only 3 beams, the pd0 data file format is still written
+as through there are four beams worth of data. The exact meaning of each of
+the "beams" in the data file depends on the coordinate system of the
+intstrument (e.g. beam, xyz, sfm, or enu), with the RDI data format manual
+indicating how to interpret the resulting arrays.
+}
+
 \section{Names of items in data slot}{
 
 

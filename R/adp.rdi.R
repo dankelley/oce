@@ -547,7 +547,7 @@ decodeHeaderRDI <- function(buf, debug = getOption("oceDebug"), tz = getOption("
 #' century offset is required, then a change will be made to the code.
 #' Even if not, the method should not cause problems for a long time.
 #'
-#' @section Handling of 3-beam Horizontal ADCP (HADCP) files
+#' @section Handling of 3-beam Horizontal ADCP (HADCP) files:
 #'
 #' While most RDI ADCPs contain 4 beams (with the exception of some SentinelV
 #' ADCPs, which stores the vertical beam data in a separate data structure), the
