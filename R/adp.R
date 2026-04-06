@@ -2049,7 +2049,6 @@ setMethod(
                 magnetometerz = 212
             )
         )
-        nw <- length(which) # may be longer with e.g. which="velocity"
         if (any(is.na(which))) {
             stop("plot,adp-method(): unrecognized 'which' code: ", paste(whichOrig[is.na(which)], collapse = " "), call. = FALSE)
         }
@@ -2070,13 +2069,30 @@ setMethod(
                 }
             }
         }
-        # oceDebug(debug, "useLayout=", useLayout, "\n")
         showBottom <- ("bottomRange" %in% names(x@data)) && !missing(control) && !is.null(control["drawBottom"])
         if (showBottom) {
             bottom <- apply(x@data$bottomRange, 1, mean, na.rm = TRUE)
         }
         oceDebug(debug, "showBottom=", showBottom, "\n")
         oceDebug(debug, "cex=", cex, ", par(\"cex\")=", par("cex"), "\n")
+        # Possibly adjust nw (number of panels) for any all-NA velocity beams that were requested
+        whichNew <- NULL
+        for (w in which) {
+            v <- x[["v"]]
+            if (w %in% 1:4) { # FIXME: do this also for other image-type fields
+                if (any(is.finite(v[, , w]))) {
+                    whichNew <- c(whichNew, w)
+                } else {
+                    warning("In plot.adp() : cannot plot beam ", w, " because it consists entirely of NA values\n", call. = FALSE)
+                }
+            } else {
+                whichNew <- c(whichNew, w)
+            }
+        }
+        oceDebug(debug, "Origionally ", vectorShow(which))
+        which <- whichNew
+        oceDebug(debug, "After possibly trimming ", vectorShow(which))
+        nw <- length(which)
         if (useLayout) {
             if (any(which %in% images) || marginsAsImage) {
                 w <- 1.5
@@ -2357,40 +2373,35 @@ setMethod(
                             )
                         } else {
                             oceDebug(debug, "about to call imagep() with time[1]=", format(tt[[1]], "%Y-%m-%d %H:%M:%S"), "\n")
-                            ats <- imagep(
-                                x = tt, y = x[["distance", j]], z,
-                                zlim = zlim,
-                                flipy = flipy,
-                                ylim = if (ylimGiven) ylim[w, ] else range(x[["distance", j]], na.rm = TRUE),
-                                col = if (colGiven) {
-                                    col
-                                } else {
-                                    if (missing(breaks)) {
-                                        oce.colorsPalette(128, 1)
+                            oceDebug(debug, vectorShow(zlim))
+                            if (any(is.finite(z))) {
+                                ats <- imagep(
+                                    x = tt, y = x[["distance", j]], z,
+                                    zlim = zlim,
+                                    flipy = flipy,
+                                    ylim = if (ylimGiven) ylim[w, ] else range(x[["distance", j]], na.rm = TRUE),
+                                    col = if (colGiven) {
+                                        col
                                     } else {
-                                        oce.colorsPalette(length(breaks) - 1, 1)
-                                    }
-                                },
-                                breaks = breaks,
-                                ylab = "distance",
-                                xaxs = "i",
-                                xlab = if (is.null(xlab)) "" else xlab,
-                                zlab = zlab,
-                                tformat = tformat,
-                                drawTimeRange = drawTimeRange,
-                                drawContours = FALSE,
-                                missingColor = missingColor,
-                                mgp = mgp,
-                                mar = mar,
-                                mai.palette = mai.palette,
-                                cex = 1,
-                                main = main[w],
-                                debug = debug - 1,
-                                ...
-                            )
-                        }
-                        if (showBottom) {
-                            lines(x[["time", j]], bottom)
+                                        if (missing(breaks)) {
+                                            oce.colorsPalette(128, 1)
+                                        } else {
+                                            oce.colorsPalette(length(breaks) - 1, 1)
+                                        }
+                                    },
+                                    breaks = breaks, ylab = "distance", xaxs = "i",
+                                    xlab = if (is.null(xlab)) "" else xlab,
+                                    zlab = zlab, tformat = tformat, drawTimeRange = drawTimeRange, drawContours = FALSE,
+                                    missingColor = missingColor, mgp = mgp, mar = mar, mai.palette = mai.palette,
+                                    cex = 1, main = main[w], debug = debug - 1,
+                                    ...
+                                )
+                                if (showBottom) {
+                                    lines(x[["time", j]], bottom)
+                                }
+                            } else {
+                                message("skipping which=", which[w], " because all data are non-finite")
+                            }
                         }
                     } else {
                         col <- if (colGiven) rep(col, length.out = nw) else rep("black", length.out = nw)
@@ -3517,7 +3528,7 @@ beamToXyzAdp <- function(x, debug = getOption("oceDebug")) {
 #' ship-coordinate velocities, and (H, P, R) denote heading, pitch, and roll.
 #'
 #' \tabular{rrrrrrrrrrrr}{
-#'**Case** \tab **Mfr.** \tab **Instr.** \tab **Orient.** \tab **H** \tab **P** \tab  **R** \tab  **S** \tab  **F** \tab  **M**\cr
+#' **Case** \tab **Mfr.** \tab **Instr.** \tab **Orient.** \tab **H** \tab **P** \tab  **R** \tab  **S** \tab  **F** \tab  **M**\cr
 #'    1 \tab RDI    \tab ADCP   \tab up      \tab H    \tab arctan(tan(P)*cos(R)) \tab  R \tab -X \tab  Y \tab -Z\cr
 #'    2 \tab RDI    \tab ADCP   \tab down    \tab H    \tab arctan(tan(P)*cos(R)) \tab -R \tab  X \tab  Y \tab  Z\cr
 #'    3 \tab Nortek \tab ADP    \tab up      \tab H-90 \tab R                     \tab -P \tab  X \tab  Y \tab  Z\cr
@@ -3527,20 +3538,6 @@ beamToXyzAdp <- function(x, debug = getOption("oceDebug")) {
 #'    7 \tab Sontek \tab PCADP  \tab up      \tab H-90 \tab R                     \tab -P \tab  X \tab  Y \tab  Z\cr
 #'    8 \tab Sontek \tab PCADP  \tab down    \tab H-90 \tab R                     \tab -P \tab  X \tab  Y \tab  Z\cr
 #' }
-#'
-## \tabular{rrrrrrrrrrrr}{ **Case** \tab **Mfr.** \tab
-## **Instr.** **Orient.** \tab **H** \tab **P** \tab
-## **R** \tab **S** \tab **F** \tab **M**\cr 1 \tab RDI
-## \tab ADCP \tab up \tab H \tab arctan(tan(P)*cos(R)) \tab R \tab -X \tab Y
-## \tab -Z\cr 2 \tab RDI \tab ADCP \tab down \tab H \tab arctan(tan(P)*cos(R))
-## \tab -R \tab X \tab Y \tab Z\cr 3 \tab Nortek \tab ADP \tab up \tab H-90
-## \tab R \tab -P \tab X \tab Y \tab Z\cr 4 \tab Nortek \tab ADP \tab down \tab
-## H-90 \tab R \tab -P \tab X \tab -Y \tab -Z\cr 5 \tab Sontek \tab ADP \tab up
-## \tab H-90 \tab -P \tab -R \tab X \tab Y \tab Z\cr 6 \tab Sontek \tab ADP
-## \tab down \tab H-90 \tab -P \tab -R \tab X \tab Y \tab Z\cr 7 \tab Sontek
-## \tab PCADP \tab up \tab H-90 \tab R \tab -P \tab X \tab Y \tab Z\cr 8 \tab
-## Sontek \tab PCADP \tab down \tab H-90 \tab R \tab -P \tab X \tab Y \tab Z\cr
-## }
 #'
 #' Finally, a standardized rotation matrix is used to convert from ship
 #' coordinates to earth coordinates (see pages 13 and 14 of
