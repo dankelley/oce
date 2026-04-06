@@ -558,6 +558,14 @@ decodeHeaderRDI <- function(buf, debug = getOption("oceDebug"), tz = getOption("
 #' intstrument (e.g. beam, xyz, sfm, or enu), with the RDI data format manual
 #' indicating how to interpret the resulting arrays.
 #'
+#' \tabular{lllll}{
+#'   **Coordinate System** \tab **Vel1**   \tab **Vel2**   \tab **Vel3**     \tab **Vel4***                   \cr
+#'   Beam                  \tab beam1      \tab beam2      \tab beam3        \tab 0                            \cr
+#'   Instrument            \tab x          \tab y          \tab 0            \tab error                        \cr
+#'   Ship                  \tab x          \tab y          \tab vertical     \tab error (tilt applied)         \cr
+#'   Earth                 \tab east       \tab north      \tab vertical     \tab error (heading applied)      \cr
+#' }
+#'
 #' @template adpTemplate
 #'
 #' @param type character string indicating the type of instrument.
