@@ -2170,6 +2170,7 @@ setMethod(
                                 }
                             }
                         }
+                        oceDebug(debug, vectorShow(zlim))
                     }
                 } else if (which[w] %in% 5:8) {
                     oceDebug(debug, "which[", w, "]=", which[w], "; this is some type of amplitude\n", sep = "")
@@ -2313,7 +2314,12 @@ setMethod(
                 } else {
                     skip <- TRUE
                 }
-                if (!skip) {
+                zlimIsValid <- is.finite(zlim[1]) && is.finite(zlim[2])
+                oceDebug(debug, vectorShow(zlimIsValid))
+                if (!zlimIsValid) {
+                    message("skipping which=", which[w], " because all data are non-finite")
+                }
+                if (!skip && zlimIsValid) {
                     if (numberOfCells > 1) {
                         if (xlimGiven) {
                             oceDebug(debug, "about to call imagep() with xlim given and par(\"cex\")=", par("cex"), ", cex=", cex, "\n", sep = "")
