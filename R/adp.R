@@ -700,7 +700,6 @@ setMethod(
 )
 
 
-
 #' @title Extract Something From an adp Object
 #'
 #' @param x an [adp-class] object.
@@ -1316,7 +1315,6 @@ as.adp <- function(time, distance, v, a = NULL, q = NULL, orientation = "upward"
 #     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
 #     res
 # }
-
 
 
 #' Get Names of Acoustic-Doppler Beams
@@ -2153,9 +2151,9 @@ setMethod(
                             max(abs(x@data$vDia[, y.look, which[w]]), na.rm = TRUE) * c(-1, 1)
                         }
                     } else {
-                        rank <- length(dim(v))
-                        oceDebug(debug, vectorShow(rank))
-                        if (rank == 3) {
+                        # Not instrumentType != "aquadopp" || j != "diagnostic") {
+                        isProfile <- dim(v)[2] > 1L
+                        if (isProfile) { # Plot profile data as an image
                             oceDebug(debug, "plot.adp(): plotting velocity component ", which[w], " as an image\n")
                             z <- x[["v", j]][, , which[w]]
                             oceDebug(debug, "class(z) after subsetting for 3rd dimension:: ", class(z), "\n")
@@ -2167,7 +2165,7 @@ setMethod(
                             y.look <- if (ylimGiven) ylimAsGiven[w, 1] <= xdistance & xdistance <= ylimAsGiven[w, 2] else rep(TRUE, length(xdistance))
                             oceDebug(debug, vectorShow(y.look))
                             if (0 == sum(y.look)) {
-                                stop("no data in the provided ylim=c(", paste(ylimAsGiven[w, ], collapse = ","), ")")
+                                stop("no data in the provided ylim=c(", paste(ylimAsGiven[w, ], collapse = ","), ") during attempt to plot a component of velocity")
                             }
                             zlim <- if (zlimGiven) {
                                 zlimAsGiven[w, ]
@@ -2182,18 +2180,16 @@ setMethod(
                                     }
                                 }
                             }
-                        } else if (rank == 2) {
+                        } else {
                             oceDebug(debug, "plot.adp(): plotting velocity component ", which[w], " as a time-series\n")
-                            z <- v[, which[w]]
+                            z <- v[, 1, which[w]]
                             oceDebug(debug, vectorShow(z))
-                            #oceDebug(debug, vectorShow(y))
+                            # oceDebug(debug, vectorShow(y))
                             zlab <- if (missing(titles)) beamName(x, which[w]) else titles[w]
                             oceDebug(debug, vectorShow(zlab))
-                            #oce.plot.ts(x[["time"]], y)
-                            #oceDebug(debug, vectorShow(ylimGiven))
-                            #y.look <- if (ylimGiven) ylimAsGiven[w, 1] <= xdistance & xdistance <= ylimAsGiven[w, 2] else rep(TRUE, length(xdistance))
-                        } else {
-                            stop("data rank (", rank, ") is neither 2 (for time-series plot) nor 3 (for image plot)")
+                            # oce.plot.ts(x[["time"]], y)
+                            # oceDebug(debug, vectorShow(ylimGiven))
+                            # y.look <- if (ylimGiven) ylimAsGiven[w, 1] <= xdistance & xdistance <= ylimAsGiven[w, 2] else rep(TRUE, length(xdistance))
                         }
                     }
                 } else if (which[w] %in% 5:8) {
@@ -2277,7 +2273,7 @@ setMethod(
                         xdistance <- x[["distance", j]]
                         y.look <- if (ylimGiven) ylimAsGiven[w, 1] <= xdistance & xdistance <= ylimAsGiven[w, 2] else rep(TRUE, length(xdistance))
                         if (0 == sum(y.look)) {
-                            stop("no data in the provided ylim=c(", paste(ylimAsGiven[w, ], collapse = ","), ")")
+                            stop("no data in the provided ylim=c(", paste(ylimAsGiven[w, ], collapse = ","), ") during attempt to plot vertical beam velocity")
                         }
                         zlim <- if (zlimGiven) {
                             zlimAsGiven[w, ]
@@ -2925,11 +2921,11 @@ setMethod(
                     )
                 } else if (which[w] %in% 221:224) { # bottom-track distance
                     oceDebug(debug, "which=", which[w], "\n", sep = "")
-                    ats <- oce.plot.ts(x@data$time, x@data$distance[, which[w]-220],
+                    ats <- oce.plot.ts(x@data$time, x@data$distance[, 1, which[w] - 220],
                         xlim = if (xlimGiven) xlim[w, ] else tlim,
                         ylim = if (ylimGiven) ylim[w, ],
                         xaxs = "i", col = col[w], lwd = lwd[w], cex = 1, cex.axis = 1, cex.lab = 1,
-                        main = main[w], ylab = paste("Distance", which[w]-220), type = type, mgp = mgp,
+                        main = main[w], ylab = paste("Distance", which[w] - 220), type = type, mgp = mgp,
                         mar = omar, drawTimeRange = drawTimeRange, tformat = tformat,
                         debug = debug - 1
                     )
@@ -3228,7 +3224,6 @@ setMethod(
 )
 
 
-
 #' Convert an adp Object to ENU Coordinates
 #'
 #' @param x an [adp-class] object.
@@ -3429,7 +3424,7 @@ beamToXyzAdp <- function(x, debug = getOption("oceDebug")) {
         stop("method is only for objects of class \"adp\"")
     }
     if (x[["oceCoordinate"]] != "beam") {
-        stop("input must be in beam coordinates")
+        stop("input must be in 'beam' coordinates, but it is in '", x[["oceCoordinate"]], "' coordinates")
     }
     if (is.ad2cp(x)) {
         oceDebug(debug, "beamToXyzAdp(x, debug=", debug, ") START\n", sep = "", unindent = 1)

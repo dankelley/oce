@@ -124,7 +124,8 @@ if (file.exists(file)) {
             d <- read.adp.ad2cp(file, dataSet = 4, dataType = "bottomTrack"),
             "setting plan=0"
         )
-        expect_equal(c(259, 4), dim(d[["v"]]))
+        expect_equal(c(259, 1, 4), dim(d[["v"]]))
+        expect_equal(c(259, 1, 4), dim(d[["distance"]]))
         expect_equal(259, length(d[["figureOfMerit"]]))
     })
 

@@ -190,31 +190,31 @@ oceDebug(debug, vectorShow(offsetOfData))
     )
 
     # {{{ Velocity. (FIXME: hard-wired for 4 beams, at the moment)
-    v <- matrix(nrow = nprofiles, ncol = nbeams)
-    v[, 1] <- velocityFactor * readBin(d$buf[pointer4 + 79L],
+    v <- array(double(), dim=c(nprofiles, 1L, nbeams))
+    v[, 1L, 1L] <- velocityFactor * readBin(d$buf[pointer4 + 79L],
         "integer",
         size = 4L, n = nprofiles, endian = "little"
     )
-    v[, 2] <- velocityFactor * readBin(d$buf[pointer4 + 83L],
+    v[, 1L, 2L] <- velocityFactor * readBin(d$buf[pointer4 + 83L],
         "integer",
         size = 4L, n = nprofiles, endian = "little"
     )
-    v[, 3] <- velocityFactor * readBin(d$buf[pointer4 + 87L],
+    v[, 1L, 3L] <- velocityFactor * readBin(d$buf[pointer4 + 87L],
         "integer",
         size = 4L, n = nprofiles, endian = "little"
     )
-    v[, 4] <- velocityFactor * readBin(d$buf[pointer4 + 91L],
+    v[, 1L, 4L] <- velocityFactor * readBin(d$buf[pointer4 + 91L],
         "integer",
         size = 4L, n = nprofiles, endian = "little"
     )
     oceDebug(debug, vectorShow(v))
     # }}}
     # {{{ Distance.
-    distance <- matrix(0.0, nrow = nprofiles, ncol = nbeams)
-    distance[, 1] <- 0.001 * readBin(d$buf[pointer4 + 95], "integer", size = 4L, n = nprofiles, endian = "little")
-    distance[, 2] <- 0.001 * readBin(d$buf[pointer4 + 99], "integer", size = 4L, n = nprofiles, endian = "little")
-    distance[, 3] <- 0.001 * readBin(d$buf[pointer4 + 103], "integer", size = 4L, n = nprofiles, endian = "little")
-    distance[, 4] <- 0.001 * readBin(d$buf[pointer4 + 107], "integer", size = 4L, n = nprofiles, endian = "little")
+    distance <- array(double(), dim=c(nprofiles, 1L, nbeams))
+    distance[, 1, 1] <- 0.001 * readBin(d$buf[pointer4 + 95], "integer", size = 4L, n = nprofiles, endian = "little")
+    distance[, 1, 2] <- 0.001 * readBin(d$buf[pointer4 + 99], "integer", size = 4L, n = nprofiles, endian = "little")
+    distance[, 1, 3] <- 0.001 * readBin(d$buf[pointer4 + 103], "integer", size = 4L, n = nprofiles, endian = "little")
+    distance[, 1, 4] <- 0.001 * readBin(d$buf[pointer4 + 107], "integer", size = 4L, n = nprofiles, endian = "little")
     oceDebug(debug, vectorShow(distance))
     # }}}
     figureOfMerit <- readBin(d$buf[pointer2 + 111], "integer", size = 2L, endian = "little", n = nprofiles, signed = FALSE)
@@ -240,7 +240,7 @@ oceDebug(debug, vectorShow(offsetOfData))
         accelerometer = accelerometer,
         ensembleCounter = ensembleCounter,
         figureOfMerit = figureOfMerit,
-        # arrays
+        # arrays (dimension NP x 1 x NB)
         v = v,
         distance = distance
     )
