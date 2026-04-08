@@ -144,26 +144,6 @@ Note 2: Code 0x30 (\code{waves}) is recognized but not handled yet.
 Note 3: Code 0xa0 (\code{text}) holds a text string that defines the settings used
 in creating the file.  This can be quite helpful in debugging and analysis.
 }
-\section{Problems}{
-
-\enumerate{
-\item In reading a file with \code{altimeterRaw} data components, a potential problem
-was noticed with that the part of the file that indicates the number of
-altimeter samples (called \code{NSAMP} in the Nortek documentation). The stated
-value was 2 times the value held in the header (text) portion of the file,
-and reading the larger value created a matrix that had
-the upper half filled with odd striping patterns. Therefore, the function
-checks the two indicates of length, and used the one in the text block if
-they disagree.  (See https://github.com/dankelley/oce/issues/2326.)
-\item Related to point 1, it is unclear from the manufacturer's manuals whether
-\code{NSAMP} is a 2-byte value (as stated in old manuals) or a 4-byte value (as
-in a manual available in June 2025)? The present function assumes a 4-byte
-value, which works with at least one test file available to the authors.
-The manufacturer has been asked for clarity on this; again, see notes at
-https://github.com/dankelley/oce/issues/2326.
-}
-}
-
 \section{How the binary file is decoded}{
 
 
@@ -197,6 +177,34 @@ components to physical units.
 }
 }
 
+\section{Problems}{
+
+\enumerate{
+\item In reading a file with \code{altimeterRaw} data components, a potential problem
+was noticed with that the part of the file that indicates the number of
+altimeter samples (called \code{NSAMP} in the Nortek documentation). The stated
+value was 2 times the value held in the header (text) portion of the file,
+and reading the larger value created a matrix that had
+the upper half filled with odd striping patterns. Therefore, the function
+checks the two indicates of length, and used the one in the text block if
+they disagree.  (See https://github.com/dankelley/oce/issues/2326.)
+\item Related to point 1, it is unclear from the manufacturer's manuals whether
+\code{NSAMP} is a 2-byte value (as stated in old manuals) or a 4-byte value (as
+in a manual available in June 2025)? The present function assumes a 4-byte
+value, which works with at least one test file available to the authors.
+The manufacturer has been asked for clarity on this; again, see notes at
+https://github.com/dankelley/oce/issues/2326.
+\item Tentative support for reading \code{which=bottomTrack} was added in April 2026.
+It is advisable to be on the lookout for problems with reading this data
+type. (For example, the field called \code{ensembleCounter} is incorrect.) The
+cause of this concern is that the latest relevant Nortek document
+(Reference 3) does not discuss the format of bottom-track data, and so the
+present function had to be written based on an old document (Reference 4),
+along with some advice that was kindly provided by Nortek staff on GitHub
+(Reference 5).
+}
+}
+
 \examples{
 library(oce)
 # You can run this within the oce directory, if you clone from github.
@@ -210,13 +218,21 @@ if (file.exists(file)) {
 
 }
 \references{
-Nortek AS. “Integrators Guide: Signature.” Nortek AS, April 30, 2025.
+\enumerate{
+\item Nortek AS. “Integrator's Guide: Signature.” Nortek AS, April 30, 2025.
 \code{https://support.nortekgroup.com/hc/en-us/article_attachments/19830760385436}
 (this link failed in a test on 2025-07-30).
-
-Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz (2024.1),} 2024.
-(This was once at \code{https://support.nortekgroup.com/hc/en-us/articles/360029513952-Integrators-Guide-Signature}
+\item Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz (2024.1),}
+2024. (This was once at
+\code{https://support.nortekgroup.com/hc/en-us/articles/360029513952-Integrators-Guide-Signature}
 but a test on 2025-05-26 revealed that this link no longer worked.)
+\item Nortek AS. \dQuote{Integrator's Guide Signature.} March 5, 2026.
+\url{https://support.nortekgroup.com/hc/en-us/article_attachments/25920785046428}.
+\item Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz (2017).}
+February 10, 2017.
+\url{https://assets.nortekgroup.com/software/N3015-007-Integrators-Guide-AD2CP_1018.pdf}.
+\item \url{https://github.com/dankelley/oce/issues/2368}
+}
 }
 \seealso{
 Other things related to adp data: 

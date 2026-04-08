@@ -543,7 +543,10 @@ ad2cpCodeToName <- function(code = NULL, prefix = TRUE) {
 #' @return `read.adp.ad2cp()` returns either an [adp-class] object or the number
 #' of data sets within the file, according to the value of `TOC`.
 #'
+#' @template adReadingMethodTemplate
+#'
 #' @section Problems:
+#'
 #' 1. In reading a file with `altimeterRaw` data components, a potential problem
 #'    was noticed with that the part of the file that indicates the number of
 #'    altimeter samples (called `NSAMP` in the Nortek documentation). The stated
@@ -560,18 +563,35 @@ ad2cpCodeToName <- function(code = NULL, prefix = TRUE) {
 #'    The manufacturer has been asked for clarity on this; again, see notes at
 #'    https://github.com/dankelley/oce/issues/2326.
 #'
+#' 3. Tentative support for reading `which=bottomTrack` was added in April 2026.
+#'    It is advisable to be on the lookout for problems with reading this data
+#'    type. (For example, the field called `ensembleCounter` is incorrect.) The
+#'    cause of this concern is that the latest relevant Nortek document
+#'    (Reference 3) does not discuss the format of bottom-track data, and so the
+#'    present function had to be written based on an old document (Reference 4),
+#'    along with some advice that was kindly provided by Nortek staff on GitHub
+#'    (Reference 5).
+#'
 #' @references
 #'
-#' Nortek AS. “Integrators Guide: Signature.” Nortek AS, April 30, 2025.
-#' \code{https://support.nortekgroup.com/hc/en-us/article_attachments/19830760385436}
-#' (this link failed in a test on 2025-07-30).
+#' 1. Nortek AS. “Integrator's Guide: Signature.” Nortek AS, April 30, 2025.
+#'    \code{https://support.nortekgroup.com/hc/en-us/article_attachments/19830760385436}
+#'    (this link failed in a test on 2025-07-30).
 #'
-#' Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz (2024.1),} 2024.
-#' (This was once at \code{https://support.nortekgroup.com/hc/en-us/articles/360029513952-Integrators-Guide-Signature}
-#' but a test on 2025-05-26 revealed that this link no longer worked.)
+#' 2. Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz (2024.1),}
+#'    2024. (This was once at
+#'    \code{https://support.nortekgroup.com/hc/en-us/articles/360029513952-Integrators-Guide-Signature}
+#'    but a test on 2025-05-26 revealed that this link no longer worked.)
 #'
-#' @family things related to adp data
-#' @family things related to ad2cp data
+#' 3. Nortek AS. \dQuote{Integrator's Guide Signature.} March 5, 2026.
+#'    \url{https://support.nortekgroup.com/hc/en-us/article_attachments/25920785046428}.
+#'
+#' 4. Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz (2017).}
+#'    February 10, 2017.
+#'    \url{https://assets.nortekgroup.com/software/N3015-007-Integrators-Guide-AD2CP_1018.pdf}.
+#'
+#' 5. \url{https://github.com/dankelley/oce/issues/2368}
+#'
 #'
 #' @examples
 #' library(oce)
@@ -584,9 +604,10 @@ ad2cpCodeToName <- function(code = NULL, prefix = TRUE) {
 #'     imagep(d[["time"]], d[["altimeterRawDistance"]], d[["altimeterRawSamples"]])
 #' }
 #'
+#' @family things related to adp data
+#' @family things related to ad2cp data
 #' @family functions that read adp data
 #'
-#' @template adReadingMethodTemplate
 #'
 #' @author Dan Kelley and Clark Richards
 read.adp.ad2cp <- function(
