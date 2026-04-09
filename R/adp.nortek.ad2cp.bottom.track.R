@@ -40,13 +40,13 @@ readBottomTrack <- function(d, configText, debug = getOption("oceDebug")) # uses
         stop("the 'id' field varies -- did read.adp.nortek.ad2cp() sieve the data?")
     }
     if (!(d$id[1] %in% c(0x17, 0x1d))) { # FIXME: check whether this code could work for 0x1d
-        #stop("all d$id values must equal 0x17 or 0x1d -- there is a problem with read.adp.nortek.ad2cp().")
+        # stop("all d$id values must equal 0x17 or 0x1d -- there is a problem with read.adp.nortek.ad2cp().")
         stop("all d$id values must equal 0x17 -- there is a problem with read.adp.nortek.ad2cp().")
     }
     type <- gsub(".*=", "", ad2cpCodeToName(d$id[1]))
     oceDebug(debug, "readBottomTrack(id=0x", as.raw(d$id[1]), " or ", d$id[1], " decimal) # i.e. type=", type, " START\n", unindent = 1)
     offsetOfData <- as.integer(d$buf[d$index[1] + 2L])
-oceDebug(debug, vectorShow(offsetOfData))
+    oceDebug(debug, vectorShow(offsetOfData))
     badRowCount <- checkRowConsistency(d$configuration)
     if (badRowCount > 0) {
         stop("Problem with bottomTrack 'configuration' matrix: ", badRowCount, " rows do not match row #1")
@@ -190,7 +190,7 @@ oceDebug(debug, vectorShow(offsetOfData))
     )
 
     # {{{ Velocity. (FIXME: hard-wired for 4 beams, at the moment)
-    v <- array(double(), dim=c(nprofiles, 1L, nbeams))
+    v <- array(double(), dim = c(nprofiles, 1L, nbeams))
     v[, 1L, 1L] <- velocityFactor * readBin(d$buf[pointer4 + 79L],
         "integer",
         size = 4L, n = nprofiles, endian = "little"
@@ -210,7 +210,7 @@ oceDebug(debug, vectorShow(offsetOfData))
     oceDebug(debug, vectorShow(v))
     # }}}
     # {{{ Distance.
-    distance <- array(double(), dim=c(nprofiles, 1L, nbeams))
+    distance <- array(double(), dim = c(nprofiles, 1L, nbeams))
     distance[, 1, 1] <- 0.001 * readBin(d$buf[pointer4 + 95], "integer", size = 4L, n = nprofiles, endian = "little")
     distance[, 1, 2] <- 0.001 * readBin(d$buf[pointer4 + 99], "integer", size = 4L, n = nprofiles, endian = "little")
     distance[, 1, 3] <- 0.001 * readBin(d$buf[pointer4 + 103], "integer", size = 4L, n = nprofiles, endian = "little")
@@ -244,6 +244,6 @@ oceDebug(debug, vectorShow(offsetOfData))
         v = v,
         distance = distance
     )
-    oceDebug(debug, "END readBottomTrack()\n", unindent=1)
+    oceDebug(debug, "END readBottomTrack()\n", unindent = 1)
     rval
 } # readBottomTrack
