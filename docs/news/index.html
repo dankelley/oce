@@ -88,13 +88,19 @@
 <li>Change <code><a href="../reference/read.amsr.html">read.amsr()</a></code> to handle realtime data files (issue <a href="https://github.com/dankelley/oce/issues/2230" class="external-link">#2230</a>).</li>
 <li>Change <code><a href="../reference/read.adp.ad2cp.html">read.adp.ad2cp()</a></code> to
 <ul><li>handle TOC, datasets and plans better (issue <a href="https://github.com/dankelley/oce/issues/2303" class="external-link">#2303</a> and related),</li>
+<li>handle bottom-track data correctly (issue <a href="https://github.com/dankelley/oce/issues/2368" class="external-link">#2368</a>)</li>
 <li>read temperature correctly (issue <a href="https://github.com/dankelley/oce/issues/2324" class="external-link">#2324</a>),</li>
-<li>save elements of AST (etc) individually, not within a list (issue <a href="https://github.com/dankelley/oce/issues/2318" class="external-link">#2318</a>) and</li>
+<li>save elements of AST (etc) individually, not within a list (issue <a href="https://github.com/dankelley/oce/issues/2318" class="external-link">#2318</a>)</li>
 <li>scale <code>altimeterRawSamples</code> by 1/2^15 (issue <a href="https://github.com/dankelley/oce/issues/2327" class="external-link">#2327</a>).</li>
 <li>set <code>data@distance</code> only if NC (number of cells) is nonzero (issue <a href="https://github.com/dankelley/oce/issues/2319" class="external-link">#2319</a>).</li>
 <li>use number of raw altimeter samples from header, if it disagrees with value in record (issue <a href="https://github.com/dankelley/oce/issues/2326" class="external-link">#2326</a>).</li>
 </ul></li>
-<li>Change <code>read.adp.rdi(..., which="??")</code> to return a data frame that includes ensemble size (issue <a href="https://github.com/dankelley/oce/issues/2329" class="external-link">#2329</a>).</li>
+<li>Change <code><a href="../reference/read.adp.rdi.html">read.adp.rdi()</a></code> to
+<ul><li>read data from 3-beam horizontal devices (issue <a href="https://github.com/dankelley/oce/issues/2369" class="external-link">#2369</a>).</li>
+</ul></li>
+<li>Change <code>read.adp.rdi(..., which="??")</code> to
+<ul><li>return a data frame that includes ensemble size (issue <a href="https://github.com/dankelley/oce/issues/2329" class="external-link">#2329</a>).</li>
+</ul></li>
 <li>Change <code><a href="../reference/read.ctd.sbe.html">read.ctd.sbe()</a></code> to
 <ul><li>Handle fixed-width column names (pull request <a href="https://github.com/dankelley/oce/issues/2365" class="external-link">#2365</a>, kindly provided by William Kumler, github user <a href="https://github.com/wkumler" class="external-link">@wkumler</a>),</li>
 <li>handle files that lack salinity and conductivity (issues <a href="https://github.com/dankelley/oce/issues/2279" class="external-link">#2279</a> and <a href="https://github.com/dankelley/oce/issues/2282" class="external-link">#2282</a>),</li>

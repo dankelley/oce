@@ -38,5 +38,5 @@ o <- new("oce")
 summary(o)
 #> * Processing Log
 #> 
-#>     - 2026-03-16 15:50:28 UTC: `Create oce object`
+#>     - 2026-04-09 19:45:16 UTC: `Create oce object`
 ```

@@ -230,6 +230,21 @@ century offset is required, then a change will be made to the code.
 Even if not, the method should not cause problems for a long time.</p>
     </div>
     <div class="section level2">
+    <h2 id="handling-of-beam-horizontal-adcp-hadcp-files">Handling of 3-beam Horizontal ADCP (HADCP) files<a class="anchor" aria-label="anchor" href="#handling-of-beam-horizontal-adcp-hadcp-files"></a></h2>
+
+
+
+<p>While most RDI ADCPs contain 4 beams (with the exception of some SentinelV
+ADCPs, which stores the vertical beam data in a separate data structure), the
+HADCP (which is a discontinued product in 2026) only has 3 beams. Despite the
+fact that there are only 3 beams, the pd0 data file format is still written
+as through there are four beams worth of data. The exact meaning of each of
+the "beams" in the data file depends on the coordinate system of the
+instrument (e.g. beam, xyz, sfm, or enu), with the RDI data format manual
+indicating how to interpret the resulting arrays, as follows (a dash means
+that the field holds no data, and in oce this is represented with NA values).</p>
+<table class="table table"><tr><td><strong>Coordinate System</strong></td><td><strong>Vel1</strong></td><td><strong>Vel2</strong></td><td><strong>Vel3</strong></td><td><strong>Vel4</strong></td></tr><tr><td>Beam</td><td>beam1</td><td>beam2</td><td>beam3</td><td>-</td></tr><tr><td>Instrument</td><td>x</td><td>y</td><td>-</td><td>error</td></tr><tr><td>Ship</td><td>x</td><td>y</td><td>vertical</td><td>error (tilt applied)</td></tr><tr><td>Earth</td><td>east</td><td>north</td><td>vertical</td><td>error (heading applied)</td></tr></table></div>
+    <div class="section level2">
     <h2 id="names-of-items-in-data-slot">Names of items in data slot<a class="anchor" aria-label="anchor" href="#names-of-items-in-data-slot"></a></h2>
 
 
@@ -483,7 +498,7 @@ P/N 957-6171-00 (June 2001) <code>WinRiver User Guide International Version.pdf.
 <span class="r-out co"><span class="r-pr">#&gt;</span> ADP Summary</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> -----------</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * Filename:          "/private/var/folders/8b/l4h64m1j22v5pb7vj049ff140000gn/T/RtmpROJlPr/temp_libpathe75375ad9206/oce/extdata/adp_rdi.000"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> * Filename:          "/private/var/folders/8b/l4h64m1j22v5pb7vj049ff140000gn/T/RtmpA4dTGC/temp_libpath116d56d689885/oce/extdata/adp_rdi.000"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Instrument:        adcp</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Manufacturer:      teledyne rdi</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Serial number:     unknown</span>
@@ -493,6 +508,8 @@ P/N 957-6171-00 (June 2001) <code>WinRiver User Guide International Version.pdf.
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Beam Angle:        20 deg</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Location:          unknown latitude, unknown longitude</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Frequency:         600 kHz</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> * Coordinate System: "beam"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> * Orientation:       "upward"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Ensemble Numbers:   1, 2, ..., 8, 9</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Transformation matrix::</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      1.462  -1.462   0.000   0.000</span>
@@ -536,7 +553,7 @@ P/N 957-6171-00 (June 2001) <code>WinRiver User Guide International Version.pdf.
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Processing Log</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2026-03-16 15:49:53 UTC: `read.adp.rdi(file = system.file("extdata", "adp_rdi.000", package = "oce"))`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - 2026-04-09 19:44:41 UTC: `read.adp.rdi(file = system.file("extdata", "adp_rdi.000", package = "oce"))`</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

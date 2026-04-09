@@ -37,7 +37,7 @@ summary(xbt)
 #> xbt summary
 #> -----------
 #> 
-#> * File source:        "/private/var/folders/8b/l4h64m1j22v5pb7vj049ff140000gn/T/RtmpROJlPr/temp_libpathe75375ad9206/oce/extdata/xbt.edf"
+#> * File source:        "/private/var/folders/8b/l4h64m1j22v5pb7vj049ff140000gn/T/RtmpA4dTGC/temp_libpath116d56d689885/oce/extdata/xbt.edf"
 #> * Serial Number:      0
 #> * Longitude:          4.005
 #> * Latitude:           -4
@@ -51,6 +51,6 @@ summary(xbt)
 #> 
 #> * Processing Log
 #> 
-#>     - 2026-03-16 15:50:39 UTC: `create 'xbt' object`
-#>     - 2026-03-16 15:50:39 UTC: `read.xbt.edf(file = file, longitude = longitude, latitude = latitude,     encoding = encoding, debug = debug - 1L, processingLog = processingLog)`
+#>     - 2026-04-09 19:45:27 UTC: `create 'xbt' object`
+#>     - 2026-04-09 19:45:27 UTC: `read.xbt.edf(file = file, longitude = longitude, latitude = latitude,     encoding = encoding, debug = debug - 1L, processingLog = processingLog)`
 ```

@@ -66,7 +66,7 @@ Other things related to ctd data:
 read.oce(system.file("extdata", "ctd.cnv.gz", package = "oce"))
 #> Warning: suspicious startTime 1903-10-15 11:38:38 changed to 2003-10-15 11:38:38; see 'start_time' in file header
 #> Warning: file has temperature in IPTS-68 so this is stored as-is, but note that [["temperature"]] and sw* functions autoconvert to ITS-90 to match modern conventions
-#> ctd object, from file "/private/var/folders/8b/l4h64m1j22v5pb7vj049ff140000gn/T/RtmpROJlPr/temp_libpathe75375ad9206/oce/extdata/ctd.cnv.gz", with data slot containing:
+#> ctd object, from file "/private/var/folders/8b/l4h64m1j22v5pb7vj049ff140000gn/T/RtmpA4dTGC/temp_libpath116d56d689885/oce/extdata/ctd.cnv.gz", with data slot containing:
 #>    scan[1:181]: 130, 131, ..., 309, 310
 #>    timeS[1:181]: 129, 130, ..., 308, 309
 #>    pressure[1:181]: 1.480, 1.671, ..., 43.903, 44.141

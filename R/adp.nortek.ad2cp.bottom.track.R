@@ -64,7 +64,8 @@ readBottomTrack <- function(d, configText, debug = getOption("oceDebug")) # uses
     if (!dataAvailable$figureOfMerit) warning("no velocity data found -- this is likely an error")
     serialNumber <- readBin(d$buf[d$index[1] + 5:8], "integer", size = 4L, endian = "little")
     oceDebug(debug, vectorShow(serialNumber))
-    # {{{ FIXME: these would be useful generally, so maybe compute at higher level
+    # {{{ timeseries data
+    # FIXME: these would be useful generally, so maybe compute at higher level
     pointer1 <- d$index
     pointer2 <- gappyIndex(d$index, 0, 2)
     pointer4 <- gappyIndex(d$index, 0, 4)
@@ -102,6 +103,7 @@ readBottomTrack <- function(d, configText, debug = getOption("oceDebug")) # uses
     oceDebug(debug, vectorShow(pitch))
     roll <- 0.01 * readBin(d$buf[pointer2 + 29L], "integer", size = 2L, n = nprofiles, signed = TRUE, endian = "little")
     oceDebug(debug, vectorShow(roll))
+    # }}}
     # {{{ #beams,coord-sys,#cells
     # beamsCoords <- d$buf[pointer1[1] + 31] # this ought never to change
     # oceDebug(debug, vectorShow(beamsCoords))
@@ -116,8 +118,6 @@ readBottomTrack <- function(d, configText, debug = getOption("oceDebug")) # uses
     oceDebug(debug, "perhaps this is ncells: ", ncells, "\n")
     ncellsAlternate <- sum(BCC[1:10] * 2^(9:0))
     oceDebug(debug, "or maybe this is: ", ncellsAlternate, "; we pick the first value but this is NOT checked\n")
-    # print(BCC[12:11])
-    # cat("above:coordSys?\n")
     b <- 2 * BCC[12] + BCC[11]
     coordinateSystem <- switch(b + 1L,
         "enu",
@@ -138,21 +138,7 @@ readBottomTrack <- function(d, configText, debug = getOption("oceDebug")) # uses
         nbeams <- findInConfig(configText[[1]], "GETBT", "NB")
         warning("the bottomTrack records suggest nbeams=", nbeamsOld, ", but this makes no sense, so using nbeams=", nbeams, ", based on the TEXT record")
     }
-    stopifnot(nbeams == 4L)
-    # stop("CHOP next few lines of old (broken) BCC decoding")
-    # beamsCoordsBits <- as.integer(strsplit(byteToBinary(beamsCoords[1]), "")[[1]])
-    # oceDebug(debug, vectorShow(beamsCoordsBits, n = 16))
-    # beamsCoordsBitsNEW <- ifelse(rawToBits(beamsCoords[1]) == 0x01, 1, 0)
-    # oceDebug(debug, vectorShow(beamsCoordsBitsNEW, n = 16))
-    # browser()
-    # Called bits 15-13 in Ref. 1
-    # OLD    nbeams <- beamsCoordsBits[3] + 2 * beamsCoordsBits[2] + 4 * beamsCoordsBits[1]
-    # oceDebug(debug, vectorShow(nbeams))
-    # pad1 32
-    # ncells 33:34
-    #
-    # ncells <- readBin(d$buf[pointer2[1:2] + 33L], "integer", size = 2L, n = 1, signed = FALSE, endian = "little")
-    # oceDebug(debug, vectorShow(ncells))
+    stopifnot(nbeams == 4L) # FIXME: should we check for 5 beams?
     # }}}
     cellSize <- 1.0e-3 * readBin(d$buf[pointer2[1:2] + 33L], "integer", size = 2L, n = 1, signed = FALSE, endian = "little")
     oceDebug(debug, "in readBottomTrack() ", vectorShow(pointer2[1:2] + 33))
@@ -176,20 +162,17 @@ readBottomTrack <- function(d, configText, debug = getOption("oceDebug")) # uses
     accelerometer[, 2] <- 1.0 / 16384.0 * readBin(d$buf[pointer2 + 49], "integer", size = 2L, n = nprofiles, signed = TRUE, endian = "little")
     accelerometer[, 3] <- 1.0 / 16384.0 * readBin(d$buf[pointer2 + 51], "integer", size = 2L, n = nprofiles, signed = TRUE, endian = "little")
     # }}}
-
     velocityScaling <- readBin(d$buf[pointer1[1] + 61], "integer", size = 1L, endian = "little", signed = TRUE)
     oceDebug(debug, vectorShow(velocityScaling))
     velocityFactor <- 10^velocityScaling
     oceDebug(debug, vectorShow(velocityFactor))
-
     oceDebug(debug, "offsetOfData: ", offsetOfData, ", is this 78?\n")
-
+    # Next is wrong; it cycles from 1 to 60, like a seconds or minutes field
     ensembleCounter <- readBin(d$buf[pointer4 + 75L],
         "integer",
         size = 4L, n = nprofiles, endian = "little"
     )
-
-    # {{{ Velocity. (FIXME: hard-wired for 4 beams, at the moment)
+    # {{{ Velocity. FIXME: perhaps handle 5-beam case
     v <- array(double(), dim = c(nprofiles, 1L, nbeams))
     v[, 1L, 1L] <- velocityFactor * readBin(d$buf[pointer4 + 79L],
         "integer",
@@ -219,19 +202,19 @@ readBottomTrack <- function(d, configText, debug = getOption("oceDebug")) # uses
     # }}}
     figureOfMerit <- readBin(d$buf[pointer2 + 111], "integer", size = 2L, endian = "little", n = nprofiles, signed = FALSE)
     oceDebug(debug, vectorShow(d$buf[pointer2 + 111]))
-    oceDebug(debug, vectorShow(figureOfMerit))
-    oceDebug(debug, "hm...", vectorShow(nprofiles))
-    oceDebug(debug, "hm...", vectorShow(pointer1))
-    oceDebug(debug, "hm...", vectorShow(pointer2))
-    oceDebug(debug, "hm...", vectorShow(pointer4))
+    oceDebug(debug, "Something is definitely wrong with this -- ", vectorShow(figureOfMerit))
+    oceDebug(debug, vectorShow(nprofiles))
+    oceDebug(debug, vectorShow(pointer1))
+    oceDebug(debug, vectorShow(pointer2))
+    oceDebug(debug, vectorShow(pointer4))
     rval <- list(
         # Scalars
         numberOfBeams = nbeams, # renaming so calling function can move to metadata
-        numberOfCells = 1, # I don't know why value read above is not 1means, but plot.adp() needs 1 to plot timeseries
+        numberOfCells = 1, # I don't know what the value read above means, but plot.adp() needs 1 to plot timeseries
         oceCoordinate = coordinateSystem, # renaming so calling function can move to metadata
         cellSize = cellSize,
         blankingDistance = blankingDistance,
-        # Vectors
+        # Time-series vectors
         soundSpeed = soundSpeed,
         time = time, pressure = pressure, temperature = temperature,
         heading = heading, pitch = pitch, roll = roll,
@@ -242,7 +225,7 @@ readBottomTrack <- function(d, configText, debug = getOption("oceDebug")) # uses
         figureOfMerit = figureOfMerit,
         # arrays (dimension NP x 1 x NB)
         v = v,
-        distance = distance
+        distance = distance # Not to be confused with @metadata$distance for profile-data!
     )
     oceDebug(debug, "END readBottomTrack()\n", unindent = 1)
     rval

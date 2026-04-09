@@ -209,25 +209,6 @@ or cause errors in processing.</p>
 in creating the file.  This can be quite helpful in debugging and analysis.</p>
     </div>
     <div class="section level2">
-    <h2 id="problems">Problems<a class="anchor" aria-label="anchor" href="#problems"></a></h2>
-
-
-<ol><li><p>In reading a file with <code>altimeterRaw</code> data components, a potential problem
-was noticed with that the part of the file that indicates the number of
-altimeter samples (called <code>NSAMP</code> in the Nortek documentation). The stated
-value was 2 times the value held in the header (text) portion of the file,
-and reading the larger value created a matrix that had
-the upper half filled with odd striping patterns. Therefore, the function
-checks the two indicates of length, and used the one in the text block if
-they disagree.  (See https://github.com/dankelley/oce/issues/2326.)</p></li>
-<li><p>Related to point 1, it is unclear from the manufacturer's manuals whether
-<code>NSAMP</code> is a 2-byte value (as stated in old manuals) or a 4-byte value (as
-in a manual available in June 2025)? The present function assumes a 4-byte
-value, which works with at least one test file available to the authors.
-The manufacturer has been asked for clarity on this; again, see notes at
-https://github.com/dankelley/oce/issues/2326.</p></li>
-</ol></div>
-    <div class="section level2">
     <h2 id="how-the-binary-file-is-decoded">How the binary file is decoded<a class="anchor" aria-label="anchor" href="#how-the-binary-file-is-decoded"></a></h2>
 
 
@@ -259,14 +240,49 @@ components to physical units.</p></li>
 <code>metadata</code> slot of the return value, according to oce convention.</p></li>
 </ol></div>
     <div class="section level2">
+    <h2 id="problems">Problems<a class="anchor" aria-label="anchor" href="#problems"></a></h2>
+
+
+<ol><li><p>In reading a file with <code>altimeterRaw</code> data components, a potential problem
+was noticed with that the part of the file that indicates the number of
+altimeter samples (called <code>NSAMP</code> in the Nortek documentation). The stated
+value was 2 times the value held in the header (text) portion of the file,
+and reading the larger value created a matrix that had
+the upper half filled with odd striping patterns. Therefore, the function
+checks the two indicates of length, and used the one in the text block if
+they disagree.  (See https://github.com/dankelley/oce/issues/2326.)</p></li>
+<li><p>Related to point 1, it is unclear from the manufacturer's manuals whether
+<code>NSAMP</code> is a 2-byte value (as stated in old manuals) or a 4-byte value (as
+in a manual available in June 2025)? The present function assumes a 4-byte
+value, which works with at least one test file available to the authors.
+The manufacturer has been asked for clarity on this; again, see notes at
+https://github.com/dankelley/oce/issues/2326.</p></li>
+<li><p>Tentative support for reading <code>which=bottomTrack</code> was added in April 2026.
+It is advisable to be on the lookout for problems with reading this data
+type. (For example, the field called <code>ensembleCounter</code> is incorrect.) The
+cause of this concern is that the latest relevant Nortek document
+(Reference 3) does not discuss the format of bottom-track data, and so the
+present function had to be written based on an old document (Reference 4),
+along with some advice that was kindly provided by Nortek staff on GitHub
+(Reference 5).</p></li>
+</ol></div>
+    <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
-    <p>Nortek AS. “Integrators Guide: Signature.” Nortek AS, April 30, 2025.
+
+<ol><li><p>Nortek AS. “Integrator's Guide: Signature.” Nortek AS, April 30, 2025.
 <code>https://support.nortekgroup.com/hc/en-us/article_attachments/19830760385436</code>
-(this link failed in a test on 2025-07-30).</p>
-<p>Nortek AS. “Signature Integration 55|250|500|1000kHz (2024.1),” 2024.
-(This was once at <code>https://support.nortekgroup.com/hc/en-us/articles/360029513952-Integrators-Guide-Signature</code>
-but a test on 2025-05-26 revealed that this link no longer worked.)</p>
-    </div>
+(this link failed in a test on 2025-07-30).</p></li>
+<li><p>Nortek AS. “Signature Integration 55|250|500|1000kHz (2024.1),”
+2024. (This was once at
+<code>https://support.nortekgroup.com/hc/en-us/articles/360029513952-Integrators-Guide-Signature</code>
+but a test on 2025-05-26 revealed that this link no longer worked.)</p></li>
+<li><p>Nortek AS. “Integrator's Guide Signature.” March 5, 2026.
+<a href="https://support.nortekgroup.com/hc/en-us/article_attachments/25920785046428" class="external-link">https://support.nortekgroup.com/hc/en-us/article_attachments/25920785046428</a>.</p></li>
+<li><p>Nortek AS. “Signature Integration 55|250|500|1000kHz (2017).”
+February 10, 2017.
+<a href="https://assets.nortekgroup.com/software/N3015-007-Integrators-Guide-AD2CP_1018.pdf" class="external-link">https://assets.nortekgroup.com/software/N3015-007-Integrators-Guide-AD2CP_1018.pdf</a>.</p></li>
+<li><p><a href="https://github.com/dankelley/oce/issues/2368" class="external-link">https://github.com/dankelley/oce/issues/2368</a></p></li>
+</ol></div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p>Other things related to adp data:

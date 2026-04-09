@@ -167,6 +167,27 @@ condition in which this century offset is required, then a change will
 be made to the code. Even if not, the method should not cause problems
 for a long time.
 
+## Handling of 3-beam Horizontal ADCP (HADCP) files
+
+While most RDI ADCPs contain 4 beams (with the exception of some
+SentinelV ADCPs, which stores the vertical beam data in a separate data
+structure), the HADCP (which is a discontinued product in 2026) only has
+3 beams. Despite the fact that there are only 3 beams, the pd0 data file
+format is still written as through there are four beams worth of data.
+The exact meaning of each of the "beams" in the data file depends on the
+coordinate system of the instrument (e.g. beam, xyz, sfm, or enu), with
+the RDI data format manual indicating how to interpret the resulting
+arrays, as follows (a dash means that the field holds no data, and in
+oce this is represented with NA values).
+
+|                       |          |          |          |                         |
+|-----------------------|----------|----------|----------|-------------------------|
+| **Coordinate System** | **Vel1** | **Vel2** | **Vel3** | **Vel4**                |
+| Beam                  | beam1    | beam2    | beam3    | \-                      |
+| Instrument            | x        | y        | \-       | error                   |
+| Ship                  | x        | y        | vertical | error (tilt applied)    |
+| Earth                 | east     | north    | vertical | error (heading applied) |
+
 ## Names of items in data slot
 
 The names of items in the `data` slot are below. Not all items are
@@ -558,7 +579,7 @@ summary(adp)
 #> ADP Summary
 #> -----------
 #> 
-#> * Filename:          "/private/var/folders/8b/l4h64m1j22v5pb7vj049ff140000gn/T/RtmpROJlPr/temp_libpathe75375ad9206/oce/extdata/adp_rdi.000"
+#> * Filename:          "/private/var/folders/8b/l4h64m1j22v5pb7vj049ff140000gn/T/RtmpA4dTGC/temp_libpath116d56d689885/oce/extdata/adp_rdi.000"
 #> * Instrument:        adcp
 #> * Manufacturer:      teledyne rdi
 #> * Serial number:     unknown
@@ -568,6 +589,8 @@ summary(adp)
 #> * Beam Angle:        20 deg
 #> * Location:          unknown latitude, unknown longitude
 #> * Frequency:         600 kHz
+#> * Coordinate System: "beam"
+#> * Orientation:       "upward"
 #> * Ensemble Numbers:   1, 2, ..., 8, 9
 #> * Transformation matrix::
 #>      1.462  -1.462   0.000   0.000
@@ -611,5 +634,5 @@ summary(adp)
 #> 
 #> * Processing Log
 #> 
-#>     - 2026-03-16 15:49:53 UTC: `read.adp.rdi(file = system.file("extdata", "adp_rdi.000", package = "oce"))`
+#>     - 2026-04-09 19:44:41 UTC: `read.adp.rdi(file = system.file("extdata", "adp_rdi.000", package = "oce"))`
 ```

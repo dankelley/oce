@@ -71,7 +71,7 @@ denote heading, pitch, and roll.
 
 |  |  |  |  |  |  |  |  |  |  |  |  |
 |----|----|----|----|----|----|----|----|----|----|----|----|
-| **Case** | **Mfr.** | **Instr.** | **Orient.** | **H** | **P** | **R** | **S** | **F** | **M** | 1 | RDI |
+| \*\* Case\*\* | **Mfr.** | **Instr.** | **Orient.** | **H** | **P** | **R** | **S** | **F** | **M** | 1 | RDI |
 | ADCP | up | H | arctan(tan(P)\*cos(R)) | R | -X | Y | -Z | 2 | RDI | ADCP | down |
 | H | arctan(tan(P)\*cos(R)) | -R | X | Y | Z | 3 | Nortek | ADP | up | H-90 | R |
 | -P | X | Y | Z | 4 | Nortek | ADP | down | H-90 | R | -P | X |
