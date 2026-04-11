@@ -46,15 +46,17 @@
 * Change `read.amsr()` to handle realtime data files (issue #2230).
 * Change `read.adp.ad2cp()` to
   * handle TOC, datasets and plans better (issue #2303 and related),
+  * handle bottom-track data correctly (issue #2368)
   * read temperature correctly (issue #2324),
   * save elements of AST (etc) individually, not within a list (issue #2318)
-    and
   * scale `altimeterRawSamples` by 1/2^15 (issue #2327).
   * set `data@distance` only if NC (number of cells) is nonzero (issue #2319).
   * use number of raw altimeter samples from header, if it disagrees with value
     in record (issue #2326).
-* Change `read.adp.rdi(..., which="??")` to return a data frame that includes
-  ensemble size (issue #2329).
+* Change `read.adp.rdi()` to
+  * read data from 3-beam horizontal devices (issue #2369).
+* Change `read.adp.rdi(..., which="??")` to
+  * return a data frame that includes ensemble size (issue #2329).
 * Change `read.ctd.sbe()` to
   * Handle fixed-width column names (pull request #2365, kindly provided by William Kumler, github user @wkumler),
   * handle files that lack salinity and conductivity (issues #2279 and #2282),

@@ -46,7 +46,7 @@
 \arguments{
 \item{x}{an \linkS4class{adp} object.}
 
-\item{which}{list of desired plot types.  These are graphed in panels
+\item{which}{a list of desired plot types.  These are graphed in panels
 running down from the top of the page.  If \code{which} is not given,
 the plot will show images of the distance-time dependence of velocity
 for each beam. See \dQuote{Details} for the meanings of various values of \code{which}.}
@@ -189,96 +189,90 @@ Create a summary plot of data measured by an acoustic Doppler profiler.
 }
 \details{
 The plot may have one or more panels, with the content being controlled by
-the \code{which} argument.
+the \code{which} argument. Note that all of the descriptions below apply to
+profile-based data (that is, data that have multiple distance cells). For
+bottom-track data (which have only a single cell), time-series plots are
+used in place of image plots, as appropriate.
 \itemize{
-\item \code{which=1:4} (or \code{which="u1"} to \code{"u4"}) yield a
-distance-time image plot of a velocity component.  If \code{x} is in
-\code{beam} coordinates (signalled by
-\code{metadata$oce.coordinate=="beam"}), this will be the beam velocity,
-labelled \code{b[1]} etc.  If \code{x} is in xyz coordinates (sometimes
-called frame coordinates, or ship coordinates), it will be the velocity
-component to the right of the frame or ship (labelled \code{u} etc).
-Finally, if \code{x} is in \code{"enu"} coordinates, the image will show the
-the eastward component (labelled \code{east}).  If \code{x} is in
-\code{"other"} coordinates, it will be component corresponding to east,
-after rotation (labelled \verb{u\\'}).  Note that the coordinate is set by
-\code{\link[=read.adp]{read.adp()}}, or by \code{\link[=beamToXyzAdp]{beamToXyzAdp()}},
-\code{\link[=xyzToEnuAdp]{xyzToEnuAdp()}}, or \code{\link[=enuToOtherAdp]{enuToOtherAdp()}}.
-\item \code{which=5:8} (or \code{which="a1"} to \code{"a4"}) yield
-distance-time images of backscatter intensity of the respective beams.  (For
-data derived from Teledyne-RDI instruments, this is the item called ``echo
-intensity.'')
-\item \code{which=9:12} (or \code{which="q1"} to \code{"q4"}) yield
-distance-time images of signal quality for the respective beams.  (For RDI
-data derived from instruments, this is the item called ``correlation
-magnitude.'')
+\item \code{which=1:4} (or \code{which="u1"} to \code{"u4"}) yield a distance-time image plot of
+a velocity component. If \code{x} is in \code{beam} coordinates (signalled by
+\code{metadata$oce.coordinate=="beam"}), this will be the beam velocity, labelled
+\code{b[1]} etc.  If \code{x} is in xyz coordinates (sometimes called frame
+coordinates, or ship coordinates), it will be the velocity component to the
+right of the frame or ship (labelled \code{u} etc). Finally, if \code{x} is in \code{"enu"}
+coordinates, the image will show the the eastward component (labelled
+\code{east}).  If \code{x} is in \code{"other"} coordinates, it will be component
+corresponding to east, after rotation (labelled \verb{u\\'}).  Note that the
+coordinate is set by \code{\link[=read.adp]{read.adp()}}, or by \code{\link[=beamToXyzAdp]{beamToXyzAdp()}}, \code{\link[=xyzToEnuAdp]{xyzToEnuAdp()}},
+or \code{\link[=enuToOtherAdp]{enuToOtherAdp()}}.
+\item \code{which=5:8} (or \code{which="a1"} to \code{"a4"}) yield distance-time images of
+backscatter intensity of the respective beams.  (For data derived from
+Teledyne-RDI instruments, this is the item called ``echo intensity.'')
+\item \code{which=9:12} (or \code{which="q1"} to \code{"q4"}) yield distance-time images of
+signal quality for the respective beams.  (For RDI data derived from
+instruments, this is the item called ``correlation magnitude.'')
 \item \code{which=60} or \code{which="map"} draw a map of location(s).
-\item \code{which=70:73} (or \code{which="g1"} to \code{"g4"}) yield
-distance-time images of percent-good for the respective beams.  (For data
-derived from Teledyne-RDI instruments, which are the only instruments that
-yield this item, it is called ``percent good.'')
-\item \code{which=80:83} (or \code{which="vv"}, \code{which="va"},
-\code{which="vq"}, and \code{which="vg"}) yield distance-time
-images of the vertical beam fields for a 5 beam "SentinelV" ADCP
-from Teledyne RDI.
-\item \code{which="vertical"} yields a two panel distance-time
-image of vertical beam velocity and amplitude.
-\item \code{which=13} (or \code{which="salinity"}) yields a time-series plot
-of salinity.
-\item \code{which=14} (or \code{which="temperature"}) yields a time-series
-plot of temperature.
-\item \code{which=15} (or \code{which="pressure"}) yields a time-series plot
-of pressure.
-\item \code{which=16} (or \code{which="heading"}) yields a time-series plot
-of instrument heading.
-\item \code{which=17} (or \code{which="pitch"}) yields a time-series plot of
-instrument pitch.
-\item \code{which=18} (or \code{which="roll"}) yields a time-series plot of
-instrument roll.
-\item \code{which=19} yields a time-series plot of distance-averaged
-velocity for beam 1, rightward velocity, eastward velocity, or
-rotated-eastward velocity, depending on the coordinate system.
-\item \code{which=20} yields a time-series of distance-averaged velocity for
-beam 2, foreward velocity, northward velocity, or rotated-northward
-velocity, depending on the coordinate system.
-\item \code{which=21} yields a time-series of distance-averaged velocity for
-beam 3, up-frame velocity, upward velocity, or rotated-upward velocity,
+\item \code{which=70:73} (or \code{which="g1"} to \code{"g4"}) yield distance-time images of
+percent-good for the respective beams.  (For data derived from Teledyne-RDI
+instruments, which are the only instruments that yield this item, it is
+called ``percent good.'')
+\item \code{which=80:83} (or \code{which="vv"}, \code{which="va"}, \code{which="vq"}, and
+\code{which="vg"}) yield distance-time images of the vertical beam fields for a 5
+beam "SentinelV" ADCP from Teledyne RDI.
+\item \code{which="vertical"} yields a two panel distance-time image of vertical beam
+velocity and amplitude.
+\item \code{which=13} (or \code{which="salinity"}) yields a time-series plot of salinity.
+\item \code{which=14} (or \code{which="temperature"}) yields a time-series plot of
+temperature.
+\item \code{which=15} (or \code{which="pressure"}) yields a time-series plot of pressure.
+\item \code{which=16} (or \code{which="heading"}) yields a time-series plot of instrument
+heading.
+\item \code{which=17} (or \code{which="pitch"}) yields a time-series plot of instrument
+pitch.
+\item \code{which=18} (or \code{which="roll"}) yields a time-series plot of instrument
+roll.
+\item \code{which=19} yields a time-series plot of distance-averaged velocity for beam
+1, rightward velocity, eastward velocity, or rotated-eastward velocity,
 depending on the coordinate system.
-\item \code{which=22} yields a time-series of distance-averaged velocity for
-beam 4, for \code{beam} coordinates, or velocity estimate, for other
-coordinates.  (This is ignored for 3-beam data.)
-\item \code{which="progressiveVector"} (or \code{which=23}) yields a progressive-vector diagram in the horizontal
-plane, plotted with \code{asp=1}.  Normally, the depth-averaged velocity
-components are used, but if the \code{control} list contains an item named
-\code{bin}, then the depth bin will be used (with an error resulting if the
-bin is out of range).
-\item \code{which=24} yields a time-averaged profile of the first component
-of velocity (see \code{which=19} for the meaning of the component, in
-various coordinate systems).
+\item \code{which=20} yields a time-series of distance-averaged velocity for beam 2,
+foreward velocity, northward velocity, or rotated-northward velocity,
+depending on the coordinate system.
+\item \code{which=21} yields a time-series of distance-averaged velocity for beam 3,
+up-frame velocity, upward velocity, or rotated-upward velocity, depending on
+the coordinate system.
+\item \code{which=22} yields a time-series of distance-averaged velocity for beam 4,
+for \code{beam} coordinates, or velocity estimate, for other coordinates.  (This
+is ignored for 3-beam data.)
+\item \code{which="progressiveVector"} (or \code{which=23}) yields a progressive-vector
+diagram in the horizontal plane, plotted with \code{asp=1}.  Normally, the
+depth-averaged velocity components are used, but if the \code{control} list
+contains an item named \code{bin}, then the depth bin will be used (with an error
+resulting if the bin is out of range).
+\item \code{which=24} yields a time-averaged profile of the first component of
+velocity (see \code{which=19} for the meaning of the component, in various
+coordinate systems).
 \item \code{which=25} as for 24, but the second component.
 \item \code{which=26} as for 24, but the third component.
-\item \code{which=27} as for 24, but the fourth component (if that makes
-sense, for the given instrument).
-\item \code{which=28} or \code{"uv"} yields velocity plot in the horizontal
-plane, i.e. \code{u[2]} versus \code{u[1]}.  If the number of data points is small, a
-scattergraph is used, but if it is large, \code{\link[=smoothScatter]{smoothScatter()}} is
-used.
-\item \code{which=29} or \code{"uv+ellipse"} as the \code{"uv"} case, but
-with an added indication of the tidal ellipse, calculated from the eigen
-vectors of the covariance matrix.
-\item \code{which=30} or \code{"uv+ellipse+arrow"} as the
-\code{"uv+ellipse"} case, but with an added arrow indicating the mean
-current.
-\item \code{which=40} or \code{"bottomRange"} for average bottom range from
-all beams of the instrument.
-\item \code{which=41} to \code{44} (or \code{"bottomRange1"} to
-\code{"bottomRange4"}) for bottom range from beams 1 to 4.
-\item \code{which=50} or \code{"bottomVelocity"} for average bottom velocity
-from all beams of the instrument.
-\item \code{which=51} to \code{54} (or \code{"bottomVelocity1"} to
-\code{"bottomVelocity4"}) for bottom velocity from beams 1 to 4.
-\item \code{which=55} (or \code{"heaving"}) for time-integrated,
-depth-averaged, vertical velocity, i.e. a time series of heaving.
+\item \code{which=27} as for 24, but the fourth component (if that makes sense, for
+the given instrument).
+\item \code{which=28} or \code{"uv"} yields velocity plot in the horizontal plane, i.e.
+\code{u[2]} versus \code{u[1]}.  If the number of data points is small, a scattergraph
+is used, but if it is large, \code{\link[=smoothScatter]{smoothScatter()}} is used.
+\item \code{which=29} or \code{"uv+ellipse"} as the \code{"uv"} case, but with an added
+indication of the tidal ellipse, calculated from the eigen vectors of the
+covariance matrix.
+\item \code{which=30} or \code{"uv+ellipse+arrow"} as the \code{"uv+ellipse"} case, but with an
+added arrow indicating the mean current.
+\item \code{which=40} or \code{"bottomRange"} for average bottom range from all beams of
+the instrument.
+\item \code{which=41} to \code{44} (or \code{"bottomRange1"} to \code{"bottomRange4"}) for bottom
+range from beams 1 to 4.
+\item \code{which=50} or \code{"bottomVelocity"} for average bottom velocity from all beams
+of the instrument.
+\item \code{which=51} to \code{54} (or \code{"bottomVelocity1"} to \code{"bottomVelocity4"}) for
+bottom velocity from beams 1 to 4.
+\item \code{which=55} (or \code{"heaving"}) for time-integrated, depth-averaged, vertical
+velocity, i.e. a time series of heaving.
 \item \code{which=60} (or \code{"map"}) for a map.
 \item \code{which=100} (or \code{"soundSpeed"}) for a time series of sound speed.
 \item \code{which=200} (or \code{"accelerometerx"}) for a time-series of the x component of
@@ -293,6 +287,10 @@ the magnetometer reading.
 the magnetometer reading.
 \item \code{which=212} (or \code{"magnetometerz"}) for a time-series of the z component of
 the magnetometer reading.
+\item \code{which=221:224} (or \code{which="distance1"} to \code{"distance4"}) yield
+a time-series plot of distance to the bottom (or surface, if the
+adp is mounted vertically. At the moment, this only works for AD2CP
+devices.
 }
 
 In addition to the above, the following shortcuts are defined:
@@ -310,6 +308,9 @@ for temperature and pressure.
 heading, pitch and roll.
 \item \code{which="accelerometer"} to plot a 3-panel timeseries
 of acceleration, equivalent to \code{which=110:102}.
+\item \code{which="distance"} equivalent to \code{which=c("distance1", "distance2", "distance3", "distance4")}, for the distance
+to the bottom (or surface) for the bottom-track
+record of AD2CP data.
 }
 
 The color scheme for image plots (\code{which} in 1:12) is provided by the

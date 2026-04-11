@@ -58,7 +58,7 @@ table, (X, Y, Z) denote instrument-coordinate velocities, (S, F, M) denote
 ship-coordinate velocities, and (H, P, R) denote heading, pitch, and roll.
 
 \tabular{rrrrrrrrrrrr}{
-\strong{Case} \tab \strong{Mfr.} \tab \strong{Instr.} \tab \strong{Orient.} \tab \strong{H} \tab \strong{P} \tab  \strong{R} \tab  \strong{S} \tab  \strong{F} \tab  \strong{M}\cr
+** Case** \tab \strong{Mfr.} \tab \strong{Instr.} \tab \strong{Orient.} \tab \strong{H} \tab \strong{P} \tab  \strong{R} \tab  \strong{S} \tab  \strong{F} \tab  \strong{M}\cr
 1 \tab RDI    \tab ADCP   \tab up      \tab H    \tab arctan(tan(P)*cos(R)) \tab  R \tab -X \tab  Y \tab -Z\cr
 2 \tab RDI    \tab ADCP   \tab down    \tab H    \tab arctan(tan(P)*cos(R)) \tab -R \tab  X \tab  Y \tab  Z\cr
 3 \tab Nortek \tab ADP    \tab up      \tab H-90 \tab R                     \tab -P \tab  X \tab  Y \tab  Z\cr

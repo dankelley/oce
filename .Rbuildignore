@@ -10,6 +10,7 @@ R/check_urls.R
 README.rst
 README.tex
 Rplots.pdf
+^ad2cp.*\.png$
 ^.*.ODF$
 ^.*.odf$
 ^.*.org$

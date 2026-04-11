@@ -462,6 +462,9 @@ setMethod(
         if ("filename" %in% mnames) {
             cat(paste("* Filename:          \"", object@metadata$filename, "\"\n", sep = ""), ...)
         }
+        if ("fileType" %in% mnames) {
+            cat(paste("* File type:         ", object@metadata$fileType, "\n", sep = ""), ...)
+        }
         if ("instrumentType" %in% mnames) {
             cat(paste("* Instrument:        ", object@metadata$instrumentType, "\n", sep = ""), ...)
         }
@@ -473,9 +476,6 @@ setMethod(
         }
         if ("serialNumber" %in% mnames) {
             cat(paste("* Serial number:     ", object@metadata$serialNumber, "\n", sep = ""), ...)
-        }
-        if ("fileType" %in% mnames) {
-            cat(paste("* File type:         ", object@metadata$fileType, "\n", sep = ""), ...)
         }
         if ("firmwareVersionMajor" %in% mnames && "firmwareVersionMinor" %in% mnames) {
             cat(paste("* Firmware:          ", object@metadata$firmwareVersionMajor, " (major), ",
@@ -588,6 +588,12 @@ setMethod(
         #             1 / subsampleDeltat))
         #-metadataNames <- names(object@metadata)
         cat("* Frequency:        ", object[["frequency"]], "kHz\n", ...)
+        if ("oceCoordinate" %in% mnames) {
+            cat(paste("* Coordinate System: \"", object@metadata$oceCoordinate[1], "\"\n", sep = ""), ...)
+        }
+        if ("orientation" %in% mnames) {
+            cat(paste("* Orientation:       \"", object@metadata$orientation[1], "\"\n", sep = ""), ...)
+        }
         if ("ensembleNumber" %in% names(object@metadata)) {
             en <- object@metadata$ensembleNumber
             nen <- length(en)
@@ -692,7 +698,6 @@ setMethod(
         rval
     }
 )
-
 
 
 #' @title Extract Something From an adp Object
@@ -1312,7 +1317,6 @@ as.adp <- function(time, distance, v, a = NULL, q = NULL, orientation = "upward"
 # }
 
 
-
 #' Get Names of Acoustic-Doppler Beams
 #'
 #' @param x an [adp-class] object.
@@ -1470,125 +1474,119 @@ read.adp <- function(file, from, to, by, tz = getOption("oceTz"), longitude = NA
 #- differently than is the case here.
 #'
 #' The plot may have one or more panels, with the content being controlled by
-#' the `which` argument.
+#' the `which` argument. Note that all of the descriptions below apply to
+#' profile-based data (that is, data that have multiple distance cells). For
+#' bottom-track data (which have only a single cell), time-series plots are
+#' used in place of image plots, as appropriate.
 #'
-#' * `which=1:4` (or `which="u1"` to `"u4"`) yield a
-#' distance-time image plot of a velocity component.  If `x` is in
-#' `beam` coordinates (signalled by
-#' `metadata$oce.coordinate=="beam"`), this will be the beam velocity,
-#' labelled `b[1]` etc.  If `x` is in xyz coordinates (sometimes
-#' called frame coordinates, or ship coordinates), it will be the velocity
-#' component to the right of the frame or ship (labelled `u` etc).
-#' Finally, if `x` is in `"enu"` coordinates, the image will show the
-#' the eastward component (labelled `east`).  If `x` is in
-#' `"other"` coordinates, it will be component corresponding to east,
-#' after rotation (labelled `u\'`).  Note that the coordinate is set by
-#' [read.adp()], or by [beamToXyzAdp()],
-#' [xyzToEnuAdp()], or [enuToOtherAdp()].
+#' * `which=1:4` (or `which="u1"` to `"u4"`) yield a distance-time image plot of
+#' a velocity component. If `x` is in `beam` coordinates (signalled by
+#' `metadata$oce.coordinate=="beam"`), this will be the beam velocity, labelled
+#' `b[1]` etc.  If `x` is in xyz coordinates (sometimes called frame
+#' coordinates, or ship coordinates), it will be the velocity component to the
+#' right of the frame or ship (labelled `u` etc). Finally, if `x` is in `"enu"`
+#' coordinates, the image will show the the eastward component (labelled
+#' `east`).  If `x` is in `"other"` coordinates, it will be component
+#' corresponding to east, after rotation (labelled `u\'`).  Note that the
+#' coordinate is set by [read.adp()], or by [beamToXyzAdp()], [xyzToEnuAdp()],
+#' or [enuToOtherAdp()].
 #'
-#' * `which=5:8` (or `which="a1"` to `"a4"`) yield
-#' distance-time images of backscatter intensity of the respective beams.  (For
-#' data derived from Teledyne-RDI instruments, this is the item called ``echo
-#' intensity.'')
+#' * `which=5:8` (or `which="a1"` to `"a4"`) yield distance-time images of
+#' backscatter intensity of the respective beams.  (For data derived from
+#' Teledyne-RDI instruments, this is the item called ``echo intensity.'')
 #'
-#' * `which=9:12` (or `which="q1"` to `"q4"`) yield
-#' distance-time images of signal quality for the respective beams.  (For RDI
-#' data derived from instruments, this is the item called ``correlation
-#' magnitude.'')
+#' * `which=9:12` (or `which="q1"` to `"q4"`) yield distance-time images of
+#' signal quality for the respective beams.  (For RDI data derived from
+#' instruments, this is the item called ``correlation magnitude.'')
 #'
 #' * `which=60` or `which="map"` draw a map of location(s).
 #'
-#' * `which=70:73` (or `which="g1"` to `"g4"`) yield
-#' distance-time images of percent-good for the respective beams.  (For data
-#' derived from Teledyne-RDI instruments, which are the only instruments that
-#' yield this item, it is called ``percent good.'')
+#' * `which=70:73` (or `which="g1"` to `"g4"`) yield distance-time images of
+#' percent-good for the respective beams.  (For data derived from Teledyne-RDI
+#' instruments, which are the only instruments that yield this item, it is
+#' called ``percent good.'')
 #'
-#' * `which=80:83` (or `which="vv"`, `which="va"`,
-#' `which="vq"`, and `which="vg"`) yield distance-time
-#' images of the vertical beam fields for a 5 beam "SentinelV" ADCP
-#' from Teledyne RDI.
+#' * `which=80:83` (or `which="vv"`, `which="va"`, `which="vq"`, and
+#' `which="vg"`) yield distance-time images of the vertical beam fields for a 5
+#' beam "SentinelV" ADCP from Teledyne RDI.
 #'
-#' * `which="vertical"` yields a two panel distance-time
-#' image of vertical beam velocity and amplitude.
+#' * `which="vertical"` yields a two panel distance-time image of vertical beam
+#' velocity and amplitude.
 #'
-#' * `which=13` (or `which="salinity"`) yields a time-series plot
-#' of salinity.
+#' * `which=13` (or `which="salinity"`) yields a time-series plot of salinity.
 #'
-#' * `which=14` (or `which="temperature"`) yields a time-series
-#' plot of temperature.
+#' * `which=14` (or `which="temperature"`) yields a time-series plot of
+#' temperature.
 #'
-#' * `which=15` (or `which="pressure"`) yields a time-series plot
-#' of pressure.
+#' * `which=15` (or `which="pressure"`) yields a time-series plot of pressure.
 #'
-#' * `which=16` (or `which="heading"`) yields a time-series plot
-#' of instrument heading.
+#' * `which=16` (or `which="heading"`) yields a time-series plot of instrument
+#' heading.
 #'
-#' * `which=17` (or `which="pitch"`) yields a time-series plot of
-#' instrument pitch.
+#' * `which=17` (or `which="pitch"`) yields a time-series plot of instrument
+#' pitch.
 #'
-#' * `which=18` (or `which="roll"`) yields a time-series plot of
-#' instrument roll.
+#' * `which=18` (or `which="roll"`) yields a time-series plot of instrument
+#' roll.
 #'
-#' * `which=19` yields a time-series plot of distance-averaged
-#' velocity for beam 1, rightward velocity, eastward velocity, or
-#' rotated-eastward velocity, depending on the coordinate system.
-#'
-#' * `which=20` yields a time-series of distance-averaged velocity for
-#' beam 2, foreward velocity, northward velocity, or rotated-northward
-#' velocity, depending on the coordinate system.
-#'
-#' * `which=21` yields a time-series of distance-averaged velocity for
-#' beam 3, up-frame velocity, upward velocity, or rotated-upward velocity,
+#' * `which=19` yields a time-series plot of distance-averaged velocity for beam
+#' 1, rightward velocity, eastward velocity, or rotated-eastward velocity,
 #' depending on the coordinate system.
 #'
-#' * `which=22` yields a time-series of distance-averaged velocity for
-#' beam 4, for `beam` coordinates, or velocity estimate, for other
-#' coordinates.  (This is ignored for 3-beam data.)
+#' * `which=20` yields a time-series of distance-averaged velocity for beam 2,
+#' foreward velocity, northward velocity, or rotated-northward velocity,
+#' depending on the coordinate system.
 #'
-#' * `which="progressiveVector"` (or `which=23`) yields a progressive-vector diagram in the horizontal
-#' plane, plotted with `asp=1`.  Normally, the depth-averaged velocity
-#' components are used, but if the `control` list contains an item named
-#' `bin`, then the depth bin will be used (with an error resulting if the
-#' bin is out of range).
+#' * `which=21` yields a time-series of distance-averaged velocity for beam 3,
+#' up-frame velocity, upward velocity, or rotated-upward velocity, depending on
+#' the coordinate system.
 #'
-#' * `which=24` yields a time-averaged profile of the first component
-#' of velocity (see `which=19` for the meaning of the component, in
-#' various coordinate systems).
+#' * `which=22` yields a time-series of distance-averaged velocity for beam 4,
+#' for `beam` coordinates, or velocity estimate, for other coordinates.  (This
+#' is ignored for 3-beam data.)
+#'
+#' * `which="progressiveVector"` (or `which=23`) yields a progressive-vector
+#' diagram in the horizontal plane, plotted with `asp=1`.  Normally, the
+#' depth-averaged velocity components are used, but if the `control` list
+#' contains an item named `bin`, then the depth bin will be used (with an error
+#' resulting if the bin is out of range).
+#'
+#' * `which=24` yields a time-averaged profile of the first component of
+#' velocity (see `which=19` for the meaning of the component, in various
+#' coordinate systems).
 #'
 #' * `which=25` as for 24, but the second component.
 #'
 #' * `which=26` as for 24, but the third component.
 #'
-#' * `which=27` as for 24, but the fourth component (if that makes
-#' sense, for the given instrument).
+#' * `which=27` as for 24, but the fourth component (if that makes sense, for
+#' the given instrument).
 #'
-#' * `which=28` or `"uv"` yields velocity plot in the horizontal
-#' plane, i.e. `u[2]` versus `u[1]`.  If the number of data points is small, a
-#' scattergraph is used, but if it is large, [smoothScatter()] is
-#' used.
+#' * `which=28` or `"uv"` yields velocity plot in the horizontal plane, i.e.
+#' `u[2]` versus `u[1]`.  If the number of data points is small, a scattergraph
+#' is used, but if it is large, [smoothScatter()] is used.
 #'
-#' * `which=29` or `"uv+ellipse"` as the `"uv"` case, but
-#' with an added indication of the tidal ellipse, calculated from the eigen
-#' vectors of the covariance matrix.
+#' * `which=29` or `"uv+ellipse"` as the `"uv"` case, but with an added
+#' indication of the tidal ellipse, calculated from the eigen vectors of the
+#' covariance matrix.
 #'
-#' * `which=30` or `"uv+ellipse+arrow"` as the
-#' `"uv+ellipse"` case, but with an added arrow indicating the mean
-#' current.
+#' * `which=30` or `"uv+ellipse+arrow"` as the `"uv+ellipse"` case, but with an
+#' added arrow indicating the mean current.
 #'
-#' * `which=40` or `"bottomRange"` for average bottom range from
-#' all beams of the instrument.
+#' * `which=40` or `"bottomRange"` for average bottom range from all beams of
+#' the instrument.
 #'
-#' * `which=41` to `44` (or `"bottomRange1"` to
-#' `"bottomRange4"`) for bottom range from beams 1 to 4.
+#' * `which=41` to `44` (or `"bottomRange1"` to `"bottomRange4"`) for bottom
+#' range from beams 1 to 4.
 #'
-#' * `which=50` or `"bottomVelocity"` for average bottom velocity
-#' from all beams of the instrument.
+#' * `which=50` or `"bottomVelocity"` for average bottom velocity from all beams
+#' of the instrument.
 #'
-#' * `which=51` to `54` (or `"bottomVelocity1"` to
-#' `"bottomVelocity4"`) for bottom velocity from beams 1 to 4.
+#' * `which=51` to `54` (or `"bottomVelocity1"` to `"bottomVelocity4"`) for
+#' bottom velocity from beams 1 to 4.
 #'
-#' * `which=55` (or `"heaving"`) for time-integrated,
-#' depth-averaged, vertical velocity, i.e. a time series of heaving.
+#' * `which=55` (or `"heaving"`) for time-integrated, depth-averaged, vertical
+#' velocity, i.e. a time series of heaving.
 #'
 #' * `which=60` (or `"map"`) for a map.
 #'
@@ -1612,6 +1610,11 @@ read.adp <- function(file, from, to, by, tz = getOption("oceTz"), longitude = NA
 #' * `which=212` (or `"magnetometerz"`) for a time-series of the z component of
 #' the magnetometer reading.
 #'
+#' * `which=221:224` (or `which="distance1"` to `"distance4"`) yield
+#' a time-series plot of distance to the bottom (or surface, if the
+#' adp is mounted vertically. At the moment, this only works for AD2CP
+#' devices.
+#'
 #' In addition to the above, the following shortcuts are defined:
 #'
 #' * `which="velocity"` equivalent to `which=1:3` or `1:4`
@@ -1632,6 +1635,11 @@ read.adp <- function(file, from, to, by, tz = getOption("oceTz"), longitude = NA
 #'
 #' * `which="accelerometer"` to plot a 3-panel timeseries
 #' of acceleration, equivalent to `which=110:102`.
+#'
+#' * `which="distance"` equivalent to `which=c("distance1",
+#' "distance2", "distance3", "distance4")`, for the distance
+#' to the bottom (or surface) for the bottom-track
+#' record of AD2CP data.
 #'
 #' The color scheme for image plots (`which` in 1:12) is provided by the
 #' `col` argument, which is passed to [image()] to do the actual
@@ -1658,7 +1666,7 @@ read.adp <- function(file, from, to, by, tz = getOption("oceTz"), longitude = NA
 #'
 #' @param x an [adp-class] object.
 #'
-#' @param which list of desired plot types.  These are graphed in panels
+#' @param which a list of desired plot types.  These are graphed in panels
 #' running down from the top of the page.  If `which` is not given,
 #' the plot will show images of the distance-time dependence of velocity
 #' for each beam. See \dQuote{Details} for the meanings of various values of `which`.
@@ -1875,7 +1883,7 @@ setMethod(
         }
         if (missing(which)) {
             # Note that j is ignored for e.g. RDI adp.
-            which <- seq_len(dim(x[["v"]])[3])
+            which <- seq_len(tail(dim(x[["v"]]), 1))
             oceDebug(debug, "setting which=c(", paste(which, collapse = ","), "), based on the data\n", sep = "")
         }
         colGiven <- !missing(col)
@@ -1913,7 +1921,7 @@ setMethod(
         if (nw == 1) {
             pm <- pmatch(which, c(
                 "velocity", "amplitude", "quality", "hydrography", "angles",
-                "accelerometer", "magnetometer"
+                "accelerometer", "magnetometer", "distance"
             ))
             # FIXME: decide what to do about 5-beam ADCPs
             if (!is.na(pm)) {
@@ -1923,14 +1931,16 @@ setMethod(
                     which <- 4 + seq(1, min(4, numberOfBeams)) # 5th beam not included
                 } else if (pm == 3) {
                     which <- 8 + seq(1, min(4, numberOfBeams)) # 5th beam not included
-                } else if (pm == 4) {
+                } else if (pm == 4) { # hydrography
                     which <- 14:15
-                } else if (pm == 5) {
+                } else if (pm == 5) { # angles
                     which <- 16:18
                 } else if (pm == 6) { # accelerometer
                     which <- 200:202
                 } else if (pm == 7) { # magnetometer
                     which <- 210:212
+                } else if (pm == 8) { # distance
+                    which <- 221:224
                 }
                 nw <- length(which)
             }
@@ -2041,12 +2051,9 @@ setMethod(
                 angles = 16:18,
                 vertical = 80:81,
                 vv = 80, va = 81, vq = 82, vg = 83,
-                accelerationx = 200,
-                accelerationy = 201,
-                accelerationz = 202,
-                magnetometerx = 210,
-                magnetometery = 211,
-                magnetometerz = 212
+                accelerationx = 200, accelerationy = 201, accelerationz = 202,
+                magnetometerx = 210, magnetometery = 211, magnetometerz = 212,
+                distance1 = 221, distance2 = 222, distance3 = 223, distance4 = 224
             )
         )
         if (any(is.na(which))) {
@@ -2054,7 +2061,7 @@ setMethod(
         }
         oceDebug(debug, "which:", paste(which, collapse = ","), "(after conversion to numerical codes)\n")
         images <- c(1:12, 70:73, 80:83)
-        timeseries <- c(13:22, 40:44, 50:54, 55, 100, 200:202, 210:212)
+        timeseries <- c(13:22, 40:44, 50:54, 55, 100, 200:202, 210:212, 221:224)
         spatial <- 23:27
         # speed <- 28
         tt <- x[["time", j]]
@@ -2160,31 +2167,45 @@ setMethod(
                             max(abs(x@data$vDia[, y.look, which[w]]), na.rm = TRUE) * c(-1, 1)
                         }
                     } else {
-                        oceDebug(debug, "a velocity component image/timeseries\n")
-                        z <- x[["v", j]][, , which[w]]
-                        oceDebug(debug, "class(z) after subsetting for 3rd dimension:: ", class(z), "\n")
-                        # oceDebug(debug, "dim(z): ", paste(dim(z), collapse="x"), "\n")
-                        zlab <- if (missing(titles)) beamName(x, which[w]) else titles[w]
-                        oceDebug(debug, "zlab:", zlab, "\n")
-                        xdistance <- x[["distance", j]]
-                        oceDebug(debug, vectorShow(xdistance))
-                        y.look <- if (ylimGiven) ylimAsGiven[w, 1] <= xdistance & xdistance <= ylimAsGiven[w, 2] else rep(TRUE, length(xdistance))
-                        oceDebug(debug, vectorShow(y.look))
-                        if (0 == sum(y.look)) {
-                            stop("no data in the provided ylim=c(", paste(ylimAsGiven[w, ], collapse = ","), ")")
-                        }
-                        zlim <- if (zlimGiven) {
-                            zlimAsGiven[w, ]
-                        } else {
-                            if (breaksGiven) {
-                                NULL
+                        # Not instrumentType != "aquadopp" || j != "diagnostic") {
+                        isProfile <- dim(v)[2] > 1L
+                        if (isProfile) { # Plot profile data as an image
+                            oceDebug(debug, "plot.adp(): plotting velocity component ", which[w], " as an image\n")
+                            z <- x[["v", j]][, , which[w]]
+                            oceDebug(debug, "class(z) after subsetting for 3rd dimension:: ", class(z), "\n")
+                            # oceDebug(debug, "dim(z): ", paste(dim(z), collapse="x"), "\n")
+                            zlab <- if (missing(titles)) beamName(x, which[w]) else titles[w]
+                            oceDebug(debug, "zlab:", zlab, "\n")
+                            xdistance <- x[["distance", j]]
+                            oceDebug(debug, vectorShow(xdistance))
+                            y.look <- if (ylimGiven) ylimAsGiven[w, 1] <= xdistance & xdistance <= ylimAsGiven[w, 2] else rep(TRUE, length(xdistance))
+                            oceDebug(debug, vectorShow(y.look))
+                            if (0 == sum(y.look)) {
+                                stop("no data in the provided ylim=c(", paste(ylimAsGiven[w, ], collapse = ","), ") during attempt to plot a component of velocity")
+                            }
+                            zlim <- if (zlimGiven) {
+                                zlimAsGiven[w, ]
                             } else {
-                                if (is.array(z)) {
-                                    max(abs(z[, y.look]), na.rm = TRUE) * c(-1, 1)
+                                if (breaksGiven) {
+                                    NULL
                                 } else {
-                                    max(abs(z), na.rm = TRUE) * c(-1, 1)
+                                    if (is.array(z)) {
+                                        max(abs(z[, y.look]), na.rm = TRUE) * c(-1, 1)
+                                    } else {
+                                        max(abs(z), na.rm = TRUE) * c(-1, 1)
+                                    }
                                 }
                             }
+                        } else {
+                            oceDebug(debug, "plot.adp(): plotting velocity component ", which[w], " as a time-series\n")
+                            z <- v[, 1, which[w]]
+                            oceDebug(debug, vectorShow(z))
+                            # oceDebug(debug, vectorShow(y))
+                            zlab <- if (missing(titles)) beamName(x, which[w]) else titles[w]
+                            oceDebug(debug, vectorShow(zlab))
+                            # oce.plot.ts(x[["time"]], y)
+                            # oceDebug(debug, vectorShow(ylimGiven))
+                            # y.look <- if (ylimGiven) ylimAsGiven[w, 1] <= xdistance & xdistance <= ylimAsGiven[w, 2] else rep(TRUE, length(xdistance))
                         }
                         oceDebug(debug, vectorShow(zlim))
                     }
@@ -2269,7 +2290,7 @@ setMethod(
                         xdistance <- x[["distance", j]]
                         y.look <- if (ylimGiven) ylimAsGiven[w, 1] <= xdistance & xdistance <= ylimAsGiven[w, 2] else rep(TRUE, length(xdistance))
                         if (0 == sum(y.look)) {
-                            stop("no data in the provided ylim=c(", paste(ylimAsGiven[w, ], collapse = ","), ")")
+                            stop("no data in the provided ylim=c(", paste(ylimAsGiven[w, ], collapse = ","), ") during attempt to plot vertical beam velocity")
                         }
                         zlim <- if (zlimGiven) {
                             zlimAsGiven[w, ]
@@ -2330,12 +2351,8 @@ setMethod(
                 } else {
                     skip <- TRUE
                 }
-                zlimIsValid <- is.finite(zlim[1]) && is.finite(zlim[2])
-                oceDebug(debug, vectorShow(zlimIsValid))
-                if (!zlimIsValid) {
-                    message("skipping which=", which[w], " because all data are non-finite")
-                }
-                if (!skip && zlimIsValid) {
+                if (!skip) {
+                    oceDebug(debug, vectorShow(numberOfCells))
                     if (numberOfCells > 1) {
                         if (xlimGiven) {
                             oceDebug(debug, "about to call imagep() with xlim given and par(\"cex\")=", par("cex"), ", cex=", cex, "\n", sep = "")
@@ -2914,6 +2931,16 @@ setMethod(
                         mar = omar, drawTimeRange = drawTimeRange, tformat = tformat,
                         debug = debug - 1
                     )
+                } else if (which[w] %in% 221:224) { # bottom-track distance
+                    oceDebug(debug, "which=", which[w], "\n", sep = "")
+                    ats <- oce.plot.ts(x@data$time, x@data$distance[, 1, which[w] - 220],
+                        xlim = if (xlimGiven) xlim[w, ] else tlim,
+                        ylim = if (ylimGiven) ylim[w, ],
+                        xaxs = "i", col = col[w], lwd = lwd[w], cex = 1, cex.axis = 1, cex.lab = 1,
+                        main = main[w], ylab = paste("Distance", which[w] - 220), type = type, mgp = mgp,
+                        mar = omar, drawTimeRange = drawTimeRange, tformat = tformat,
+                        debug = debug - 1
+                    )
                 }
                 # FIXME delete the next block, after testing.
                 if (marginsAsImage && useLayout) {
@@ -3209,7 +3236,6 @@ setMethod(
 )
 
 
-
 #' Convert an adp Object to ENU Coordinates
 #'
 #' @param x an [adp-class] object.
@@ -3410,7 +3436,7 @@ beamToXyzAdp <- function(x, debug = getOption("oceDebug")) {
         stop("method is only for objects of class \"adp\"")
     }
     if (x[["oceCoordinate"]] != "beam") {
-        stop("input must be in beam coordinates")
+        stop("input must be in 'beam' coordinates, but it is in '", x[["oceCoordinate"]], "' coordinates")
     }
     if (is.ad2cp(x)) {
         oceDebug(debug, "beamToXyzAdp(x, debug=", debug, ") START\n", sep = "", unindent = 1)
@@ -3503,10 +3529,6 @@ beamToXyzAdp <- function(x, debug = getOption("oceDebug")) {
 #' on what is stored in the data, and so it depends greatly on instrument type
 #' and the style of original data format. This function handles data from
 #' RDI Teledyne, Sontek, and some Nortek instruments directly.
-#- However, Nortek
-#- data stored in in the AD2CP format are handled by the specialized
-#- function [xyzToEnuAdpAD2CP()], the documentation for which
-#- should be consulted, rather than the material given blow.
 #'
 #' The first step is to convert the (x,y,z) velocity components (stored in the
 #' three columns of `x[["v"]][,,1:3]`) into what RDI (reference 1, pages 11 and 12)
@@ -3527,7 +3549,6 @@ beamToXyzAdp <- function(x, debug = getOption("oceDebug")) {
 #' table, (X, Y, Z) denote instrument-coordinate velocities, (S, F, M) denote
 #' ship-coordinate velocities, and (H, P, R) denote heading, pitch, and roll.
 #'
-#' \tabular{rrrrrrrrrrrr}{
 #' **Case** \tab **Mfr.** \tab **Instr.** \tab **Orient.** \tab **H** \tab **P** \tab  **R** \tab  **S** \tab  **F** \tab  **M**\cr
 #'    1 \tab RDI    \tab ADCP   \tab up      \tab H    \tab arctan(tan(P)*cos(R)) \tab  R \tab -X \tab  Y \tab -Z\cr
 #'    2 \tab RDI    \tab ADCP   \tab down    \tab H    \tab arctan(tan(P)*cos(R)) \tab -R \tab  X \tab  Y \tab  Z\cr

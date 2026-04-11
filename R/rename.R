@@ -242,7 +242,8 @@ renameInternal <- function(names, dictionary = "ioos.csv", debug = 0) {
 #' `https://currents.soest.hawaii.edu/docs/adcp_doc/UHDAS_OPERATIONS/UHDAS_atsea/adcp_access/read_netCDF.html`
 #'
 #' 2. IOOS naming convention
-#'    `https://cfconventions.org/Data/cf-standard-names/78/build/cf-standard-name-table.html`
+# 2026-04-03: remote-build tests often fail on this cfconventions link.
+#' `https://cfconventions.org/Data/cf-standard-names/78/build/cf-standard-name-table.html`
 #'
 #' 3. The SBE names come from a processing manual that was once at
 #'    `http://www.seabird.com/document/sbe-data-processing-manual`, but as of

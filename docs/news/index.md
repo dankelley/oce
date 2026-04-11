@@ -131,10 +131,12 @@
   to
   - handle TOC, datasets and plans better (issue
     [\#2303](https://github.com/dankelley/oce/issues/2303) and related),
+  - handle bottom-track data correctly (issue
+    [\#2368](https://github.com/dankelley/oce/issues/2368))
   - read temperature correctly (issue
     [\#2324](https://github.com/dankelley/oce/issues/2324)),
   - save elements of AST (etc) individually, not within a list (issue
-    [\#2318](https://github.com/dankelley/oce/issues/2318)) and
+    [\#2318](https://github.com/dankelley/oce/issues/2318))
   - scale `altimeterRawSamples` by 1/2^15 (issue
     [\#2327](https://github.com/dankelley/oce/issues/2327)).
   - set `data@distance` only if NC (number of cells) is nonzero (issue
@@ -142,9 +144,14 @@
   - use number of raw altimeter samples from header, if it disagrees
     with value in record (issue
     [\#2326](https://github.com/dankelley/oce/issues/2326)).
-- Change `read.adp.rdi(..., which="??")` to return a data frame that
-  includes ensemble size (issue
-  [\#2329](https://github.com/dankelley/oce/issues/2329)).
+- Change
+  [`read.adp.rdi()`](https://dankelley.github.io/oce/reference/read.adp.rdi.md)
+  to
+  - read data from 3-beam horizontal devices (issue
+    [\#2369](https://github.com/dankelley/oce/issues/2369)).
+- Change `read.adp.rdi(..., which="??")` to
+  - return a data frame that includes ensemble size (issue
+    [\#2329](https://github.com/dankelley/oce/issues/2329)).
 - Change
   [`read.ctd.sbe()`](https://dankelley.github.io/oce/reference/read.ctd.sbe.md)
   to

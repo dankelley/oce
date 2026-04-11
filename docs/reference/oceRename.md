@@ -115,7 +115,7 @@ the developers.
     `https://currents.soest.hawaii.edu/docs/adcp_doc/UHDAS_OPERATIONS/UHDAS_atsea/adcp_access/read_netCDF.html`
 
 2.  IOOS naming convention
-    <https://cfconventions.org/Data/cf-standard-names/78/build/cf-standard-name-table.html>
+    `https://cfconventions.org/Data/cf-standard-names/78/build/cf-standard-name-table.html`
 
 3.  The SBE names come from a processing manual that was once at
     `http://www.seabird.com/document/sbe-data-processing-manual`, but as
@@ -171,6 +171,7 @@ if (requireNamespace("curl")) {
     }
     unlink(file)
 }
+#> Loading required namespace: curl
 #> * Time: 2023-01-05 13:14:45
 #> * Data Overview
 #> 
@@ -212,8 +213,8 @@ if (requireNamespace("curl")) {
 #> 
 #> * Processing Log
 #> 
-#>     - 2026-03-16 15:49:39 UTC: `Create oce object`
-#>     - 2026-03-16 15:49:39 UTC: `read.netcdf("/var/folders/8b/l4h64m1j22v5pb7vj049ff140000gn/T//RtmppgqIhG/fileeb234107fb27.nc")`
+#>     - 2026-04-09 19:44:27 UTC: `Create oce object`
+#>     - 2026-04-09 19:44:27 UTC: `read.netcdf("/var/folders/8b/l4h64m1j22v5pb7vj049ff140000gn/T//RtmpqI8GlK/file117706bbf3970.nc")`
 #> * Time: 2023-01-05 13:14:45
 #> * Data Overview
 #> 
@@ -257,7 +258,7 @@ if (requireNamespace("curl")) {
 #> 
 #> * Processing Log
 #> 
-#>     - 2026-03-16 15:49:39 UTC: `Create oce object`
-#>     - 2026-03-16 15:49:39 UTC: `read.netcdf("/var/folders/8b/l4h64m1j22v5pb7vj049ff140000gn/T//RtmppgqIhG/fileeb234107fb27.nc")`
-#>     - 2026-03-16 15:49:39 UTC: `oceRename(..., "/private/var/folders/8b/l4h64m1j22v5pb7vj049ff140000gn/T/RtmpROJlPr/temp_libpathe75375ad9206/oce/extdata/dictionary_ioos.csv")`
+#>     - 2026-04-09 19:44:27 UTC: `Create oce object`
+#>     - 2026-04-09 19:44:27 UTC: `read.netcdf("/var/folders/8b/l4h64m1j22v5pb7vj049ff140000gn/T//RtmpqI8GlK/file117706bbf3970.nc")`
+#>     - 2026-04-09 19:44:27 UTC: `oceRename(..., "/private/var/folders/8b/l4h64m1j22v5pb7vj049ff140000gn/T/RtmpA4dTGC/temp_libpath116d56d689885/oce/extdata/dictionary_ioos.csv")`
 ```

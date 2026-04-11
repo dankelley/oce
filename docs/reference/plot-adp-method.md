@@ -54,7 +54,7 @@ plot(
 
 - which:
 
-  list of desired plot types. These are graphed in panels running down
+  a list of desired plot types. These are graphed in panels running down
   from the top of the page. If `which` is not given, the plot will show
   images of the distance-time dependence of velocity for each beam. See
   “Details” for the meanings of various values of `which`.
@@ -277,7 +277,10 @@ add a grid to the plot.
 ## Details
 
 The plot may have one or more panels, with the content being controlled
-by the `which` argument.
+by the `which` argument. Note that all of the descriptions below apply
+to profile-based data (that is, data that have multiple distance cells).
+For bottom-track data (which have only a single cell), time-series plots
+are used in place of image plots, as appropriate.
 
 - `which=1:4` (or `which="u1"` to `"u4"`) yield a distance-time image
   plot of a velocity component. If `x` is in `beam` coordinates
@@ -419,6 +422,10 @@ by the `which` argument.
 - `which=212` (or `"magnetometerz"`) for a time-series of the z
   component of the magnetometer reading.
 
+- `which=221:224` (or `which="distance1"` to `"distance4"`) yield a
+  time-series plot of distance to the bottom (or surface, if the adp is
+  mounted vertically. At the moment, this only works for AD2CP devices.
+
 In addition to the above, the following shortcuts are defined:
 
 - `which="velocity"` equivalent to `which=1:3` or `1:4` (depending on
@@ -438,6 +445,11 @@ In addition to the above, the following shortcuts are defined:
 
 - `which="accelerometer"` to plot a 3-panel timeseries of acceleration,
   equivalent to `which=110:102`.
+
+- `which="distance"` equivalent to
+  `which=c("distance1", "distance2", "distance3", "distance4")`, for the
+  distance to the bottom (or surface) for the bottom-track record of
+  AD2CP data.
 
 The color scheme for image plots (`which` in 1:12) is provided by the
 `col` argument, which is passed to

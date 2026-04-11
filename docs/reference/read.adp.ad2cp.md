@@ -179,26 +179,6 @@ Note 3: Code 0xa0 (`text`) holds a text string that defines the settings
 used in creating the file. This can be quite helpful in debugging and
 analysis.
 
-## Problems
-
-1.  In reading a file with `altimeterRaw` data components, a potential
-    problem was noticed with that the part of the file that indicates
-    the number of altimeter samples (called `NSAMP` in the Nortek
-    documentation). The stated value was 2 times the value held in the
-    header (text) portion of the file, and reading the larger value
-    created a matrix that had the upper half filled with odd striping
-    patterns. Therefore, the function checks the two indicates of
-    length, and used the one in the text block if they disagree. (See
-    https://github.com/dankelley/oce/issues/2326.)
-
-2.  Related to point 1, it is unclear from the manufacturer's manuals
-    whether `NSAMP` is a 2-byte value (as stated in old manuals) or a
-    4-byte value (as in a manual available in June 2025)? The present
-    function assumes a 4-byte value, which works with at least one test
-    file available to the authors. The manufacturer has been asked for
-    clarity on this; again, see notes at
-    https://github.com/dankelley/oce/issues/2326.
-
 ## How the binary file is decoded
 
 This file type, like other acoustic-Doppler types, is read with a hybrid
@@ -234,16 +214,56 @@ for users who want to inspect the code or build upon it.
 4.  Finally, in R, the acquired items are inserted into the `data` or
     `metadata` slot of the return value, according to oce convention.
 
+## Problems
+
+1.  In reading a file with `altimeterRaw` data components, a potential
+    problem was noticed with that the part of the file that indicates
+    the number of altimeter samples (called `NSAMP` in the Nortek
+    documentation). The stated value was 2 times the value held in the
+    header (text) portion of the file, and reading the larger value
+    created a matrix that had the upper half filled with odd striping
+    patterns. Therefore, the function checks the two indicates of
+    length, and used the one in the text block if they disagree. (See
+    https://github.com/dankelley/oce/issues/2326.)
+
+2.  Related to point 1, it is unclear from the manufacturer's manuals
+    whether `NSAMP` is a 2-byte value (as stated in old manuals) or a
+    4-byte value (as in a manual available in June 2025)? The present
+    function assumes a 4-byte value, which works with at least one test
+    file available to the authors. The manufacturer has been asked for
+    clarity on this; again, see notes at
+    https://github.com/dankelley/oce/issues/2326.
+
+3.  Tentative support for reading `which=bottomTrack` was added in
+    April 2026. It is advisable to be on the lookout for problems with
+    reading this data type. (For example, the field called
+    `ensembleCounter` is incorrect.) The cause of this concern is that
+    the latest relevant Nortek document (Reference 3) does not discuss
+    the format of bottom-track data, and so the present function had to
+    be written based on an old document (Reference 4), along with some
+    advice that was kindly provided by Nortek staff on GitHub (Reference
+    5).
+
 ## References
 
-Nortek AS. “Integrators Guide: Signature.” Nortek AS, April 30, 2025.
-`https://support.nortekgroup.com/hc/en-us/article_attachments/19830760385436`
-(this link failed in a test on 2025-07-30).
+1.  Nortek AS. “Integrator's Guide: Signature.” Nortek AS, April
+    30, 2025.
+    `https://support.nortekgroup.com/hc/en-us/article_attachments/19830760385436`
+    (this link failed in a test on 2025-07-30).
 
-Nortek AS. “Signature Integration 55\|250\|500\|1000kHz (2024.1),” 2024.
-(This was once at
-`https://support.nortekgroup.com/hc/en-us/articles/360029513952-Integrators-Guide-Signature`
-but a test on 2025-05-26 revealed that this link no longer worked.)
+2.  Nortek AS. “Signature Integration 55\|250\|500\|1000kHz
+    (2024.1),” 2024. (This was once at
+    `https://support.nortekgroup.com/hc/en-us/articles/360029513952-Integrators-Guide-Signature`
+    but a test on 2025-05-26 revealed that this link no longer worked.)
+
+3.  Nortek AS. “Integrator's Guide Signature.” March 5, 2026.
+    <https://support.nortekgroup.com/hc/en-us/article_attachments/25920785046428>.
+
+4.  Nortek AS. “Signature Integration 55\|250\|500\|1000kHz (2017).”
+    February 10, 2017.
+    <https://assets.nortekgroup.com/software/N3015-007-Integrators-Guide-AD2CP_1018.pdf>.
+
+5.  <https://github.com/dankelley/oce/issues/2368>
 
 ## See also
 
