@@ -3549,6 +3549,7 @@ beamToXyzAdp <- function(x, debug = getOption("oceDebug")) {
 #' table, (X, Y, Z) denote instrument-coordinate velocities, (S, F, M) denote
 #' ship-coordinate velocities, and (H, P, R) denote heading, pitch, and roll.
 #'
+#' \tabular{llllllllll}{
 #' **Case** \tab **Mfr.** \tab **Instr.** \tab **Orient.** \tab **H** \tab **P** \tab  **R** \tab  **S** \tab  **F** \tab  **M**\cr
 #'    1 \tab RDI    \tab ADCP   \tab up      \tab H    \tab arctan(tan(P)*cos(R)) \tab  R \tab -X \tab  Y \tab -Z\cr
 #'    2 \tab RDI    \tab ADCP   \tab down    \tab H    \tab arctan(tan(P)*cos(R)) \tab -R \tab  X \tab  Y \tab  Z\cr
@@ -3558,37 +3559,11 @@ beamToXyzAdp <- function(x, debug = getOption("oceDebug")) {
 #'    6 \tab Sontek \tab ADP    \tab down    \tab H-90 \tab -P                    \tab -R \tab  X \tab  Y \tab  Z\cr
 #'    7 \tab Sontek \tab PCADP  \tab up      \tab H-90 \tab R                     \tab -P \tab  X \tab  Y \tab  Z\cr
 #'    8 \tab Sontek \tab PCADP  \tab down    \tab H-90 \tab R                     \tab -P \tab  X \tab  Y \tab  Z\cr
-#' }
+#'}
 #'
 #' Finally, a standardized rotation matrix is used to convert from ship
 #' coordinates to earth coordinates (see pages 13 and 14 of
 #' the RDI coordinate transformation manual, reference 1).
-## FIXME: possibly fix and uncomment this block but the formula from
-## FIXME: the previous version of the docs had no operator where I put
-## FIXME: a '?' below, so it was wrong anyway, and therefore serving
-## FIXME: no purpose. I've grepped the code for rbind and am not seeing
-## FIXME: what is stated here. Maybe we did it that way in the past,
-## FIXME: or maybe that is done in C++ code somewhere. In any case, I
-## FIXME: don't have time at 2025-11-28 to look at this so I'm just
-## FIXME: commenting it out.  Perhaps CR has ideas on this...
-## FIXME:  This matrix is based on sines
-## FIXME:  and cosines of heading, pitch, and roll.
-## FIXME:  If `CH` and `SH` denote
-## FIXME:  cosine and sine of heading (after adjusting for declination), with similar
-## FIXME: terms for pitch and roll using second letters `P` and `R`, the
-## FIXME:  rotation matrix is as follows
-## FIXME:
-## FIXME:  ```
-## FIXME:  rbind(c( CH*CR + SH*SP*SR, SH*CP,  CH*SR - SH*SP*CR),
-## FIXME:        c(-SH*CR ? CH*SP*SR, CH*CP, -SH*SR - CH*SP*CR),
-## FIXME:        c( -CP*SR,              SP,  CP*CR           ))
-## FIXME:  ```
-## FIXME:
-## FIXME: This matrix is left-multiplied by a matrix with three rows, the top a vector
-## FIXME: of "starboard" values, the middle a vector of "forward" values, and the
-## FIXME: bottom a vector of "mast" values.  Finally, the columns of
-## FIXME: `data$v[,,1:3]` are filled in with the result of the matrix
-## FIXME: multiplication.
 #'
 #' @param x an [adp-class] object.
 #'
