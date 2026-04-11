@@ -579,7 +579,7 @@ summary(adp)
 #> ADP Summary
 #> -----------
 #> 
-#> * Filename:          "/private/var/folders/8b/l4h64m1j22v5pb7vj049ff140000gn/T/RtmpA4dTGC/temp_libpath116d56d689885/oce/extdata/adp_rdi.000"
+#> * Filename:          "/private/var/folders/8b/l4h64m1j22v5pb7vj049ff140000gn/T/RtmpbSRLEI/temp_libpath5a836c21f22a/oce/extdata/adp_rdi.000"
 #> * Instrument:        adcp
 #> * Manufacturer:      teledyne rdi
 #> * Serial number:     unknown
@@ -634,5 +634,5 @@ summary(adp)
 #> 
 #> * Processing Log
 #> 
-#>     - 2026-04-09 19:44:41 UTC: `read.adp.rdi(file = system.file("extdata", "adp_rdi.000", package = "oce"))`
+#>     - 2026-04-11 11:45:51 UTC: `read.adp.rdi(file = system.file("extdata", "adp_rdi.000", package = "oce"))`
 ```

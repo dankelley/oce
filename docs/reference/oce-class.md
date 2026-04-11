@@ -56,6 +56,6 @@ str(new("oce"))
 #>   .. ..$ flags: list()
 #>   ..@ data         : list()
 #>   ..@ processingLog:List of 2
-#>   .. ..$ time : POSIXct[1:1], format: "2026-04-09 19:44:19"
+#>   .. ..$ time : POSIXct[1:1], format: "2026-04-11 11:45:29"
 #>   .. ..$ value: chr "Create oce object"
 ```

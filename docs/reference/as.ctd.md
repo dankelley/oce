@@ -326,9 +326,9 @@ summary(ctd)
 #> 
 #> * Processing Log
 #> 
-#>     - 2026-04-09 19:43:46 UTC: `create 'ctd' object`
-#>     - 2026-04-09 19:43:46 UTC: `as.ctd(salinity = salinity, temperature = temperature, pressure = pressure)`
-#>     - 2026-04-09 19:43:46 UTC: `oceSetData(object = ctd, name = "fluorescence", value = fluo,     unit = list(unit = expression(mg/m^3), scale = ""))`
+#>     - 2026-04-11 11:44:56 UTC: `create 'ctd' object`
+#>     - 2026-04-11 11:44:56 UTC: `as.ctd(salinity = salinity, temperature = temperature, pressure = pressure)`
+#>     - 2026-04-11 11:44:56 UTC: `oceSetData(object = ctd, name = "fluorescence", value = fluo,     unit = list(unit = expression(mg/m^3), scale = ""))`
 
 # 2. fake data, with supplied units (which are the defaults, actually)
 ctd <- as.ctd(salinity, temperature, pressure,

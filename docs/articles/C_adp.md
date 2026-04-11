@@ -478,8 +478,8 @@ summary(m)
 #> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 #> * Processing Log
 #> 
-#>     - 2026-04-09 19:45:36 UTC: `create 'tidem' object`
-#>     - 2026-04-09 19:45:36 UTC: `tidem(t = as.sealevel(pressure, time))`
+#>     - 2026-04-11 11:46:46 UTC: `create 'tidem' object`
+#>     - 2026-04-11 11:46:46 UTC: `tidem(t = as.sealevel(pressure, time))`
 ```
 
 (Note that it fitted for M2, but not S2, because the Rayleigh criterion
