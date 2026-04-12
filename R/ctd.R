@@ -3390,9 +3390,15 @@ setMethod(
     definition = function(x, subset, ...) {
         subsetString <- paste(deparse(substitute(expr = subset, env = environment())), collapse = " ")
         dots <- list(...)
+        debug <- getOption("oceDebug")
         dotsNames <- names(dots)
+        if (length(dots) && ("debug" %in% dotsNames)) {
+            debug <- dots$debug
+        }
+oceDebug(debug, "subset(<ctd>) START", sep="", unindent=1)
         indicesGiven <- length(dots) && ("indices" %in% dotsNames)
         if (indicesGiven) {
+            oceDebug(debug, "'indices' was given\n")
             if (!missing(subset)) {
                 stop("cannot specify both 'subset' and 'indices'")
             }
@@ -3414,32 +3420,37 @@ setMethod(
                 res@processingLog,
                 paste("subset.ctd(x, subset=", subsetString, ")", sep = "")
             )
+            oceDebug(debug, "subset(<ctd>) END\n", unindent=1)
             return(res)
-        }
-        res <- x
-        # res@metadata <- x@metadata
-        # res@processingLog <- x@processingLog
-        # FIXME: next 2 lines used to be in the loop but I don't see why, so moved out
-        r <- eval(substitute(expr = subset, env = environment()), x@data, parent.frame(2))
-        r <- r & !is.na(r)
-        nr <- length(r)
-        for (i in seq_along(res@data)) {
-            if (length(res@data[[i]]) == nr) {
-                res@data[[i]] <- res@data[[i]][r]
+        } else {
+            oceDebug(debug, "'indices' was not given\n")
+            res <- x
+            # FIXME: next 2 lines used to be in the loop but I don't see why, so moved out
+            if (!("time" %in% names(x@data))) {
+                x@data$time <- x[["time"]]
             }
-        }
-        for (i in seq_along(res@metadata$flags)) {
-            if (length(res@metadata$flags[[i]]) == nr) {
-                res@metadata$flags[[i]] <- res@metadata$flags[[i]][r]
+            r <- eval(substitute(expr = subset, env = environment()), x@data, parent.frame(2))
+            r <- r & !is.na(r)
+            nr <- length(r)
+            for (i in seq_along(res@data)) {
+                if (length(res@data[[i]]) == nr) {
+                    res@data[[i]] <- res@data[[i]][r]
+                }
             }
+            for (i in seq_along(res@metadata$flags)) {
+                if (length(res@metadata$flags[[i]]) == nr) {
+                    res@metadata$flags[[i]] <- res@metadata$flags[[i]][r]
+                }
+            }
+            # names(res@data) <- names(x@data)
+            subsetString <- paste(deparse(substitute(expr = subset, env = environment())), collapse = " ")
+            res@processingLog <- processingLogAppend(
+                res@processingLog,
+                paste("subset.ctd(x, subset=", subsetString, ")", sep = "")
+            )
+            oceDebug(debug, "subset(<ctd>) END\n", unindent=1)
+            res
         }
-        # names(res@data) <- names(x@data)
-        subsetString <- paste(deparse(substitute(expr = subset, env = environment())), collapse = " ")
-        res@processingLog <- processingLogAppend(
-            res@processingLog,
-            paste("subset.ctd(x, subset=", subsetString, ")", sep = "")
-        )
-        res
     }
 )
 
