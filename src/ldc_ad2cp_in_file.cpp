@@ -176,7 +176,8 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, NumericVector from,
   //   Rprintf("DAN size of 'int' %lu\n", sizeof(int));                     // 4
   //   Rprintf("DAN size of 'long int' %lu\n", sizeof(long int));           // 8
   //   Rprintf("DAN size of 'long long int' %lu\n", sizeof(long long int)); // 8
-  Debug = (Debug < 0 ? 0 : Debug);
+  if (Debug < 0)
+    Debug = 0;
   std::string fn = Rcpp::as<std::string>(filename(0));
   FILE *fp = fopen(fn.c_str(), "rb");
   if (!fp)
@@ -189,19 +190,17 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, NumericVector from,
     Rcpp::stop("'by' must be positive but it is %ld", By);
 
   // Find file size, and return to start
+  fseek(fp, 0L, SEEK_END);
   long int filesize_tmp = ftell(fp); // made unsigned long later
   if (filesize_tmp < 0)
     Rcpp::stop("this ad2cp file is empty");
-  fseek(fp, 0L, SEEK_END);
   unsigned long int filesize = (unsigned long int) filesize_tmp;
   fseek(fp, 0L, SEEK_SET);
   if (Debug) {
-    Rprintf("do_ldc_ad2cp_in_file(filename, from=%ld, to=%ld, by=%ld, "
+    Rprintf("do_ldc_ad2cp_in_file(filename=%s, from=%ld, to=%ld, by=%ld, "
             "debug=%d) {\n",
-            From, To, By, Debug);
-    Rprintf("  filename=\"%s\"\n", fn.c_str());
-    // Rprintf("  ignoreChecksums[0]=%d\n", ignoreChecksums[0]);
-    Rprintf("  filesize=%ld bytes\n", filesize);
+            fn.c_str(), From, To, By, Debug);
+    Rprintf("  filesize=%lu bytes\n", filesize);
   }
   unsigned long int chunk = 0;
   unsigned long int cindex = 0; //, cindex_last_good = 0;

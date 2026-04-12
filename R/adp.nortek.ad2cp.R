@@ -204,10 +204,7 @@ ad2cpHeaderValue <- function(x, key, item, numeric = TRUE, default, plan = 0, de
     }
     key2 <- paste0("^", key, ",")
     oceDebug(debug, vectorShow(key2))
-    # message("DAN 1: key2=", key2)
     hline <- header[grep(key2, header)]
-    # message("DAN 2: next is hline")
-    # print(hline)
     if (length(hline) > 1) {
         stop("header line is not distinct; try using a comma at the end of key")
     }
@@ -222,7 +219,6 @@ ad2cpHeaderValue <- function(x, key, item, numeric = TRUE, default, plan = 0, de
         hline <- hline[1]
     }
     res <- gsub(paste("^.*", item, "=([^,]*).*$", sep = ""), "\\1", hline)
-    # message("DAN 3: res=", res)
     if (nchar(res)) {
         # message("ad2cpHeaderValue(key='", key, "', item='", item, "' case 1")
         res <- if (numeric) as.numeric(res) else gsub("\"", "", res)
@@ -804,9 +800,8 @@ read.adp.ad2cp <- function(
     dataSize <- readBin(buf[5:6], what = "integer", n = 1L, size = 2L, endian = "little", signed = FALSE)
     oceDebug(debug, "dataSize:", dataSize, "\n")
     oceDebug(debug, "buf[1+headerSize+dataSize=", 1 + headerSize + dataSize, "]=0x", buf[1 + headerSize + dataSize], " (expect 0xa5)\n", sep = "")
-    # Note that we read the *whole* file. We may use `from`, `to` and `by`
-    # later, though.
-    nav <- do_ldc_ad2cp_in_file(filename, from = 1L, to = 1e9, by = 1L, debug = if (debug > 4) 1 else 0)
+    # Note that we read the *whole* file here, but later we use `from`, `to` and `by`.
+    nav <- do_ldc_ad2cp_in_file(filename, from = 1L, to = 1e9, by = 1L, debug = debug - 1)
     d <- list(buf = buf, index = nav$index, headerLength = nav$headerLength, dataLength = nav$dataLength, id = nav$id)
     # cat("FIXME ad2cp main L790 table(d$id):\n")
     # print(table(d$id))
@@ -1334,7 +1329,6 @@ read.adp.ad2cp <- function(
     # 0x30 - waves (not handled yet)
     # 0xA0 - String Data Record, eg. GPS NMEA data, comment from the FWRITE command.
     # Set up pointers to records matching these keys.
-    #-message("DAN 1");browser()
     p <- list(
         burst = which(d$id == 0x15),
         average = which(d$id == 0x16),
@@ -2202,7 +2196,6 @@ read.adp.ad2cp <- function(
                 } else {
                     stop("cannot infer `nbeams` from the data chunks or the TEXT block")
                 }
-                message("DAN DAN DAN DAN DAN DAN NB=",NB)
             }
             iv <- gappyIndex(i, i0v, 4L * NB)
             tmp <- readBin(d$buf[iv], "integer", size = 4L, n = NB * NP, endian = "little")
@@ -2218,7 +2211,6 @@ read.adp.ad2cp <- function(
             oceDebug(debug, "reading bottom-track distance\n")
             tmp <- readBin(d$buf[iv], "integer", size = 4L, n = NB * NP, endian = "little")
             rval$distance <- 1e-3 * matrix(tmp, ncol = NB, byrow = FALSE)
-            # message("FIXME DAN 2")
             i0v <<- i0v + 4L * NB
         }
         # figure-of-merit [Nortek 2017, Table 6.1.3, pages 60 and 62]
@@ -2348,7 +2340,6 @@ read.adp.ad2cp <- function(
             iv <- gappyIndex(i, i0v, 4L * NB)
             tmp <- readBin(d$buf[iv], "integer", size = 4L, n = NB * NP, endian = "little")
             rval$distance <- 1e-3 * matrix(tmp, ncol = NB, byrow = FALSE)
-            # message("FIXME DAN 3")
             i0v <<- i0v + 4L * NB
         }
         # figure-of-merit [Nortek 2017, Table 6.1.3, pages 60 and 62]
@@ -2410,7 +2401,6 @@ read.adp.ad2cp <- function(
             powerLevel = powerLevel[look]
         )
         rval$distance <- rval$blankingDistance + seq(0, by = rval$cellSize, length.out = rval$numberOfCells)
-        # message("FIXME DAN 4")
         i <- d$index[look] # pointers to "echosounder" chunks in buf
         oceDebug(debug, "in readEchosounder: ", vectorShow(i))
         i0v <<- 1L + offsetOfData[1] # pointer to data (incremented by getItemFromBuf() later).
@@ -2736,7 +2726,6 @@ read.adp.ad2cp <- function(
         if (!length(XMIT1) || !length(BD)) {
             warning("cannot infer distance for echosounderRaw record; set to 1, 2, which is almost certainly very wrong")
             data$distance <- seq_len(data$numberOfSamples)
-            # message("FIXME DAN 5")
         } else {
             L <- 0.5 * XMIT1 * soundSpeed[1] + BD
             samplingRate <- data$samplingRate
@@ -2746,7 +2735,6 @@ read.adp.ad2cp <- function(
             data$cellSize <- L / startSampleIndex
             # data$cellSize <- L / data$startSampleIndex
             data$distance <- seq(0, by = res@metadata$cellSize, length.out = data$numberOfSamples)
-            # message("FIXME DAN 6")
             oceDebug(
                 debug, "computing echosounderRaw$distance based ",
                 "on my interpretation of an email sent by RE/Nortek on 2022-09-01\n"
