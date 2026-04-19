@@ -87,7 +87,8 @@
 <li>Change <code><a href="../reference/pwelch.html">pwelch()</a></code> to fix error if <code>nfft</code> and <code>spec</code> are provided (issue <a href="https://github.com/dankelley/oce/issues/2299" class="external-link">#2299</a>).</li>
 <li>Change <code><a href="../reference/read.amsr.html">read.amsr()</a></code> to handle realtime data files (issue <a href="https://github.com/dankelley/oce/issues/2230" class="external-link">#2230</a>).</li>
 <li>Change <code><a href="../reference/read.adp.ad2cp.html">read.adp.ad2cp()</a></code> to
-<ul><li>handle TOC, datasets and plans better (issue <a href="https://github.com/dankelley/oce/issues/2303" class="external-link">#2303</a> and related),</li>
+<ul><li>rename hex code 0x1f from <code>averageAltimeter</code> to <code>averageAltimeterRaw</code>, for consistency with Nortek manuals as of 2026. (The old name is still accepted, but a warning is issued.)</li>
+<li>handle TOC, datasets and plans better (issue <a href="https://github.com/dankelley/oce/issues/2303" class="external-link">#2303</a> and related),</li>
 <li>handle bottom-track data correctly (issue <a href="https://github.com/dankelley/oce/issues/2368" class="external-link">#2368</a>)</li>
 <li>read temperature correctly (issue <a href="https://github.com/dankelley/oce/issues/2324" class="external-link">#2324</a>),</li>
 <li>save elements of AST (etc) individually, not within a list (issue <a href="https://github.com/dankelley/oce/issues/2318" class="external-link">#2318</a>)</li>

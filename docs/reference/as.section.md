@@ -139,8 +139,8 @@ summary(sec1)
 #>     2  fake  -63.6339   44.6843     181    NA 2003-10-15 15:38
 #> * Processing Log
 #> 
-#>     - 2026-04-11 11:44:57 UTC: `create 'section' object`
-#>     - 2026-04-11 11:44:57 UTC: `as.section(salinity = c("ctd", "fake"))`
+#>     - 2026-04-19 17:02:49 UTC: `create 'section' object`
+#>     - 2026-04-19 17:02:49 UTC: `as.section(salinity = c("ctd", "fake"))`
 # vector of CTD objects
 ctds <- vector("list", 2)
 ctds[[1]] <- ctd
@@ -159,8 +159,8 @@ summary(sec2)
 #>     2  fake  -63.6339   44.6843     181    44 2003-10-15 15:38
 #> * Processing Log
 #> 
-#>     - 2026-04-11 11:44:57 UTC: `create 'section' object`
-#>     - 2026-04-11 11:44:57 UTC: `as.section(salinity = ctds)`
+#>     - 2026-04-19 17:02:49 UTC: `create 'section' object`
+#>     - 2026-04-19 17:02:49 UTC: `as.section(salinity = ctds)`
 # argo data (a subset)
 data(argo)
 sec3 <- as.section(subset(argo, profile < 5))
@@ -178,6 +178,6 @@ summary(sec3)
 #>     4     4  -22.4160   61.2520      56    NA 2005-11-28 14:12
 #> * Processing Log
 #> 
-#>     - 2026-04-11 11:44:57 UTC: `create 'section' object`
-#>     - 2026-04-11 11:44:57 UTC: `as.section(salinity = subset(argo, profile < 5))`
+#>     - 2026-04-19 17:02:49 UTC: `create 'section' object`
+#>     - 2026-04-19 17:02:49 UTC: `as.section(salinity = subset(argo, profile < 5))`
 ```

@@ -35,24 +35,24 @@ raw form of the code linked with the name, as in the example.
 
 The mapping from code (hex or decimal) to oce name is as follows.
 
-|            |                |                     |
-|------------|----------------|---------------------|
-| code (raw) | code (integer) | oce name            |
-| ———-       | ————–          | —————–              |
-| `0x15`     | 21             | `burst`             |
-| `0x16`     | 22             | `average`           |
-| `0x17`     | 23             | `bottomTrack`       |
-| `0x18`     | 24             | `interleavedBurst`  |
-| `0x1a`     | 26             | `burstAltimeterRaw` |
-| `0x1b`     | 27             | `DVLBottomTrack`    |
-| `0x1c`     | 28             | `echosounder`       |
-| `0x1d`     | 29             | `DVLWaterTrack`     |
-| `0x1e`     | 30             | `altimeter`         |
-| `0x1f`     | 31             | `averageAltimeter`  |
-| `0x23`     | 35             | `echosounderRaw`    |
-| `0x24`     | 36             | `echosounderRawTx`  |
-| `0x30`     | 48             | `waves`             |
-| `0xa0`     | 160            | `text`              |
+|            |                |                       |
+|------------|----------------|-----------------------|
+| code (raw) | code (integer) | oce name              |
+| ———-       | ————–          | —————–                |
+| `0x15`     | 21             | `burst`               |
+| `0x16`     | 22             | `average`             |
+| `0x17`     | 23             | `bottomTrack`         |
+| `0x18`     | 24             | `interleavedBurst`    |
+| `0x1a`     | 26             | `burstAltimeterRaw`   |
+| `0x1b`     | 27             | `DVLBottomTrack`      |
+| `0x1c`     | 28             | `echosounder`         |
+| `0x1d`     | 29             | `DVLWaterTrack`       |
+| `0x1e`     | 30             | `altimeter`           |
+| `0x1f`     | 31             | `averageAltimeterRaw` |
+| `0x23`     | 35             | `echosounderRaw`      |
+| `0x24`     | 36             | `echosounderRawTx`    |
+| `0x30`     | 48             | `waves`               |
+| `0xa0`     | 160            | `text`                |
 
 ## References
 

@@ -158,8 +158,8 @@ summary(sl)
 #> 
 #> * Processing Log
 #> 
-#>     - 2026-04-11 11:44:57 UTC: `create 'sealevel' object`
-#>     - 2026-04-11 11:44:57 UTC: `as.sealevel(elevation = elevation)`
+#>     - 2026-04-19 17:02:49 UTC: `create 'sealevel' object`
+#>     - 2026-04-19 17:02:49 UTC: `as.sealevel(elevation = elevation)`
 
 # As above, but start at the Y2K time.
 time <- as.POSIXct("2000-01-01") + h * 3600
@@ -181,6 +181,6 @@ summary(sl)
 #> 
 #> * Processing Log
 #> 
-#>     - 2026-04-11 11:44:57 UTC: `create 'sealevel' object`
-#>     - 2026-04-11 11:44:57 UTC: `as.sealevel(elevation = elevation, time = time)`
+#>     - 2026-04-19 17:02:49 UTC: `create 'sealevel' object`
+#>     - 2026-04-19 17:02:49 UTC: `as.sealevel(elevation = elevation, time = time)`
 ```

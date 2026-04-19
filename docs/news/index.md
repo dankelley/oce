@@ -129,6 +129,9 @@
 - Change
   [`read.adp.ad2cp()`](https://dankelley.github.io/oce/reference/read.adp.ad2cp.md)
   to
+  - rename hex code 0x1f from `averageAltimeter` to
+    `averageAltimeterRaw`, for consistency with Nortek manuals as
+    of 2026. (The old name is still accepted, but a warning is issued.)
   - handle TOC, datasets and plans better (issue
     [\#2303](https://github.com/dankelley/oce/issues/2303) and related),
   - handle bottom-track data correctly (issue

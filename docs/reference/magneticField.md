@@ -100,13 +100,13 @@ library(oce)
 # 1. Today's value at Halifax NS
 magneticField(-(63 + 36 / 60), 44 + 39 / 60, Sys.Date())
 #> $declination
-#> [1] -16.15195
+#> [1] -16.149
 #> 
 #> $inclination
-#> [1] 66.27642
+#> [1] 66.27429
 #> 
 #> $intensity
-#> [1] 51028.84
+#> [1] 51027.09
 #> 
 
 # 2. World map of declination in year 2025.

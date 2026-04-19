@@ -87,19 +87,19 @@ summary(as.cm(t, u, v, p))
 #> ----------
 #> 
 #> * North:         magnetic
-#> * Time: 2026-04-11 08:44:56 to 2026-04-11 08:45:46 (51 samples, mean increment 1 s)
+#> * Time: 2026-04-19 14:02:48 to 2026-04-19 14:03:38 (51 samples, mean increment 1 s)
 #> * Data Overview
 #> 
 #>                     Min.       Mean       Max.       Dim. NAs
-#>     time            1775907897 1775907922 1775907947 51   0  
+#>     time            1776618169 1776618194 1776618219 51   0  
 #>     u [m/s]         -3.5634    0.18818    2.6826     51   0  
 #>     v [m/s]         -2.2084    0.033611   2.3168     51   0  
 #>     pressure [dbar] 98.1       100.23     102.56     51   0  
 #> 
 #> * Processing Log
 #> 
-#>     - 2026-04-11 11:44:56 UTC: `create 'cm' object`
-#>     - 2026-04-11 11:44:56 UTC: `as.cm(time = t, u = u, v = v, pressure = p)`
+#>     - 2026-04-19 17:02:48 UTC: `create 'cm' object`
+#>     - 2026-04-19 17:02:48 UTC: `as.cm(time = t, u = u, v = v, pressure = p)`
 
 # Example 2: creation from an adv object
 data(adv)
@@ -128,5 +128,5 @@ summary(as.cm(adv))
 #>     - 2015-12-23 17:53:55 UTC: `use aquadoppHR heading; despike own pitch and roll`
 #>     - 2015-12-23 17:54:11 UTC: `beamToXyzAdv(x = x)`
 #>     - 2015-12-23 17:54:34 UTC: `xyzToEnu(x, declination=-18.099, horizontalCase=TRUE, sensorOrientiation=upward, debug=0)`
-#>     - 2026-04-11 11:44:56 UTC: `as.cm(time = adv)`
+#>     - 2026-04-19 17:02:48 UTC: `as.cm(time = adv)`
 ```

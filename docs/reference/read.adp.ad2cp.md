@@ -149,33 +149,65 @@ The permitted values for `dataType` are shown in the table below; the
 `dataType` argument of `read.adp.ad2cp()` may be given as listed in any
 of the first 3 columns of this table.
 
-|            |                |                     |       |
-|------------|----------------|---------------------|-------|
-| code (raw) | code (integer) | oce name            | notes |
-| ———-       | ————–          | ——————-             | ——    |
-| `0x15`     | 21             | `burst`             | \-    |
-| `0x16`     | 22             | `average`           | \-    |
-| `0x17`     | 23             | `bottomTrack`       | \-    |
-| `0x18`     | 24             | `interleavedBurst`  | \-    |
-| `0x1a`     | 26             | `burstAltimeterRaw` | \-    |
-| `0x1b`     | 27             | `DVLBottomTrack`    | \-    |
-| `0x1c`     | 28             | `echosounder`       | \-    |
-| `0x1d`     | 29             | `DVLWaterTrack`     | \-    |
-| `0x1e`     | 30             | `altimeter`         | \-    |
-| `0x1f`     | 31             | `averageAltimeter`  | \-    |
-| `0x23`     | 35             | `echosounderRaw`    | \-    |
-| `0x24`     | 36             | `echosounderRawTx`  | 1     |
-| `0x30`     | 48             | `waves`             | 2     |
-| `0xa0`     | 160            | `text`              | 3     |
+|            |                |                       |       |
+|------------|----------------|-----------------------|-------|
+| code (raw) | code (integer) | oce name              | notes |
+| ———-       | ————–          | ——————-               | ——    |
+| `0x15`     | 21             | `burst`               | \-    |
+| `0x16`     | 22             | `average`             | \-    |
+| `0x17`     | 23             | `bottomTrack`         | 1     |
+| `0x18`     | 24             | `interleavedBurst`    | \-    |
+| `0x1a`     | 26             | `burstAltimeterRaw`   | 2     |
+| `0x1b`     | 27             | `DVLBottomTrack`      | \-    |
+| `0x1c`     | 28             | `echosounder`         | \-    |
+| `0x1d`     | 29             | `DVLWaterTrack`       | \-    |
+| `0x1e`     | 30             | `altimeter`           | \-    |
+| `0x1f`     | 31             | `averageAltimeterRaw` | 3     |
+| `0x23`     | 35             | `echosounderRaw`      | \-    |
+| `0x24`     | 36             | `echosounderRawTx`    | 4     |
+| `0x30`     | 48             | `waves`               | 5     |
+| `0xa0`     | 160            | `text`                | 6     |
 
-Note 1: Code 0x24 (`echosounderRawTx`) has some coding done, but it is
+Note 1. Tentative support for reading `dataType=bottomTrack` was added
+in April of 2026. The problem with this `dataType` is that the most
+recent Nortek manuals (e.g. Reference 3) do not provide any
+documentation, and there are contradictions between an older manual
+(Reference 4) and information provided in a Nortek email to Dan Kelley
+and Clark Richards, dated 2026-03-24 (Reference 5). The known problems
+include the following (see
+`https://github.com/dankelley/oce/issues/2368` for discussion), (1) The
+`ensembleCounter` field is certainly incorrect, as it cycles from 1 to
+60 in test files, instead of increasing monotonically. (2) The byte that
+is supposed to hold both the coordinate system and the number of beams
+seems not to be configured identically across the handful of test files
+used during oce development. As a remedy, the function tries to detect
+faulty values, and switches to using the header record if so (issuing a
+warning so the user will know that assumptions have been made).
+
+Note 2. In reading a file with `burstAltimeterRaw` data components, a
+potential problem was noticed with that the part of the file that
+indicates the number of altimeter samples (called `NSAMP` in the Nortek
+documentation). The stated value was 2 times the value held in the
+header (text) portion of the file, and reading the larger value created
+a matrix that had the upper half filled with odd striping patterns.
+Therefore, the function checks the two indicatations of length, and uses
+the value in the text block if they disagree. (See
+https://github.com/dankelley/oce/issues/2326.)
+
+Note 3. In April 2026, the name `averageAltimeter` (hex code 0x14) was
+changed to `averageAltimeterRaw`, to be more consistent with names used
+in Reference 3. The old name will still work, but a warning will be
+issued indicating that the name was automatically replaced with the new
+name.
+
+Note 4: Code 0x24 (`echosounderRawTx`) has some coding done, but it is
 untested, as the developers lack a data file exemplar. For now, this
 data type is read as though it were 0x23, which is likely to produce
 poor results or cause errors in processing.
 
-Note 2: Code 0x30 (`waves`) is recognized but not handled yet.
+Note 5: Code 0x30 (`waves`) is recognized but not handled yet.
 
-Note 3: Code 0xa0 (`text`) holds a text string that defines the settings
+Note 6: Code 0xa0 (`text`) holds a text string that defines the settings
 used in creating the file. This can be quite helpful in debugging and
 analysis.
 
@@ -216,33 +248,12 @@ for users who want to inspect the code or build upon it.
 
 ## Problems
 
-1.  In reading a file with `altimeterRaw` data components, a potential
-    problem was noticed with that the part of the file that indicates
-    the number of altimeter samples (called `NSAMP` in the Nortek
-    documentation). The stated value was 2 times the value held in the
-    header (text) portion of the file, and reading the larger value
-    created a matrix that had the upper half filled with odd striping
-    patterns. Therefore, the function checks the two indicates of
-    length, and used the one in the text block if they disagree. (See
-    https://github.com/dankelley/oce/issues/2326.)
-
-2.  Related to point 1, it is unclear from the manufacturer's manuals
-    whether `NSAMP` is a 2-byte value (as stated in old manuals) or a
-    4-byte value (as in a manual available in June 2025)? The present
-    function assumes a 4-byte value, which works with at least one test
-    file available to the authors. The manufacturer has been asked for
-    clarity on this; again, see notes at
-    https://github.com/dankelley/oce/issues/2326.
-
-3.  Tentative support for reading `which=bottomTrack` was added in
-    April 2026. It is advisable to be on the lookout for problems with
-    reading this data type. (For example, the field called
-    `ensembleCounter` is incorrect.) The cause of this concern is that
-    the latest relevant Nortek document (Reference 3) does not discuss
-    the format of bottom-track data, and so the present function had to
-    be written based on an old document (Reference 4), along with some
-    advice that was kindly provided by Nortek staff on GitHub (Reference
-    5).
+1.  It is unclear from the manufacturer's manuals whether `NSAMP` is a
+    2-byte value (as stated in old manuals) or a 4-byte value (as in a
+    manual available in or around June 2025). The present function
+    assumes a 4-byte value, which works with a test file available to
+    the authors. The manufacturer has been asked for clarity on this;
+    see https://github.com/dankelley/oce/issues/2326.
 
 ## References
 

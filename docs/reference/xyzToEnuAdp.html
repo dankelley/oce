@@ -103,9 +103,26 @@ by specifying higher <code>debug</code> values.</p></dd>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-
-
-
+    <p>The first step is to convert the (x,y,z) velocity components (stored in the
+three columns of <code>x[["v"]][,,1:3]</code>) into what RDI (reference 1, pages 11 and 12)
+calls "ship" (or "righted") components.  For example, the z coordinate,
+which may point upwards or downwards depending on instrument orientation, is
+mapped onto a "mast" coordinate that points more nearly upwards than
+downward.  The other ship coordinates are called "starboard" and "forward",
+the meanings of which will be clear to mariners.  Once the (x,y,z)
+velocities are converted to ship velocities, the orientation of the
+instrument is extracted from heading, pitch, and roll vectors stored in the
+object.  These angles are defined differently for RDI and Sontek profilers.</p>
+<p>The code handles every case individually, based on the table given below.
+The table comes from Clark Richards, a former PhD student at Dalhousie
+University (reference 2), who developed it based on instrument documentation,
+discussion on user groups, and analysis of measurements acquired with RDI
+and Sontek acoustic current profilers in the SLEIWEX experiment.  In the
+table, (X, Y, Z) denote instrument-coordinate velocities, (S, F, M) denote
+ship-coordinate velocities, and (H, P, R) denote heading, pitch, and roll.</p>
+<table class="table table"><tr><td><strong>Case</strong></td><td><strong>Mfr.</strong></td><td><strong>Instr.</strong></td><td><strong>Orient.</strong></td><td><strong>H</strong></td><td><strong>P</strong></td><td><strong>R</strong></td><td><strong>S</strong></td><td><strong>F</strong></td><td><strong>M</strong></td></tr><tr><td>1</td><td>RDI</td><td>ADCP</td><td>up</td><td>H</td><td>arctan(tan(P)*cos(R))</td><td>R</td><td>-X</td><td>Y</td><td>-Z</td></tr><tr><td>2</td><td>RDI</td><td>ADCP</td><td>down</td><td>H</td><td>arctan(tan(P)*cos(R))</td><td>-R</td><td>X</td><td>Y</td><td>Z</td></tr><tr><td>3</td><td>Nortek</td><td>ADP</td><td>up</td><td>H-90</td><td>R</td><td>-P</td><td>X</td><td>Y</td><td>Z</td></tr><tr><td>4</td><td>Nortek</td><td>ADP</td><td>down</td><td>H-90</td><td>R</td><td>-P</td><td>X</td><td>-Y</td><td>-Z</td></tr><tr><td>5</td><td>Sontek</td><td>ADP</td><td>up</td><td>H-90</td><td>-P</td><td>-R</td><td>X</td><td>Y</td><td>Z</td></tr><tr><td>6</td><td>Sontek</td><td>ADP</td><td>down</td><td>H-90</td><td>-P</td><td>-R</td><td>X</td><td>Y</td><td>Z</td></tr><tr><td>7</td><td>Sontek</td><td>PCADP</td><td>up</td><td>H-90</td><td>R</td><td>-P</td><td>X</td><td>Y</td><td>Z</td></tr><tr><td>8</td><td>Sontek</td><td>PCADP</td><td>down</td><td>H-90</td><td>R</td><td>-P</td><td>X</td><td>Y</td><td>Z</td></tr></table><p>Finally, a standardized rotation matrix is used to convert from ship
+coordinates to earth coordinates (see pages 13 and 14 of
+the RDI coordinate transformation manual, reference 1).</p>
     </div>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>

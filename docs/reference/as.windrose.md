@@ -90,6 +90,6 @@ summary(wr)
 #> 
 #> * Processing Log
 #> 
-#>     - 2026-04-11 11:44:58 UTC: `create 'windrose' object`
-#>     - 2026-04-11 11:44:58 UTC: `as.windrose(x = x, y = y)`
+#>     - 2026-04-19 17:02:50 UTC: `create 'windrose' object`
+#>     - 2026-04-19 17:02:50 UTC: `as.windrose(x = x, y = y)`
 ```

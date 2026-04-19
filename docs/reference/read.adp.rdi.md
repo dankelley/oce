@@ -579,16 +579,17 @@ summary(adp)
 #> ADP Summary
 #> -----------
 #> 
-#> * Filename:          "/private/var/folders/8b/l4h64m1j22v5pb7vj049ff140000gn/T/RtmpbSRLEI/temp_libpath5a836c21f22a/oce/extdata/adp_rdi.000"
+#> * Filename:          "/private/var/folders/8b/l4h64m1j22v5pb7vj049ff140000gn/T/RtmpMrReOu/temp_libpath325a1bd2ef40/oce/extdata/adp_rdi.000"
 #> * Instrument:        adcp
 #> * Manufacturer:      teledyne rdi
 #> * Serial number:     unknown
 #> * Firmware:          16 (major), 28 (minor)
 #> * Firmware:          16.28
+#> * Frequency:         600
 #> * Cell Size:         0.50 m
+#> * Number of Beams:   4
 #> * Beam Angle:        20 deg
 #> * Location:          unknown latitude, unknown longitude
-#> * Frequency:         600 kHz
 #> * Coordinate System: "beam"
 #> * Orientation:       "upward"
 #> * Ensemble Numbers:   1, 2, ..., 8, 9
@@ -634,5 +635,5 @@ summary(adp)
 #> 
 #> * Processing Log
 #> 
-#>     - 2026-04-11 11:45:51 UTC: `read.adp.rdi(file = system.file("extdata", "adp_rdi.000", package = "oce"))`
+#>     - 2026-04-19 17:03:42 UTC: `read.adp.rdi(file = system.file("extdata", "adp_rdi.000", package = "oce"))`
 ```

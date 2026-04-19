@@ -200,12 +200,38 @@ object, perhaps to combine it with other objects from within the AD2CP file
 or other files, in the normal R manner.</p>
 <p>The permitted values for <code>dataType</code> are shown in the table below; the
 <code>dataType</code> argument of <code>read.adp.ad2cp()</code> may be given as listed in any of
-the first 3 columns of this table.</p><table class="table table"><tr><td>code (raw)</td><td>code (integer)</td><td>oce name</td><td>notes</td></tr><tr><td>———-</td><td>————–</td><td>——————-</td><td>——</td></tr><tr><td><code>0x15</code></td><td>21</td><td><code>burst</code></td><td>-</td></tr><tr><td><code>0x16</code></td><td>22</td><td><code>average</code></td><td>-</td></tr><tr><td><code>0x17</code></td><td>23</td><td><code>bottomTrack</code></td><td>-</td></tr><tr><td><code>0x18</code></td><td>24</td><td><code>interleavedBurst</code></td><td>-</td></tr><tr><td><code>0x1a</code></td><td>26</td><td><code>burstAltimeterRaw</code></td><td>-</td></tr><tr><td><code>0x1b</code></td><td>27</td><td><code>DVLBottomTrack</code></td><td>-</td></tr><tr><td><code>0x1c</code></td><td>28</td><td><code>echosounder</code></td><td>-</td></tr><tr><td><code>0x1d</code></td><td>29</td><td><code>DVLWaterTrack</code></td><td>-</td></tr><tr><td><code>0x1e</code></td><td>30</td><td><code>altimeter</code></td><td>-</td></tr><tr><td><code>0x1f</code></td><td>31</td><td><code>averageAltimeter</code></td><td>-</td></tr><tr><td><code>0x23</code></td><td>35</td><td><code>echosounderRaw</code></td><td>-</td></tr><tr><td><code>0x24</code></td><td>36</td><td><code>echosounderRawTx</code></td><td>1</td></tr><tr><td><code>0x30</code></td><td>48</td><td><code>waves</code></td><td>2</td></tr><tr><td><code>0xa0</code></td><td>160</td><td><code>text</code></td><td>3</td></tr></table><p>Note 1: Code 0x24 (<code>echosounderRawTx</code>) has some coding done, but it is
+the first 3 columns of this table.</p><table class="table table"><tr><td>code (raw)</td><td>code (integer)</td><td>oce name</td><td>notes</td></tr><tr><td>———-</td><td>————–</td><td>——————-</td><td>——</td></tr><tr><td><code>0x15</code></td><td>21</td><td><code>burst</code></td><td>-</td></tr><tr><td><code>0x16</code></td><td>22</td><td><code>average</code></td><td>-</td></tr><tr><td><code>0x17</code></td><td>23</td><td><code>bottomTrack</code></td><td>1</td></tr><tr><td><code>0x18</code></td><td>24</td><td><code>interleavedBurst</code></td><td>-</td></tr><tr><td><code>0x1a</code></td><td>26</td><td><code>burstAltimeterRaw</code></td><td>2</td></tr><tr><td><code>0x1b</code></td><td>27</td><td><code>DVLBottomTrack</code></td><td>-</td></tr><tr><td><code>0x1c</code></td><td>28</td><td><code>echosounder</code></td><td>-</td></tr><tr><td><code>0x1d</code></td><td>29</td><td><code>DVLWaterTrack</code></td><td>-</td></tr><tr><td><code>0x1e</code></td><td>30</td><td><code>altimeter</code></td><td>-</td></tr><tr><td><code>0x1f</code></td><td>31</td><td><code>averageAltimeterRaw</code></td><td>3</td></tr><tr><td><code>0x23</code></td><td>35</td><td><code>echosounderRaw</code></td><td>-</td></tr><tr><td><code>0x24</code></td><td>36</td><td><code>echosounderRawTx</code></td><td>4</td></tr><tr><td><code>0x30</code></td><td>48</td><td><code>waves</code></td><td>5</td></tr><tr><td><code>0xa0</code></td><td>160</td><td><code>text</code></td><td>6</td></tr></table><p>Note 1. Tentative support for reading <code>dataType=bottomTrack</code> was added in
+April of 2026. The problem with this <code>dataType</code> is that the most recent
+Nortek manuals (e.g. Reference 3) do not provide any documentation, and there
+are contradictions between an older manual (Reference 4) and information
+provided in a Nortek email to Dan Kelley and Clark Richards, dated 2026-03-24
+(Reference 5). The known problems include the following (see
+<code>https://github.com/dankelley/oce/issues/2368</code> for discussion),  (1) The
+<code>ensembleCounter</code> field is certainly incorrect, as it cycles from 1 to 60 in
+test files, instead of increasing monotonically. (2) The byte that is
+supposed to hold both the coordinate system and the number of beams seems not
+to be configured identically across the handful of test files used during oce
+development. As a remedy, the function tries to detect faulty values, and
+switches to using the header record if so (issuing a warning so the user will
+know that assumptions have been made).</p>
+<p>Note 2. In reading a file with <code>burstAltimeterRaw</code> data components, a potential problem
+was noticed with that the part of the file that indicates the number of
+altimeter samples (called <code>NSAMP</code> in the Nortek documentation). The stated
+value was 2 times the value held in the header (text) portion of the file,
+and reading the larger value created a matrix that had
+the upper half filled with odd striping patterns. Therefore, the function
+checks the two indicatations of length, and uses the value in the text block if
+they disagree.  (See https://github.com/dankelley/oce/issues/2326.)</p>
+<p>Note 3. In April 2026, the name <code>averageAltimeter</code> (hex code 0x14) was changed to
+<code>averageAltimeterRaw</code>, to be more consistent with names used in Reference 3.
+The old name will still work, but a warning will be issued indicating that the
+name was automatically replaced with the new name.</p>
+<p>Note 4: Code 0x24 (<code>echosounderRawTx</code>) has some coding done, but it is
 untested, as the developers lack a data file exemplar. For now, this data
 type is read as though it were 0x23, which is likely to produce poor results
 or cause errors in processing.</p>
-<p>Note 2: Code 0x30 (<code>waves</code>) is recognized but not handled yet.</p>
-<p>Note 3: Code 0xa0 (<code>text</code>) holds a text string that defines the settings used
+<p>Note 5: Code 0x30 (<code>waves</code>) is recognized but not handled yet.</p>
+<p>Note 6: Code 0xa0 (<code>text</code>) holds a text string that defines the settings used
 in creating the file.  This can be quite helpful in debugging and analysis.</p>
     </div>
     <div class="section level2">
@@ -243,28 +269,12 @@ components to physical units.</p></li>
     <h2 id="problems">Problems<a class="anchor" aria-label="anchor" href="#problems"></a></h2>
 
 
-<ol><li><p>In reading a file with <code>altimeterRaw</code> data components, a potential problem
-was noticed with that the part of the file that indicates the number of
-altimeter samples (called <code>NSAMP</code> in the Nortek documentation). The stated
-value was 2 times the value held in the header (text) portion of the file,
-and reading the larger value created a matrix that had
-the upper half filled with odd striping patterns. Therefore, the function
-checks the two indicates of length, and used the one in the text block if
-they disagree.  (See https://github.com/dankelley/oce/issues/2326.)</p></li>
-<li><p>Related to point 1, it is unclear from the manufacturer's manuals whether
+<ol><li><p>It is unclear from the manufacturer's manuals whether
 <code>NSAMP</code> is a 2-byte value (as stated in old manuals) or a 4-byte value (as
-in a manual available in June 2025)? The present function assumes a 4-byte
-value, which works with at least one test file available to the authors.
-The manufacturer has been asked for clarity on this; again, see notes at
+in a manual available in or around June 2025). The present function assumes a 4-byte
+value, which works with a test file available to the authors.
+The manufacturer has been asked for clarity on this; see
 https://github.com/dankelley/oce/issues/2326.</p></li>
-<li><p>Tentative support for reading <code>which=bottomTrack</code> was added in April 2026.
-It is advisable to be on the lookout for problems with reading this data
-type. (For example, the field called <code>ensembleCounter</code> is incorrect.) The
-cause of this concern is that the latest relevant Nortek document
-(Reference 3) does not discuss the format of bottom-track data, and so the
-present function had to be written based on an old document (Reference 4),
-along with some advice that was kindly provided by Nortek staff on GitHub
-(Reference 5).</p></li>
 </ol></div>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>

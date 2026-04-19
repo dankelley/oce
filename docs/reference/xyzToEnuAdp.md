@@ -48,6 +48,43 @@ An object with `data$v[,,1:3]` altered appropriately, and
 
 ## Details
 
+The first step is to convert the (x,y,z) velocity components (stored in
+the three columns of `x[["v"]][,,1:3]`) into what RDI (reference 1,
+pages 11 and 12) calls "ship" (or "righted") components. For example,
+the z coordinate, which may point upwards or downwards depending on
+instrument orientation, is mapped onto a "mast" coordinate that points
+more nearly upwards than downward. The other ship coordinates are called
+"starboard" and "forward", the meanings of which will be clear to
+mariners. Once the (x,y,z) velocities are converted to ship velocities,
+the orientation of the instrument is extracted from heading, pitch, and
+roll vectors stored in the object. These angles are defined differently
+for RDI and Sontek profilers.
+
+The code handles every case individually, based on the table given
+below. The table comes from Clark Richards, a former PhD student at
+Dalhousie University (reference 2), who developed it based on instrument
+documentation, discussion on user groups, and analysis of measurements
+acquired with RDI and Sontek acoustic current profilers in the SLEIWEX
+experiment. In the table, (X, Y, Z) denote instrument-coordinate
+velocities, (S, F, M) denote ship-coordinate velocities, and (H, P, R)
+denote heading, pitch, and roll.
+
+|  |  |  |  |  |  |  |  |  |  |
+|----|----|----|----|----|----|----|----|----|----|
+| **Case** | **Mfr.** | **Instr.** | **Orient.** | **H** | **P** | **R** | **S** | **F** | **M** |
+| 1 | RDI | ADCP | up | H | arctan(tan(P)\*cos(R)) | R | -X | Y | -Z |
+| 2 | RDI | ADCP | down | H | arctan(tan(P)\*cos(R)) | -R | X | Y | Z |
+| 3 | Nortek | ADP | up | H-90 | R | -P | X | Y | Z |
+| 4 | Nortek | ADP | down | H-90 | R | -P | X | -Y | -Z |
+| 5 | Sontek | ADP | up | H-90 | -P | -R | X | Y | Z |
+| 6 | Sontek | ADP | down | H-90 | -P | -R | X | Y | Z |
+| 7 | Sontek | PCADP | up | H-90 | R | -P | X | Y | Z |
+| 8 | Sontek | PCADP | down | H-90 | R | -P | X | Y | Z |
+
+Finally, a standardized rotation matrix is used to convert from ship
+coordinates to earth coordinates (see pages 13 and 14 of the RDI
+coordinate transformation manual, reference 1).
+
 ## References
 
 1.  Teledyne RD Instruments. “ADCP Coordinate Transformation: Formulas
