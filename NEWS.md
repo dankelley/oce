@@ -45,6 +45,7 @@
   #2299).
 * Change `read.amsr()` to handle realtime data files (issue #2230).
 * Change `read.adp.ad2cp()` to
+  * rename hex code 0x1f from `averageAltimeter` to `averageAltimeterRaw`, for consistency with Nortek manuals as of 2026. (The old name is still accepted, but a warning is issued.)
   * handle TOC, datasets and plans better (issue #2303 and related),
   * handle bottom-track data correctly (issue #2368)
   * read temperature correctly (issue #2324),

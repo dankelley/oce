@@ -108,10 +108,12 @@ if (file.exists(file)) {
             )
         )
 
-        # bottomTrack -- FIXME
-        expect_message(
-            bt <- read.oce(file, dataType = "bottomTrack"),
-            "setting plan=0, the most common value in this file"
+        # Bottom track
+        expect_warning(
+            expect_message(
+                bt <- read.oce(file, dataType = "bottomTrack"),
+                "setting plan=0, the most common value in this file"
+            ), "Using nbeams=4 from file header, instead of suspicious value 3"
         )
 
         # bt <- d[["bottomTrack"]] # FIXME: the values are crazy, e.g. lots of v of order e-15

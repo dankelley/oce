@@ -119,29 +119,58 @@ the first 3 columns of this table.\tabular{rrrr}{
    ---------- \tab -------------- \tab ------------------- \tab ------ \cr
    \code{0x15} \tab 21 \tab \code{burst} \tab - \cr
    \code{0x16} \tab 22 \tab \code{average} \tab - \cr
-   \code{0x17} \tab 23 \tab \code{bottomTrack} \tab - \cr
+   \code{0x17} \tab 23 \tab \code{bottomTrack} \tab 1 \cr
    \code{0x18} \tab 24 \tab \code{interleavedBurst} \tab - \cr
-   \code{0x1a} \tab 26 \tab \code{burstAltimeterRaw} \tab - \cr
+   \code{0x1a} \tab 26 \tab \code{burstAltimeterRaw} \tab 2 \cr
    \code{0x1b} \tab 27 \tab \code{DVLBottomTrack} \tab - \cr
    \code{0x1c} \tab 28 \tab \code{echosounder} \tab - \cr
    \code{0x1d} \tab 29 \tab \code{DVLWaterTrack} \tab - \cr
    \code{0x1e} \tab 30 \tab \code{altimeter} \tab - \cr
-   \code{0x1f} \tab 31 \tab \code{averageAltimeter} \tab - \cr
+   \code{0x1f} \tab 31 \tab \code{averageAltimeterRaw} \tab 3 \cr
    \code{0x23} \tab 35 \tab \code{echosounderRaw} \tab - \cr
-   \code{0x24} \tab 36 \tab \code{echosounderRawTx} \tab 1 \cr
-   \code{0x30} \tab 48 \tab \code{waves} \tab 2 \cr
-   \code{0xa0} \tab 160 \tab \code{text} \tab 3 \cr
+   \code{0x24} \tab 36 \tab \code{echosounderRawTx} \tab 4 \cr
+   \code{0x30} \tab 48 \tab \code{waves} \tab 5 \cr
+   \code{0xa0} \tab 160 \tab \code{text} \tab 6 \cr
 }
 
 
-Note 1: Code 0x24 (\code{echosounderRawTx}) has some coding done, but it is
+Note 1. Tentative support for reading \code{dataType=bottomTrack} was added in
+April of 2026. The problem with this \code{dataType} is that the most recent
+Nortek manuals (e.g. Reference 3) do not provide any documentation, and there
+are contradictions between an older manual (Reference 4) and information
+provided in a Nortek email to Dan Kelley and Clark Richards, dated 2026-03-24
+(Reference 5). The known problems include the following (see
+\verb{https://github.com/dankelley/oce/issues/2368} for discussion),  (1) The
+\code{ensembleCounter} field is certainly incorrect, as it cycles from 1 to 60 in
+test files, instead of increasing monotonically. (2) The byte that is
+supposed to hold both the coordinate system and the number of beams seems not
+to be configured identically across the handful of test files used during oce
+development. As a remedy, the function tries to detect faulty values, and
+switches to using the header record if so (issuing a warning so the user will
+know that assumptions have been made).
+
+Note 2. In reading a file with \code{burstAltimeterRaw} data components, a potential problem
+was noticed with that the part of the file that indicates the number of
+altimeter samples (called \code{NSAMP} in the Nortek documentation). The stated
+value was 2 times the value held in the header (text) portion of the file,
+and reading the larger value created a matrix that had
+the upper half filled with odd striping patterns. Therefore, the function
+checks the two indicatations of length, and uses the value in the text block if
+they disagree.  (See https://github.com/dankelley/oce/issues/2326.)
+
+Note 3. In April 2026, the name \code{averageAltimeter} (hex code 0x14) was changed to
+\code{averageAltimeterRaw}, to be more consistent with names used in Reference 3.
+The old name will still work, but a warning will be issued indicating that the
+name was automatically replaced with the new name.
+
+Note 4: Code 0x24 (\code{echosounderRawTx}) has some coding done, but it is
 untested, as the developers lack a data file exemplar. For now, this data
 type is read as though it were 0x23, which is likely to produce poor results
 or cause errors in processing.
 
-Note 2: Code 0x30 (\code{waves}) is recognized but not handled yet.
+Note 5: Code 0x30 (\code{waves}) is recognized but not handled yet.
 
-Note 3: Code 0xa0 (\code{text}) holds a text string that defines the settings used
+Note 6: Code 0xa0 (\code{text}) holds a text string that defines the settings used
 in creating the file.  This can be quite helpful in debugging and analysis.
 }
 \section{How the binary file is decoded}{
@@ -180,28 +209,12 @@ components to physical units.
 \section{Problems}{
 
 \enumerate{
-\item In reading a file with \code{altimeterRaw} data components, a potential problem
-was noticed with that the part of the file that indicates the number of
-altimeter samples (called \code{NSAMP} in the Nortek documentation). The stated
-value was 2 times the value held in the header (text) portion of the file,
-and reading the larger value created a matrix that had
-the upper half filled with odd striping patterns. Therefore, the function
-checks the two indicates of length, and used the one in the text block if
-they disagree.  (See https://github.com/dankelley/oce/issues/2326.)
-\item Related to point 1, it is unclear from the manufacturer's manuals whether
+\item It is unclear from the manufacturer's manuals whether
 \code{NSAMP} is a 2-byte value (as stated in old manuals) or a 4-byte value (as
-in a manual available in June 2025)? The present function assumes a 4-byte
-value, which works with at least one test file available to the authors.
-The manufacturer has been asked for clarity on this; again, see notes at
+in a manual available in or around June 2025). The present function assumes a 4-byte
+value, which works with a test file available to the authors.
+The manufacturer has been asked for clarity on this; see
 https://github.com/dankelley/oce/issues/2326.
-\item Tentative support for reading \code{which=bottomTrack} was added in April 2026.
-It is advisable to be on the lookout for problems with reading this data
-type. (For example, the field called \code{ensembleCounter} is incorrect.) The
-cause of this concern is that the latest relevant Nortek document
-(Reference 3) does not discuss the format of bottom-track data, and so the
-present function had to be written based on an old document (Reference 4),
-along with some advice that was kindly provided by Nortek staff on GitHub
-(Reference 5).
 }
 }
 

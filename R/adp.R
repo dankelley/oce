@@ -495,11 +495,17 @@ setMethod(
         if ("firmwareVersion" %in% mnames) {
             cat(paste("* Firmware:          ", object@metadata$firmwareVersion, "\n", sep = ""), ...)
         }
+        if ("frequency" %in% mnames) {
+            cat(paste("* Frequency:         ", object@metadata$frequency, "\n", sep = ""), ...)
+        }
         if ("cellSize" %in% mnames) {
             cat(sprintf("* Cell Size:         %.2f m\n", round(object@metadata$cellSize, 2)), ...)
         }
         if ("blankingDistance" %in% mnames) {
             cat(sprintf("* Blanking Distance: %.2f m\n", round(object@metadata$blankingDistance, 2)), ...)
+        }
+        if ("numberOfBeams" %in% mnames) {
+            cat(paste("* Number of Beams:   ", object@metadata$numberOfBeams, "\n", sep = "", ...))
         }
         if ("beamAngle" %in% mnames) {
             cat(paste("* Beam Angle:       ", paste(object@metadata$beamAngle, sep = "", collapse = ",")),
@@ -587,7 +593,6 @@ setMethod(
         #             format(subsampleEnd),  attr(subsampleEnd, "tzone"),
         #             1 / subsampleDeltat))
         #-metadataNames <- names(object@metadata)
-        cat("* Frequency:        ", object[["frequency"]], "kHz\n", ...)
         if ("oceCoordinate" %in% mnames) {
             cat(paste("* Coordinate System: \"", object@metadata$oceCoordinate[1], "\"\n", sep = ""), ...)
         }
@@ -3559,7 +3564,7 @@ beamToXyzAdp <- function(x, debug = getOption("oceDebug")) {
 #'    6 \tab Sontek \tab ADP    \tab down    \tab H-90 \tab -P                    \tab -R \tab  X \tab  Y \tab  Z\cr
 #'    7 \tab Sontek \tab PCADP  \tab up      \tab H-90 \tab R                     \tab -P \tab  X \tab  Y \tab  Z\cr
 #'    8 \tab Sontek \tab PCADP  \tab down    \tab H-90 \tab R                     \tab -P \tab  X \tab  Y \tab  Z\cr
-#'}
+#' }
 #'
 #' Finally, a standardized rotation matrix is used to convert from ship
 #' coordinates to earth coordinates (see pages 13 and 14 of

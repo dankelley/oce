@@ -23,10 +23,13 @@ dataAvailableBottomTrack <- function(twoBytes) {
 
 # Read bottom-track AD2CP data
 #
-# The code follows section 6.1.3 of Ref 1. I think Nortek
+# Much of this code follows section 6.1.3 of Ref 1. I think Nortek
 # also released a similar document in 2018, but the manual
 # I have for 2026 has nothing about the format. Therefore,
-# this code may be somewhat brittle.
+# this code may be somewhat brittle. Some elements, e.g.
+# the coordinate-system and number-of-beams field, are entirely
+# different from Ref 1, instead coming from an email sent by
+# a Nortek person to Clark Richards and Dan Kelley on 2026-03-24.
 #
 # @references
 # 1. Nortek AS. "Signature Integration 55|250|500|1000kHz (2017)."
@@ -105,46 +108,54 @@ readBottomTrack <- function(d, configText, debug = getOption("oceDebug")) # uses
     oceDebug(debug, vectorShow(roll))
     # }}}
     # {{{ #beams,coord-sys,#cells
-    # beamsCoords <- d$buf[pointer1[1] + 31] # this ought never to change
-    # oceDebug(debug, vectorShow(beamsCoords))
-    # Decode a 2-byte sequence. Note that some items cross
-    # byte boundaries, so we cannot simply read with readBin(),
-    # and must instead expand bit by bit.
-    BCCraw <- readBin(d$buf[pointer1[1] + 31:32], "raw", size = 1, n = 2, endian = "little")
-    BCC <- ifelse(rawToBits(BCCraw) == 0x01, 1, 0)
-    # print(BCC)
-    # print(BCC[10:1])
-    ncells <- sum(BCC[10:1] * 2^(9:0))
-    oceDebug(debug, "perhaps this is ncells: ", ncells, "\n")
-    ncellsAlternate <- sum(BCC[1:10] * 2^(9:0))
-    oceDebug(debug, "or maybe this is: ", ncellsAlternate, "; we pick the first value but this is NOT checked\n")
-    b <- 2 * BCC[12] + BCC[11]
-    coordinateSystem <- switch(b + 1L,
-        "enu",
-        "xyz",
-        "beam"
+    # DELETE beamsCoords <- d$buf[pointer1[1] + 31] # this ought never to change
+    # DELETE oceDebug(debug, vectorShow(beamsCoords))
+    # DELETE Decode a 2-byte sequence. Note that some items cross
+    # DELETE byte boundaries, so we cannot simply read with readBin(),
+    # DELETE and must instead expand bit by bit.
+    # DELETE BCCraw <- readBin(d$buf[pointer1[1] + 31:32], "raw", size = 1, n = 2, endian = "little")
+    # NOTE: email from Nortek says that we do NOT have a 2-byte sequence
+    # here, in contradiction to the 2017 manual. We have 1-byte beams_cy
+    # and then 1-byte pad1, and after 2-byte for ncells.
+    beamsCyByte <- readBin(d$buf[pointer1[1] + 31], "raw", size = 1, n = 1, endian = "little")
+    beamsCy <- ifelse(rawToBits(beamsCyByte) == 0x01, 1, 0)
+    oceDebug(debug, vectorShow(beamsCy, n = 10))
+    oceDebug(debug, "In the above value of beamsCy, expect as follows, based on a Nortek email\n")
+    oceDebug(debug, "  bits 7-5: nbeams\n")
+    oceDebug(debug, "  bits 4-3: coordinate system (00 for 'enu', 01 for 'xyz', 10 for 'beam' and 11 for '-')\n")
+    oceDebug(debug, "where, I think the number is 0 for the first bit etc\n")
+    oceDebug(debug, "but are they counting from left-to-right or from right-to-left?\n")
+    # From email (I think they count from 0): bit 7-5 = number of beams")
+    nbeams <- 4L * beamsCy[8] + 2L * beamsCy[7] + beamsCy[6]
+    oceDebug(debug, vectorShow(nbeams))
+    if (nbeams != 4) {
+        tmp <- nbeams
+        nbeams <- findInConfig(configText[[1]], "GETBT", "NB")
+        warning("Using nbeams=", nbeams, " from file header, instead of suspicious value ", tmp, " in data record. Plan: revisit if Nortek documents bottom-track format.")
+    }
+    # From email (I think they count from 0): bit 4-3 = coordinate system (b00 : ENU b01 : XYZ b10 : BEAM)")
+    oceDebug(debug, vectorShow(beamsCy[5:4]))
+    CStmp <- 2L * beamsCy[5] + beamsCy[4]
+    oceDebug(debug, vectorShow(CStmp))
+    coordinateSystem <- switch(CStmp + 1L,
+        "enu", # CStmp=0
+        "xyz", # CStmp=1
+        "beam", # CStmp=2
+        "-" # CStmp=3
     )
-    if (is.null(coordinateSystem)) {
-        coordinateSystem <- "?"
-        warning("cannot determine velocity coordinate system; defaulting to '?'")
+    if (coordinateSystem == "-") {
+        tmp <- coordinateSystem
+        coordinateSystem <- tolower(findInConfig(configText[[1]], "", "CY", numeric = FALSE))
+        warning("Using coordinateSystem=\"", coordinateSystem, "\" from file header, instead of suspicious value \"", tmp, "\" in data record. Plan: revisit if Nortek documents bottom-track format.")
     }
     oceDebug(debug, vectorShow(coordinateSystem))
-    # print(BCC[16:13])
-    # cat("above:nbeams?\n")
-    nbeams <- as.integer(8 * BCC[16] + 4 * BCC[15] + 1 * BCC[14] + BCC[13])
-    oceDebug(debug, vectorShow(nbeams))
-    if (nbeams < 4) {
-        nbeamsOld <- nbeams
-        nbeams <- findInConfig(configText[[1]], "GETBT", "NB")
-        warning("the bottomTrack records suggest nbeams=", nbeamsOld, ", but this makes no sense, so using nbeams=", nbeams, ", based on the TEXT record")
-    }
-    stopifnot(nbeams == 4L) # FIXME: should we check for 5 beams?
-    # }}}
     cellSize <- 1.0e-3 * readBin(d$buf[pointer2[1:2] + 33L], "integer", size = 2L, n = 1, signed = FALSE, endian = "little")
     oceDebug(debug, "in readBottomTrack() ", vectorShow(pointer2[1:2] + 33))
     oceDebug(debug, "in readBottomTrack() ", vectorShow(cellSize))
     blankingDistance <- 1.0e-3 * readBin(d$buf[pointer2[1:2] + 35L], "integer", size = 2L, n = 1, signed = FALSE, endian = "little")
     oceDebug(debug, vectorShow(blankingDistance))
+    # skip 1 byte called 'padUnused' in Nortek email
+    # skip 1 byte called 'pressureTemp' in Nortek email
     batteryVoltage <- 0.1 * readBin(d$buf[pointer2 + 39L], "integer", size = 2L, n = nprofiles, signed = FALSE, endian = "little")
     oceDebug(debug, vectorShow(batteryVoltage))
     # {{{ magnetometer FIXME: is there a factor to get to physical units?

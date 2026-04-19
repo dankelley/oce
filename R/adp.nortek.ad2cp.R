@@ -21,20 +21,34 @@ checkRowConsistency <- function(m) {
 # the 2017 Nortek manual.  It's a long story, but see
 # https://github.com/dankelley/oce/issues/2368
 # if you're interested.
-findInConfig <- function(ct, type, property, numeric = TRUE) {
-    line <- grep(paste0("^", type, ","), ct)
-    if (1 != length(line)) {
-        return(NA)
+findInConfig <- function(config, type, property, numeric = TRUE) {
+    lines <- if (type == "") {
+        #cat("case 1\n")
+        grep(paste0(",", property, "="), config)
     } else {
-        values <- strsplit(ct[line], ",")[[1]]
-        w <- grep(paste0(property, "="), values)
+        #cat("case 2\n")
+        grep(paste0("^", type, ","), config)
+    }
+    #cat(vectorShow(lines, n=100))
+    #cat(vectorShow(config[lines], n=100))
+    if (0 == length(lines)) {
+        NA
+    } else {
+        # FIXME: should we check against multiple lines?
+        values <- strsplit(config[lines[1]], ",")[[1]]
+        #cat(vectorShow(values, n=100))
+        w <- grep(paste0(property, "="), values) # find match to requested property
+        #cat(vectorShow(w, n=100))
         if (1 != length(w)) {
-            return(NA)
+            NA
         } else {
             if (numeric) {
-                return(as.numeric(strsplit(values[w], "=")[[1]][2]))
+                #cat("case A\n")
+                #cat(vectorShow(values[w], n=100))
+                as.numeric(strsplit(values[w], "=")[[1]][2])
             } else {
-                return(strsplit(values[w], "=")[[1]][2])
+                #cat("case B\n")
+                gsub('"', '', strsplit(values[w], "=")[[1]][2])
             }
         }
     }
@@ -107,13 +121,13 @@ ad2cpDefaultDataItem <- function(x, j = NULL, order = c(
                                      "burst", "average",
                                      "bottomTrack", "interleavedBurst", "burstAltimeterRaw",
                                      "DVLBottomTrack", "DVLWaterTrack", "echosounder", "echosounderRaw",
-                                     "altimeter", "averageAltimeter"
+                                     "altimeter", "averageAltimeterRaw"
                                  )) {
     if (!is.ad2cp(x)) {
         stop("x is not an AD2CP object")
     }
     dataNames <- names(x@data)
-    if (is.null(j) || nchar(j) == 0) {
+    if (is.null(j) || !nzchar(j, keepNA = TRUE)) {
         i <- which(order %in% dataNames)
         if (length(i)) order[i[1]] else stop("ad2cp object does not contain any of '", paste(order, collapse = "', '"), "'")
     } else {
@@ -260,23 +274,23 @@ is.ad2cp <- function(x) {
 #'
 #' The mapping from code (hex or decimal) to oce name is as follows.
 #'
-#' | code (raw) | code (integer) |            oce name |
-#' |      ----: |          ----: |               ----: |
-#' | ---------- | -------------- |   ----------------- |
-#' |     `0x15` |             21 |             `burst` |
-#' |     `0x16` |             22 |           `average` |
-#' |     `0x17` |             23 |       `bottomTrack` |
-#' |     `0x18` |             24 |  `interleavedBurst` |
-#' |     `0x1a` |             26 | `burstAltimeterRaw` |
-#' |     `0x1b` |             27 |    `DVLBottomTrack` |
-#' |     `0x1c` |             28 |       `echosounder` |
-#' |     `0x1d` |             29 |     `DVLWaterTrack` |
-#' |     `0x1e` |             30 |         `altimeter` |
-#' |     `0x1f` |             31 |  `averageAltimeter` |
-#' |     `0x23` |             35 |    `echosounderRaw` |
-#' |     `0x24` |             36 |  `echosounderRawTx` |
-#' |     `0x30` |             48 |             `waves` |
-#' |     `0xa0` |            160 |              `text` |
+#' | code (raw) | code (integer) |              oce name |
+#' |      ----: |          ----: |                 ----: |
+#' | ---------- | -------------- |     ----------------- |
+#' |     `0x15` |             21 |               `burst` |
+#' |     `0x16` |             22 |             `average` |
+#' |     `0x17` |             23 |         `bottomTrack` |
+#' |     `0x18` |             24 |    `interleavedBurst` |
+#' |     `0x1a` |             26 |   `burstAltimeterRaw` |
+#' |     `0x1b` |             27 |      `DVLBottomTrack` |
+#' |     `0x1c` |             28 |         `echosounder` |
+#' |     `0x1d` |             29 |       `DVLWaterTrack` |
+#' |     `0x1e` |             30 |           `altimeter` |
+#' |     `0x1f` |             31 | `averageAltimeterRaw` |
+#' |     `0x23` |             35 |      `echosounderRaw` |
+#' |     `0x24` |             36 |    `echosounderRawTx` |
+#' |     `0x30` |             48 |               `waves` |
+#' |     `0xa0` |            160 |                `text` |
 #'
 #' @param code a [raw] (or corresponding integer) vector indicating the IDs of
 #' interest, or NULL to get a summary of possible values.
@@ -310,7 +324,7 @@ ad2cpCodeToName <- function(code = NULL, prefix = TRUE) {
         echosounder = as.raw(0x1c),
         DVLWaterTrack = as.raw(0x1d),
         altimeter = as.raw(0x1e),
-        averageAltimeter = as.raw(0x1f),
+        averageAltimeterRaw = as.raw(0x1f),
         echosounderRaw = as.raw(0x23),
         echosounderRawTx = as.raw(0x24),
         waves = as.raw(0x30),
@@ -368,42 +382,71 @@ ad2cpCodeToName <- function(code = NULL, prefix = TRUE) {
 #' `dataType` argument of [read.adp.ad2cp()] may be given as listed in any of
 #' the first 3 columns of this table.
 #'
-#' | code (raw) | code (integer) |            oce name |  notes |
-#' |      ----: |          ----: |               ----: |  ----: |
-#' | ---------- | -------------- | ------------------- | ------ |
-#' |     `0x15` |             21 |             `burst` |      - |
-#' |     `0x16` |             22 |           `average` |      - |
-#' |     `0x17` |             23 |       `bottomTrack` |      - |
-#' |     `0x18` |             24 |  `interleavedBurst` |      - |
-#' |     `0x1a` |             26 | `burstAltimeterRaw` |      - |
-#' |     `0x1b` |             27 |    `DVLBottomTrack` |      - |
-#' |     `0x1c` |             28 |       `echosounder` |      - |
-#' |     `0x1d` |             29 |     `DVLWaterTrack` |      - |
-#' |     `0x1e` |             30 |         `altimeter` |      - |
-#' |     `0x1f` |             31 |  `averageAltimeter` |      - |
-#' |     `0x23` |             35 |    `echosounderRaw` |      - |
-#' |     `0x24` |             36 |  `echosounderRawTx` |      1 |
-#' |     `0x30` |             48 |             `waves` |      2 |
-#' |     `0xa0` |            160 |              `text` |      3 |
-## |     `0xc0` |            192 |           `format8` |      4 |
-## |     `0xc8` |            200 |          `vector 2` |      5 |
+#' | code (raw) | code (integer) |            oce name    |  notes |
+#' |      ----: |          ----: |               ----:    |  ----: |
+#' | ---------- | -------------- | -------------------    | ------ |
+#' |     `0x15` |             21 |               `burst` |      - |
+#' |     `0x16` |             22 |             `average` |      - |
+#' |     `0x17` |             23 |         `bottomTrack` |      1 |
+#' |     `0x18` |             24 |    `interleavedBurst` |      - |
+#' |     `0x1a` |             26 |   `burstAltimeterRaw` |      2 |
+#' |     `0x1b` |             27 |      `DVLBottomTrack` |      - |
+#' |     `0x1c` |             28 |         `echosounder` |      - |
+#' |     `0x1d` |             29 |       `DVLWaterTrack` |      - |
+#' |     `0x1e` |             30 |           `altimeter` |      - |
+#' |     `0x1f` |             31 | `averageAltimeterRaw` |      3 |
+#' |     `0x23` |             35 |      `echosounderRaw` |      - |
+#' |     `0x24` |             36 |    `echosounderRawTx` |      4 |
+#' |     `0x30` |             48 |               `waves` |      5 |
+#' |     `0xa0` |            160 |                `text` |      6 |
+## |     `0xc0` |            192 |             `format8` |      . |
+## |     `0xc8` |            200 |            `vector 2` |      . |
 #'
-#' Note 1: Code 0x24 (`echosounderRawTx`) has some coding done, but it is
+#' Note 1. Tentative support for reading `dataType=bottomTrack` was added in
+#' April of 2026. The problem with this `dataType` is that the most recent
+#' Nortek manuals (e.g. Reference 3) do not provide any documentation, and there
+#' are contradictions between an older manual (Reference 4) and information
+#' provided in a Nortek email to Dan Kelley and Clark Richards, dated 2026-03-24
+#' (Reference 5). The known problems include the following (see
+#' `https://github.com/dankelley/oce/issues/2368` for discussion),  (1) The
+#' `ensembleCounter` field is certainly incorrect, as it cycles from 1 to 60 in
+#' test files, instead of increasing monotonically. (2) The byte that is
+#' supposed to hold both the coordinate system and the number of beams seems not
+#' to be configured identically across the handful of test files used during oce
+#' development. As a remedy, the function tries to detect faulty values, and
+#' switches to using the header record if so (issuing a warning so the user will
+#' know that assumptions have been made).
+#'
+#' Note 2. In reading a file with `burstAltimeterRaw` data components, a potential problem
+#' was noticed with that the part of the file that indicates the number of
+#' altimeter samples (called `NSAMP` in the Nortek documentation). The stated
+#' value was 2 times the value held in the header (text) portion of the file,
+#' and reading the larger value created a matrix that had
+#' the upper half filled with odd striping patterns. Therefore, the function
+#' checks the two indicatations of length, and uses the value in the text block if
+#' they disagree.  (See https://github.com/dankelley/oce/issues/2326.)
+#'
+#' Note 3. In April 2026, the name `averageAltimeter` (hex code 0x14) was changed to
+#' `averageAltimeterRaw`, to be more consistent with names used in Reference 3.
+#' The old name will still work, but a warning will be issued indicating that the
+#' name was automatically replaced with the new name.
+#'
+#' Note 4: Code 0x24 (`echosounderRawTx`) has some coding done, but it is
 #' untested, as the developers lack a data file exemplar. For now, this data
 #' type is read as though it were 0x23, which is likely to produce poor results
 #' or cause errors in processing.
 #'
-#' Note 2: Code 0x30 (`waves`) is recognized but not handled yet.
+#' Note 5: Code 0x30 (`waves`) is recognized but not handled yet.
 #'
-#' Note 3: Code 0xa0 (`text`) holds a text string that defines the settings used
+#' Note 6: Code 0xa0 (`text`) holds a text string that defines the settings used
 #' in creating the file.  This can be quite helpful in debugging and analysis.
 #'
-## Note 4: Code 0xc0 (`format8`) is not handled, and trying to read this yields
+## Note 7: Code 0xc0 (`format8`) is not handled, and trying to read this yields
 ## an error indicating this fact.  This code was mentioned in Nortek (2024)
 ## without further information, but it was not listed in Nortek (2025).
 ## Accordingly, it is not handled by `read.adp.ad2cp`.
 ##
-## Note 5: Code 0xc8 (`vector 2`) is listed in Nortek (2025) but that document
+## Note 8: Code 0xc8 (`vector 2`) is listed in Nortek (2025) but that document
 ## provides no information on the format. Accordingly, it is not handled by
 ## `read.adp.ad2cp`.
 #'
@@ -543,30 +586,12 @@ ad2cpCodeToName <- function(code = NULL, prefix = TRUE) {
 #'
 #' @section Problems:
 #'
-#' 1. In reading a file with `altimeterRaw` data components, a potential problem
-#'    was noticed with that the part of the file that indicates the number of
-#'    altimeter samples (called `NSAMP` in the Nortek documentation). The stated
-#'    value was 2 times the value held in the header (text) portion of the file,
-#'    and reading the larger value created a matrix that had
-#'    the upper half filled with odd striping patterns. Therefore, the function
-#'    checks the two indicates of length, and used the one in the text block if
-#'    they disagree.  (See https://github.com/dankelley/oce/issues/2326.)
-#'
-#' 2. Related to point 1, it is unclear from the manufacturer's manuals whether
-#'    `NSAMP` is a 2-byte value (as stated in old manuals) or a 4-byte value (as
-#'    in a manual available in June 2025)? The present function assumes a 4-byte
-#'    value, which works with at least one test file available to the authors.
-#'    The manufacturer has been asked for clarity on this; again, see notes at
-#'    https://github.com/dankelley/oce/issues/2326.
-#'
-#' 3. Tentative support for reading `which=bottomTrack` was added in April 2026.
-#'    It is advisable to be on the lookout for problems with reading this data
-#'    type. (For example, the field called `ensembleCounter` is incorrect.) The
-#'    cause of this concern is that the latest relevant Nortek document
-#'    (Reference 3) does not discuss the format of bottom-track data, and so the
-#'    present function had to be written based on an old document (Reference 4),
-#'    along with some advice that was kindly provided by Nortek staff on GitHub
-#'    (Reference 5).
+#' 1. It is unclear from the manufacturer's manuals whether
+#' `NSAMP` is a 2-byte value (as stated in old manuals) or a 4-byte value (as
+#' in a manual available in or around June 2025). The present function assumes a 4-byte
+#' value, which works with a test file available to the authors.
+#' The manufacturer has been asked for clarity on this; see
+#' https://github.com/dankelley/oce/issues/2326.
 #'
 #' @references
 #'
@@ -622,7 +647,7 @@ read.adp.ad2cp <- function(
     for (e in expectedNames) {
         le <- tolower(e)
         if (le %in% dotsNames) {
-            stop(paste0("'", le, "' is not a parameter; did you mean '", e, "'?"))
+            stop("'", le, "' is not a parameter; did you mean '", e, "'?")
         }
     }
     dataSet <- as.integer(dataSet)
@@ -645,7 +670,7 @@ read.adp.ad2cp <- function(
         "echosounder" = 0x1c,
         "DVLWaterTrack" = 0x1d,
         "altimeter" = 0x1e,
-        "averageAltimeter" = 0x1f,
+        "averageAltimeterRaw" = 0x1f,
         "echosounderRaw" = 0x23,
         "echosounderRawTx" = 0x24, # maybe handled (the docs are unclear how different from 0x23)
         "waveData" = 0x30 # not handled
@@ -653,6 +678,11 @@ read.adp.ad2cp <- function(
     )
     dataTypeOrig <- dataType
     if (!is.null(dataType)) {
+        if (dataType == "averageAltimeter") {
+            warning("dataType=\"averageAltimeter\" changed to \"averageAltimeterRaw\", which is the new name for ID 0x1f")
+            dataType <- "averageAltimeterRaw"
+            dataTypeOrig <- dataType
+        }
         # oceDebug(debug, "original dataType=\"", dataType, "\n")
         if (length(dataType) > 1L) {
             stop("length of dataType (", length(dataType), ") must not exceed 1")
@@ -1024,7 +1054,8 @@ read.adp.ad2cp <- function(
         )
     }
     keep <- planKeep & dataSetKeep & dataTypeKeep
-    #-print(table(keep))
+    #print(table(keep))
+    #browser()
     if (sum(keep) < length(keep)) {
         oceDebug(debug, "Focussing on plan=", plan, ", dataSet=", dataSet, ", and dataType=", dataType, ")\n",
             sep = ""
@@ -1208,7 +1239,7 @@ read.adp.ad2cp <- function(
     # As for 'configuration' above, we set this up as a matrix of 0s and 1s,
     # with rows corresponding to times, for easy transformation into integers.
     # BCC case 1
-    BCC <- ifelse(0x01 == rawToBits(d$buf[pointer2 + 31]), 1L, 0L)
+    BCC <- as.integer(0x01 == rawToBits(d$buf[pointer2 + 31]))
     dim(BCC) <- c(16, N)
     BCC <- t(BCC)
     oceDebug(debug, vectorShow(BCC[1, ], n = 30))
@@ -1339,7 +1370,7 @@ read.adp.ad2cp <- function(
         echosounder = which(d$id == 0x1c),
         DVLWaterTrack = which(d$id == 0x1d),
         altimeter = which(d$id == 0x1e),
-        averageAltimeter = which(d$id == 0x1f),
+        averageAltimeterRaw = which(d$id == 0x1f),
         echosounderRaw = which(d$id == 0x23),
         echosounderRawTx = which(d$id == 0x24), # not handled yet
         waves = which(d$id == 0x30), # not handled yet
@@ -2620,12 +2651,12 @@ read.adp.ad2cp <- function(
             data[name] <- NULL
         }
     }
-    if (0x1f == dataType) { # 0x1f=averageAltimeter
-        if (length(p$averageAltimeter) < 1L) {
-            stop("no dataType=", dataTypeOrig, " (averageAltimeter) in file")
+    if (0x1f == dataType) { # 0x1f=averageAltimeterRaw
+        if (length(p$averageAltimeterRaw) < 1L) {
+            stop("no dataType=", dataTypeOrig, " (averageAltimeterRaw) in file")
         }
         data <- readProfile(id = dataType, debug = debug)
-        oceDebug(debug, "move some (averageAltimeter) things from data to metadata\n")
+        oceDebug(debug, "move some (averageAltimeterRaw) things from data to metadata\n")
         for (name in c(
             "blankingDistance", "cellSize", "configuration", "datasetDescription",
             "frequency", "numberOfBeams", "numberOfCells", "orientation"
