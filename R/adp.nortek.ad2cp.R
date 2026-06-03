@@ -984,7 +984,13 @@ read.adp.ad2cp <- function(
     }
     dataSetTime <- as.POSIXct(sapply(
         configText,
-        function(h) gsub(".*=\"(.*)\"", "\\1", h[1])
+        function(h) {
+            line <- h[1]
+            timeString <- if (grepl('TIME="', line)) sub('.*TIME="([^"]*)".*', "\\1", line) else NA_character_
+            offsetString <- if (grepl('OFFSET="', line)) sub('.*OFFSET="([^"]*)".*', "\\1", line) else NA_character_
+            tzString <- if (grepl('TZ="', line)) sub('.*TZ="([^"]*)".*', "\\1", line) else NA_character_
+            timeString
+        }
     ), tz = "UTC")
     dataSetStart <- idText[textBlockIsConfig]
     dataSetEnd <- c(diff(dataSetStart), length(d$id))

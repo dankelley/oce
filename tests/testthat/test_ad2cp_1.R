@@ -7,6 +7,8 @@ if (file.exists(file)) {
             bar <- read.adp.ad2cp(file, dataType = "burstAltimeterRaw"),
             "early EOF in chunk"
         ), "setting plan=0")
+        expect_false(anyNA(bar[["time"]]))
+        expect_equal(attr(bar[["time"]], "tzone"), "UTC")
         start <- mean(bar[["time"]])
         ntime <- sum(bar[["time"]] > mean(bar[["time"]]))
         sub <- subset(bar, time >= start)
