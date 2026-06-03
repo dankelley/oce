@@ -989,6 +989,7 @@ read.adp.ad2cp <- function(
             timeString <- if (grepl('TIME="', line)) sub('.*TIME="([^"]*)".*', "\\1", line) else NA_character_
             offsetString <- if (grepl('OFFSET="', line)) sub('.*OFFSET="([^"]*)".*', "\\1", line) else NA_character_
             tzString <- if (grepl('TZ="', line)) sub('.*TZ="([^"]*)".*', "\\1", line) else NA_character_
+            # For now, ignore offsetString and tzString and assume UTC.
             timeString
         }
     ), tz = "UTC")
