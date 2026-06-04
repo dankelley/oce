@@ -23,32 +23,32 @@ checkRowConsistency <- function(m) {
 # if you're interested.
 findInConfig <- function(config, type, property, numeric = TRUE) {
     lines <- if (type == "") {
-        #cat("case 1\n")
+        # cat("case 1\n")
         grep(paste0(",", property, "="), config)
     } else {
-        #cat("case 2\n")
+        # cat("case 2\n")
         grep(paste0("^", type, ","), config)
     }
-    #cat(vectorShow(lines, n=100))
-    #cat(vectorShow(config[lines], n=100))
+    # cat(vectorShow(lines, n=100))
+    # cat(vectorShow(config[lines], n=100))
     if (0 == length(lines)) {
         NA
     } else {
         # FIXME: should we check against multiple lines?
         values <- strsplit(config[lines[1]], ",")[[1]]
-        #cat(vectorShow(values, n=100))
+        # cat(vectorShow(values, n=100))
         w <- grep(paste0(property, "="), values) # find match to requested property
-        #cat(vectorShow(w, n=100))
+        # cat(vectorShow(w, n=100))
         if (1 != length(w)) {
             NA
         } else {
             if (numeric) {
-                #cat("case A\n")
-                #cat(vectorShow(values[w], n=100))
+                # cat("case A\n")
+                # cat(vectorShow(values[w], n=100))
                 as.numeric(strsplit(values[w], "=")[[1]][2])
             } else {
-                #cat("case B\n")
-                gsub('"', '', strsplit(values[w], "=")[[1]][2])
+                # cat("case B\n")
+                gsub('"', "", strsplit(values[w], "=")[[1]][2])
             }
         }
     }
@@ -632,12 +632,13 @@ ad2cpCodeToName <- function(code = NULL, prefix = TRUE) {
 #'
 #' @author Dan Kelley and Clark Richards
 read.adp.ad2cp <- function(
-    file,
-    from = 1L, to = 0L, by = 1L, dataType = NULL, dataSet = 1L,
-    tz = getOption("oceTz"), longitude = NA, latitude = NA, plan, TOC = FALSE,
-    debug = getOption("oceDebug"),
-    orientation, distance, monitor, despike, # ignored; warning issued if provided
-    ...) {
+  file,
+  from = 1L, to = 0L, by = 1L, dataType = NULL, dataSet = 1L,
+  tz = getOption("oceTz"), longitude = NA, latitude = NA, plan, TOC = FALSE,
+  debug = getOption("oceDebug"),
+  orientation, distance, monitor, despike, # ignored; warning issued if provided
+  ...
+) {
     if (!is.logical(TOC)) {
         stop("'TOC' must be a logical value, but it is ", TOC)
     }
@@ -1065,8 +1066,8 @@ read.adp.ad2cp <- function(
         )
     }
     keep <- planKeep & dataSetKeep & dataTypeKeep
-    #print(table(keep))
-    #browser()
+    # print(table(keep))
+    # browser()
     if (sum(keep) < length(keep)) {
         oceDebug(debug, "Focussing on plan=", plan, ", dataSet=", dataSet, ", and dataType=", dataType, ")\n",
             sep = ""
@@ -2833,10 +2834,10 @@ read.adp.ad2cp <- function(
         if (!length(res@metadata$distance)) {
             if (!is.null(res@metadata$numberOfCells) && res@metadata$numberOfCells > 1L) {
                 oceDebug(
-                         debug, "about to compute data$distance from blankingDistance=",
-                         res@metadata$blankingDistance, ", cellSize=",
-                         res@metadata$cellSize, ", and numberOfCells=",
-                         res@metadata$numberOfCells, "\n"
+                    debug, "about to compute data$distance from blankingDistance=",
+                    res@metadata$blankingDistance, ", cellSize=",
+                    res@metadata$cellSize, ", and numberOfCells=",
+                    res@metadata$numberOfCells, "\n"
                 )
                 data$distance <- res@metadata$blankingDistance +
                     seq(1L, by = res@metadata$cellSize, length.out = res@metadata$numberOfCells)
