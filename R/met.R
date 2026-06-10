@@ -382,7 +382,7 @@ as.met <- function(time, temperature, pressure, u, v, filename = "(constructed f
 #' # of 2003. This dataset is used for data(met) provided with oce.
 #' # Note that requests for data after 2012 month 10 yield all
 #' # missing values, for reasons unknown to the author.
-#' metFile <- download.met(6358, 2003, 9, destdir=".")
+#' metFile <- download.met(8202250, 2003, 9, destdir=".")
 #' met <- read.met(metFile)
 #' }
 #'
@@ -404,7 +404,7 @@ download.met <- function(
     destdir = ".", destfile, force = FALSE, quiet = FALSE,
     debug = getOption("oceDebug")) {
     if (missing(id)) {
-        id <- 6358
+        id <- 8202250
     }
     id <- as.integer(id)
     if (missing(deltat)) {
@@ -420,39 +420,43 @@ download.met <- function(
     }
     deltat <- deltatChoices[deltatIndex]
     if (deltat == "hour") {
-        today <- as.POSIXlt(presentTime())
         if (missing(year)) {
-            year <- today$year + 1900
+            year <- 2003
         }
         if (missing(month)) {
-            month <- today$mon + 1 # so 1=jan etc
-            month <- month - 1 # we want *previous* month, which should have data
-            if (month == 1) {
-                year <- year - 1
-                month <- 12
-            }
+            month <- 9
         }
-        # Next line is an example that worked as of Feb 2, 2017
-        # http://climate.weather.gc.ca/climate_data/bulk_data_e.html?format=csv&stationID=6358&Year=2003&Month=9&timeframe=1&submit=Download+Data
-        url <- paste("http://climate.weather.gc.ca/climate_data/bulk_data_e.html?",
-            "format=", type,
-            "&stationID=", id,
-            "&Year=", year,
-            "&Month=", month,
-            "&timeframe=1&submit=Download+Data",
-            sep = ""
-        )
+        # Next line is an example that worked as of Jun 10 2026
+        # https://climate.weather.gc.ca/climate_data/daily_data_e.html?timeframe=2&Year=2003&Month=9&Day=9&hlyRange=1961-01-01%7C2012-09-13&dlyRange=1953-01-01%7C2012-09-13&mlyRange=1953-01-01%7C2012-09-01&climate_id=8202250&Prov=NS&urlExtension=_e.html&searchType=stnName&optLimit=yearRange&StartYear=2003&EndYear=2003&selRowPerPage=25&Line=0&searchMethod=contains&txtStationName=halifax+stanfield
+        url <- paste0("https://climate.weather.gc.ca/climate_data/bulk_data_e.html?",
+                      "format=", type,
+                      "&climate_id=", id, # station ID changed to climate ID 2026
+                      "&timeframe=", ifelse(deltat == "hour", 1, 3),
+                      "&Year=", year,
+                      "&Month=", month,
+                      "&Day=1", # this forces first day of month downloads but could be provided as a user param
+                      "&submit=Download+Data")
         if (missing(destfile)) {
             destfile <- sprintf("met_%d_hourly_%04d_%02d_%02d.%s", id, year, month, 1, type)
         }
     } else if (deltat == "month") {
-        # Next line reverse engineered from monthly data at Resolute. I don't imagine we
-        # need Year and Month and Day.
-        url <- paste("http://climate.weather.gc.ca/climate_data/bulk_data_e.html?stationID=",
-            id, "&format=", type, "&timeframe=3&submit=Download+Data",
-            sep = ""
-        )
-        # id, "&Year=2000&Month=1&Day=14&format=csv&timeframe=3&submit=%20Download+Data", sep="")
+        # Year, Month, and Day ARE required for the new API
+        today <- as.POSIXlt(presentTime())
+        if (missing(year)) {
+            year <- 2003
+        }
+        if (missing(month)) {
+            month <- 9
+        }
+        # Updated URL structure with climate_id parameter
+        url <- paste0("https://climate.weather.gc.ca/climate_data/bulk_data_e.html?",
+                      "format=", type,
+                      "&climate_id=", id,
+                      "&timeframe=3",
+                      "&Year=", year,
+                      "&Month=", month,
+                      "&Day=1",
+                      "&submit=Download+Data")
         if (missing(destfile)) {
             destfile <- sprintf("met_%d_monthly.%s", id, type)
         }
@@ -474,6 +478,19 @@ download.met <- function(
     # download stage and at the read.met() stage, and I don't think this is
     # worthwhile.  The better scheme may be for users to move to the XML
     # format, instead of sticking with the CSV format.
+
+    if (file.exists(destination)) {
+        # Check if we received HTML instead of data
+        first_bytes <- readBin(destination, "raw", n = 100)
+        first_text <- rawToChar(first_bytes)
+
+        if (grepl("<!DOCTYPE html|<html", first_text, ignore.case = TRUE)) {
+            file.remove(destination)
+            stop("Server returned HTML page instead of data file. ",
+                 "Verify that climate_id=", id, " is valid and has data for ",
+                 year, "-", sprintf("%02d", month), ".")
+        }
+    }
     destination
 }
 
