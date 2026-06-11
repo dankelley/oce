@@ -126,4 +126,55 @@ if (1L == length(list.files(path = ".", pattern = "local_data"))) {
             expect_equal(moce[names(moce) != "filename"], mmet[names(mmet) != "filename"])
         })
     }
+
+    test_that("download.met works for hourly data", {
+        f <- try(download.met(8204700, 2007, 6,
+            deltat = "hour", type = "csv",
+            destdir = tempdir()
+        ), silent = TRUE)
+        if (inherits(f, "try-error")) {
+            cli::cli_alert_info("Could not download an hourly met file")
+        } else {
+            expect_true(file.exists(f))
+            # Should not be HTML
+            first_line <- readLines(f, n = 1, warn = FALSE)
+            expect_false(grepl("<!DOCTYPE html", first_line))
+            # Should be readable as met object
+            m <- read.met(f)
+            unlink(f) # Clean up
+            expect_s4_class(m, "met")
+            expect_true("temperature" %in% names(m@data))
+        }
+    })
+
+    test_that("download.met works for monthly data", {
+        f <- try(download.met(8204700, 2007, 6,
+            deltat = "month", type = "xml",
+            destdir = tempdir()
+        ), silent = TRUE)
+        if (inherits(f, "try-error")) {
+            cli::cli_alert_info("Could not download an monthly met file")
+        } else {
+            expect_true(file.exists(f))
+            first_line <- readLines(f, n = 1, warn = FALSE)
+            expect_false(grepl("<!DOCTYPE html", first_line))
+            m <- read.met(f)
+            unlink(f) # Clean up
+            expect_s4_class(m, "met")
+        }
+    })
+
+    test_that("download.met works with XML format", {
+        f <- try(download.met(8204700, 2007, 6,
+            deltat = "hour", type = "xml",
+            destdir = tempdir()
+        ), silent = TRUE)
+        if (inherits(f, "try-error")) {
+            cli::cli_alert_info("Could not download an XML met file")
+        } else {
+            m <- read.met(f)
+            unlink(f) # Clean up
+            expect_s4_class(m, "met")
+        }
+    })
 }
