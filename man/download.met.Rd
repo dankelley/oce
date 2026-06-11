@@ -86,7 +86,7 @@ library(oce)
 # of 2003. This dataset is used for data(met) provided with oce.
 # Note that requests for data after 2012 month 10 yield all
 # missing values, for reasons unknown to the author.
-metFile <- download.met(6358, 2003, 9, destdir=".")
+metFile <- download.met(8202250, 2003, 9, destdir=".")
 met <- read.met(metFile)
 }
 }
@@ -108,18 +108,18 @@ Other functions that download files:
 \code{\link{download.topo}()}
 
 Other things related to met data: 
-\code{\link{[[,met-method}},
-\code{\link{[[<-,met-method}},
+\code{\link{[[,met,ANY,ANY-method}},
+\code{\link{[[<-,met,ANY,ANY,ANY-method}},
 \code{\link{as.met}()},
 \code{\link{met}},
 \code{\link{met-class}},
-\code{\link{plot,met-method}},
+\code{\link{plot,met,ANY-method}},
 \code{\link{read.met}()},
 \code{\link{subset,met-method}},
 \code{\link{summary,met-method}}
 }
 \author{
-Dan Kelley
+Dan Kelley, Emily O'Grady
 }
 \concept{functions that download files}
 \concept{things related to met data}
