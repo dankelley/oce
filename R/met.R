@@ -398,7 +398,7 @@ as.met <- function(time, temperature, pressure, u, v, filename = "(constructed f
 #' @family functions that download files
 #' @family things related to met data
 #'
-#' @author Dan Kelley
+#' @author Dan Kelley, Emily O'Grady
 download.met <- function(
     id, year, month, deltat, type = "xml",
     destdir = ".", destfile, force = FALSE, quiet = FALSE,
@@ -434,7 +434,7 @@ download.met <- function(
                       "&timeframe=", ifelse(deltat == "hour", 1, 3),
                       "&Year=", year,
                       "&Month=", month,
-                      "&Day=1", # this forces first day of month downloads but could be provided as a user param
+                      "&Day=1", # this  could be provided as a user param
                       "&submit=Download+Data")
         if (missing(destfile)) {
             destfile <- sprintf("met_%d_hourly_%04d_%02d_%02d.%s", id, year, month, 1, type)
