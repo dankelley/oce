@@ -16,7 +16,7 @@ test_that("download.met works for hourly data", {
 })
 
 test_that("download.met works for monthly data", {
-    f <- download.met(8204700, 2007, 6, deltat = "month", type = "csv",
+    f <- download.met(8204700, 2007, 6, deltat = "month", type = "xml",
                       destdir = tempdir())
     expect_true(file.exists(f))
 
