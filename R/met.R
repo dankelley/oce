@@ -398,11 +398,12 @@ as.met <- function(time, temperature, pressure, u, v, filename = "(constructed f
 #' @family functions that download files
 #' @family things related to met data
 #'
-#' @author Dan Kelley, Emily O'Grady
+#' @author Dan Kelley and Emily O'Grady
 download.met <- function(
-    id, year, month, deltat, type = "xml",
-    destdir = ".", destfile, force = FALSE, quiet = FALSE,
-    debug = getOption("oceDebug")) {
+  id, year, month, deltat, type = "xml",
+  destdir = ".", destfile, force = FALSE, quiet = FALSE,
+  debug = getOption("oceDebug")
+) {
     if (missing(id)) {
         id <- 8202250
     }
@@ -428,14 +429,16 @@ download.met <- function(
         }
         # Next line is an example that worked as of Jun 10 2026
         # https://climate.weather.gc.ca/climate_data/daily_data_e.html?timeframe=2&Year=2003&Month=9&Day=9&hlyRange=1961-01-01%7C2012-09-13&dlyRange=1953-01-01%7C2012-09-13&mlyRange=1953-01-01%7C2012-09-01&climate_id=8202250&Prov=NS&urlExtension=_e.html&searchType=stnName&optLimit=yearRange&StartYear=2003&EndYear=2003&selRowPerPage=25&Line=0&searchMethod=contains&txtStationName=halifax+stanfield
-        url <- paste0("https://climate.weather.gc.ca/climate_data/bulk_data_e.html?",
-                      "format=", type,
-                      "&climate_id=", id, # station ID changed to climate ID 2026
-                      "&timeframe=", ifelse(deltat == "hour", 1, 3),
-                      "&Year=", year,
-                      "&Month=", month,
-                      "&Day=1", # this  could be provided as a user param
-                      "&submit=Download+Data")
+        url <- paste0(
+            "https://climate.weather.gc.ca/climate_data/bulk_data_e.html?",
+            "format=", type,
+            "&climate_id=", id, # station ID changed to climate ID 2026
+            "&timeframe=", ifelse(deltat == "hour", 1, 3),
+            "&Year=", year,
+            "&Month=", month,
+            "&Day=1", # this  could be provided as a user param
+            "&submit=Download+Data"
+        )
         if (missing(destfile)) {
             destfile <- sprintf("met_%d_hourly_%04d_%02d_%02d.%s", id, year, month, 1, type)
         }
@@ -449,14 +452,16 @@ download.met <- function(
             month <- 9
         }
         # Updated URL structure with climate_id parameter
-        url <- paste0("https://climate.weather.gc.ca/climate_data/bulk_data_e.html?",
-                      "format=", type,
-                      "&climate_id=", id,
-                      "&timeframe=3",
-                      "&Year=", year,
-                      "&Month=", month,
-                      "&Day=1",
-                      "&submit=Download+Data")
+        url <- paste0(
+            "https://climate.weather.gc.ca/climate_data/bulk_data_e.html?",
+            "format=", type,
+            "&climate_id=", id,
+            "&timeframe=3",
+            "&Year=", year,
+            "&Month=", month,
+            "&Day=1",
+            "&submit=Download+Data"
+        )
         if (missing(destfile)) {
             destfile <- sprintf("met_%d_monthly.%s", id, type)
         }
@@ -486,9 +491,11 @@ download.met <- function(
 
         if (grepl("<!DOCTYPE html|<html", first_text, ignore.case = TRUE)) {
             file.remove(destination)
-            stop("Server returned HTML page instead of data file. ",
-                 "Verify that climate_id=", id, " is valid and has data for ",
-                 year, "-", sprintf("%02d", month), ".")
+            stop(
+                "Server returned HTML page instead of data file. ",
+                "Verify that climate_id=", id, " is valid and has data for ",
+                year, "-", sprintf("%02d", month), "."
+            )
         }
     }
     destination
@@ -677,12 +684,13 @@ metNames2oceNames <- function(names, scheme) {
 #'
 #' @family things related to met data
 read.met <- function(
-    file,
-    type = NULL,
-    skip = NULL,
-    encoding = "latin1",
-    tz = getOption("oceTz"),
-    debug = getOption("oceDebug")) {
+  file,
+  type = NULL,
+  skip = NULL,
+  encoding = "latin1",
+  tz = getOption("oceTz"),
+  debug = getOption("oceDebug")
+) {
     if (missing(file)) {
         stop("must supply 'file'")
     }
@@ -740,11 +748,12 @@ read.met <- function(
 }
 
 read.met.csv1 <- function(
-    file,
-    skip = NULL,
-    encoding = "latin1",
-    tz = getOption("oceTz"),
-    debug = getOption("oceDebug")) {
+  file,
+  skip = NULL,
+  encoding = "latin1",
+  tz = getOption("oceTz"),
+  debug = getOption("oceDebug")
+) {
     if (missing(file)) {
         stop("must supply 'file'")
     }
@@ -996,11 +1005,12 @@ read.met.csv1 <- function(
 
 # This handles both csv2 and csv3 types
 read.met.csv2 <- function(
-    file,
-    skip = NULL,
-    encoding = "latin1",
-    tz = getOption("oceTz"),
-    debug = getOption("oceDebug")) {
+  file,
+  skip = NULL,
+  encoding = "latin1",
+  tz = getOption("oceTz"),
+  debug = getOption("oceDebug")
+) {
     if (missing(file)) {
         stop("must supply 'file'")
     }
@@ -1216,8 +1226,9 @@ read.met.csv2 <- function(
 }
 
 read.met.xml2 <- function(
-    file, skip = NULL, tz = getOption("oceTz"),
-    debug = getOption("oceDebug")) {
+  file, skip = NULL, tz = getOption("oceTz"),
+  debug = getOption("oceDebug")
+) {
     oceDebug(debug, "read.met.xml2(file=\"", file, "\", ...) START\n", sep = "", unindent = 1)
     if (!requireNamespace("XML", quietly = TRUE)) {
         stop("must install.packages(\"XML\") to read rsk data")
