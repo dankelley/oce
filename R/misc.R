@@ -1725,7 +1725,6 @@ detrend <- function(x, y) {
 }
 
 
-
 #' Remove Spikes From a Time Series
 #'
 #' The method identifies spikes with respect to a "reference" time-series, and
@@ -1817,8 +1816,9 @@ detrend <- function(x, y) {
 #' CTD <- despike(ctd)
 #' plot(CTD)
 despike <- function(
-    x, reference = c("median", "smooth", "trim"), n = 4, k = 7, min = NA, max = NA,
-    replace = c("reference", "NA"), skip) {
+  x, reference = c("median", "smooth", "trim"), n = 4, k = 7, min = NA, max = NA,
+  replace = c("reference", "NA"), skip
+) {
     if (is.vector(x)) {
         x <- despikeColumn(x, reference = reference, n = n, k = k, min = min, max = max, replace = replace)
     } else {
@@ -1863,8 +1863,9 @@ despike <- function(
 }
 
 despikeColumn <- function(
-    x, reference = c("median", "smooth", "trim"), n = 4, k = 7, min = NA, max = NA,
-    replace = c("reference", "NA")) {
+  x, reference = c("median", "smooth", "trim"), n = 4, k = 7, min = NA, max = NA,
+  replace = c("reference", "NA")
+) {
     reference <- match.arg(reference)
     replace <- match.arg(replace)
     gave.min <- !is.na(min)
@@ -1916,7 +1917,6 @@ despikeColumn <- function(
 }
 
 
-
 #' Substitute NA for Data Outside a Range
 #'
 #' Substitute NA for data outside a range, e.g. to remove wild spikes in data.
@@ -1963,7 +1963,6 @@ unabbreviateYear <- function(year) {
     # handle e.g. 2008 as 2008 (full year), 8 (year-2000 offset), or 108 (year 1900 offset)
     ifelse(year > 1800, year, ifelse(year > 50, year + 1900, year + 2000))
 }
-
 
 
 #' Unwrap an Angle That Suffers Modulo-360 Problems
@@ -2657,7 +2656,7 @@ resizableLabel <- function(item, axis = "x", sep, unit = NULL, debug = getOption
     } else if (item == "Rrho") {
         abbreviated <- full <- expression(R[rho])
     } else if (item == "RrhoSF") {
-        abbreviated <- full <- expression(R[rho*","*SF])
+        abbreviated <- full <- expression(R[rho * "," * SF])
     } else if (item == paste("sound", "speed")) {
         var <- gettext("Sound Speed", domain = "R-oce")
         # unit is ignored
@@ -3399,8 +3398,12 @@ makeFilter <- function(type = c("blackman-harris", "rectangular", "hamming", "ha
 #' examined if `xg` and `yg` are not supplied.
 #'
 #' @param xr,yr optional values defining the x and y radii of the weighting ellipse.
-#' If not supplied, these are calculated as the span of x
-#' and y over the square root of the number of data.
+#' If not supplied, these are calculated respectively as the span of x
+#' and y over the square root of the number of data. Be aware that
+#' this method can be problematic if there are many repeated (x,y)
+#' pairs, as for example in CTD profiles. In most serious analyses,
+#' it will make sense to supply `xr` and `yr` based on knowledge
+#' of the dataset or the domain.
 #'
 #' @param gamma grid-focussing parameter.  At each successive iteration, `xr` and
 #' `yr` are reduced by a factor of `sqrt(gamma)`.
@@ -3482,11 +3485,12 @@ makeFilter <- function(type = c("blackman-harris", "rectangular", "hamming", "ha
 #' plot(S, p, cex = 0.5, col = "blue", ylim = rev(range(p)))
 #' lines(g$zg, g$xg, col = "red")
 interpBarnes <- function(
-    x, y, z, w,
-    xg, yg, xgl, ygl,
-    xr, yr, gamma = 0.5, iterations = 2, trim = 0,
-    pregrid = FALSE,
-    debug = getOption("oceDebug")) {
+  x, y, z, w,
+  xg, yg, xgl, ygl,
+  xr, yr, gamma = 0.5, iterations = 2, trim = 0,
+  pregrid = FALSE,
+  debug = getOption("oceDebug")
+) {
     debug <- max(0, debug)
     oceDebug(debug, "interpBarnes(",
         argShow(x),
@@ -4832,10 +4836,12 @@ grad <- function(h, x = seq(0, 1, length.out = nrow(h)), y = seq(0, 1, length.ou
     if (missing(h)) {
         stop("must give h")
     }
-    if (length(x) < 3)
+    if (length(x) < 3) {
         stop("length of x must exceed 3, but it is ", length(x))
-    if (length(y) < 3)
+    }
+    if (length(y) < 3) {
         stop("length of y must exceed 3, but it is ", length(y))
+    }
     if (length(x) != nrow(h)) {
         stop("length of x (", length(x), ") must equal number of rows in h (", nrow(h), ")")
     }
