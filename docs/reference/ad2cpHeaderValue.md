@@ -52,6 +52,7 @@ found there, or if `x` is not of the required class and variety.
 
 ## Sample of Usage
 
+
     if (file.exists("a.ad2cp")) {
         d <- read.oce("a.ad2cp")
         # The examples start with the line in x[["text"]][[1]]; note that in the second

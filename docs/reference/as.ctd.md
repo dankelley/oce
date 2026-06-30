@@ -319,16 +319,16 @@ summary(ctd)
 #> 
 #>                              Min.    Mean   Max.   Dim. NAs OriginalName
 #>     scan                     1       25.5   50     50   0   "-"         
-#>     salinity [PSS-78]        33.489  34.11  34.521 50   0   "-"         
-#>     temperature [°C, ITS-90] 8.9673  9.778  11.029 50   0   "-"         
+#>     salinity [PSS-78]        33.49   34.108 34.519 50   0   "-"         
+#>     temperature [°C, ITS-90] 8.962   9.7833 11.033 50   0   "-"         
 #>     pressure [dbar]          1       25.5   50     50   0   "-"         
 #>     fluorescence [mg/m³]     0.41042 1.7903 4.7561 50   0   "-"         
 #> 
 #> * Processing Log
 #> 
-#>     - 2026-04-19 17:02:48 UTC: `create 'ctd' object`
-#>     - 2026-04-19 17:02:48 UTC: `as.ctd(salinity = salinity, temperature = temperature, pressure = pressure)`
-#>     - 2026-04-19 17:02:48 UTC: `oceSetData(object = ctd, name = "fluorescence", value = fluo,     unit = list(unit = expression(mg/m^3), scale = ""))`
+#>     - 2026-06-30 12:58:05 UTC: `create 'ctd' object`
+#>     - 2026-06-30 12:58:05 UTC: `as.ctd(salinity = salinity, temperature = temperature, pressure = pressure)`
+#>     - 2026-06-30 12:58:05 UTC: `oceSetData(object = ctd, name = "fluorescence", value = fluo,     unit = list(unit = expression(mg/m^3), scale = ""))`
 
 # 2. fake data, with supplied units (which are the defaults, actually)
 ctd <- as.ctd(salinity, temperature, pressure,

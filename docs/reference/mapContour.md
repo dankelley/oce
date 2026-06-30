@@ -122,6 +122,7 @@ mapContour(
 
 ## Sample of Usage
 
+
     library(oce)
     data(coastlineWorld)
     if (requireNamespace("ocedata", quietly=TRUE)) {
@@ -138,6 +139,7 @@ Suppose a map has been plotted using longitudes that are bound between
 and 360 (as for the built-in `coastlineWorld` dataset), try Clark
 Richards' method (<https://github.com/dankelley/oce/issues/2217>, as
 below.
+
 
     # Start with z=z(lon,lat), with lon bound by 0 and 360
     z2 <- rbind(z[lon > 180, ], z[lon <= 180, ])

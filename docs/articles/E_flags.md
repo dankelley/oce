@@ -9,6 +9,7 @@ general information about oce. The sample code provided here relies on
 the oce package, loaded as follows.
 
 ``` r
+
 library(oce)
 #> Loading required package: gsw
 ```
@@ -122,6 +123,7 @@ plotting or analysis situations.
 The oce package provides a dataset
 
 ``` r
+
 library(oce)
 data(ctdRaw)
 ```
@@ -130,6 +132,7 @@ that contains anomalous values that are revealed clearly in a summary
 plot (Figure 1):
 
 ``` r
+
 plot(ctdRaw)
 ```
 
@@ -153,6 +156,7 @@ These criteria can be supplied to `setFlags` in various ways, but the
 simplest is to create logical vectors, e.g.
 
 ``` r
+
 badS <- with(ctdRaw[["data"]], salinity < 25 | 40 < salinity)
 badT <- with(ctdRaw[["data"]], temperature < -2 | 40 < temperature)
 ```
@@ -161,6 +165,7 @@ In the above, `with` has been used to avoid inserting `salinity` and
 `temperature` in the namespace, but it would also be common to use e.g.
 
 ``` r
+
 salinity <- ctdRaw[["salinity"]]
 temperature <- ctdRaw[["temperature"]]
 bad <- (salinity < 25 | 40 < salinity) | (temperature < -2 | 40 < temperature)
@@ -171,6 +176,7 @@ and `badT` values will be used. The first step is to copy the original
 data, so that the flag operations will not alter `ctdRaw`:
 
 ``` r
+
 qc <- ctdRaw
 ```
 
@@ -178,6 +184,7 @@ Work flow is best documented if a flag scheme is established, and the
 “WHP CTD exchange” scheme is a reasonable choice; using
 
 ``` r
+
 qc <- initializeFlagScheme(qc, "WHP CTD")
 ```
 
@@ -187,6 +194,7 @@ initialize flag values. For example, to set up flag storage for salinity
 and temperature, use e.g.
 
 ``` r
+
 qc <- initializeFlags(qc, "salinity", 2)
 qc <- initializeFlags(qc, "temperature", 2)
 ```
@@ -210,6 +218,7 @@ function can be called any number of times. Continuing along with our
 example, we may mark bad salinities with
 
 ``` r
+
 qc <- setFlags(qc, "salinity", badS, value = "bad")
 ```
 
@@ -217,6 +226,7 @@ We can see that the flag got inserted by using `summary(qc)`, but for
 brevity here another method is:
 
 ``` r
+
 names(qc[["flags"]])
 #> [1] "salinity"    "temperature"
 ```
@@ -224,6 +234,7 @@ names(qc[["flags"]])
 Now, temperature flags may be inserted with
 
 ``` r
+
 qc <- setFlags(qc, "temperature", badT, value = "bad")
 ```
 
@@ -237,6 +248,7 @@ test whether this procedure has cleaned up the data significantly: we
 must “handle” the flags, using
 
 ``` r
+
 qch <- handleFlags(qc, flags = list(c(1, 3:9)))
 ```
 
@@ -244,6 +256,7 @@ Comparing Figure 1 with the summary plot for `qch` (Figure 2),
 constructed with
 
 ``` r
+
 plot(qch)
 ```
 
@@ -281,6 +294,7 @@ frame will exit the procedure, after which `qc` is a ctd object with
 flags as set, and data set to `NA` where these flags indicate bad data.
 
 ``` r
+
 options(eos = "gsw")
 data(ctd)
 qc <- ctd
@@ -327,6 +341,7 @@ As a simple example, the following shows how to clean up the “A03”
 Atlantic section that is provided with oce.
 
 ``` r
+
 data(section)
 s <- handleFlags(section, flags = list(c(1, 3:9)))
 par(mfrow = c(2, 1))
@@ -359,6 +374,7 @@ illustrated here; look near 8h and 20h. However, altering the values for
 `G` and `V4` will reveal that the schemes do differ.
 
 ``` r
+
 data(adp)
 v <- adp[["v"]]
 i2 <- array(FALSE, dim = dim(v)) # construct array to match 'v'

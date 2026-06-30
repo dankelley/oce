@@ -176,6 +176,7 @@ Dan Kelley
 ## Examples
 
 ``` r
+
 library(oce)
 data(ctd)
 # Left panel: density

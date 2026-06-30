@@ -202,6 +202,7 @@ a list containing the following (not necessarily in this order)
 
 ## Sample of Usage
 
+
     # Example 2. topographic image with a standard color scheme
     par(mfrow=c(1,1))
     data(topoWorld)

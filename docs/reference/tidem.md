@@ -71,6 +71,7 @@ tidem(
   `name` items have already been computed, then the suggested inference
   is ignored, and the already-computed values are used.
 
+
       infer=list(name=c("P1","K2"),
                  from=c("K1", "S2"),
                  amp=c(0.33093, 0.27215),
@@ -156,6 +157,7 @@ consisting of
 ## Details
 
 A summary of constituents used by `tidem()` may be found with:
+
 
     data(tidedata)
     print(tidedata$const)
@@ -288,6 +290,7 @@ doing so.
 
 The `tidem` amplitude and phase results, obtained with
 
+
     tidem(sealevelTuktoyaktuk, constituents=c("standard", "M10"),
         infer=list(name=c("P1", "K2"),
             from=c("K1", "S2"),
@@ -397,8 +400,8 @@ summary(tide)
 #> Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 #> * Processing Log
 #> 
-#>     - 2026-04-19 17:04:25 UTC: `create 'tidem' object`
-#>     - 2026-04-19 17:04:25 UTC: `tidem(t = sealevelTuktoyaktuk)`
+#>     - 2026-06-30 12:59:40 UTC: `create 'tidem' object`
+#>     - 2026-06-30 12:59:40 UTC: `tidem(t = sealevelTuktoyaktuk)`
 
 # AIC analysis
 extractAIC(tide[["model"]])
@@ -419,24 +422,24 @@ summary(m)
 #> 
 #> Call:
 #> tidem(t = sl)
-#> RMS misfit to data:  4.034692e-15 
+#> RMS misfit to data:  4.085402e-15 
 #> 
 #> Fitted Model:
 #>          Freq Amplitude Phase      p    
-#> Z0   0.00e+00  1.61e-16   0.0   0.55    
-#> K1   4.18e-02  5.53e-16 320.9   0.32    
+#> Z0   0.00e+00  1.05e-16   0.0   0.70    
+#> K1   4.18e-02  5.23e-16 322.1   0.35    
 #> M2   8.05e-02  1.00e+00 266.4 <2e-16 ***
-#> M3   1.21e-01  2.21e-16  61.1   0.71    
-#> M4   1.61e-01  5.10e-16 316.7   0.35    
-#> 2MK5 2.03e-01  1.84e-16 181.6   0.81    
-#> 2SK5 2.08e-01  4.12e-16  81.3   0.59    
-#> M6   2.42e-01  5.66e-16 201.3   0.38    
-#> 3MK7 2.83e-01  2.48e-16 252.0   0.69    
-#> M8   3.22e-01  6.82e-16 136.7   0.21    
+#> M3   1.21e-01  1.36e-16  70.9   0.84    
+#> M4   1.61e-01  5.46e-16 308.7   0.33    
+#> 2MK5 2.03e-01  1.59e-16 209.7   0.79    
+#> 2SK5 2.08e-01  4.90e-16  74.4   0.49    
+#> M6   2.42e-01  5.79e-16 191.5   0.45    
+#> 3MK7 2.83e-01  2.39e-16 232.2   0.67    
+#> M8   3.22e-01  5.93e-16 139.9   0.28    
 #> ---
 #> Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 #> * Processing Log
 #> 
-#>     - 2026-04-19 17:04:25 UTC: `create 'tidem' object`
-#>     - 2026-04-19 17:04:25 UTC: `tidem(t = sl)`
+#>     - 2026-06-30 12:59:40 UTC: `create 'tidem' object`
+#>     - 2026-06-30 12:59:40 UTC: `tidem(t = sl)`
 ```

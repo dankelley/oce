@@ -130,9 +130,9 @@ formatCI(c(0.95, 1.05), style = "parentheses") # "1.00(5)"
 a <- rnorm(100, mean = 10, sd = 1)
 CI <- t.test(a)$conf.int
 formatCI(CI)
-#> [1] "9.9+/-0.2"
+#> [1] "9.9+/-0.19"
 formatCI(CI, style = "parentheses")
-#> [1] "9.9(1.99)"
+#> [1] "9.9(1.87)"
 
 # example 4: specifying a model
 x <- seq(0, 10, 0.1)
@@ -140,10 +140,10 @@ y <- 2 + 3 * x + rnorm(x, sd = 0.1)
 m <- lm(y ~ x)
 formatCI(model = m)
 #>             value       
-#> (Intercept) "2+/-0.02"  
-#> x           "3+/-0.0035"
+#> (Intercept) "2+/-0.021" 
+#> x           "3+/-0.0036"
 formatCI(model = m, style = "parentheses")
-#>             value       
-#> (Intercept) "1.99(2.03)"
-#> x           "3.002(3.5)"
+#>             value        
+#> (Intercept) "1.97(2.11)" 
+#> x           "3.005(3.64)"
 ```

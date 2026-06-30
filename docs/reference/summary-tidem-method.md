@@ -43,6 +43,7 @@ summary(object, p = 1, constituent, ...)
 
 ## Sample of Usage
 
+
     library(oce)
     data(sealevel)
     tide <- tidem(sealevel)

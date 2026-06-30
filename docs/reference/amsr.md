@@ -14,6 +14,7 @@ data(amsr)
 
 The following code was used to create this dataset.
 
+
     library(oce)
     amsr <- read.amsr(download.amsr(2023, 7, 27, destdir="~/data/amsr"))
     amsr <- subset(amsr, -71 < longitude & longitude < -60, debug=2)

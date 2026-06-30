@@ -454,6 +454,7 @@ projections, such as those used in the examples.
 
 ## Sample of Usage
 
+
     # Example 1.
     # Mollweide (referenc 1 page 54) is an equal-area projection that works well
     # for whole-globe views.

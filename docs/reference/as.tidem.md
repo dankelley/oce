@@ -86,6 +86,7 @@ permitted here, *except* for `"Z0"` (see “Description” regarding
 reference height). To get a list of constituent names, please consult
 Foreman (1978), or type the following in an R console:
 
+
     data(tidedata)
     data.frame(name=tidedata$const$name, freq=tidedata$const$freq)
 
@@ -145,6 +146,7 @@ Other things related to tides:
 ## Examples
 
 ``` r
+
 # Example 1: show agreement with tidem()
 data(sealevelTuktoyaktuk)
 # 'm0' is model fitted by tidem()

@@ -191,6 +191,7 @@ phone/tablet devices equipped with GPS sensors.
 
 ## Sample of Usage
 
+
     library(oce)
     data(ctdRaw)
     # Example 1: focus on downcast

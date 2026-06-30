@@ -113,6 +113,7 @@ Dan Kelley
 ## Examples
 
 ``` r
+
 library(oce)
 data(adp)
 o <- enuToOtherAdp(adp, heading = -31.5)

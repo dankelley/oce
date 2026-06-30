@@ -21,6 +21,7 @@ plotting, including a cumulative spectrum that can be quite informative
 to learn more).
 
 ``` r
+
 library(oce)
 #> Loading required package: gsw
 data(sealevel)
@@ -210,6 +211,7 @@ libraries and set the conda environment that we want to use for
 `reticulate`:
 
 ``` r
+
 library(oce)
 library(reticulate)
 use_condaenv("tides")
@@ -219,6 +221,7 @@ The functions associated with the python libraries can be loaded into
 the R workspace with the `import()` function, like:
 
 ``` r
+
 utide <- import("utide")
 pandas <- import("pandas")
 np <- import("numpy")
@@ -227,6 +230,7 @@ np <- import("numpy")
 and we can load the example “tidalCurrent” dataset included in `oce`:
 
 ``` r
+
 data(tidalCurrent)
 t <- tidalCurrent$time
 u <- np$array(tidalCurrent$u)
@@ -241,6 +245,7 @@ We can then perform the tidal analysis using the Utide
 [`coef()`](https://rdrr.io/r/stats/coef.html) function:
 
 ``` r
+
 coef <- utide$solve(tpy, u, v,
     lat = 45, nodal = FALSE, trend = FALSE, method = "ols",
     conf_int = "linear", Rayleigh_min = 0.95
@@ -252,6 +257,7 @@ coef <- utide$solve(tpy, u, v,
 which produces a list `coef` that has fields:
 
 ``` r
+
 names(coef)
 ```
 
@@ -264,6 +270,7 @@ Making a tidal prediction based on the fit, is as easy as using the
 utide `reconstruct()` function:
 
 ``` r
+
 tide <- utide$reconstruct(t = tpy, coef = coef)
 ```
 
@@ -272,6 +279,7 @@ tide <- utide$reconstruct(t = tpy, coef = coef)
 Let’s make some plots to show that it works!
 
 ``` r
+
 par(mfrow = c(2, 1))
 oce.plot.ts(t, u)
 lines(t, tide["u"], col = 2)
@@ -286,6 +294,7 @@ constituents from the fit and adding them to a hodograph of the
 currents:
 
 ``` r
+
 ellipse <- function(xc = 0, yc = 0, Lmaj, Lmin, phi, ...) {
     th <- seq(0, 2 * pi, 0.01)
     x <- xc + Lmaj * cos(th) * cos(phi) - Lmin * sin(th) * sin(phi)
@@ -311,6 +320,7 @@ occurred a bit after midnight – that was the time he moved to a room
 without windows, in fear of flying glass.
 
 ``` r
+
 library(oce)
 data(sealevel)
 # Focus on 2003-Sep-28 to 29th, the time when Hurricane Juan caused flooding
@@ -328,6 +338,7 @@ on September 29th indicates the damaging storm surge that was generated
 by Hurricane Juan.
 
 ``` r
+
 library(oce)
 data(sealevel)
 m <- tidem(sealevel)

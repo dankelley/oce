@@ -43,5 +43,5 @@ processingLogShow(ctd)
 #>     - 2018-11-14 20:03:47 UTC: `create 'ctd' object`
 #>     - 2018-11-14 20:03:47 UTC: `read.ctd.sbe(file = file, debug = 10, processingLog = processingLog)`
 #>     - 2018-11-14 20:03:47 UTC: `oce.edit(x = ctd, item = "startTime", value = as.POSIXct(gsub("1903",     "2003", format(ctd[["startTime"]])), tz = "UTC") + 4 * 3600,     reason = "file had year=1903, instead of 2003", person = "Dan Kelley")`
-#>     - 2026-04-19 17:03:41 UTC: `test`
+#>     - 2026-06-30 12:58:57 UTC: `test`
 ```

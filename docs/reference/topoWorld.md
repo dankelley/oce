@@ -33,6 +33,7 @@ This is created with
 [`read.topo()`](https://dankelley.github.io/oce/reference/read.topo.md),
 using a file downloaded with
 
+
     topoFile <- download.topo(west=-180, east=180, south=-90, north=90,
        resolution=30, destdir=".")
 
@@ -54,6 +55,7 @@ appear identical when plotted at the global scale that is the
 recommended for such a coarse topographic file.
 
 ## Sample of Usage
+
 
     library(oce)
     data(topoWorld)

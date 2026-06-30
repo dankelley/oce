@@ -35,6 +35,7 @@ provided in this vignette to work. If this package is not installed, it
 may be installed with
 
 ``` r
+
 install.packages("sf")
 ```
 
@@ -60,6 +61,7 @@ To see the need for setting the aspect ratio, consider the following
 view of North America.
 
 ``` r
+
 library(oce)
 #> Loading required package: gsw
 data(coastlineWorld)
@@ -83,6 +85,7 @@ of [`plot()`](https://rdrr.io/r/graphics/plot.default.html) to a value
 appropriate to the general latitude of the view (45N, in this case).
 
 ``` r
+
 par(mar = c(4, 4, 0.5, 0.5))
 plot(lon, lat,
     type = "l",
@@ -101,6 +104,7 @@ generic [`plot()`](https://rdrr.io/r/graphics/plot.default.html)
 function for `coastline` objects, as follows.
 
 ``` r
+
 plot(coastlineWorld, clongitude = -90, clatitude = 45, span = 7000)
 ```
 
@@ -135,6 +139,7 @@ follow, because plotting a detailed coastline in a world view leads to a
 scribbling effect that obscures the large-scale coastline shapes.
 
 ``` r
+
 data(coastlineWorld)
 ```
 
@@ -142,6 +147,7 @@ The function used to produce maps with projections is `mapPlot`, and
 with default arguments it produces
 
 ``` r
+
 par(mar = c(1.5, 1.5, 0.5, 0.5))
 mapPlot(coastlineWorld, col = "lightgray")
 ```
@@ -176,6 +182,7 @@ a trick on the latitude limit, specifying an image point on the other
 side of the planet, with the pole in between).
 
 ``` r
+
 par(mar = c(1.5, 1.5, 0.5, 0.5))
 mapPlot(coastlineWorld,
     longitudelim = c(-180, 180), latitudelim = c(60, 90),
@@ -203,6 +210,7 @@ The Lambert Conformal view is often used in maps that span wide
 longitudinal ranges, e.g. a map of Canada may be produced as follows.
 
 ``` r
+
 par(mar = c(1.5, 1.5, 0.5, 0.5))
 mapPlot(coastlineWorld,
     longitudelim = c(-130, -55), latitudelim = c(45, 70),
@@ -245,6 +253,7 @@ sea surface temperature as contours.
 shading for land.
 
 ``` r
+
 par(mar = rep(0.5, 4))
 mapPlot(coastlineWorld, col = "lightgray", projection = "+proj=robin")
 ```
@@ -261,6 +270,7 @@ Note that some adjustment of the margins is required to fit the
 colorbar.
 
 ``` r
+
 par(mar = c(1.5, 1, 1.5, 1))
 data(topoWorld)
 topo <- decimate(topoWorld, 2) # coarsen grid: 4X faster plot
@@ -281,6 +291,7 @@ World topography with Mollweide projection (exercise 2).
 **Exercise 3.** Draw a view of Antarctica and the Southern Ocean.
 
 ``` r
+
 par(mar = c(1.5, 1.5, 0.5, 0.5))
 mapPlot(coastlineWorld,
     longitudelim = c(-180, 180), latitudelim = c(-130, -50),
@@ -300,6 +311,7 @@ Zone 20 includes Nova Scotia, which is also a good place to centre the
 view.
 
 ``` r
+
 par(mar = c(1.5, 1.5, 0.5, 0.5))
 mapPlot(coastlineWorld,
     col = "lightgray",
@@ -329,6 +341,7 @@ Equal-Area projection, and the Mercator projection shown in the previous
 diagram.
 
 ``` r
+
 par(mar = c(1.5, 1.5, 0.5, 0.5))
 mapPlot(coastlineWorld,
     col = "lightgray",
@@ -348,6 +361,7 @@ sea surface temperature as contours.
 Note that the temperature is provided by the `ocedata` package.
 
 ``` r
+
 par(mar = rep(0.5, 4))
 mapPlot(coastlineWorld, projection = "+proj=goode", col = "lightgray")
 if (requireNamespace("ocedata", quietly = TRUE)) {

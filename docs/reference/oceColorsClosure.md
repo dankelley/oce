@@ -23,6 +23,7 @@ oceColorsClosure(spec)
 
 ## Sample of Usage
 
+
     # Update oxygen color scheme to latest matplotlib value.
     library(oce)
     oxy <- "https://raw.githubusercontent.com/matplotlib/cmocean/master/cmocean/rgb/oxy-rgb.txt"

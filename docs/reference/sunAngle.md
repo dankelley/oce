@@ -120,6 +120,7 @@ Dan Kelley
 ## Examples
 
 ``` r
+
 rise <- as.POSIXct("2011-03-03 06:49:00", tz = "UTC") + 4 * 3600
 set <- as.POSIXct("2011-03-03 18:04:00", tz = "UTC") + 4 * 3600
 mismatch <- function(lonlat) {

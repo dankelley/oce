@@ -49,6 +49,7 @@ Dan Kelley
 ## Examples
 
 ``` r
+
 library(oce)
 data(lobo)
 summary(lobo)

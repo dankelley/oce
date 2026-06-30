@@ -56,6 +56,7 @@ items. See “Details of the Specialized Method” for more information.
 
 - If `i` is `"Sv"`, then the following is returned.
 
+
       20*log10(a) -
         (x@metadata$sourceLevel+x@metadata$receiverSensitivity+x@metadata$transmitPower) +
         20*log10(r) +
@@ -64,6 +65,7 @@ items. See “Details of the Specialized Method” for more information.
         10*log10(soundSpeed*x@metadata$pulseDuration/1e6*psi/2)
 
 - If `i` is `"TS"`, then the following is returned.
+
 
       20*log10(a) -
         (x@metadata$sourceLevel+x@metadata$receiverSensitivity+x@metadata$transmitPower) +

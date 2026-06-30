@@ -58,6 +58,7 @@ time zone is used in decoding the lines in the `.TBL` file.
 
 ## Sample of Usage
 
+
     file <- "~/data/archive/sleiwex/2008/moorings/m05/adv/sontek_202h/raw"
     table <- rskToc(file,
         from=as.POSIXct("2008-07-01 00:00:00", tz="UTC"),

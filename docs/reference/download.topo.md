@@ -109,6 +109,7 @@ hints from `marmap::getNOAAbathy()`.
 
 ## Sample of Usage
 
+
     library(oce)
     topoFile <- download.topo(west=-66, east=-60, south=43, north=47,
         resolution=1, destdir="~/data/topo")

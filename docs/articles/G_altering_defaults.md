@@ -18,6 +18,7 @@ state be used in operations like plotting CTD data, might insert the
 following line in the `~/.Rprofile` file:
 
 ``` r
+
 options(oceEOS = "gsw")
 ```
 

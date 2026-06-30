@@ -232,6 +232,7 @@ Dan Kelley
 ## Examples
 
 ``` r
+
 # 1. Create a ctd object with fake data.
 a <- as.ctd(salinity = 35 + 1:3 / 10, temperature = 10 - 1:3 / 10, pressure = 1:3)
 summary(a)
@@ -248,8 +249,8 @@ summary(a)
 #> 
 #> * Processing Log
 #> 
-#>     - 2026-04-19 17:02:56 UTC: `create 'ctd' object`
-#>     - 2026-04-19 17:02:56 UTC: `as.ctd(salinity = 35 + 1:3/10, temperature = 10 - 1:3/10, pressure = 1:3)`
+#>     - 2026-06-30 12:58:12 UTC: `create 'ctd' object`
+#>     - 2026-06-30 12:58:12 UTC: `as.ctd(salinity = 35 + 1:3/10, temperature = 10 - 1:3/10, pressure = 1:3)`
 
 # 2. Fix a typo in a station latitude (fake! it's actually okay)
 data(ctd)

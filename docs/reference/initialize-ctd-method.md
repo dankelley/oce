@@ -144,6 +144,7 @@ Other things related to ctd data:
 ## Examples
 
 ``` r
+
 # 1. empty
 new("ctd")
 #> ctd object has nothing in its data slot.
@@ -165,7 +166,7 @@ summary(ctd)
 #> 
 #> * Processing Log
 #> 
-#>     - 2026-04-19 17:03:05 UTC: `create 'ctd' object`
+#>     - 2026-06-30 12:58:22 UTC: `create 'ctd' object`
 plot(ctd, eos = "unesco")
 
 

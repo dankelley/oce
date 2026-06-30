@@ -179,6 +179,7 @@ FOSS license, so CRAN requested a change to
 
 ## Sample of Usage
 
+
     library(oce)
     data(coastlineWorld)
     data(topoWorld)

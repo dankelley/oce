@@ -11,6 +11,7 @@ information about oce. The sample code provided here relies on the oce
 package, loaded as follows.
 
 ``` r
+
 library(oce)
 #> Loading required package: gsw
 ```
@@ -34,6 +35,7 @@ function.
 Suppose `f` is a character string naming a data file. In many cases,
 
 ``` r
+
 d <- read.oce(f)
 ```
 
@@ -41,6 +43,7 @@ will read the file, because `read.oce` will look inside the file to try
 to guess the format. If this does not work, one ought to try e.g.
 
 ``` r
+
 d <- read.adp(f)
 ```
 
@@ -62,6 +65,7 @@ help to use the `by` argument, e.g. for a 138Mb file on the author’s
 computer,
 
 ``` r
+
 f <- "/data/archive/sleiwex/2008/moorings/m09/adp/rdi_2615/raw/adp_rdi_2615.000"
 dall <- read.oce(f)
 ```
@@ -69,6 +73,7 @@ dall <- read.oce(f)
 takes 15.2s of user time, but
 
 ``` r
+
 d100 <- read.oce(f, by = 100)
 ```
 
@@ -79,6 +84,7 @@ takes 0.2s. It is also possible to window the data, using the `from` and
 For example, the adp dataset provided by oce was read with
 
 ``` r
+
 read.oce(f,
     from = as.POSIXct("2008-06-26", tz = "UTC"),
     to = as.POSIXct("2008-06-27", tz = "UTC"),
@@ -106,6 +112,7 @@ The generic function `summary` provides a useful overview of an adp data
 object. For example,
 
 ``` r
+
 data(adp)
 summary(adp)
 ```
@@ -156,6 +163,7 @@ will convert data measured in any coordinate system into an `enu`
 variant, many analysts will do something along the lines of
 
 ``` r
+
 beam <- read.oce(f)
 xyx <- beamToXyz(beam)
 enu <- xyzToEnu(xyz, declination = -18.1)
@@ -178,6 +186,7 @@ depends on the number of beams used by the instrument, and each one has
 a label indicating the component name. For example,
 
 ``` r
+
 plot(adp)
 ```
 
@@ -214,6 +223,7 @@ velocity without the speed of the ship for a file named
 Adp data can be subsetted in a wide variety of ways, e.g.
 
 ``` r
+
 plot(subset(adp, distance < 20))
 ```
 
@@ -242,6 +252,7 @@ but a few examples should suffice to sketch the general pattern.
 For example,
 
 ``` r
+
 time <- adp[["time"]]
 distance <- adp[["distance"]]
 ```
@@ -250,6 +261,7 @@ extracts the times and distances of the profiles within `data(adp)`,
 while the array holding the velocities is extract with
 
 ``` r
+
 v <- adp[["v"]]
 ```
 
@@ -267,6 +279,7 @@ quickly. However, to actually work with the numbers, users can extract a
 e.g.
 
 ``` r
+
 a <- adp[["a", "numeric"]]
 ```
 
@@ -294,6 +307,7 @@ coordinate system of an adp object.
 With adp as loaded in the text, we may the names in the metadata with:
 
 ``` r
+
 sort(names(adp[["metadata"]]))
 ```
 
@@ -301,6 +315,7 @@ sort(names(adp[["metadata"]]))
 elements relate to coordinates:
 
 ``` r
+
 adp[["originalCoordinate"]]
 #> [1] "beam"
 adp[["oceCoordinate"]]
@@ -312,6 +327,7 @@ is the coordinate system in which the data were originally measured,
 while the latter is the coordinate system of the transformed data. Using
 
 ``` r
+
 processingLogShow(adp)
 #> * Processing Log
 #> 
@@ -327,6 +343,7 @@ reveals the steps in the data transformation.
 **Solution.**
 
 ``` r
+
 plot(adp, which = "uv")
 ```
 
@@ -339,6 +356,7 @@ velocity without the speed of the ship for a file named
 **Solution.**
 
 ``` r
+
 library(oce)
 adcp <- read.adp("COR2019002_20190818T064815_007_000000.ENS")
 enu <- toEnu(adcp)
@@ -352,6 +370,7 @@ interval.
 **Solution.** (results not shown)
 
 ``` r
+
 plot(subset(adp, time < median(adp[["time"]])))
 ```
 
@@ -361,6 +380,7 @@ eastward velocities.
 **Solution.**
 
 ``` r
+
 time <- adp[["time"]]
 v <- adp[["v"]]
 # The second index is for bin number, the third for beam number
@@ -388,6 +408,7 @@ velocity.
 **Solution.**
 
 ``` r
+
 u <- adp[["v"]][, , 1]
 v <- adp[["v"]][, , 2]
 ok <- is.finite(u) & is.finite(v) # remove NA values
@@ -408,12 +429,14 @@ Note that this action is equivalent to principal component analysis, and
 it might be wiser to use
 
 ``` r
+
 pr <- prcomp(data.frame(u, v))
 ```
 
 to do the analysis, which yields the same principal axes
 
 ``` r
+
 pr
 #> Standard deviations (1, .., p=2):
 #> [1] 0.6953428 0.1247818
@@ -433,6 +456,7 @@ tidal height.
 **Solution.**
 
 ``` r
+
 time <- adp[["time"]]
 pressure <- adp[["pressure"]]
 oce.plot.ts(time, pressure)
@@ -444,6 +468,7 @@ series.](C_adp_files/figure-html/unnamed-chunk-25-1.png)
 As a matter of interest, a tidal analysis may be done with
 
 ``` r
+
 m <- tidem(as.sealevel(pressure, time))
 #> Warning in tidem(as.sealevel(pressure, time)): tidal record too short to fit
 #> constituents: SA, SSA, MSM, MM, MSF, MF, ALP1, 2Q1, SIG1, Q1, RHO1, O1, TAU1,
@@ -459,6 +484,7 @@ tidal record is so short (see
 fitted constituents are as follows
 
 ``` r
+
 summary(m)
 #> tidem summary
 #> -------------
@@ -478,8 +504,8 @@ summary(m)
 #> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 #> * Processing Log
 #> 
-#>     - 2026-04-19 17:04:38 UTC: `create 'tidem' object`
-#>     - 2026-04-19 17:04:38 UTC: `tidem(t = as.sealevel(pressure, time))`
+#>     - 2026-06-30 12:59:53 UTC: `create 'tidem' object`
+#>     - 2026-06-30 12:59:53 UTC: `tidem(t = as.sealevel(pressure, time))`
 ```
 
 (Note that it fitted for M2, but not S2, because the Rayleigh criterion
@@ -493,6 +519,7 @@ following (see
 [`?predict.tidem`](https://dankelley.github.io/oce/reference/predict.tidem.md)).
 
 ``` r
+
 oce.plot.ts(time, pressure, type = "p", col = "blue")
 timePredict <- seq(min(time), max(time), length.out = 200)
 pressurePredict <- predict(m, timePredict)

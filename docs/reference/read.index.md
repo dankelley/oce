@@ -79,6 +79,7 @@ January, February, etc.
 
 ## Sample of Usage
 
+
     library(oce)
     par(mfrow=c(2, 1))
     # 1. AO, Arctic oscillation

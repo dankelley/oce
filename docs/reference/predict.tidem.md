@@ -55,6 +55,7 @@ with regard to the Rayleigh criterion.
 
 ## Sample of Usage
 
+
     # prediction at specified times
     data(sealevel)
     m <- tidem(sealevel)
@@ -92,6 +93,7 @@ Dan Kelley
 ## Examples
 
 ``` r
+
 # Show non-tidal sealevel signal in Halifax Harbour during
 # the year 2002. The spike resulted from Hurricane Juan.
 library(oce)

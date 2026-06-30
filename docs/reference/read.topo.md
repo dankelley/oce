@@ -55,6 +55,7 @@ The three permitted file types are as follows.
 
 ## Sample of Usage
 
+
     library(oce)
     topoMaritimes <- read.topo("topoMaritimes.asc")
     plot(topographyMaritimes)

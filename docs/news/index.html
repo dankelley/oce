@@ -66,6 +66,7 @@
 </ul></li>
 <li>Change <code><a href="../reference/concatenate.html">concatenate()</a></code> to handle lists properly (issue <a href="https://github.com/dankelley/oce/issues/2278" class="external-link">#2278</a>).</li>
 <li>Change <code><a href="../reference/download.amsr.html">download.amsr()</a></code> to handle realtime data files (issue <a href="https://github.com/dankelley/oce/issues/2231" class="external-link">#2231</a>).</li>
+<li>Change <code><a href="../reference/download.met.html">download.met()</a></code> to account for server changes (issue <a href="https://github.com/dankelley/oce/issues/2381" class="external-link">#2381</a>, reported and solved by github user <code>EOGrady21</code>).</li>
 <li>Change <code><a href="../reference/imagep.html">imagep()</a></code> to handle <code>decimate</code> as set in <code>~/.Rprofile</code> (issue <a href="https://github.com/dankelley/oce/issues/2263" class="external-link">#2263</a>).</li>
 <li>Change <code><a href="../reference/lonlat2map.html">lonlat2map()</a></code> to handle a [coastline-class] object as first parameter (issue <a href="https://github.com/dankelley/oce/issues/2284" class="external-link">#2284</a>).</li>
 <li>Change <code><a href="../reference/magneticField.html">magneticField()</a></code> to handle the latest (generation 14) IGRF formulation (issue <a href="https://github.com/dankelley/oce/issues/2274" class="external-link">#2274</a>).</li>
@@ -88,8 +89,9 @@
 <li>Change <code><a href="../reference/read.amsr.html">read.amsr()</a></code> to handle realtime data files (issue <a href="https://github.com/dankelley/oce/issues/2230" class="external-link">#2230</a>).</li>
 <li>Change <code><a href="../reference/read.adp.ad2cp.html">read.adp.ad2cp()</a></code> to
 <ul><li>rename hex code 0x1f from <code>averageAltimeter</code> to <code>averageAltimeterRaw</code>, for consistency with Nortek manuals as of 2026. (The old name is still accepted, but a warning is issued.)</li>
-<li>handle TOC, datasets and plans better (issue <a href="https://github.com/dankelley/oce/issues/2303" class="external-link">#2303</a> and related),</li>
+<li>handle a new, three-element, form of the <code>GETCLOCKSTR</code> field (issue <a href="https://github.com/dankelley/oce/issues/2379" class="external-link">#2379</a>).</li>
 <li>handle bottom-track data correctly (issue <a href="https://github.com/dankelley/oce/issues/2368" class="external-link">#2368</a>)</li>
+<li>handle TOC, datasets and plans better (issue <a href="https://github.com/dankelley/oce/issues/2303" class="external-link">#2303</a> and related),</li>
 <li>read temperature correctly (issue <a href="https://github.com/dankelley/oce/issues/2324" class="external-link">#2324</a>),</li>
 <li>save elements of AST (etc) individually, not within a list (issue <a href="https://github.com/dankelley/oce/issues/2318" class="external-link">#2318</a>)</li>
 <li>scale <code>altimeterRawSamples</code> by 1/2^15 (issue <a href="https://github.com/dankelley/oce/issues/2327" class="external-link">#2327</a>).</li>

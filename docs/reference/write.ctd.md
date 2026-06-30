@@ -43,6 +43,7 @@ write.ctd(object, file, metadata = TRUE, flags = TRUE, format = "csv")
 
 ## Sample of Usage
 
+
     library(oce)
     data(ctd)
     write.ctd(ctd, "ctd.csv")

@@ -122,6 +122,7 @@ Dan Kelley, based on formulae in Meeus (1982).
 ## Examples
 
 ``` r
+
 library(oce)
 par(mfrow = c(3, 2))
 y <- 2012

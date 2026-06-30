@@ -48,6 +48,7 @@ Dan Kelley
 ## Examples
 
 ``` r
+
 t <- ISOdatetime(1978, 11, 13, 0, 0, 0, tz = "UTC")
 print(siderealTime(t))
 #> [1] 3.45037

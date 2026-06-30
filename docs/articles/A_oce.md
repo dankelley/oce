@@ -72,12 +72,14 @@ temperature, pressure and conductivity are stored).
 A general introduction is provided by
 
 ``` r
+
 ?`[[,oce-method`
 ```
 
 and details are provided for individual object classes with e.g.
 
 ``` r
+
 ?`[[,ctd-method`
 ```
 
@@ -87,6 +89,7 @@ The notation is simple. For example, suppose that `d` is an object that
 stores `salinity` in either its `data` slot or `metadata` slot. Then,
 
 ``` r
+
 S <- d[["salinity"]]
 ```
 
@@ -130,6 +133,7 @@ Finally, it is also possible to extract the entirety of either the
 `metadata` or `data` slot, e.g.
 
 ``` r
+
 data <- d[["data"]]
 ```
 
@@ -137,6 +141,7 @@ yields the full data slot, which is a list with elements that can be
 accessed in the conventional way, e.g. for a `ctd` object, and
 
 ``` r
+
 data$temperature
 ```
 
@@ -150,6 +155,7 @@ specific not just to the object class, but also to the data stored
 within the particular object. For example,
 
 ``` r
+
 library(oce)
 data(ctd)
 ctd[["?"]]
@@ -169,6 +175,7 @@ For example, and by analogy with the `[[` notation of the previous
 section, the following
 
 ``` r
+
 data(ctd)
 ctd[["temperatureAboveFreezing"]] <- ctd[["temperature"]] - swTFreeze(ctd)
 ```
@@ -178,6 +185,7 @@ will store the excess over freezing temperature into the `ctd` object.
 Further information on this notation is provided by
 
 ``` r
+
 ?"[[<-,oce-method"
 ```
 
@@ -185,6 +193,7 @@ The above works only within the `data` slot. To store within the
 `metadata` slot, consider using e.g.
 
 ``` r
+
 ctd[["metadata"]]$scientist <- "Dalhousie Oceanography 4120/5120 Class of 2003"
 ```
 
@@ -196,6 +205,7 @@ and `oceSetMetadata`. For example, a better way to change the scientist
 might be to write
 
 ``` r
+
 ctd <- oceSetMetadata(ctd,
     name = "scientist",
     value = "Dalhousie Oceanography 4120/5120 Class of 2003",
@@ -206,6 +216,7 @@ ctd <- oceSetMetadata(ctd,
 and a better way to store `temperatureAboveFreezing` would be
 
 ``` r
+
 ctd <- oceSetData(ctd,
     name = "temperatureAboveFreezing",
     value = ctd[["temperature"]] - swTFreeze(ctd),
@@ -229,6 +240,7 @@ file named `"station1.cnv"`, summarize the contents, and plot an
 overview of the data, with profiles, a TS diagram, and a map (Figure 2).
 
 ``` r
+
 library(oce)
 d <- read.oce("station1.cnv")
 summary(d)
@@ -379,6 +391,7 @@ dealing with CTD data.
 The commands
 
 ``` r
+
 data(section)
 plot(section, which = c(1, 2, 3, 99))
 ```
@@ -403,6 +416,7 @@ northwest, crossing isobaths (and perhaps, the Gulf Stream) at nearly
 right angles.
 
 ``` r
+
 library(oce)
 #> Loading required package: gsw
 data(section)
@@ -456,6 +470,7 @@ vignette](https://dankelley.github.io/oce/articles/C_adp.md) for much
 more on acoustic Doppler profiler data.
 
 ``` r
+
 library(oce)
 data(adp)
 plot(adp, which = 1)
@@ -489,6 +504,7 @@ rudimentary way. Setting the language can be done at the general system
 level, or within R, as indicated below (results not shown).
 
 ``` r
+
 library(oce)
 Sys.setenv(LANGUAGE = "fr")
 data(ctd)
@@ -549,6 +565,7 @@ dataset makes `[["?"]]` indicate that N2 is no longer available.
 This may be demonstrated as below.
 
 ``` r
+
 library(oce)
 data(ctd)
 "N2" %in% ctd[["?"]]$dataDerived
@@ -561,6 +578,7 @@ ctd@data$temperature <- NULL # erase temperature
 **Exercise 2.** Seawater properties. In the UNESCO system we may write
 
 ``` r
+
 library(oce)
 swRho(34, 10, 100, eos = "unesco")
 #> [1] 1026.624
@@ -591,6 +609,7 @@ We will use the Gibbs SeaWater system, so
 location information.
 
 ``` r
+
 library(oce)
 data(section)
 s <- handleFlags(section, flags = list(c(1, 3:9)))
@@ -609,6 +628,7 @@ Gulf Stream. (Hint: use the `swDynamicHeight` function.)
 for hints on smoothing.)
 
 ``` r
+
 library(oce)
 data(section)
 GS <- subset(section, 102 <= stationId & stationId <= 124)

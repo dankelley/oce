@@ -34,6 +34,7 @@ The data were combined into a data frame named `db` and packaged in an
 RDA file, an overview of which is provided as follows.
 
 ``` r
+
 library(oce)
 #> Loading required package: gsw
 load(system.file("extdata", "drifter.rda", package = "oce"))
@@ -55,6 +56,7 @@ The base class is named `"oce"`, and so a new object of that type can be
 created with
 
 ``` r
+
 o <- new("oce")
 ```
 
@@ -62,15 +64,17 @@ At this point, the [`summary()`](https://rdrr.io/r/base/summary.html)
 method does not reveal much:
 
 ``` r
+
 summary(o)
 #> * Processing Log
 #> 
-#>     - 2026-04-19 17:04:46 UTC: `Create oce object`
+#>     - 2026-06-30 13:00:01 UTC: `Create oce object`
 ```
 
 but if we populate the object with some data and metadata
 
 ``` r
+
 o <- oceSetData(o, "time", db$t)
 o <- oceSetData(o, "longitude", db$lon)
 o <- oceSetData(o, "latitude", db$lat)
@@ -80,6 +84,7 @@ o <- oceSetMetadata(o, "ID", 4201703)
 then the summary is more informative
 
 ``` r
+
 summary(o)
 #> * Time: 2021-11-01 21:04:00 to 2021-11-08 06:00:00 (146 samples, mean increment 1.054713 hour)
 #> * Data Overview
@@ -91,11 +96,11 @@ summary(o)
 #> 
 #> * Processing Log
 #> 
-#>     - 2026-04-19 17:04:46 UTC: `Create oce object`
-#>     - 2026-04-19 17:04:46 UTC: `oceSetData(object = o, name = "time", value = db$t)`
-#>     - 2026-04-19 17:04:46 UTC: `oceSetData(object = o, name = "longitude", value = db$lon)`
-#>     - 2026-04-19 17:04:46 UTC: `oceSetData(object = o, name = "latitude", value = db$lat)`
-#>     - 2026-04-19 17:04:46 UTC: `oceSetMetadata(object = o, name = "ID", value = 4201703)`
+#>     - 2026-06-30 13:00:01 UTC: `Create oce object`
+#>     - 2026-06-30 13:00:01 UTC: `oceSetData(object = o, name = "time", value = db$t)`
+#>     - 2026-06-30 13:00:01 UTC: `oceSetData(object = o, name = "longitude", value = db$lon)`
+#>     - 2026-06-30 13:00:01 UTC: `oceSetData(object = o, name = "latitude", value = db$lat)`
+#>     - 2026-06-30 13:00:01 UTC: `oceSetMetadata(object = o, name = "ID", value = 4201703)`
 ```
 
 Note, however, that the `ID` is not listed by
@@ -110,6 +115,7 @@ Objects of `oce-class` automatically have other methods, besides
 accessing operator `[[` works for the object that was just created:
 
 ``` r
+
 str(o[["latitude"]])
 #>  num [1:146] 42.5 42.5 42.5 42.6 42.6 ...
 ```
@@ -119,6 +125,7 @@ We can also use the default
 show the interdependence of entries in the `data` slot.
 
 ``` r
+
 plot(o, pch = 20, cex = 0.5)
 ```
 
@@ -138,6 +145,7 @@ A reasonable name for our new subclass might be `"drifter"`. With this
 choice, the class can be defined in a single line of code:
 
 ``` r
+
 drifter <- setClass(Class = "drifter", contains = "oce")
 ```
 
@@ -145,6 +153,7 @@ Once this has been executed, the user can create a new object of this
 subclass with
 
 ``` r
+
 d <- new("drifter")
 ```
 
@@ -154,6 +163,7 @@ section, it is more convenient to supply this information when
 this, we must set up an initialization function, as follows.
 
 ``` r
+
 setMethod(
     f = "initialize",
     signature = "drifter",
@@ -191,6 +201,7 @@ With this setup, we may now create an object that we can use for the
 rest of this vignette:
 
 ``` r
+
 d <- new("drifter", time = db$t, longitude = db$lon, latitude = db$lat, ID = 4201703)
 ```
 
@@ -210,6 +221,7 @@ Here, three plot types are provided, as selected by an argument called
 latitude, and the third shows the trajectory.
 
 ``` r
+
 setMethod(
     f = "plot",
     signature = signature("drifter"),
@@ -240,6 +252,7 @@ The three plot types are fairly rudimentary, but the `...` argument can
 be used for customization, as in the following example.
 
 ``` r
+
 par(mar = c(3.3, 3.3, 1, 1), mgp = c(2, 0.7, 0))
 layout(matrix(c(1, 3, 2, 3), nrow = 2, byrow = TRUE))
 plot(d, which = 1, drawTimeRange = FALSE)
@@ -262,6 +275,7 @@ to summarize the rest.
 So, with
 
 ``` r
+
 setMethod(
     f = "summary",
     signature = "drifter",
@@ -276,6 +290,7 @@ setMethod(
 An example follows.
 
 ``` r
+
 summary(d)
 #> CTD Summary
 #> -----------
@@ -291,7 +306,7 @@ summary(d)
 #> 
 #> * Processing Log
 #> 
-#>     - 2026-04-19 17:04:47 UTC: `create 'drifter' object`
+#>     - 2026-06-30 13:00:02 UTC: `create 'drifter' object`
 ```
 
 ### Specializing the `[[` accessor
@@ -301,6 +316,7 @@ velocity, and this is of sufficient interest that it might be worth
 adding to `[[`. This may be done as follows.
 
 ``` r
+
 setMethod(
     f = "[[",
     signature(x = "drifter", i = "ANY", j = "ANY"),
@@ -328,6 +344,7 @@ setMethod(
 As a test, we can plot the velocity components.
 
 ``` r
+
 uv <- d[["velocity"]]
 par(mfrow = c(2, 1))
 oce.plot.ts(d[["time"]], uv$u, ylab = "Eastward velo. [m/s]", grid = TRUE)
@@ -344,6 +361,7 @@ lagged autocorrelation, can shed some light on the periodicity of the
 velocity signals (but see Exercise 3), as follows.
 
 ``` r
+
 data(tidedata)
 M2period <- 1 / with(tidedata$const, freq[[which(name == "M2")]])
 uv <- d[["velocity"]]

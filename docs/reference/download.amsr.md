@@ -124,6 +124,7 @@ be of use in analysis of current events.
 
 ## Sample of Usage
 
+
     # The download may take up to about a minute.
     f <- download.amsr(2023, 7, 27, destdir="~/data/amsr")
     d <- read.amsr(f)

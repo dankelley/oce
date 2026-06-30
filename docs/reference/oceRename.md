@@ -212,8 +212,8 @@ if (requireNamespace("curl")) {
 #> 
 #> * Processing Log
 #> 
-#>     - 2026-04-19 17:03:28 UTC: `Create oce object`
-#>     - 2026-04-19 17:03:28 UTC: `read.netcdf("/var/folders/8b/l4h64m1j22v5pb7vj049ff140000gn/T//RtmpOwXhlf/file4e1f5f9a823b.nc")`
+#>     - 2026-06-30 12:58:45 UTC: `Create oce object`
+#>     - 2026-06-30 12:58:45 UTC: `read.netcdf("/var/folders/8b/l4h64m1j22v5pb7vj049ff140000gn/T//RtmpaJUz8D/filea72e201ad31c.nc")`
 #> * Time: 2023-01-05 13:14:45
 #> * Data Overview
 #> 
@@ -257,7 +257,7 @@ if (requireNamespace("curl")) {
 #> 
 #> * Processing Log
 #> 
-#>     - 2026-04-19 17:03:28 UTC: `Create oce object`
-#>     - 2026-04-19 17:03:28 UTC: `read.netcdf("/var/folders/8b/l4h64m1j22v5pb7vj049ff140000gn/T//RtmpOwXhlf/file4e1f5f9a823b.nc")`
-#>     - 2026-04-19 17:03:28 UTC: `oceRename(..., "/private/var/folders/8b/l4h64m1j22v5pb7vj049ff140000gn/T/RtmpMrReOu/temp_libpath325a1bd2ef40/oce/extdata/dictionary_ioos.csv")`
+#>     - 2026-06-30 12:58:45 UTC: `Create oce object`
+#>     - 2026-06-30 12:58:45 UTC: `read.netcdf("/var/folders/8b/l4h64m1j22v5pb7vj049ff140000gn/T//RtmpaJUz8D/filea72e201ad31c.nc")`
+#>     - 2026-06-30 12:58:45 UTC: `oceRename(..., "/private/var/folders/8b/l4h64m1j22v5pb7vj049ff140000gn/T/Rtmpgd13QI/temp_libpath87af3fecbdce/oce/extdata/dictionary_ioos.csv")`
 ```

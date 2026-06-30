@@ -79,6 +79,7 @@ vector (see “Indexing rules”).
 
 ## Sample of Usage
 
+
     # Example 2: Interactive flag assignment based on TS plot, using
     # WHP scheme to define 'acceptable' and 'bad' codes
     options(eos="gsw")

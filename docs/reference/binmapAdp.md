@@ -38,6 +38,7 @@ This only works for 4-beam RDI ADP objects.
 
 ## Sample of Usage
 
+
     library(oce)
     file <- "~/data/archive/sleiwex/2008/moorings/m09/adp/rdi_2615/raw/adp_rdi_2615.000"
     beam <- read.oce(file,

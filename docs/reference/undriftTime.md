@@ -39,6 +39,7 @@ appropriately.
 
 ## Sample of Usage
 
+
     library(oce)
     file <- "~/data/archive/sleiwex/2008/moorings/m08/pt/rbr_011855/raw/pt_rbr_011855.dat"
     rbr011855 <- read.oce(file)

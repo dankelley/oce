@@ -31,6 +31,7 @@ Dan Kelley
 ## Examples
 
 ``` r
+
 library(oce)
 # fake some heading data that lie near due-north (0 degrees)
 n <- 20

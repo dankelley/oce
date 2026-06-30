@@ -42,6 +42,7 @@ lines of constant latitude are horizontal on the plot.
 
 ## Sample of Usage
 
+
     library(oce)
     if (requireNamespace("ocedata", quietly=TRUE)) {
         data(coastlineWorldFine, package="ocedata")

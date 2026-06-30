@@ -42,9 +42,9 @@ x <- rnorm(1e3)
 s <- spectrum(x, plot = FALSE)
 ss <- oce.spectrum(x, plot = FALSE)
 cat("variance of x=", var(x), "\n")
-#> variance of x= 0.9728356 
+#> variance of x= 0.9757407 
 cat("integral of     spectrum=", sum(s$spec) * diff(s$freq[1:2]), "\n")
-#> integral of     spectrum= 0.4780713 
+#> integral of     spectrum= 0.4903071 
 cat("integral of oce.spectrum=", sum(ss$spec) * diff(ss$freq[1:2]), "\n")
-#> integral of oce.spectrum= 0.9728356 
+#> integral of oce.spectrum= 0.9757407 
 ```

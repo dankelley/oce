@@ -179,6 +179,7 @@ Similar steps can be followed on other servers.
 
 ## Sample of Usage
 
+
     # Example 1: read from a local file
     library(oce)
     d <- read.argo("~/data/OAR/6900388_prof.nc")

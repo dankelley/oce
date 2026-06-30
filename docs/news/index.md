@@ -67,6 +67,11 @@
   to handle realtime data files (issue
   [\#2231](https://github.com/dankelley/oce/issues/2231)).
 - Change
+  [`download.met()`](https://dankelley.github.io/oce/reference/download.met.md)
+  to account for server changes (issue
+  [\#2381](https://github.com/dankelley/oce/issues/2381), reported and
+  solved by github user `EOGrady21`).
+- Change
   [`imagep()`](https://dankelley.github.io/oce/reference/imagep.md) to
   handle `decimate` as set in `~/.Rprofile` (issue
   [\#2263](https://github.com/dankelley/oce/issues/2263)).
@@ -132,10 +137,12 @@
   - rename hex code 0x1f from `averageAltimeter` to
     `averageAltimeterRaw`, for consistency with Nortek manuals as
     of 2026. (The old name is still accepted, but a warning is issued.)
-  - handle TOC, datasets and plans better (issue
-    [\#2303](https://github.com/dankelley/oce/issues/2303) and related),
+  - handle a new, three-element, form of the `GETCLOCKSTR` field (issue
+    [\#2379](https://github.com/dankelley/oce/issues/2379)).
   - handle bottom-track data correctly (issue
     [\#2368](https://github.com/dankelley/oce/issues/2368))
+  - handle TOC, datasets and plans better (issue
+    [\#2303](https://github.com/dankelley/oce/issues/2303) and related),
   - read temperature correctly (issue
     [\#2324](https://github.com/dankelley/oce/issues/2324)),
   - save elements of AST (etc) individually, not within a list (issue

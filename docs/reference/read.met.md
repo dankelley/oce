@@ -84,6 +84,7 @@ A [met](https://dankelley.github.io/oce/reference/met-class.md) object.
 
 ## Sample of Usage
 
+
     # Example 1: "csv1" Environment Canada format (found to be obsolete as of Oct 2019)
     csv1 <- read.met(system.file("extdata", "test_met_vsn1.csv", package="oce"))
     csv1 <- oceSetData(csv1, "time", csv1[["time"]]+4*3600,

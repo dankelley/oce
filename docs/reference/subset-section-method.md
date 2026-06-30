@@ -74,6 +74,7 @@ logical vector, again indicating which stations to keep.
 
 ## Sample of Usage
 
+
     # Example 7. Subset by a polygon determined with locator()
     par(mfrow=c(2, 1))
     plot(section, which="map")

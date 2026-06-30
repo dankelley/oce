@@ -59,6 +59,7 @@ Dan Kelley
 ## Examples
 
 ``` r
+
 library(oce)
 
 # Case 1: smooth a noisy signal

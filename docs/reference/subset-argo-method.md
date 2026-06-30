@@ -56,6 +56,7 @@ as opposed to dropping data (as is the case with `time`, for example).
 
 ## Sample of Usage
 
+
     # Example 2: restrict attention to delayed-mode profiles.
     par(mfrow=c(1, 1))
     plot(subset(argo, dataMode == "D"))

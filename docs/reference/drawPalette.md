@@ -191,6 +191,7 @@ Dan Kelley, with help from Clark Richards
 ## Examples
 
 ``` r
+
 library(oce)
 par(mgp = getOption("oceMgp"))
 

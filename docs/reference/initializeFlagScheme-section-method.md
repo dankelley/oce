@@ -127,6 +127,7 @@ See reference 4 for a deeper explanation of the meanings of these codes.
 
 ## Sample of Usage
 
+
     data(section)
     section <- read.section("a03_hy1.csv", sectionId="a03", institute="SIO",
        ship="R/V Professor Multanovskiy", scientist="Vladimir Tereschenov")

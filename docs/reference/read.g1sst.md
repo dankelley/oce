@@ -38,6 +38,7 @@ from simulation.
 
 ## Sample of Usage
 
+
     # Construct query, making it easier to understand and modify.
     day <- "2016-01-02"
     lon0 <- -66.5

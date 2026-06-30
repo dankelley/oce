@@ -121,6 +121,7 @@ is in beam coordinates, frame coordinates, or earth coordinates. For
 example, if in earth coordinates, then beam 1 is the eastward component
 of velocity. Thus, for example,
 
+
     library(oce)
     data(adp)
     t <- adp[["time"]]

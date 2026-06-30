@@ -78,6 +78,7 @@ aerosol band of a Landsat object named `x` are contained within
 `x@data$aerosol$msb` and `x@data$aerosol$lsb`, each of which is a matrix
 of raw values. The results may be combined as e.g.
 
+
     256L*as.integer(x@data[[i]]$msb) + as.integer(x@data[[i]]$lsb)
 
 and this is what is returned by executing `x[["aerosol"]]`.
@@ -113,6 +114,7 @@ at least 8GB of RAM to work with such data.
 
 The Landsat 8 satellite has 11 frequency bands, listed below (see
 reference 2\]).
+
 
     .------------------------------------------------------------------------------.
     | Band | Band                      | Band         | Wavelength    | Resolution |
@@ -152,6 +154,7 @@ identical wavelength span for each, which roughly matches the range of
 the Landsat-8 bands `tirs1` and `tirs2` combined. This may seem
 confusing, but it lets code like `plot(im, band="tirs1")` to work with
 both Landsat-8 and Landsat-7.
+
 
     .------------------------------------------------------------------------------.
     | Band | Band                      | Band         | Wavelength    | Resolution |

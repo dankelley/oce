@@ -114,8 +114,12 @@ examined if <code>xg</code> and <code>yg</code> are not supplied.</p></dd>
 
 <dt id="arg-xr-yr">xr, yr<a class="anchor" aria-label="anchor" href="#arg-xr-yr"></a></dt>
 <dd><p>optional values defining the x and y radii of the weighting ellipse.
-If not supplied, these are calculated as the span of x
-and y over the square root of the number of data.</p></dd>
+If not supplied, these are calculated respectively as the span of x
+and y over the square root of the number of data. Be aware that
+this method can be problematic if there are many repeated (x,y)
+pairs, as for example in CTD profiles. In most serious analyses,
+it will make sense to supply <code>xr</code> and <code>yr</code> based on knowledge
+of the dataset or the domain.</p></dd>
 
 
 <dt id="arg-gamma">gamma<a class="anchor" aria-label="anchor" href="#arg-gamma"></a></dt>

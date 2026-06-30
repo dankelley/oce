@@ -13,6 +13,7 @@ learn how to do this trimming.) A summary and plot (Figure 2) are
 created as follows.
 
 ``` r
+
 library(oce)
 data(ctd)
 summary(ctd)
@@ -77,6 +78,7 @@ data. Spurious data from these phases must be trimmed as a first step in
 processing. For example, consider the following code.
 
 ``` r
+
 data(ctdRaw)
 plotScan(ctdRaw)
 ```
@@ -98,6 +100,7 @@ portion of the profile by an essentially manual method, e.g. proceeding
 with a sequence of commands such as
 
 ``` r
+
 plotScan(ctdTrim(ctdRaw, "range",
     parameters = list(item = "scan", from = 140, to = 250)
 ))
@@ -111,6 +114,7 @@ the most robust method of trimming data. However, for quick work, users
 may be satisfied with the results of automatic downcast detection, e.g.
 
 ``` r
+
 ctdTrimmed <- ctdTrim(ctdRaw)
 ```
 
@@ -127,6 +131,7 @@ Taking these things together, a quick visual examination of a CTD file
 takes just one line of code:
 
 ``` r
+
 plot(ctdDecimate(ctdTrim(read.ctd("stn123.cnv"))))
 ```
 
@@ -175,6 +180,7 @@ stations of this cruise. (Caution: the link seems to change from time to
 time.)
 
 ``` r
+
 library(oce)
 # http://cchdo.ucsd.edu/data/7971/ar18_58JH19941029_ct1.zip
 # setwd("~/Downloads/ar18_58JH19941029_ct1")
@@ -216,6 +222,7 @@ illustration let us say it is in 5 dbar to 12 dbar range. One way to do
 this is
 
 ``` r
+
 library(oce)
 data(ctd)
 pycnocline <- ctdTrim(ctd, "range",
@@ -227,6 +234,7 @@ plotProfile(pycnocline, which = "density+N2")
 Another is
 
 ``` r
+
 library(oce)
 data(ctd)
 pycnocline <- subset(ctd, 5 <= pressure & pressure <= 12)
@@ -246,6 +254,7 @@ should bear in mind that this is a fairly large dataset, so the
 processing will take up to a minute.)
 
 ``` r
+
 library(oce)
 # http://cchdo.ucsd.edu/data/7971/ar18_58JH19941029_ct1.zip
 # setwd("~/Downloads/ar18_58JH19941029_ct1")

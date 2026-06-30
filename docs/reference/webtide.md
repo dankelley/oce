@@ -170,6 +170,7 @@ structure. Users should be on the lookout for odd results.
 
 ## Sample of Usage
 
+
     # needs WebTide at the system level
     library(oce)
     # 1. prediction at Halifax NS

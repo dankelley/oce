@@ -85,6 +85,7 @@ under 4 remaining distinct pressures, `NA` is returned, with a warning.
 
 ## Sample of Usage
 
+
     library(oce)
     data(section)
 
