@@ -24,7 +24,7 @@
 * Change `concatenate()` to handle lists properly (issue #2278).
 * Change `download.amsr()` to handle realtime data files (issue #2231).
 * Change `download.met()` to account for server changes (issue #2381, reported
-and solved by github user EOGrady21).
+and solved by github user `EOGrady21`).
 * Change `imagep()` to handle `decimate` as set in `~/.Rprofile` (issue #2263).
 * Change `lonlat2map()` to handle a [coastline-class] object as first parameter
   (issue #2284).

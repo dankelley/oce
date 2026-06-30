@@ -423,7 +423,7 @@ ad2cpCodeToName <- function(code = NULL, prefix = TRUE) {
 #' value was 2 times the value held in the header (text) portion of the file,
 #' and reading the larger value created a matrix that had
 #' the upper half filled with odd striping patterns. Therefore, the function
-#' checks the two indicatations of length, and uses the value in the text block if
+#' checks the two indications of length, and uses the value in the text block if
 #' they disagree.  (See https://github.com/dankelley/oce/issues/2326.)
 #'
 #' Note 3. In April 2026, the name `averageAltimeter` (hex code 0x14) was changed to

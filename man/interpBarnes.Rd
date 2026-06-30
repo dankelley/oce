@@ -41,8 +41,12 @@ these values are inferred from the data, using e.g. \code{pretty(x, n=50)}.}
 examined if \code{xg} and \code{yg} are not supplied.}
 
 \item{xr, yr}{optional values defining the x and y radii of the weighting ellipse.
-If not supplied, these are calculated as the span of x
-and y over the square root of the number of data.}
+If not supplied, these are calculated respectively as the span of x
+and y over the square root of the number of data. Be aware that
+this method can be problematic if there are many repeated (x,y)
+pairs, as for example in CTD profiles. In most serious analyses,
+it will make sense to supply \code{xr} and \code{yr} based on knowledge
+of the dataset or the domain.}
 
 \item{gamma}{grid-focussing parameter.  At each successive iteration, \code{xr} and
 \code{yr} are reduced by a factor of \code{sqrt(gamma)}.}
