@@ -177,18 +177,20 @@ test_that("binApply2D", {
     z <- outer(x, y)
     b <- binApply2D(x, y, z, xbreaks = seq(0, 1, 0.25), ybreaks = seq(0, 1, 0.25), FUN = mean, na.rm = TRUE)
     expect_equal(names(b), c("xbreaks", "xmids", "ybreaks", "ymids", "result"))
-    # This tests for consistency, as of 2019-Feb-19. Note that there was
-    # an error before this time; see https://github.com/dankelley/oce/issues/1493
-    # for details.
-    expect_equal(
-        b$result,
-        structure(c(
-            NA, NA, 0.27639419053949, 0.479638201680171, NA,
-            NA, 0.288604148050149, 0.412574693391033, NA, 0.21404595826396,
-            NA, 0.462144185463384, 0.0238428724141042, 0.19474368350674,
-            NA, NA
-        ), .Dim = c(4L, 4L))
-    )
+    # This tests for consistency, as of 2019-Feb-19.
+    # 1. There was an error before this time (see
+    # https://github.com/dankelley/oce/issues/1493).
+    # 2. On 2026-07-14 a CRAN pre-release Fedora machine
+    # reported that the ".Dim()" method used previously was deprecated,
+    # so a change was made to the present form.
+    x <- structure(c(
+        NA, NA, 0.27639419053949, 0.479638201680171, NA,
+        NA, 0.288604148050149, 0.412574693391033, NA, 0.21404595826396,
+        NA, 0.462144185463384, 0.0238428724141042, 0.19474368350674,
+        NA, NA
+    ))
+    dim(x) <- c(4L, 4L)
+    expect_equal(b$result, x)
 })
 
 #<old>test_that("binCount2D() with include.lowest=FALSE", {
