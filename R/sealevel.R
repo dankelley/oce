@@ -607,8 +607,16 @@ setMethod(
                 to <- from + 28 * 86400 # 28 days
                 look <- from <= x@data$time & x@data$time <= to
                 xx <- x
-                for (i in seq_along(x@data)) {
-                    xx@data[[i]] <- x@data[[i]][look]
+                oceDebug(debug, "  for which2[", w, "]==2, subsetting to ", sum(look), " points\n", sep = "")
+                # let data be in either an old form (list) or a new one
+                # (data-frame); see https://github.com/dankelley/oce/issues/2359#issuecomment-3916646263
+                if (inherits(x@data, "list")) {
+                    for (i in seq_along(x@data)) {
+                        oceDebug(debug, "  subsetting field number ", i, "\n", sep = "")
+                        xx@data[[i]] <- x@data[[i]][look]
+                    }
+                } else { # it was made a data-frame sometime near year 2026
+                    xx@data <- x@data[look, ]
                 }
                 if (any(is.finite(xx@data$elevation))) {
                     xlim <- if (xlimGiven) xlim else (range(xx@data$time, na.rm = TRUE))
@@ -720,7 +728,7 @@ setMethod(
 #' the file is in neither of these formats, the user might wish to scan it
 #' directly, and then to use [as.sealevel()] to create a
 #' `sealevel` object.
-
+#'
 #' The Hawaii archive site at
 #' `http://ilikai.soest.hawaii.edu/uhslc/datai.html` at one time provided a graphical
 #' interface for downloading sealevel data in Type 1, with format that was once
@@ -735,8 +743,12 @@ setMethod(
 #' The MEDS repository (\code{http://www.isdm-gdsi.gc.ca/isdm-gdsi/index-eng.html})
 #' provides Type 2 data.
 #'
-#' @param file a connection or a character string giving the name of the file
-#' to load.  See Details for the types of files that are recognized.
+#' @param file either of three choices: (1) a connection, (2)
+#' a character vector of length 1, giving the name of the file
+#' to load (see \sQuote{Details} for the possible file formats)
+#' or (3) a character vector of length 2 giving the
+#' names of 2 files that are to be passed, along with `debug` (but
+#' no other arguments) to [read.sealevel.gc2026].
 #'
 #' @param tz time zone.  The default value, `oceTz`, is set to `UTC`
 #' at setup.  (If a time zone is present in the file header, this will
@@ -760,16 +772,21 @@ read.sealevel <- function(
     if (missing(file)) {
         stop("must supply 'file'")
     }
-    if (is.character(file)) {
-        if (!file.exists(file)) {
-            stop("cannot find file \"", file, "\"")
+    if (2 == length(file)) {
+        return(read.sealevel.gc2026(file, debug = debug))
+    } else {
+        if (is.character(file)) {
+            if (!file.exists(file)) {
+                stop("cannot find file \"", file, "\"")
+            }
+            if (0L == file.info(file)$size) {
+                stop("empty file \"", file, "\"")
+            }
         }
-        if (0L == file.info(file)$size) {
-            stop("empty file \"", file, "\"")
-        }
+        oceDebug(debug, "read.sealevel(file=\"", file, "\", ...) START\n", sep = "", unindent = 1)
+        filename <- "?"
     }
-    oceDebug(debug, "read.sealevel(file=\"", file, "\", ...) START\n", sep = "", unindent = 1)
-    filename <- "?"
+
     if (is.character(file)) {
         filename <- fullFilename(file)
         file <- file(file, "r", encoding = encoding)

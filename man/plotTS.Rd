@@ -258,7 +258,6 @@ Journal of Atmospheric and Oceanic Technology 20, no. 5 (May 1, 2003): 730-41.
 \code{\link[=read.ctd]{read.ctd()}} scans it from a file.
 
 Other functions that plot oce data: 
-\code{\link{download.amsr}()},
 \code{\link{plot,adp-method}},
 \code{\link{plot,adv-method}},
 \code{\link{plot,amsr-method}},
@@ -283,8 +282,7 @@ Other functions that plot oce data:
 \code{\link{plot,windrose-method}},
 \code{\link{plot,xbt-method}},
 \code{\link{plotProfile}()},
-\code{\link{plotScan}()},
-\code{\link{tidem-class}}
+\code{\link{plotScan}()}
 
 Other things related to ctd data: 
 \code{\link{CTD_BCD2014666_008_1_DN.ODF.gz}},

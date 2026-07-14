@@ -86,7 +86,7 @@ library(oce)
 # of 2003. This dataset is used for data(met) provided with oce.
 # Note that requests for data after 2012 month 10 yield all
 # missing values, for reasons unknown to the author.
-metFile <- download.met(6358, 2003, 9, destdir=".")
+metFile <- download.met(8202250, 2003, 9, destdir=".")
 met <- read.met(metFile)
 }
 }
@@ -119,7 +119,7 @@ Other things related to met data:
 \code{\link{summary,met-method}}
 }
 \author{
-Dan Kelley
+Dan Kelley and Emily O'Grady
 }
 \concept{functions that download files}
 \concept{things related to met data}

@@ -25,7 +25,7 @@ Rename an item within the \code{data} slot of an \linkS4class{oce} object, also 
 \code{dataNamesOriginal} in the \code{metadata} slot, so that the \code{[[} accessor will
 still work with the original name that was stored in the data.
 Note that this function does not alter associated flags or units; to
-take care of those things, use the newer \code{\link[=rename]{rename()}} function instead.
+take care of those things, use the newer \code{\link[=oceRename]{oceRename()}} function instead.
 }
 \examples{
 library(oce)

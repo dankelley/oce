@@ -16,18 +16,18 @@ List mapAssemblePolygons(NumericVector lon, NumericVector lat,
   int nlat = lat.size();
   int nlon = lon.size();
   if (nlon < 1) {
-    ::Rf_error("must have at least 2 longitudes");
+    Rcpp::stop("must have at least 2 longitudes");
   }
   if (nlat < 1) {
-    ::Rf_error("must have at least 2 latitudes");
+    Rcpp::stop("must have at least 2 latitudes");
   }
   int nrow = z.nrow();
   int ncol = z.ncol();
   if (nlat != ncol) {
-    ::Rf_error("mismatch; length(lat)=%d must equal nrow(z)=%d", nlat, ncol);
+    Rcpp::stop("mismatch; length(lat)=%d must equal nrow(z)=%d", nlat, ncol);
   }
   if (nlon != nrow) {
-    ::Rf_error("mismatch; length(lon)=%d must equal ncol(z)=%d", nlon, nrow);
+    Rcpp::stop("mismatch; length(lon)=%d must equal ncol(z)=%d", nlon, nrow);
   }
   int n = nlon * nlat;
   NumericVector polylon(5 * n);
@@ -73,12 +73,12 @@ List mapAssemblePolygons(NumericVector lon, NumericVector lat,
 #endif
     }
     if (k > 5 * n) {
-      ::Rf_error("coding error (assigned insufficient memory); k: %d,  5*n: %d",
+      Rcpp::stop("coding error (assigned insufficient memory); k: %d,  5*n: %d",
                  k, 5 * n);
     }
   }
   if (k != 5 * n) {
-    ::Rf_error("coding error (assigned surplus memory); k: %d,  5*n: %d", k,
+    Rcpp::stop("coding error (assigned surplus memory); k: %d,  5*n: %d", k,
                5 * n);
   }
   return (List::create(Named("longitude") = polylon,
@@ -92,22 +92,22 @@ List mapCheckPolygons(NumericVector x, NumericVector y, NumericVector z,
 {
   int nusr = usr.size();
   if (nusr != 4)
-    ::Rf_error("'usr' must hold 4 values, but it holds %d", nusr);
+    Rcpp::stop("'usr' must hold 4 values, but it holds %d", nusr);
   int nx = x.size();
   if (nx < 2) {
-    ::Rf_error("must have at least two x values, but have %d", nx);
+    Rcpp::stop("must have at least two x values, but have %d", nx);
   }
   int ny = y.size();
   if (ny < 2) {
-    ::Rf_error("must have at least two y values, but have %d", ny);
+    Rcpp::stop("must have at least two y values, but have %d", ny);
   }
   int nz = z.size();
   if (nz < 1) {
-    ::Rf_error("must have at least one z value, but have %d", nz);
+    Rcpp::stop("must have at least one z value, but have %d", nz);
   }
   int nxokspan = xokspan.size();
   if (nxokspan != 1) {
-    ::Rf_error("okspan should be of length 1, but it is of length %d",
+    Rcpp::stop("okspan should be of length 1, but it is of length %d",
                nxokspan);
   }
   int npoly = nx / 5;
@@ -208,17 +208,17 @@ List mapClipXy(NumericVector x, NumericVector y, NumericVector usr) {
   // returns list with new x and y vectors
   int nusr = usr.size();
   if (nusr != 4) {
-    ::Rf_error("'usr' must hold 4 values, not %d", nusr);
+    Rcpp::stop("'usr' must hold 4 values, not %d", nusr);
   }
   int xlen = x.size();
   int ylen = y.size();
   if (xlen != ylen) {
-    ::Rf_error(
+    Rcpp::stop(
         "'x' and 'y' must be of same length, but their lengths are %d and %d",
         xlen, ylen);
   }
   if (xlen < 2) {
-    ::Rf_error("must have at least two 'x' and 'y' pairs");
+    Rcpp::stop("must have at least two 'x' and 'y' pairs");
   }
   // xb and yb are growable buffers; we copy to xc and yc near the end.
   int clen = xlen + 100; // the 100 may save reallocs

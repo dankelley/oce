@@ -23,44 +23,46 @@ pwelch(
 it there is no need to \code{fs}, and doing so will result in an error if it does
 not match the value inferred from \code{x}.}
 
-\item{window}{optional numeric vector specifying a window to be applied
-to the timeseries subsamples.  This is ignored if \code{spec} is provided.
-Otherwise, if \code{window} is provided, then it must either
-be of the same length as \code{nfft} or be of length 1.  In the first case,
-the vector is multiplied into the timeseries subsample, and the length
-of \code{window} must equal \code{nfft} is that is supplied.
-In the second then \code{window} is taken to be the number
-of sub-intervals into which the time series is to be broken up, with a
-hamming window being used for each sub-interval.  If \code{window} is not
-specified and \code{nfft} is given, then the window is constructed as
-a hamming window with length \code{nfft}.  And, if neither \code{window}
-nor \code{nfft} are specified, then \code{x} will be broken up
-into 8 portions.}
+\item{window}{optional value that can have several meanings. CASE 1: If
+\code{window} is a single integer, then that is taken as the number of fragments
+into which \code{x} is subdivided. In this case, a Hamming window, of length
+\code{length(x)/window}, is constructed using \code{\link[=makeFilter]{makeFilter()}} with its \code{normalize}
+and \code{asKernel} arguments both set to FALSE.  This filter is then multiplied
+elementwise with the \code{x} values in the subdivision. CASE 2: if \code{window} is a
+numeric vector of length exceeding 1, then the values are taken to be a
+filter to be applied to the subset of \code{x}, and thus the length of \code{window}
+and the value of \code{nfft} must be equal, if both are supplied.}
 
-\item{noverlap}{number of points to overlap between windows.  If not
-specified, this will be set to half the window length.}
+\item{noverlap}{number of points to overlap between the subdivisions
+of \code{x}. If this is not provided, a value equal to half the subset
+length will be used.}
 
-\item{nfft}{length of FFT. See \code{window} for how \code{nfft} interacts with
-that argument.}
+\item{nfft}{length of the FFT, i.e. length of the desired subsets of \code{x}.
+This argument works together with the \code{window} argument; see the documentation
+on the latter to learn more.}
 
-\item{fs}{frequency of time-series.  If \code{x} is a time-series, and if
-\code{fs} is supplied, then time-series is altered to have frequency
-\code{fs}.}
+\item{fs}{numeric value indicating the sampling frequency for \code{x}.  If
+\code{x} is already a time-series object, then \code{fs} must match its frequency,
+or an error is reported.}
 
-\item{spec}{optional function to be used for the computation of the spectrum,
-to allow finer-grained control of the processing.
-If provided, \code{spec} must accept a time-series as its first argument, and
-must return a list containing the spectrum in \code{spec} and the
-frequency in \code{freq}.
-Note that no window will be applied to the data after subsampling,
-and an error will be reported if \code{window} and \code{spec} are both given.
-An error will be reported if \code{spec} is given but \code{nfft} is not given.
-Note that the values of \code{demean}, \code{detrend} and \code{plot} are ignored if \code{spec}
-is given. However, the \dots argument \emph{is} passed to \code{spec}.}
+\item{spec}{optional function to be used, in conjunction with \code{nfft}, to
+control the computation of the spectra in the subdivided time-series. The
+purpose is to allow fine-grained control of the processing, mainly for use by
+experts. If provided, \code{spec} must accept a time-series as its first argument,
+along with optional other arguments that are passed through as the \code{...}
+argument. The return value from \code{spec} must be a list or data frame
+containing the spectrum in an element named \code{spec} and the frequency in an
+element named \code{freq}. Note that an error will be reported if \code{window} is
+provided in addition to \code{spec} and \code{nfft}. This is because \code{\link[=pwelch]{pwelch()}}
+automatically constructs a (Hamming) window and multiplies it into each
+subset of \code{x}. Also, note that the values of \code{demean} and \code{detrend} are
+ignored if \code{spec} is provided; it's up to the user to decide on these things
+and to handle them within \code{spec()}.}
 
-\item{demean, detrend}{logical values that can control the spectrum calculation,
-in the default case of \code{spec}.  These are passed to \code{\link[=spectrum]{spectrum()}} and thence
-\code{\link[=spec.pgram]{spec.pgram()}}; see the help pages for the latter for an explanation.}
+\item{demean, detrend}{logical values that can control the spectrum
+calculation, but only if \code{spec} is not provided. These are passed to
+\code{\link[=spectrum]{spectrum()}} and thence to \code{\link[=spec.pgram]{spec.pgram()}}; see the help pages for the latter
+for an explanation.}
 
 \item{plot}{logical, set to \code{TRUE} to plot the spectrum.}
 
@@ -72,28 +74,36 @@ amount of debugging information, or to 2 to get more.}
 }
 \value{
 \code{pwelch} returns a list mimicking the return value from \code{\link[=spectrum]{spectrum()}},
-containing frequency \code{freq}, spectral power \code{spec}, degrees of
-freedom \code{df}, bandwidth \code{bandwidth}, etc.
+containing frequency \code{freq}, spectral power \code{spec}, degrees of freedom \code{df},
+bandwidth \code{bandwidth}, etc.
 }
 \description{
-Compute periodogram using the Welch (1967) method. This is
-somewhat analogous to the Matlab function of the same name,
-but it is \emph{not} intended as a drop-in replacement.
+Compute periodogram using the Welch (1967) method. This function is somewhat
+analogous to the Matlab function of the same name, but it is \emph{not} intended
+as a drop-in replacement. Please see the \sQuote{Arguments} and
+\sQuote{Details} to learn about the complex interactions of the controlling
+parameters.
 }
 \details{
-First, \code{x} is broken up into chunks,
-overlapping as specified by \code{noverlap}.  These chunks are then
-multiplied by the window, and then
-passed to \code{\link[=spectrum]{spectrum()}}.  The resulting spectra are then averaged,
-with the results being stored in \code{spec} of the return value.  Other
-entries of the return value mimic those returned by \code{\link[=spectrum]{spectrum()}}.
+The gist of the \code{\link[=pwelch]{pwelch()}} behaviour is not too difficult to explain: \code{x} is
+broken up into subdivisions, spectral analysis is done on each, and the
+results are averaged to get a return value.
 
-It should be noted that the actions of several parameters are interlocked,
-so this can be a complex function to use.  For example, if \code{window} is
-given and has length exceeding 1, then its length must equal \code{nfft}, if the
-latter is also provided.
+However, things get complicated in practice. This is because there are
+several interlocking parameters that control both the subdivision stage and
+the spectral stage. The goal is to at least roughly mimic the Matlab
+function, so the parameter names and how they are interpreted are dictated to
+some extent by how things work in the Matlab code.
+
+The parameters \code{window}, \code{noverlap} and \code{nfft} control the subdivision
+behaviour. The parameters \code{fs}, \code{spec}, \code{demean} and \code{detrend} control the
+spectral-analysis behaviour. Users who find the documentation on these things
+to be confusing may want to examine the code to see what is actually being
+done. If they see problems, they are asked to post issues on the oce github
+website.
 }
 \section{Bugs}{
+
 
 Both bandwidth and degrees of freedom are just copied from
 the values for one of the chunk spectra, and are thus incorrect.  That means
@@ -102,21 +112,27 @@ the cross indicated on the graph is also incorrect.
 
 \section{Historical notes}{
 
-\itemize{
-\item \strong{2021-06-26:} Until this date, \code{\link[=pwelch]{pwelch()}} passed the
-subsampled timeseries portions through \code{\link[=detrend]{detrend()}}
-before applying the window. This practice was dropped
-because it could lead to over-estimates of low frequency
-energy (as noticed by Holger Foysi of the University of Siegen),
-perhaps because \code{\link[=detrend]{detrend()}} considers only endpoints and
-therefore can yield inaccurate trend estimates.
-In a related change, \code{demean} and \code{detrend} were added
-as formal arguments, to avoid users having to trace the documentation
-for \code{\link[=spectrum]{spectrum()}} and then \code{\link[=spec.pgram]{spec.pgram()}}, to learn how to
-remove means and trends from data.
-For more control, the \code{spec} argument was
-added to let users sidestep \code{\link[=spectrum]{spectrum()}} entirely, by providing
-their own spectral computation functions.
+\enumerate{
+\item \emph{2021-06-26:} Until this date, \code{\link[=pwelch]{pwelch()}} passed the subsampled timeseries
+portions through \code{\link[=detrend]{detrend()}} before applying the window. This practice was
+dropped because it could lead to over-estimates of low frequency energy
+(as noticed by Holger Foysi of the University of Siegen), perhaps because
+\code{\link[=detrend]{detrend()}} considers only endpoints and therefore can yield
+inaccurate trend estimates. In a related change, \code{demean} and \code{detrend}
+were added as formal arguments, to avoid users having to trace the
+documentation for \code{\link[=spectrum]{spectrum()}} and then \code{\link[=spec.pgram]{spec.pgram()}}, to learn how to
+remove means and trends from data. For more control, the \code{spec} argument
+was added to let users sidestep \code{\link[=spectrum]{spectrum()}} entirely, by providing their
+own spectral computation functions.
+\item \emph{2025-07-04:} until this date, there was an error in supplying \code{nfft}
+together with \code{spec} (it is issue 2299 on the github website). This issued
+an error message that resulted from the fact that it was not permitted to
+supply \code{window} in that case. To address the problem, whilst retaining the
+requirement that \code{window} not be supplied, \code{pwelch()} was changed so that
+it constructs a window automatically.  (In the future, \code{\link[=pwelch]{pwelch()}} may be
+modified to accept \code{window=FALSE}, in which case no windowing will be done
+here, leaving it up to the user to decide whether to do windowing in the
+user-supplied \code{spec()} function.)
 }
 }
 
@@ -126,26 +142,12 @@ Fs <- 1000
 t <- seq(0, 0.296, 1 / Fs)
 x <- cos(2 * pi * t * 200) + rnorm(n = length(t))
 X <- ts(x, frequency = Fs)
-s <- spectrum(X, spans = c(3, 2), main = "random + 200 Hz", log = "no")
+s <- spectrum(X, spans = c(3, 2), log = "no", plot = FALSE)
+plot(s$freq, s$spec, type = "l", xlab = "Frequency", ylab = "Spectrum")
 w <- pwelch(X, plot = FALSE)
-lines(w$freq, w$spec, col = "red")
-w2 <- pwelch(X, nfft = 75, plot = FALSE)
-lines(w2$freq, w2$spec, col = "green")
-abline(v = 200, col = "blue", lty = "dotted")
-cat("Checking spectral levels with Parseval's theorem:\n")
-cat("var(x)                              = ", var(x), "\n")
-cat("2 * sum(s$spec) * diff(s$freq[1:2]) = ", 2 * sum(s$spec) * diff(s$freq[1:2]), "\n")
-cat("sum(w$spec) * diff(s$freq[1:2])     = ", sum(w$spec) * diff(w$freq[1:2]), "\n")
-cat("sum(w2$spec) * diff(s$freq[1:2])    = ", sum(w2$spec) * diff(w2$freq[1:2]), "\n")
-# co2
-par(mar = c(3, 3, 2, 1), mgp = c(2, 0.7, 0))
-s <- spectrum(co2, plot = FALSE)
-plot(log10(s$freq), s$spec * s$freq,
-    xlab = expression(log[10] * Frequency), ylab = "Power*Frequency", type = "l"
-)
-title("Variance-preserving spectrum")
-pw <- pwelch(co2, nfft = 256, plot = FALSE)
-lines(log10(pw$freq), pw$spec * pw$freq, col = "red")
+lines(w$freq, w$spec, col = 2)
+abline(v = 200, col = "lightgray")
+legend("topright", bg = "white", lwd = 1, col = 1:2, legend = c("spectrum()", "pwelch()"))
 
 }
 \references{
@@ -155,5 +157,5 @@ Modified Periodograms. \emph{IEEE Transactions on Audio Electroacoustics},
 AU-15, 70--73.
 }
 \author{
-Dan Kelley
+Dan Kelley and Clark Richards
 }

@@ -183,24 +183,24 @@ List do_ldc_rdi_in_file_new(StringVector filename, IntegerVector from,
   std::string fn = Rcpp::as<std::string>(filename(0));
   FILE *fp = fopen(fn.c_str(), "rb");
   if (!fp) {
-    ::Rf_error("cannot open file '%s'\n", fn.c_str());
+    Rcpp::stop("cannot open file '%s'\n", fn.c_str());
   }
   if (from[0] < 0) {
-    ::Rf_error("'from' must be positive");
+    Rcpp::stop("'from' must be positive");
   }
   unsigned long int from_value = from[0];
   if (to[0] < 0) {
-    ::Rf_error("'to' must be positive");
+    Rcpp::stop("'to' must be positive");
   }
   unsigned long int to_value = to[0];
   if (by[0] < 0) {
-    ::Rf_error("'by' must be positive");
+    Rcpp::stop("'by' must be positive");
   }
   unsigned long int by_value = by[0];
   unsigned long int start_index = startIndex[0];
   int mode_value = mode[0];
   if (mode_value != 0 && mode_value != 1) {
-    ::Rf_error("'mode' must be 0 or 1");
+    Rcpp::stop("'mode' must be 0 or 1");
   }
   if (debug_value > 0) {
     Rprintf("    do_ldc_rdi_in_file_new() {\n");
@@ -226,7 +226,7 @@ List do_ldc_rdi_in_file_new(StringVector filename, IntegerVector from,
   clast = fgetc(fp);
   cindex++;
   if (clast == EOF) {
-    ::Rf_error("empty file '%s'", fn.c_str());
+    Rcpp::stop("empty file '%s'", fn.c_str());
   }
   // 'obuf' is a growable C buffer to hold the output, which eventually
   // gets saved in the R item "buf".
@@ -306,11 +306,11 @@ List do_ldc_rdi_in_file_new(StringVector filename, IntegerVector from,
       }
       // Catch two errors
       if (bytes_to_check < 5) {
-        ::Rf_error("cannot decode the length of ensemble number %lu",
+        Rcpp::stop("cannot decode the length of ensemble number %lu",
                    (long unsigned int)ensembles.size());
       }
       if (bytes_to_check < 4) {
-        ::Rf_error("bytes_to_check should be >=4 but it is %d\n",
+        Rcpp::stop("bytes_to_check should be >=4 but it is %d\n",
                    bytes_to_check);
       }
       // byte1&byte2&check_sum used 4 bytes already
@@ -453,7 +453,7 @@ List do_ldc_rdi_in_file_new(StringVector filename, IntegerVector from,
         // maybe the number of bytes to check was wrong (issue 1437)
         if (bytes_to_check_last != bytes_to_check) {
           if (bytes_to_check == 0) {
-            ::Rf_error("bad file: first ensemble has a checksum error\n");
+            Rcpp::stop("bad file: first ensemble has a checksum error\n");
           }
           if (debug_value > 0) {
             Rprintf(

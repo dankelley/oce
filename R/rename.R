@@ -19,7 +19,7 @@ renameVocabulary <- function(dictionary = "ioos.csv", debug = 0) {
     vocab
 }
 
-# An internal function, used by rename(); not exported.
+# An internal function, used by oceRename(); not exported.
 # @author Dan Kelley
 renameInternal <- function(names, dictionary = "ioos.csv", debug = 0) {
     debug <- min(3L, max(debug, 0L))
@@ -165,7 +165,7 @@ renameInternal <- function(names, dictionary = "ioos.csv", debug = 0) {
 #' }
 #'
 #' In many cases, the third and fourth columns are empty, and even if values are
-#' provided, they will be superceded by values within the data file.
+#' provided, they will be superseded by values within the data file.
 #'
 #' As an example, the entry
 #'
@@ -182,7 +182,7 @@ renameInternal <- function(names, dictionary = "ioos.csv", debug = 0) {
 #' be renamed, or NULL. In the latter case, the dictionary is returned
 #' as a data frame, which can be useful for users who want to use [rbind()]
 #' to append dictionary elements of their own, thus customizing the
-#' action of `rename()`.
+#' action of `oceRename()`.
 #'
 #' @param dictionary either a string or a data frame.  If a string, then it is
 #' either the name of a built-in vocabulary (either `"ioos"` or `"sbe"`)
@@ -202,7 +202,7 @@ renameInternal <- function(names, dictionary = "ioos.csv", debug = 0) {
 #' dictText <- "S,salinity,,
 #' T,temperature,degree*C,ITS-90"
 #' dictionary <- read.csv(text = dictText, header = FALSE)
-#' rename(d, dictionary)
+#' oceRename(d, dictionary)
 #' #
 #' # Example 2: a CIOOS NetCDF file. Note that this file
 #' # is downloaded and removed at the end; in practice,
@@ -222,7 +222,7 @@ renameInternal <- function(names, dictionary = "ioos.csv", debug = 0) {
 #'     if (!inherits(t, "try-error")) {
 #'         d <- read.netcdf(file)
 #'         summary(d)
-#'         dd <- rename(d, "ioos")
+#'         dd <- oceRename(d, "ioos")
 #'         summary(dd)
 #'     } else {
 #'         message("Cannot connect to ", url)
@@ -238,10 +238,12 @@ renameInternal <- function(names, dictionary = "ioos.csv", debug = 0) {
 #' @references
 #'
 #' 1. CODAS naming convention
-#' <https://currents.soest.hawaii.edu/docs/adcp_doc/UHDAS_OPERATIONS/UHDAS_atsea/adcp_access/read_netCDF.html>
+# 2026-03-16: remote-build tests often fail on this UHDAS link.
+#' `https://currents.soest.hawaii.edu/docs/adcp_doc/UHDAS_OPERATIONS/UHDAS_atsea/adcp_access/read_netCDF.html`
 #'
 #' 2. IOOS naming convention
-#'    <https://cfconventions.org/Data/cf-standard-names/78/build/cf-standard-name-table.html>
+# 2026-04-03: remote-build tests often fail on this cfconventions link.
+#' `https://cfconventions.org/Data/cf-standard-names/78/build/cf-standard-name-table.html`
 #'
 #' 3. The SBE names come from a processing manual that was once at
 #'    `http://www.seabird.com/document/sbe-data-processing-manual`, but as of
@@ -252,8 +254,8 @@ renameInternal <- function(names, dictionary = "ioos.csv", debug = 0) {
 #'    12/08/2017; this was the reference version used in coding `oce`.
 #'
 #' @author Dan Kelley
-rename <- function(x, dictionary = "ioos", debug = 0) {
-    oceDebug(debug, "rename(..., dictionary=",
+oceRename <- function(x, dictionary = "ioos", debug = 0) {
+    oceDebug(debug, "oceRename(..., dictionary=",
         if (is.data.frame(dictionary)) {
             "[data frame]"
         } else {
@@ -359,7 +361,7 @@ rename <- function(x, dictionary = "ioos", debug = 0) {
     }
     rval@processingLog <- processingLogAppend(
         rval@processingLog,
-        paste0("rename(..., ",
+        paste0("oceRename(..., ",
             if (is.data.frame(dictionary)) {
                 " [data frame]"
             } else {
@@ -368,6 +370,6 @@ rename <- function(x, dictionary = "ioos", debug = 0) {
             sep = "", collapse = ""
         )
     )
-    oceDebug(debug, "END rename()\n", sep = "", unindent = 1)
+    oceDebug(debug, "END oceRename()\n", sep = "", unindent = 1)
     rval
 }

@@ -566,7 +566,7 @@ setMethod(
         model <- object@metadata$model
         mnames <- names(object@metadata)
         showMetadataItem(object, "filename", "File:                ", quote = TRUE)
-        #showMetadataItem(object, "source",        "Source:              ")
+        # showMetadataItem(object, "source",        "Source:              ")
         if (!is.null(type) && nchar(type)) {
             if (is.null(model)) {
                 cat("* Instrument:          ", type, "\n", sep = "")
@@ -587,7 +587,7 @@ setMethod(
         showMetadataItem(object, "time", "Time:                ", isdate = TRUE)
         # Next defined for argo floats
         if (identical(object@metadata$source, "Argo float")) {
-            showMetadataItem(object, "id",          "Argo id:             ")
+            showMetadataItem(object, "id", "Argo id:             ")
             showMetadataItem(object, "cycleNumber", "Argo cycleNumber:    ")
         }
         # showMetadataItem(object, "systemUploadTime",          "System upload time:  ", isdate=TRUE)
@@ -597,9 +597,9 @@ setMethod(
                 sep = ""
             )
         }
-        showMetadataItem(object, "cruise",      "Cruise:              ")
-        showMetadataItem(object, "ship",        "Vessel:              ")
-        showMetadataItem(object, "station",     "Station:             ")
+        showMetadataItem(object, "cruise", "Cruise:              ")
+        showMetadataItem(object, "ship", "Vessel:              ")
+        showMetadataItem(object, "station", "Station:             ")
         deploymentType <- object@metadata$deploymentType
         if (!is.null(deploymentType) && deploymentType != "unknown") {
             showMetadataItem(object, "deploymentType", "Deployment type:     ")
@@ -960,7 +960,7 @@ setMethod(
 #' `"lm"` method can be quite slow, and its results may be quite similar to those of the
 #' boxcar method.)
 #'
-#' For widely-spaced data, a sort of numerical cabeling effect can result when
+#' For widely-spaced data, a sort of numerical cabbeling effect can result when
 #' density is computed based on interpolated salinity and temperature.
 #' See reference 2 for a discussion of this issue and possible solutions.
 #'
@@ -3177,33 +3177,43 @@ setMethod(
                         mapPoints(stationLon, stationLat, cex = latlon.cex, col = latlon.col, pch = latlon.pch)
                     }
                     # draw some text in top margin
+                    topMsg <- ""
                     mnames <- names(x@metadata)
                     if ("station" %in% mnames) { # ctd from a file
-                        mtext(x[["station"]],
-                            side = 3, adj = 0, cex = par("cex"), line = 0.5
-                        )
+                        topMsg <- paste0(topMsg, "stn:", x[["station"]], " ")
                     } else if ("id" %in% mnames) { # ctd from an argo object
                         msg <- x[["id"]]
+                        topMsg <- paste0(topMsg, "id:", x[["id"]])
                         if ("cycleNumber" %in% mnames) {
-                            msg <- paste0(msg, "_", x[["cycleNumber"]])
+                            # msg <- paste0(msg, "_", x[["cycleNumber"]])
+                            topMsg <- paste(topMsg, x[["cycleNumber"]])
                         }
-                        mtext(msg,
-                            side = 3, adj = 0, cex = par("cex"), line = 0.5
-                        )
                     }
                     if ("startTime" %in% mnames) {
-                        mtext(format(x[["startTime"]], "%Y-%m-%d %H:%M"),
-                            side = 3, adj = 1, cex = par("cex"), line = 0.5
-                        )
+                        timeForLabel <- x[["startTime"]]
+                        if (length(timeForLabel) && !is.na(timeForLabel[1])) {
+                            topMsg <- paste(topMsg, format(
+                                timeForLabel[1],
+                                "%Y-%m-%d %H:%M"
+                            ))
+                        }
                     } else if ("time" %in% mnames) {
                         timeForLabel <- x[["time"]]
                         goodTimes <- which(!is.na(timeForLabel))
                         if (length(goodTimes)) {
-                            mtext(format(timeForLabel[goodTimes[1]],
-                                         "%Y-%m-%d %H:%M"),
-                                side = 3, adj = 1, cex = par("cex"), line = 0.5
+                            topMsg <- paste(
+                                topMsg,
+                                format(
+                                    timeForLabel[goodTimes[1]],
+                                    "%Y-%m-%d %H:%M"
+                                )
                             )
                         }
+                    }
+                    if (nchar(topMsg) > 0) {
+                        # message("DAN ", mean(par("usr")[1:2]))
+                        # print(par("usr"))
+                        mtext(topMsg, line = 0.5, cex = par("cex"), adj = 1)
                     }
                 }
                 if (which[w] == "map_with_filename" && !is.null(x@metadata$filename)) {
@@ -3380,9 +3390,15 @@ setMethod(
     definition = function(x, subset, ...) {
         subsetString <- paste(deparse(substitute(expr = subset, env = environment())), collapse = " ")
         dots <- list(...)
+        debug <- getOption("oceDebug")
         dotsNames <- names(dots)
+        if (length(dots) && ("debug" %in% dotsNames)) {
+            debug <- dots$debug
+        }
+oceDebug(debug, "subset(<ctd>) START", sep="", unindent=1)
         indicesGiven <- length(dots) && ("indices" %in% dotsNames)
         if (indicesGiven) {
+            oceDebug(debug, "'indices' was given\n")
             if (!missing(subset)) {
                 stop("cannot specify both 'subset' and 'indices'")
             }
@@ -3404,32 +3420,37 @@ setMethod(
                 res@processingLog,
                 paste("subset.ctd(x, subset=", subsetString, ")", sep = "")
             )
+            oceDebug(debug, "subset(<ctd>) END\n", unindent=1)
             return(res)
-        }
-        res <- x
-        # res@metadata <- x@metadata
-        # res@processingLog <- x@processingLog
-        # FIXME: next 2 lines used to be in the loop but I don't see why, so moved out
-        r <- eval(substitute(expr = subset, env = environment()), x@data, parent.frame(2))
-        r <- r & !is.na(r)
-        nr <- length(r)
-        for (i in seq_along(res@data)) {
-            if (length(res@data[[i]]) == nr) {
-                res@data[[i]] <- res@data[[i]][r]
+        } else {
+            oceDebug(debug, "'indices' was not given\n")
+            res <- x
+            # FIXME: next 2 lines used to be in the loop but I don't see why, so moved out
+            if (!("time" %in% names(x@data))) {
+                x@data$time <- x[["time"]]
             }
-        }
-        for (i in seq_along(res@metadata$flags)) {
-            if (length(res@metadata$flags[[i]]) == nr) {
-                res@metadata$flags[[i]] <- res@metadata$flags[[i]][r]
+            r <- eval(substitute(expr = subset, env = environment()), x@data, parent.frame(2))
+            r <- r & !is.na(r)
+            nr <- length(r)
+            for (i in seq_along(res@data)) {
+                if (length(res@data[[i]]) == nr) {
+                    res@data[[i]] <- res@data[[i]][r]
+                }
             }
+            for (i in seq_along(res@metadata$flags)) {
+                if (length(res@metadata$flags[[i]]) == nr) {
+                    res@metadata$flags[[i]] <- res@metadata$flags[[i]][r]
+                }
+            }
+            # names(res@data) <- names(x@data)
+            subsetString <- paste(deparse(substitute(expr = subset, env = environment())), collapse = " ")
+            res@processingLog <- processingLogAppend(
+                res@processingLog,
+                paste("subset.ctd(x, subset=", subsetString, ")", sep = "")
+            )
+            oceDebug(debug, "subset(<ctd>) END\n", unindent=1)
+            res
         }
-        # names(res@data) <- names(x@data)
-        subsetString <- paste(deparse(substitute(expr = subset, env = environment())), collapse = " ")
-        res@processingLog <- processingLogAppend(
-            res@processingLog,
-            paste("subset.ctd(x, subset=", subsetString, ")", sep = "")
-        )
-        res
     }
 )
 
@@ -3759,7 +3780,9 @@ parseLatLon <- function(line, debug = getOption("oceDebug")) {
     }
     res <- res * sign
     if (is.na(res)) {
-        warning("cannot decode longitude or latitude from '", line, "'")
+        if (!grepl("name [0-9]{1,2} = ", line)) { # only give warning if *not* in data slot
+            warning("cannot decode longitude or latitude from '", line, "'")
+        }
     }
     oceDebug(debug, "END parseLatLon()\n", unindent = 1)
     res
@@ -4145,8 +4168,13 @@ plotTS <- function(
     # this point called salinity and y, and also bg, col, cex, and pch.
     # See https://github.com/dankelley/oce/issues/1730
     canPlot <- is.finite(salinity) & is.finite(y)
-    #print(table(is.finite(salinity)))
-    #print(table(is.finite(y)))
+    if (0 == sum(canPlot)) {
+        if (eos == "gsw") {
+            stop("There are no finite SA,CT pairs")
+        } else {
+            stop("There are no finite salinity,theta pairs")
+        }
+    }
     if (length(col) == length(y)) {
         col <- col[canPlot]
     }
@@ -4164,14 +4192,6 @@ plotTS <- function(
     }
     salinity <- salinity[canPlot]
     y <- y[canPlot]
-    if (!any(is.finite(salinity))) {
-        warning("plotTS() found no valid salinity data")
-        return(invisible(list(xat = NULL, yat = NULL)))
-    }
-    if (!any(is.finite(y))) {
-        warning("plotTS() found no valid temperature data")
-        return(invisible(list(xat = NULL, yat = NULL)))
-    }
     if (missing(Slim)) {
         Slim <- range(salinity, na.rm = TRUE)
         oceDebug(debug, "Slim was not given, so inferred Slim=c(", paste(Slim, collapse = ","), ") from the data\n", sep = "")
@@ -4838,9 +4858,7 @@ plotProfile <- function(
                                 lwd = par("lwd"),
                                 cex = 1, pch = 1, pt.bg = "transparent",
                                 df = df, keepNA = FALSE, debug = getOption("oceDebug", 0)) {
-        oceDebug(debug, "plotJustProfile(...,",
-            argShow(xtype),
-            argShow(col), ", debug=", debug, ") START\n",
+        oceDebug(debug, "plotJustProfile(...,", argShow(col), ", ...) START\n",
             sep = "", unindent = 1
         )
         if (is.null(xlab)) {
@@ -5117,11 +5135,7 @@ plotProfile <- function(
             axes = FALSE, xaxs = xaxs, yaxs = yaxs, ...
         )
         axis(3, col = col.rho, col.axis = col.rho, col.lab = col.rho)
-        if (getOption("oceUnitBracket") == "[") {
-            mtext(expression(paste(sigma[theta], " [", kg / m^3, "] ")), side = 3, line = axisNameLoc, col = col.rho, cex = par("cex"))
-        } else {
-            mtext(expression(paste(sigma[theta], " (", kg / m^3, ") ")), side = 3, line = axisNameLoc, col = col.rho, cex = par("cex"))
-        }
+        mtext(resizableLabel("sigmaTheta", "x"), side = 3, line = axisNameLoc, col = col.rho, cex = par("cex"))
         axis(2)
         mtext(yname, side = 2, line = axisNameLoc, cex = par("cex"))
         box()
@@ -5143,21 +5157,21 @@ plotProfile <- function(
         # lines(dpdt.sm$y, dpdt.sm$x, lwd=lwd, col=col.dpdt)
         if (getOption("oceUnitBracket") == "[") {
             if (knowTimeUnit) {
-                mtext(expression(dp / dt * " [dbar/s]"),
+                mtext(expression(dp / dt * " [ dbar/s ]"),
                     side = 1, line = axisNameLoc, cex = par("cex"), col = col.dpdt
                 )
             } else {
-                mtext(expression(dp / dt * " [dbar/(time unit)]"),
+                mtext(expression(dp / dt * " [ dbar/(time unit) ]"),
                     side = 1, line = axisNameLoc, cex = par("cex"), col = col.dpdt
                 )
             }
         } else {
             if (knowTimeUnit) {
-                mtext(expression(dp / dt * " (dbar/s)"),
+                mtext(expression(dp / dt * " ( dbar/s )"),
                     side = 1, line = axisNameLoc, cex = par("cex"), col = col.dpdt
                 )
             } else {
-                mtext(expression(dp / dt * " (dbar/(time unit))"),
+                mtext(expression(dp / dt * " ( dbar/(time unit) )"),
                     side = 1, line = axisNameLoc, cex = par("cex"), col = col.dpdt
                 )
             }
@@ -5418,10 +5432,12 @@ plotProfile <- function(
     } else if (xtype == "Rrho" || xtype == "RrhoSF") {
         oceDebug(debug, "case 9: xtype is \"Rrho\" or \"RrhoSF\"\n")
         Rrho <- swRrho(x, sense = if (xtype == "Rrho") "diffusive" else "finger")
+        # message(vectorShow(Rrho))
         look <- if (keepNA) seq_along(y) else !is.na(Rrho) & !is.na(y)
+        # message(vectorShow(look))
         if (!add) {
             if (ylimGiven) {
-                plot(Rrho, y[look],
+                plot(Rrho[look], y[look],
                     lty = lty,
                     xlim = if (!missing(Rrholim)) Rrholim,
                     ylim = ylim, cex = cex, pch = pch,
@@ -5429,15 +5445,16 @@ plotProfile <- function(
                     type = "n", xlab = "", ylab = yname, ...
                 )
             } else {
-                plot(Rrho, y[look],
+                plot(Rrho[look], y[look],
                     lty = lty,
                     xlim = if (!missing(Rrholim)) Rrholim,
+                    # ylim = rev(range(y[look])), cex = cex, pch = pch,
                     ylim = rev(range(y[look])), cex = cex, pch = pch,
                     axes = FALSE, xaxs = xaxs, yaxs = yaxs,
                     type = "n", xlab = "", ylab = yname, ...
                 )
             }
-            mtext(if (is.null(xlab)) expression(R[rho]) else xlab, side = 3, line = axisNameLoc, cex = par("cex"))
+            mtext(if (is.null(xlab)) resizableLabel(xtype) else xlab, side = 3, line = axisNameLoc, cex = par("cex"))
             axis(2)
             axis(3)
             box()
@@ -5448,7 +5465,7 @@ plotProfile <- function(
                 abline(v = seq(at[1], at[2], length.out = at[3] + 1), col = col.grid, lty = lty.grid)
             }
         }
-        plotJustProfile(Rrho, y[look],
+        plotJustProfile(Rrho[look], y[look],
             type = type, lwd = lwd, lty = lty,
             cex = cex, col = col, pch = pch, pt.bg = pt.bg,
             keepNA = keepNA, debug = debug - 1
@@ -5602,15 +5619,18 @@ plotProfile <- function(
                     lty = lty, cex = cex, pch = pch, ...
                 )
             }
-            if (getOption("oceUnitBracket") == "[") {
-                mtext(if (is.null(xlab)) expression(paste(sigma[0], " [", kg / m^3, "]")) else xlab,
-                    side = 3, line = axisNameLoc, cex = par("cex")
-                )
-            } else {
-                mtext(if (is.null(xlab)) expression(paste(sigma[0], " (", kg / m^3, ")")) else xlab,
-                    side = 3, line = axisNameLoc, cex = par("cex")
-                )
-            }
+            #<2351> if (getOption("oceUnitBracket") == "[") {
+            #<2351>     mtext(if (is.null(xlab)) expression(paste(sigma[0], " [", kg / m^3, "]")) else xlab,
+            #<2351>         side = 3, line = axisNameLoc, cex = par("cex")
+            #<2351>     )
+            #<2351> } else {
+            #<2351>     mtext(if (is.null(xlab)) expression(paste(sigma[0], " (", kg / m^3, ")")) else xlab,
+            #<2351>         side = 3, line = axisNameLoc, cex = par("cex")
+            #<2351>     )
+            #<2351> }
+            mtext(if (is.null(xlab)) resizableLabel(xtype, debug = debug) else xlab,
+                side = 3, line = axisNameLoc, cex = par("cex")
+            )
             axis(2)
             axis(3)
             box()
@@ -5692,11 +5712,11 @@ plotProfile <- function(
                 )
             }
             if (getOption("oceUnitBracket") == "[") {
-                mtext(if (is.null(xlab)) expression(paste(rho, " [", kg / m^3, "]")) else xlab,
+                mtext(if (is.null(xlab)) resizableLabel("rho", "x") else xlab,
                     side = 3, line = axisNameLoc, cex = par("cex")
                 )
             } else {
-                mtext(if (is.null(xlab)) expression(paste(rho, " (", kg / m^3, ")")) else xlab,
+                mtext(if (is.null(xlab)) resizableLabel("rho", "x") else xlab,
                     side = 3, line = axisNameLoc, cex = par("cex")
                 )
             }
@@ -5736,20 +5756,12 @@ plotProfile <- function(
             type = "n", xlab = "", ylab = yname, ...
         )
         axis(3, col = col.rho, col.axis = col.rho, col.lab = col.rho)
-        tmpsep <- getOption("oceUnitSep")
-        sep <- if (!is.null(tmpsep)) tmpsep else ""
-        if (getOption("oceUnitBracket") == "[") {
-            label <- if (eos == "unesco") {
-                bquote(sigma[theta] * " [" * .(sep) * kg / m^3 * .(sep) * "]")
-            } else {
-                bquote(sigma[0] * " [" * .(sep) * kg / m^3 * .(sep) * "]")
-            }
+        # tmpsep <- getOption("oceUnitSep")
+        # sep <- if (!is.null(tmpsep)) tmpsep else ""
+        label <- if (eos == "unesco") {
+            resizableLabel("sigmaTheta", "x")
         } else {
-            label <- if (eos == "unesco") {
-                bquote(sigma[theta] * " (" * .(sep) * kg / m^3 * .(sep) * ")")
-            } else {
-                bquote(sigma[0] * " (" * .(sep) * kg / m^3 * .(sep) * ")")
-            }
+            resizableLabel("sigma0", "x")
         }
         mtext(resizableLabel(if (eos == "unesco") "sigmaTheta" else "sigma0"),
             side = 3, line = axisNameLoc, col = col.rho, cex = par("cex")
@@ -5932,10 +5944,12 @@ plotProfile <- function(
         # Try to compute a top-axis label with units, unless 'xlab' was given.
         if (is.null(xlab)) {
             label <- if (xtype %in% names(x@metadata$units)) {
-                label <- resizableLabel(as.character(xtype), "x", unit = x@metadata$units[[xtype]]$unit)
+                resizableLabel(as.character(xtype), "x", unit = x@metadata$units[[xtype]]$unit)
             } else {
                 as.character(xtype)
             }
+        } else {
+            label <- xlab
         }
         look <- if (keepNA) seq_along(y) else !is.na(x@data[[xtype]]) & !is.na(y)
         dots <- list(...)

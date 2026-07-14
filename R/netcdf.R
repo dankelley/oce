@@ -185,6 +185,7 @@ read.netcdf <- function(file, ..., encoding = NA, renamer = NULL, debug = getOpt
     }
     oceDebug(debug, "read.netcdf() START\n", unindent = 1)
     nc <- ncdf4::nc_open(file)
+    on.exit(ncdf4::nc_close(nc))
     res <- new("oce")
     varNames <- names(nc$var)
     if ("time" %in% names(nc$dim)) {
@@ -267,6 +268,18 @@ read.netcdf <- function(file, ..., encoding = NA, renamer = NULL, debug = getOpt
                 res@metadata$units[[oceNames[i]]] <- list(
                     unit = expression(pH),
                     scale = if (scale$hasatt) scale$value else ""
+                )
+            } else if (units$value == "mS cm^-1") {
+                # See https://github.com/dankelley/oce/issues/2341
+                res@metadata$units[[oceNames[i]]] <- list(
+                    unit = expression(mS/cm),
+                    scale = ""
+                )
+            } else if (units$value == "degree_Celcius") { # spelling error (in ITP files)
+                # See https://github.com/dankelley/oce/issues/2341
+                res@metadata$units[[oceNames[i]]] <- list(
+                    unit = expression(degree*C),
+                    scale = ""
                 )
             } else {
                 # Tell as.unit() to return NULL if unknown, so we can do

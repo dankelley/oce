@@ -181,7 +181,7 @@ oceSetData <- function(object, name, value, unit, originalName = "-", note = "")
 #' `dataNamesOriginal` in the `metadata` slot, so that the `[[` accessor will
 #' still work with the original name that was stored in the data.
 #' Note that this function does not alter associated flags or units; to
-#' take care of those things, use the newer [rename()] function instead.
+#' take care of those things, use the newer [oceRename()] function instead.
 #'
 #' @param object an [oce-class] object.
 #'

@@ -88,7 +88,8 @@ from the values in the file to the oce convention, using \code{\link[=cnvName2oc
 for the translation. This is done by default, but setting \code{rename=FALSE} can
 be helpful if there is a wish to control the renaming, either using a
 built-in dictionary or using a dictionary set up by the user.  See Examples 1
-and 2. if there is a desire to control renaming using \code{\link[=rename]{rename()}}.}
+and 2, the latter dealing with the case of using \code{\link[=oceRename]{oceRename()}} to rename
+the variables after the file has been read.}
 
 \item{requireSalinity}{logical value indicating what to do if the dataset
 lacks both salinity and conductivity. If \code{requireSalinity} is TRUE (the
@@ -125,6 +126,7 @@ limitation, because the data from the second sensor are also available as
 e.g. \code{x[["temperature1"]]}, where \code{x} is the name of the returned value.  For
 the details of the mapping from \code{.cnv} names to \code{ctd} names, see
 \code{\link[=cnvName2oceName]{cnvName2oceName()}}.
+
 The names of the elements in the \code{data} slot of the returned value depend on
 the file type, as signalled by the \code{btl} argument.  For the default case of \code{.cnv} files,
 the original data names as stored in \code{file} are stored within the \code{metadata}
@@ -280,7 +282,7 @@ f <- system.file("extdata", "ctd.cnv.gz", package = "oce")
 d1 <- read.ctd(f)
 
 # Example 2: handle variable renaming after reading
-d2 <- read.ctd(f, rename = FALSE) |> rename("sbe")
+d2 <- read.ctd(f, rename = FALSE) |> oceRename("sbe")
 
 }
 \references{
@@ -356,7 +358,7 @@ Other functions that read ctd data:
 \code{\link{read.ctd.woce.other}()}
 }
 \author{
-Dan Kelley and Clark Richards
+Dan Kelley and Clark Richards, along with William Kumler.
 }
 \concept{functions that read ctd data}
 \concept{things related to ctd data}

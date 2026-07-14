@@ -35,6 +35,7 @@ Other things related to sealevel data:
 \code{\link{as.sealevel}()},
 \code{\link{plot,sealevel-method}},
 \code{\link{read.sealevel}()},
+\code{\link{read.sealevel.gc2026}()},
 \code{\link{sealevel}},
 \code{\link{sealevel-class}},
 \code{\link{sealevelTuktoyaktuk}},

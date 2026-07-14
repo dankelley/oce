@@ -271,6 +271,7 @@
 <url><loc>https://dankelley.github.io/oce/reference/oceColorsCDOM.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/oceColorsChlorophyll.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/oceColorsClosure.html</loc></url>
+<url><loc>https://dankelley.github.io/oce/reference/oceColorsCubeHelix.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/oceColorsDensity.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/oceColorsFreesurface.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/oceColorsGebco.html</loc></url>
@@ -300,6 +301,7 @@
 <url><loc>https://dankelley.github.io/oce/reference/oceNames2whpNames.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/ocePmatch.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/oceProject.html</loc></url>
+<url><loc>https://dankelley.github.io/oce/reference/oceRename.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/oceRenameData.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/oceRenameMetadata.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/oceSetData.html</loc></url>
@@ -398,6 +400,7 @@
 <url><loc>https://dankelley.github.io/oce/reference/read.oce.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/read.odf.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/read.rsk.html</loc></url>
+<url><loc>https://dankelley.github.io/oce/reference/read.sealevel.gc2026.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/read.sealevel.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/read.section.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/read.topo.html</loc></url>
@@ -407,7 +410,6 @@
 <url><loc>https://dankelley.github.io/oce/reference/read.xbt.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/read.xbt.noaa1.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/read.xbt.noaa2.html</loc></url>
-<url><loc>https://dankelley.github.io/oce/reference/rename.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/rescale.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/resizableLabel.html</loc></url>
 <url><loc>https://dankelley.github.io/oce/reference/retime.html</loc></url>

@@ -152,7 +152,8 @@ from the values in the file to the oce convention, using <code><a href="cnvName2
 for the translation. This is done by default, but setting <code>rename=FALSE</code> can
 be helpful if there is a wish to control the renaming, either using a
 built-in dictionary or using a dictionary set up by the user.  See Examples 1
-and 2. if there is a desire to control renaming using <code><a href="rename.html">rename()</a></code>.</p></dd>
+and 2, the latter dealing with the case of using <code><a href="oceRename.html">oceRename()</a></code> to rename
+the variables after the file has been read.</p></dd>
 
 
 <dt id="arg-requiresalinity">requireSalinity<a class="anchor" aria-label="anchor" href="#arg-requiresalinity"></a></dt>
@@ -196,8 +197,8 @@ that the first sensor will be used in any future processing that accesses
 limitation, because the data from the second sensor are also available as
 e.g. <code>x[["temperature1"]]</code>, where <code>x</code> is the name of the returned value.  For
 the details of the mapping from <code>.cnv</code> names to <code>ctd</code> names, see
-<code><a href="cnvName2oceName.html">cnvName2oceName()</a></code>.
-The names of the elements in the <code>data</code> slot of the returned value depend on
+<code><a href="cnvName2oceName.html">cnvName2oceName()</a></code>.</p>
+<p>The names of the elements in the <code>data</code> slot of the returned value depend on
 the file type, as signalled by the <code>btl</code> argument.  For the default case of <code>.cnv</code> files,
 the original data names as stored in <code>file</code> are stored within the <code>metadata</code>
 slot as <code>dataNamesOriginal</code>, and are displayed with <code>summary</code> alongside the
@@ -336,18 +337,18 @@ and this was the reference version used in coding <code>oce</code>.</p></li>
 <code><a href="CTD_BCD2014666_008_1_DN.ODF.gz.html">CTD_BCD2014666_008_1_DN.ODF.gz</a></code>,
 <code><a href="sub-sub-ctd-method.html">[[,ctd-method</a></code>,
 <code>[[&lt;-,ctd-method</code>,
-<code><a href="argo2ctd.html">argo2ctd</a>()</code>,
-<code><a href="as.ctd.html">as.ctd</a>()</code>,
-<code><a href="cnvName2oceName.html">cnvName2oceName</a>()</code>,
+<code><a href="argo2ctd.html">argo2ctd()</a></code>,
+<code><a href="as.ctd.html">as.ctd()</a></code>,
+<code><a href="cnvName2oceName.html">cnvName2oceName()</a></code>,
 <code><a href="ctd.html">ctd</a></code>,
 <code><a href="ctd-class.html">ctd-class</a></code>,
 <code><a href="ctd.cnv.gz.html">ctd.cnv.gz</a></code>,
-<code><a href="ctdDecimate.html">ctdDecimate</a>()</code>,
-<code><a href="ctdFindProfiles.html">ctdFindProfiles</a>()</code>,
-<code><a href="ctdFindProfilesRBR.html">ctdFindProfilesRBR</a>()</code>,
+<code><a href="ctdDecimate.html">ctdDecimate()</a></code>,
+<code><a href="ctdFindProfiles.html">ctdFindProfiles()</a></code>,
+<code><a href="ctdFindProfilesRBR.html">ctdFindProfilesRBR()</a></code>,
 <code><a href="ctdRaw.html">ctdRaw</a></code>,
-<code><a href="ctdRepair.html">ctdRepair</a>()</code>,
-<code><a href="ctdTrim.html">ctdTrim</a>()</code>,
+<code><a href="ctdRepair.html">ctdRepair()</a></code>,
+<code><a href="ctdTrim.html">ctdTrim()</a></code>,
 <code><a href="ctd_aml_type1.csv.gz.html">ctd_aml_type1.csv.gz</a></code>,
 <code><a href="ctd_aml_type3.csv.gz.html">ctd_aml_type3.csv.gz</a></code>,
 <code><a href="d200321-001.ctd.gz.html">d200321-001.ctd.gz</a></code>,
@@ -355,40 +356,40 @@ and this was the reference version used in coding <code>oce</code>.</p></li>
 <code><a href="handleFlags-ctd-method.html">handleFlags,ctd-method</a></code>,
 <code><a href="initialize-ctd-method.html">initialize,ctd-method</a></code>,
 <code><a href="initializeFlagScheme-ctd-method.html">initializeFlagScheme,ctd-method</a></code>,
-<code><a href="oceNames2whpNames.html">oceNames2whpNames</a>()</code>,
-<code><a href="oceUnits2whpUnits.html">oceUnits2whpUnits</a>()</code>,
+<code><a href="oceNames2whpNames.html">oceNames2whpNames()</a></code>,
+<code><a href="oceUnits2whpUnits.html">oceUnits2whpUnits()</a></code>,
 <code><a href="plot-ctd-method.html">plot,ctd-method</a></code>,
-<code><a href="plotProfile.html">plotProfile</a>()</code>,
-<code><a href="plotScan.html">plotScan</a>()</code>,
-<code><a href="plotTS.html">plotTS</a>()</code>,
-<code><a href="read.ctd.html">read.ctd</a>()</code>,
-<code><a href="read.ctd.aml.html">read.ctd.aml</a>()</code>,
-<code><a href="read.ctd.itp.html">read.ctd.itp</a>()</code>,
-<code><a href="read.ctd.odf.html">read.ctd.odf</a>()</code>,
-<code><a href="read.ctd.odv.html">read.ctd.odv</a>()</code>,
-<code><a href="read.ctd.saiv.html">read.ctd.saiv</a>()</code>,
-<code><a href="read.ctd.ssda.html">read.ctd.ssda</a>()</code>,
-<code><a href="read.ctd.woce.html">read.ctd.woce</a>()</code>,
-<code><a href="read.ctd.woce.other.html">read.ctd.woce.other</a>()</code>,
+<code><a href="plotProfile.html">plotProfile()</a></code>,
+<code><a href="plotScan.html">plotScan()</a></code>,
+<code><a href="plotTS.html">plotTS()</a></code>,
+<code><a href="read.ctd.html">read.ctd()</a></code>,
+<code><a href="read.ctd.aml.html">read.ctd.aml()</a></code>,
+<code><a href="read.ctd.itp.html">read.ctd.itp()</a></code>,
+<code><a href="read.ctd.odf.html">read.ctd.odf()</a></code>,
+<code><a href="read.ctd.odv.html">read.ctd.odv()</a></code>,
+<code><a href="read.ctd.saiv.html">read.ctd.saiv()</a></code>,
+<code><a href="read.ctd.ssda.html">read.ctd.ssda()</a></code>,
+<code><a href="read.ctd.woce.html">read.ctd.woce()</a></code>,
+<code><a href="read.ctd.woce.other.html">read.ctd.woce.other()</a></code>,
 <code><a href="setFlags-ctd-method.html">setFlags,ctd-method</a></code>,
 <code><a href="subset-ctd-method.html">subset,ctd-method</a></code>,
 <code><a href="summary-ctd-method.html">summary,ctd-method</a></code>,
-<code><a href="woceNames2oceNames.html">woceNames2oceNames</a>()</code>,
-<code><a href="woceUnit2oceUnit.html">woceUnit2oceUnit</a>()</code>,
-<code><a href="write.ctd.html">write.ctd</a>()</code></p>
+<code><a href="woceNames2oceNames.html">woceNames2oceNames()</a></code>,
+<code><a href="woceUnit2oceUnit.html">woceUnit2oceUnit()</a></code>,
+<code><a href="write.ctd.html">write.ctd()</a></code></p>
 <p>Other functions that read ctd data:
-<code><a href="read.ctd.html">read.ctd</a>()</code>,
-<code><a href="read.ctd.aml.html">read.ctd.aml</a>()</code>,
-<code><a href="read.ctd.itp.html">read.ctd.itp</a>()</code>,
-<code><a href="read.ctd.odf.html">read.ctd.odf</a>()</code>,
-<code><a href="read.ctd.saiv.html">read.ctd.saiv</a>()</code>,
-<code><a href="read.ctd.ssda.html">read.ctd.ssda</a>()</code>,
-<code><a href="read.ctd.woce.html">read.ctd.woce</a>()</code>,
-<code><a href="read.ctd.woce.other.html">read.ctd.woce.other</a>()</code></p></div>
+<code><a href="read.ctd.html">read.ctd()</a></code>,
+<code><a href="read.ctd.aml.html">read.ctd.aml()</a></code>,
+<code><a href="read.ctd.itp.html">read.ctd.itp()</a></code>,
+<code><a href="read.ctd.odf.html">read.ctd.odf()</a></code>,
+<code><a href="read.ctd.saiv.html">read.ctd.saiv()</a></code>,
+<code><a href="read.ctd.ssda.html">read.ctd.ssda()</a></code>,
+<code><a href="read.ctd.woce.html">read.ctd.woce()</a></code>,
+<code><a href="read.ctd.woce.other.html">read.ctd.woce.other()</a></code></p></div>
     </div>
     <div class="section level2">
     <h2 id="author">Author<a class="anchor" aria-label="anchor" href="#author"></a></h2>
-    <p>Dan Kelley and Clark Richards</p>
+    <p>Dan Kelley and Clark Richards, along with William Kumler.</p>
     </div>
 
     <div class="section level2">
@@ -400,7 +401,7 @@ and this was the reference version used in coding <code>oce</code>.</p></li>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>file has temperature in IPTS-68 so this is stored as-is, but note that [["temperature"]] and sw* functions autoconvert to ITS-90 to match modern conventions</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Example 2: handle variable renaming after reading</span></span></span>
-<span class="r-in"><span><span class="va">d2</span> <span class="op">&lt;-</span> <span class="fu"><a href="read.ctd.html">read.ctd</a></span><span class="op">(</span><span class="va">f</span>, rename <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="rename.html">rename</a></span><span class="op">(</span><span class="st">"sbe"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">d2</span> <span class="op">&lt;-</span> <span class="fu"><a href="read.ctd.html">read.ctd</a></span><span class="op">(</span><span class="va">f</span>, rename <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="oceRename.html">oceRename</a></span><span class="op">(</span><span class="st">"sbe"</span><span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>suspicious startTime 1903-10-15 11:38:38 changed to 2003-10-15 11:38:38; see 'start_time' in file header</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
@@ -414,7 +415,7 @@ and this was the reference version used in coding <code>oce</code>.</p></li>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer></div>

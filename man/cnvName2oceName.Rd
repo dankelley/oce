@@ -4,13 +4,27 @@
 \alias{cnvName2oceName}
 \title{Infer Variable Name, Units and Scale From a Seabird Header}
 \usage{
-cnvName2oceName(h, columns = NULL, debug = getOption("oceDebug"))
+cnvName2oceName(
+  h,
+  columns = NULL,
+  newNameFormat = FALSE,
+  debug = getOption("oceDebug")
+)
 }
 \arguments{
-\item{h}{The header line.}
+\item{h}{character value holding the header line.}
 
-\item{columns}{Optional list containing name correspondences, as described for
+\item{columns}{optional list containing name correspondences, as described for
 \code{\link[=read.ctd.sbe]{read.ctd.sbe()}}.}
+
+\item{newNameFormat}{logical value indicating whether the column names
+in the header are in the traditional format (with an abbreviated name
+followed by a colon and then more information) or a new format noticed
+in a file provided with a github issue (https://github.com/dankelley/oce/issues/2328).
+Until (or unless) SBE provides information on this new format, the
+present parameter is provisional, as is all code relating to reading
+new-format files.  (The file is produced by the new SBE software called
+Fathom.)}
 
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
@@ -57,7 +71,7 @@ argument), and so users are well-advised to rename the items as appropriate.
 The first step in doing this is to pass the object to \code{summary()}, to
 discover the SBE names in question. Then consult the SBE documentation to
 find an appropriate name for the data, and either manipulate the names in the
-object data slot directly or use \code{\link[=rename]{rename()}} to rename the elements.
+object data slot directly or use \code{\link[=oceRename]{oceRename()}} to rename the elements.
 Finally, please publish an 'issue' on the oce Github site
 \verb{https://github.com/dankelley/oce/issues} so that the developers can add the
 data type in question.
@@ -93,7 +107,7 @@ reasonable and specific expression user interest.
 \code{flCM}        \tab \code{fluorescence}             \tab ug/l; Chelsea Mini Chl Con\tab\cr
 \code{flCUVA#}     \tab \code{fluorescence}             \tab ug/l; Chelsea UV Aquatracka\tab\cr
 \code{flC#}        \tab \code{fluorescence}             \tab ug/l; Chelsea Aqua 3\tab    \cr
-\code{flEC-AFL#}   \tab \code{fluorescence}             \tab mg/m^3; WET Labs ECO-AFL/FLtab\cr
+\code{flEC-AFL#}   \tab \code{fluorescence}             \tab mg/m^3; WET Labs ECO-AFL/FL\tab\cr
 \code{flScufa#}    \tab \code{fluorescence}             \tab -; Turner SCUFA (RFU)\tab\cr
 \code{flSPR}       \tab \code{fluorescence}             \tab -; Seapoint, Rhodamine\tab  \cr
 \code{flSPuv}      \tab \code{fluorescence}             \tab -; Seapoint, UV      \tab   \cr

@@ -219,7 +219,6 @@ structure of coastline objects, and also outlines the other functions
 dealing with them.
 
 Other functions that plot oce data: 
-\code{\link{download.amsr}()},
 \code{\link{plot,adp-method}},
 \code{\link{plot,adv-method}},
 \code{\link{plot,amsr-method}},
@@ -244,8 +243,7 @@ Other functions that plot oce data:
 \code{\link{plot,xbt-method}},
 \code{\link{plotProfile}()},
 \code{\link{plotScan}()},
-\code{\link{plotTS}()},
-\code{\link{tidem-class}}
+\code{\link{plotTS}()}
 
 Other things related to coastline data: 
 \code{\link{[[,coastline-method}},

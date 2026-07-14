@@ -1,19 +1,24 @@
 # vim:filetype=r:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
-useDynLib(oce, .registration=TRUE)
+useDynLib(oce, .registration = TRUE)
 # exportPattern("^[[:alpha:]]+")
 importFrom(Rcpp, sourceCpp)
 
-importFrom("graphics", ".filled.contour", "axTicks", "abline", "arrows", "axis",
+importFrom(
+    "graphics", ".filled.contour", "axTicks", "abline", "arrows", "axis",
     "Axis", "axis.POSIXct", "box", "contour", "frame", "grid", "hist", "image",
     "layout", "lcm", "legend", "lines", "locator", "mtext", "pairs", "par",
     "plot", "plot.new", "plot.window", "points", "polygon", "rect", "rug",
     "segments", "smoothScatter", "strheight", "strwidth", "text", "title",
-    "xinch", "yinch")
+    "xinch", "yinch"
+)
 
-importFrom("grDevices", "adjustcolor", "col2rgb", "colorRamp",
-    "colorRampPalette", "contourLines", "gray", "hsv", "rgb")
+importFrom(
+    "grDevices", "adjustcolor", "col2rgb", "colorRamp",
+    "colorRampPalette", "contourLines", "gray", "hsv", "rgb"
+)
 
-importFrom("gsw", "gsw_CT_freezing", "gsw_CT_from_t", "gsw_C_from_SP",
+importFrom(
+    "gsw", "gsw_CT_freezing", "gsw_CT_from_t", "gsw_C_from_SP",
     "gsw_Nsquared", "gsw_SA_from_SP", "gsw_SA_from_rho", "gsw_SP_from_C",
     "gsw_SP_from_SA", "gsw_SR_from_SP", "gsw_Sstar_from_SA",
     "gsw_Turner_Rsubrho", "gsw_adiabatic_lapse_rate_from_CT", "gsw_alpha",
@@ -21,26 +26,33 @@ importFrom("gsw", "gsw_CT_freezing", "gsw_CT_from_t", "gsw_C_from_SP",
     "gsw_geo_strf_dyn_height", "gsw_p_from_z", "gsw_pot_rho_t_exact",
     "gsw_pt_from_t", "gsw_rho", "gsw_sigma0", "gsw_sigma1", "gsw_sigma2",
     "gsw_sigma3", "gsw_sigma4", "gsw_sound_speed", "gsw_t_freezing",
-    "gsw_t_from_CT", "gsw_z_from_p")
+    "gsw_t_from_CT", "gsw_z_from_p"
+)
 
-importFrom("methods", "as", "callNextMethod", "new", "slot<-", "slotNames",
-    "validObject")
+importFrom(
+    "methods", "as", "callNextMethod", "new", "slot<-", "slotNames",
+    "validObject"
+)
 
-#importFrom("sf", "st_intersection", "st_multipoint", "st_polygon")
-importFrom("stats", "approx", "approxfun", "coef", "confint", "cor", "cov",
+# importFrom("sf", "st_intersection", "st_multipoint", "st_polygon")
+importFrom(
+    "stats", "approx", "approxfun", "coef", "confint", "cor", "cov",
     "fivenum", "frequency", "integrate", "is.ts", "kernel", "lm", "median",
     "na.exclude", "nls", "optim", "optimize", "predict", "printCoefmat",
     "quantile", "rnorm", "runmed", "sd", "smooth", "smooth.spline", "spectrum",
-    "ts", "uniroot", "var", "weighted.mean", "window")
+    "ts", "uniroot", "var", "weighted.mean", "window"
+)
 
-#importFrom("testthat", "expect_equal", "expect_error", "expect_false",
+# importFrom("testthat", "expect_equal", "expect_error", "expect_false",
 #           "expect_identical", "expect_lt", "expect_null", "expect_output",
 #           "expect_silent", "expect_true", "expect_warning")
 
-importFrom("utils", "capture.output", "data", "download.file", "head",
+importFrom(
+    "utils", "capture.output", "data", "download.file", "head",
     "flush.console", "packageVersion", "read.csv", "read.delim", "read.table",
     "setTxtProgressBar", "str", "tail", "txtProgressBar", "unzip",
-    "write.table")
+    "write.table"
+)
 
 exportMethods(plot)
 exportMethods(subset)
@@ -50,7 +62,7 @@ export(
     ad2cpCodeToName,
     adpAd2cpFileTrim,
     adpRdiFileTrim,
-    #advSontekAdrFileTrim,
+    # advSontekAdrFileTrim,
     approx3d,
     argShow,
     beamName,
@@ -216,11 +228,11 @@ export(
     oce.axis.POSIXct,
     oceAxis,
     oceColorsClosure,
-
     oce.colors9A, oceColors9A,
     oce.colors9B, oceColors9B,
     oce.colorsCDOM, oceColorsCDOM,
     oce.colorsChlorophyll, oceColorsChlorophyll,
+    oce.colorsCubeHelix, oceColorsCubeHelix,
     oce.colorsDensity, oceColorsDensity,
     oce.colorsFreesurface, oceColorsFreesurface,
     oce.colorsGebco, oceColorsGebco,
@@ -237,10 +249,13 @@ export(
     oce.colorsVelocity, oceColorsVelocity,
     oce.colorsViridis, oceColorsViridis,
     oce.colorsVorticity, oceColorsVorticity,
-
     oceCRS,
     oceFileTrim,
-    oceGetData, oceDeleteData, oceRenameData, oceSetData,
+    oceGetData,
+    oceDeleteData,
+    oceRename,
+    oceRenameData,
+    oceSetData,
     oceGetMetadata, oceDeleteMetadata, oceRenameMetadata, oceSetMetadata,
     oce.debug, oceDebug,
     oce.edit, oceEdit,
@@ -321,13 +336,13 @@ export(
     read.odf,
     read.rsk,
     read.sealevel,
+    read.sealevel.gc2026,
     read.section,
     read.woa,
     read.xbt,
     read.xbt.edf,
     read.xbt.noaa1,
     read.xbt.noaa2,
-    rename,
     rescale,
     resizableLabel,
     retime,
@@ -335,7 +350,7 @@ export(
     rsk2ctd,
     rskPatm,
     rskToc,
-    ##rskTrim,
+    ## rskTrim,
     runlm,
     secondsToCtime,
     sectionAddCtd,
@@ -401,8 +416,8 @@ export(
     toEnuAdp,
     toEnuAdv,
     topoInterpolate,
-    #trap, # created by Rcpp
-    #trimString, removed 2023-07-12 after a year of deprecated status
+    # trap, # created by Rcpp
+    # trimString, removed 2023-07-12 after a year of deprecated status
     unabbreviateYear,
     undriftTime,
     ungrid,
@@ -422,14 +437,16 @@ export(
     xyzToEnu,
     xyzToEnuAdp,
     xyzToEnuAdpAD2CP,
-    xyzToEnuAdv)
+    xyzToEnuAdv
+)
 
 S3method(head, oce)
 S3method(predict, tidem)
 S3method(tail, oce)
 S3method(window, oce)
 
-exportClasses(oce, adp, adv, amsr, bremen, cm, coastline, ctd, argo, ladp,
+exportClasses(
+    oce, adp, adv, amsr, bremen, cm, coastline, ctd, argo, ladp,
     landsat, lisst, lobo, met, odf, sealevel, section, rsk, tidem, topo,
-    windrose)
-
+    windrose
+)

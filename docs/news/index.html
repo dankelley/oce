@@ -46,43 +46,90 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.8.4" id="oce-184">oce 1.8.4<a class="anchor" aria-label="anchor" href="#oce-184"></a></h2>
 <ul><li>Add <code><a href="../reference/bodcNames2oceNames.html">bodcNames2oceNames()</a></code> to rename NERC/BODC variables (issue <a href="https://github.com/dankelley/oce/issues/2235" class="external-link">#2235</a>).</li>
-<li>Add <code>D4902337_219.nc</code> built-in Argo profile data file (issue <a href="https://github.com/dankelley/oce/issues/2272" class="external-link">#2272</a>).</li>
+<li>Add <code>D4902337_219.nc</code> built-in Argo profile data file (issue <a href="https://github.com/dankelley/oce/issues/2272" class="external-link">#2272</a>). (issue <a href="https://github.com/dankelley/oce/issues/2331" class="external-link">#2331</a>).</li>
 <li>Add <code><a href="../reference/netcdfTOC.html">netcdfTOC()</a></code> to overview NetCDF files (issue <a href="https://github.com/dankelley/oce/issues/2232" class="external-link">#2232</a>).</li>
-<li>Add <code><a href="../reference/rename.html">rename()</a></code> to rename variables, flags and units (issue <a href="https://github.com/dankelley/oce/issues/2238" class="external-link">#2238</a>).</li>
+<li>Add <code><a href="../reference/oceColorsCubeHelix.html">oceColorsCubeHelix()</a></code>, a perceptual colour scheme used in Astronomy</li>
+<li>Add <code><a href="../reference/oceRename.html">oceRename()</a></code> to rename variables, flags and units (issue <a href="https://github.com/dankelley/oce/issues/2238" class="external-link">#2238</a>).</li>
+<li>Add <code>read.sealevel.gc2026</code> to read a Govt Canada format (issue <a href="https://github.com/dankelley/oce/issues/2349" class="external-link">#2349</a>).</li>
 <li>Add <code><a href="../reference/read.xbt.edf2.html">read.xbt.edf2()</a></code> to read a tab-separated file type.</li>
+<li>Add <code><a href="../reference/read.xbt.noaa2.html">read.xbt.noaa2()</a></code> to handle UBT format (issue <a href="https://github.com/dankelley/oce/issues/2289" class="external-link">#2289</a>).</li>
 <li>Add <code>Tidal Analysis</code> vignette (issue <a href="https://github.com/dankelley/oce/issues/2243" class="external-link">#2243</a>).</li>
+<li>Change <code>[[</code> to handle <code>"cabbeling"</code>, for objects holding sufficient information for this computation (issue <a href="https://github.com/dankelley/oce/issues/2338" class="external-link">#2338</a>).</li>
+<li>Change <code><a href="../reference/adpRdiFileTrim.html">adpRdiFileTrim()</a></code> to reorder parameters, and to accept <code>indices</code> parameter (issue <a href="https://github.com/dankelley/oce/issues/2330" class="external-link">#2330</a>)</li>
 <li>Change <code>amsr[[</code> to handle <code>"metadata"</code> parameter (issue <a href="https://github.com/dankelley/oce/issues/2229" class="external-link">#2229</a>).</li>
 <li>Change <code><a href="../reference/argo2ctd.html">argo2ctd()</a></code> (issue <a href="https://github.com/dankelley/oce/issues/2270" class="external-link">#2270</a>).</li>
 <li>Change <code><a href="../reference/as.unit.html">as.unit()</a></code> to handle more units (issue <a href="https://github.com/dankelley/oce/issues/2240" class="external-link">#2240</a>).</li>
 <li>Change <code><a href="../reference/as.ctd.html">as.ctd()</a></code> to handle Argo data better (issue <a href="https://github.com/dankelley/oce/issues/2270" class="external-link">#2270</a>).</li>
-<li>Change <code><a href="../reference/binApply1D.html">binApply1D()</a></code> to handle the <code>...</code> argument (issue <a href="https://github.com/dankelley/oce/issues/2265" class="external-link">#2265</a>).</li>
-<li>Change <code><a href="../reference/binApply1D.html">binApply1D()</a></code> to handle the time zones better (issue <a href="https://github.com/dankelley/oce/issues/2266" class="external-link">#2266</a>).</li>
+<li>Change <code><a href="../reference/binApply1D.html">binApply1D()</a></code> to
+<ul><li>handle the <code>...</code> argument (issue <a href="https://github.com/dankelley/oce/issues/2265" class="external-link">#2265</a>) and</li>
+<li>handle time zones better (issue <a href="https://github.com/dankelley/oce/issues/2266" class="external-link">#2266</a>).</li>
+</ul></li>
 <li>Change <code><a href="../reference/concatenate.html">concatenate()</a></code> to handle lists properly (issue <a href="https://github.com/dankelley/oce/issues/2278" class="external-link">#2278</a>).</li>
 <li>Change <code><a href="../reference/download.amsr.html">download.amsr()</a></code> to handle realtime data files (issue <a href="https://github.com/dankelley/oce/issues/2231" class="external-link">#2231</a>).</li>
+<li>Change <code><a href="../reference/download.met.html">download.met()</a></code> to account for server changes (issue <a href="https://github.com/dankelley/oce/issues/2381" class="external-link">#2381</a>, reported and solved by github user <code>EOGrady21</code>).</li>
 <li>Change <code><a href="../reference/imagep.html">imagep()</a></code> to handle <code>decimate</code> as set in <code>~/.Rprofile</code> (issue <a href="https://github.com/dankelley/oce/issues/2263" class="external-link">#2263</a>).</li>
 <li>Change <code><a href="../reference/lonlat2map.html">lonlat2map()</a></code> to handle a [coastline-class] object as first parameter (issue <a href="https://github.com/dankelley/oce/issues/2284" class="external-link">#2284</a>).</li>
 <li>Change <code><a href="../reference/magneticField.html">magneticField()</a></code> to handle the latest (generation 14) IGRF formulation (issue <a href="https://github.com/dankelley/oce/issues/2274" class="external-link">#2274</a>).</li>
-<li>Change <code><a href="../reference/mapScalebar.html">mapScalebar()</a></code> to handle <code>x="top"</code> (issue <a href="https://github.com/dankelley/oce/issues/2283" class="external-link">#2283</a>).</li>
-<li>Change <code><a href="../reference/mapScalebar.html">mapScalebar()</a></code> to handle <code>length</code> under 1km (issue <a href="https://github.com/dankelley/oce/issues/2287" class="external-link">#2287</a>).</li>
+<li>Change <code><a href="../reference/mapScalebar.html">mapScalebar()</a></code> to
+<ul><li>handle <code>x="top"</code> (issue <a href="https://github.com/dankelley/oce/issues/2283" class="external-link">#2283</a>) and</li>
+<li>handle <code>length</code> under 1km (issue <a href="https://github.com/dankelley/oce/issues/2287" class="external-link">#2287</a>).</li>
+</ul></li>
 <li>Change <code><a href="../reference/mapPlot.html">mapPlot()</a></code> to handle <code>las</code> as a parameter (issue <a href="https://github.com/dankelley/oce/issues/1707" class="external-link">#1707</a>).</li>
-<li>Change <code><a href="../reference/oce.plot.ts.html">oce.plot.ts()</a></code> to handle <code>grid</code> better (issue <a href="https://github.com/dankelley/oce/issues/2267" class="external-link">#2267</a>).</li>
-<li>Change <code><a href="../reference/oce.plot.ts.html">oce.plot.ts()</a></code> to handle <code>simplify</code> better (issue <a href="https://github.com/dankelley/oce/issues/2277" class="external-link">#2277</a>).</li>
-<li>Change <code><a href="../reference/oce.plot.ts.html">oce.plot.ts()</a></code> to handle <code>xlab</code> (issue <a href="https://github.com/dankelley/oce/issues/2285" class="external-link">#2285</a>).</li>
+<li>Change <code><a href="../reference/oceRename.html">oceRename()</a></code> to default to a built-in IOOS dictionary (issue <a href="https://github.com/dankelley/oce/issues/2311" class="external-link">#2311</a>).</li>
+<li>Change <code><a href="../reference/oce.plot.ts.html">oce.plot.ts()</a></code> to
+<ul><li>handle <code>grid</code> better (issue <a href="https://github.com/dankelley/oce/issues/2267" class="external-link">#2267</a>),</li>
+<li>handle <code>simplify</code> better (issue <a href="https://github.com/dankelley/oce/issues/2277" class="external-link">#2277</a>) and</li>
+<li>handle <code>xlab</code> better (issue <a href="https://github.com/dankelley/oce/issues/2285" class="external-link">#2285</a>).</li>
+</ul></li>
+<li>Change <code><a href="../reference/plot-coastline-method.html">plot.coastline()</a></code> to improve axes aesthetics (issue <a href="https://github.com/dankelley/oce/issues/2342" class="external-link">#2342</a>).</li>
+<li>Change <code><a href="../reference/plot-ctd-method.html">plot.ctd()</a></code> to improve map margin note (issue <a href="https://github.com/dankelley/oce/issues/2343" class="external-link">#2343</a>).</li>
+<li>Change <code><a href="../reference/plotProfile.html">plotProfile()</a></code> to improve unit spacing (issue <a href="https://github.com/dankelley/oce/issues/2352" class="external-link">#2352</a>).</li>
 <li>Change <code><a href="../reference/plot-section-method.html">plot.section()</a></code> to handle <code>eos="gsw"</code> (issue <a href="https://github.com/dankelley/oce/issues/2256" class="external-link">#2256</a>).</li>
+<li>Change <code><a href="../reference/pwelch.html">pwelch()</a></code> to fix error if <code>nfft</code> and <code>spec</code> are provided (issue <a href="https://github.com/dankelley/oce/issues/2299" class="external-link">#2299</a>).</li>
 <li>Change <code><a href="../reference/read.amsr.html">read.amsr()</a></code> to handle realtime data files (issue <a href="https://github.com/dankelley/oce/issues/2230" class="external-link">#2230</a>).</li>
-<li>Change <code><a href="../reference/read.ctd.sbe.html">read.ctd.sbe()</a></code> to handle files that lack salinity and conductivity (issues <a href="https://github.com/dankelley/oce/issues/2279" class="external-link">#2279</a> and <a href="https://github.com/dankelley/oce/issues/2282" class="external-link">#2282</a>).</li>
-<li>Change <code><a href="../reference/read.ctd.sbe.html">read.ctd.sbe()</a></code> to handle time-related header elements better (issues <a href="https://github.com/dankelley/oce/issues/2280" class="external-link">#2280</a> and <a href="https://github.com/dankelley/oce/issues/2281" class="external-link">#2281</a>).</li>
+<li>Change <code><a href="../reference/read.adp.ad2cp.html">read.adp.ad2cp()</a></code> to
+<ul><li>rename hex code 0x1f from <code>averageAltimeter</code> to <code>averageAltimeterRaw</code>, for consistency with Nortek manuals as of 2026. (The old name is still accepted, but a warning is issued.)</li>
+<li>handle a new, three-element, form of the <code>GETCLOCKSTR</code> field (issue <a href="https://github.com/dankelley/oce/issues/2379" class="external-link">#2379</a>).</li>
+<li>handle bottom-track data correctly (issue <a href="https://github.com/dankelley/oce/issues/2368" class="external-link">#2368</a>)</li>
+<li>handle TOC, datasets and plans better (issue <a href="https://github.com/dankelley/oce/issues/2303" class="external-link">#2303</a> and related),</li>
+<li>read temperature correctly (issue <a href="https://github.com/dankelley/oce/issues/2324" class="external-link">#2324</a>),</li>
+<li>save elements of AST (etc) individually, not within a list (issue <a href="https://github.com/dankelley/oce/issues/2318" class="external-link">#2318</a>)</li>
+<li>scale <code>altimeterRawSamples</code> by 1/2^15 (issue <a href="https://github.com/dankelley/oce/issues/2327" class="external-link">#2327</a>).</li>
+<li>set <code>data@distance</code> only if NC (number of cells) is nonzero (issue <a href="https://github.com/dankelley/oce/issues/2319" class="external-link">#2319</a>).</li>
+<li>use number of raw altimeter samples from header, if it disagrees with value in record (issue <a href="https://github.com/dankelley/oce/issues/2326" class="external-link">#2326</a>).</li>
+</ul></li>
+<li>Change <code><a href="../reference/read.adp.rdi.html">read.adp.rdi()</a></code> to
+<ul><li>read data from 3-beam horizontal devices (issue <a href="https://github.com/dankelley/oce/issues/2369" class="external-link">#2369</a>).</li>
+</ul></li>
+<li>Change <code>read.adp.rdi(..., which="??")</code> to
+<ul><li>return a data frame that includes ensemble size (issue <a href="https://github.com/dankelley/oce/issues/2329" class="external-link">#2329</a>).</li>
+</ul></li>
+<li>Change <code><a href="../reference/read.ctd.sbe.html">read.ctd.sbe()</a></code> to
+<ul><li>Handle fixed-width column names (pull request <a href="https://github.com/dankelley/oce/issues/2365" class="external-link">#2365</a>, kindly provided by William Kumler, github user <a href="https://github.com/wkumler" class="external-link">@wkumler</a>),</li>
+<li>handle files that lack salinity and conductivity (issues <a href="https://github.com/dankelley/oce/issues/2279" class="external-link">#2279</a> and <a href="https://github.com/dankelley/oce/issues/2282" class="external-link">#2282</a>),</li>
+<li>handle time-related header elements better (issues <a href="https://github.com/dankelley/oce/issues/2280" class="external-link">#2280</a> and <a href="https://github.com/dankelley/oce/issues/2281" class="external-link">#2281</a>), and</li>
+<li>handle “new” format CNV files, at least provisionally (issue <a href="https://github.com/dankelley/oce/issues/2328" class="external-link">#2328</a>).</li>
+</ul></li>
 <li>Change <code><a href="../reference/read.ctd.aml.html">read.ctd.aml()</a></code> to handle “type 3” format (issue <a href="https://github.com/dankelley/oce/issues/2247" class="external-link">#2247</a>).</li>
+<li>Change <code><a href="../reference/read.coastline.html">read.coastline()</a></code> to handle <code>file</code> in “shapefile” format (issue <a href="https://github.com/dankelley/oce/issues/1850" class="external-link">#1850</a>).</li>
 <li>Change <code><a href="../reference/read.met.html">read.met()</a></code> to handle flags better (issue <a href="https://github.com/dankelley/oce/issues/2298" class="external-link">#2298</a>).</li>
-<li>Change <code><a href="../reference/read.netcdf.html">read.netcdf()</a></code> docs to show how to handle flags (issue <a href="https://github.com/dankelley/oce/issues/2236" class="external-link">#2236</a>).</li>
-<li>Change <code><a href="../reference/read.netcdf.html">read.netcdf()</a></code> to give a way to rename data (issue <a href="https://github.com/dankelley/oce/issues/2235" class="external-link">#2235</a>).</li>
-<li>Change <code><a href="../reference/read.netcdf.html">read.netcdf()</a></code> to handle units better.</li>
-<li>Change <code><a href="../reference/read.rsk.html">read.rsk()</a></code> to handle a new file (issue <a href="https://github.com/dankelley/oce/issues/2291" class="external-link">#2291</a>).</li>
-<li>Add <code><a href="../reference/read.xbt.noaa2.html">read.xbt.noaa2()</a></code> to handle UBT format (issue <a href="https://github.com/dankelley/oce/issues/2289" class="external-link">#2289</a>).</li>
-<li>Change <code><a href="../reference/rename.html">rename()</a></code> to default to a built-in IOOS dictionary (issue <a href="https://github.com/dankelley/oce/issues/2311" class="external-link">#2311</a>).</li>
+<li>Change <code><a href="../reference/read.netcdf.html">read.netcdf()</a></code> to
+<ul><li>document flag handling better (issue <a href="https://github.com/dankelley/oce/issues/2236" class="external-link">#2236</a>),</li>
+<li>handle units better and</li>
+<li>permit renaming data (issue <a href="https://github.com/dankelley/oce/issues/2235" class="external-link">#2235</a>).</li>
+</ul></li>
+<li>Change <code><a href="../reference/read.rsk.html">read.rsk()</a></code> to
+<ul><li>solve a column renaming problem (issue <a href="https://github.com/dankelley/oce/issues/2291" class="external-link">#2291</a>),</li>
+<li>handle files that have empty (but not missing) <code>geodata</code> tables (issue <a href="https://github.com/dankelley/oce/issues/2336" class="external-link">#2336</a>), and</li>
+<li>handle more unit formats (issue <a href="https://github.com/dankelley/oce/issues/2337" class="external-link">#2337</a>).</li>
+</ul></li>
+<li>Change <code><a href="../reference/sectionSmooth.html">sectionSmooth()</a></code> to disallow <code>method="kriging"</code>, because it relied on the <code>automap</code> package, which was removed from CRAN on 2025-06-30 (issue <a href="https://github.com/dankelley/oce/issues/2332" class="external-link">#2332</a>).</li>
 <li>Change <code>subset,amsr-method()</code> to handle <code>"pass"</code> parameter.</li>
 <li>Change <code>subset,ctd-method()</code> to handle items of unexpected length (issue <a href="https://github.com/dankelley/oce/issues/2250" class="external-link">#2250</a>).</li>
+<li>Change <code><a href="../reference/swSoundAbsorption.html">swSoundAbsorption()</a></code> to handle three more parameterizations (code and documentation contributed by João Resende via pull request 2345).</li>
 <li>Change <code><a href="../reference/tidem.html">tidem()</a></code> to stop if there are any non-finite time values (issue <a href="https://github.com/dankelley/oce/issues/2269" class="external-link">#2269</a>).</li>
+<li>Change <code><a href="../reference/vectorShow.html">vectorShow()</a></code> to obey “digits” parameter for list arguments (issue <a href="https://github.com/dankelley/oce/issues/2313" class="external-link">#2313</a>).</li>
+<li>Fix bug in <code>read.sbe.ctd</code> when <code>btl=TRUE</code> that was incorrectly parsing files with long column names (<a href="https://github.com/dankelley/oce/issues/2365" class="external-link">#2365</a>)</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.8.3" id="oce-183-on-cran">oce 1.8.3 (ON CRAN)<a class="anchor" aria-label="anchor" href="#oce-183-on-cran"></a></h2>
@@ -1819,7 +1866,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer></div>

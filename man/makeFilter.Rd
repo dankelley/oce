@@ -7,110 +7,79 @@
 makeFilter(
   type = c("blackman-harris", "rectangular", "hamming", "hann"),
   m,
+  normalize = TRUE,
   asKernel = TRUE
 )
 }
 \arguments{
 \item{type}{a string indicating the type of filter to use.  (See Harris
-(1978) for a comparison of these and similar filters.)
+(1978) for a comparison of these and similar filters.) The choices for
+the present function are as follows.
 \itemize{
 \item \code{"blackman-harris"} yields a modified raised-cosine filter designated
 as "4-Term (-92 dB) Blackman-Harris" by Harris (1978; coefficients given in
 the table on page 65).  This is also called "minimum 4-sample Blackman
-Harris" by that author, in his Table 1, which lists figures of merit as
-follows: highest side lobe level -92dB; side lobe fall off -6 db/octave;
-coherent gain 0.36; equivalent noise bandwidth 2.00 bins; 3.0-dB bandwidth
-1.90 bins; scallop loss 0.83 dB; worst case process loss 3.85 dB; 6.0-db
-bandwidth 2.72 bins; overlap correlation 46 percent for 75\\% overlap and 3.8
-for 50\\% overlap.  Note that the equivalent noise bandwidth is the width of
-a spectral peak, so that a value of 2 indicates a cutoff frequency of
-\code{1/m}, where \code{m} is as given below.
+Harris" by that author, in his Table 1.
 \item \code{"rectangular"} for a flat filter.  (This is just for convenience.  Note that
 \code{\link{kernel}}\verb{("daniell",....)} gives the same result, in kernel form.)
-\code{"hamming"} for a Hamming filter (a raised-cosine that does not taper
-to zero at the ends)
-\item \code{"hann"} (a raised cosine that tapers to zero at the ends).
+\item \code{"hamming"} for a raised-cosine filter designed by Hamming. The
+mathematical form is \code{a-(1-a)*cos(2*pi*i/(m-1))} where \code{a} is 0.54 and \code{i} is
+\code{seq(0,m-1)}.
+\item \code{"hann"} for a cosine filter that tapers to zero at the ends, i.e.
+of the same mathematical form as \code{"hamming"}, but with
+\code{a} equal to 0.5.
 }}
 
-\item{m}{length of filter.  This should be an odd number, for any
-non-rectangular filter.}
+\item{m}{length of filter.}
+
+\item{normalize}{logical value indicating whether to return numbers that sum
+to 1.  This is TRUE by default, which is useful if the purpose is to lowpass
+filter a timeseries without altering power in the pass-band.  However,
+\code{normalize=FALSE} is the right choice if the purpose is to window a
+timeseries, e.g. in computing a spectral estimate using Welch's method (see
+\code{\link[=pwelch]{pwelch()}}).}
 
 \item{asKernel}{boolean, set to \code{TRUE} to get a smoothing kernel for
 the return value.}
 }
 \value{
-If \code{asKernel} is \code{FALSE}, this returns a list of filter
-coefficients, symmetric about the midpoint and summing to 1.  These may be
-used with \code{\link[=filter]{filter()}}, which should be provided with argument
-\code{circular=TRUE} to avoid phase offsets.  If \code{asKernel} is
-\code{TRUE}, the return value is a smoothing kernel, which can be applied to
-a timeseries with \code{\link[=kernapply]{kernapply()}}, whose bandwidth can be determined
-with \code{\link[=bandwidth.kernel]{bandwidth.kernel()}}, and which has both print and plot
-methods.
+If \code{asKernel} is \code{FALSE}, this returns a vector of filter
+coefficients, symmetric about the midpoint. The vector will sum to 1 if
+\code{normalize=TRUE} (i.e. by default).  The return value may be used with
+\code{\link[=filter]{filter()}}, which should be provided with argument \code{circular=TRUE} to avoid
+phase offsets.  If \code{asKernel} is TRUE and if \code{normalize} is FALSE, an error
+is reported.  On the other hand, if \code{asKernel} is TRUE and \code{normalize} is
+FALSE, then the return value is a smoothing kernel, which can be applied to a
+timeseries with \code{\link[=kernapply]{kernapply()}}, whose bandwidth can be determined with
+\code{\link[=bandwidth.kernel]{bandwidth.kernel()}}, and which has both print and plot methods.
 }
 \description{
-The filter is suitable for use by \code{\link[=filter]{filter()}},
-\code{\link[=convolve]{convolve()}} or (for the \code{asKernal=TRUE} case) with
-\code{\link[=kernapply]{kernapply()}}.  Note that \code{\link[=convolve]{convolve()}} should be faster
-than \code{\link[=filter]{filter()}}, but it cannot be used if the time series has
-missing values.  For the Blackman-Harris filter, the half-power frequency is
-at \code{1/m} cycles per time unit, as shown in the \dQuote{Examples}
-section.  When using \code{\link[=filter]{filter()}} or \code{\link[=kernapply]{kernapply()}} with
-these filters, use \code{circular=TRUE}.
+The results can be used in two different ways.  CASE 1: for filtering, using
+\code{\link[=filter]{filter()}} or \code{\link[=convolve]{convolve()}} or (for the \code{asKernal=TRUE} case) using
+\code{\link[=kernapply]{kernapply()}}.  For the Blackman-Harris filter, the half-power frequency is
+at \code{1/m} cycles per time unit, as shown in the \dQuote{Examples} section.
+When using \code{\link[=filter]{filter()}} or \code{\link[=kernapply]{kernapply()}} with these filters, use
+\code{circular=TRUE}. CASE 2: for windowing, if \code{normalize} is set to FALSE, as
+for example in computing a Welch spectral estimate.
 }
-\section{Sample of Usage}{
-
-\preformatted{
-# need signal package for this example
-r <- rnorm(2048)
-rh <- stats::filter(r, H)
-rh <- rh[is.finite(rh)] # kludge to remove NA at start/end
-sR <- spectrum(r, plot=FALSE, spans=c(11, 5, 3))
-sRH <- spectrum(rh, plot=FALSE, spans=c(11, 5, 3))
-par(mfrow=c(2, 1), mar=c(3, 3, 1, 1), mgp=c(2, 0.7, 0))
-plot(sR$freq, sRH$spec/sR$spec, xlab="Frequency", ylab="Power Transfer",
-     type="l", lwd=5, col="gray")
-theory <- freqz(H, n=seq(0,pi,length.out=100))
-# Note we must square the modulus for the power spectrum
-lines(theory$f/pi/2, Mod(theory$h)^2, lwd=1, col="red")
-grid()
-legend("topright", col=c("gray", "red"), lwd=c(5, 1), cex=2/3,
-       legend=c("Practical", "Theory"), bg="white")
-plot(log10(sR$freq), log10(sRH$spec/sR$spec),
-     xlab="log10 Frequency", ylab="log10 Power Transfer",
-     type="l", lwd=5, col="gray")
-theory <- freqz(H, n=seq(0,pi,length.out=100))
-# Note we must square the modulus for the power spectrum
-lines(log10(theory$f/pi/2), log10(Mod(theory$h)^2), lwd=1, col="red")
-grid()
-legend("topright", col=c("gray", "red"), lwd=c(5, 1), cex=2/3,
-       legend=c("Practical", "Theory"), bg="white")
-}
-}
-
 \examples{
 library(oce)
 
-# 1. Demonstrate step-function response
+# Demonstrate step-function response
 y <- c(rep(1, 10), rep(-1, 10))
 x <- seq_along(y)
 plot(x, y, type = "o", ylim = c(-1.05, 1.05))
 BH <- makeFilter("blackman-harris", 11, asKernel = FALSE)
 H <- makeFilter("hamming", 11, asKernel = FALSE)
 yBH <- stats::filter(y, BH)
-points(x, yBH, col = 2, type = "o")
+lines(x, yBH, type = "o", col = 2)
 yH <- stats::filter(y, H)
-points(yH, col = 3, type = "o")
+lines(x, yH, type = "o", col = 3)
+grid()
 legend("topright",
-    col = 1:3, cex = 2 / 3, pch = 1,
+    col = 1:3, bg = "white",
     legend = c("input", "Blackman Harris", "Hamming")
 )
-
-# 2. Show theoretical and practical filter gain, where
-#    the latter is based on random white noise, and
-#    includes a particular value for the spans
-#    argument of spectrum(), etc.
-
 }
 \references{
 F. J. Harris, 1978.  On the use of windows for harmonic analysis

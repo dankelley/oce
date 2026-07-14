@@ -176,33 +176,35 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, NumericVector from,
   //   Rprintf("DAN size of 'int' %lu\n", sizeof(int));                     // 4
   //   Rprintf("DAN size of 'long int' %lu\n", sizeof(long int));           // 8
   //   Rprintf("DAN size of 'long long int' %lu\n", sizeof(long long int)); // 8
-  Debug = (Debug < 0 ? 0 : Debug);
+  if (Debug < 0)
+    Debug = 0;
   std::string fn = Rcpp::as<std::string>(filename(0));
   FILE *fp = fopen(fn.c_str(), "rb");
   if (!fp)
-    ::Rf_error("cannot open file '%s'\n", fn.c_str());
+    Rcpp::stop("cannot open file '%s'\n", fn.c_str());
   if (From < 0)
-    ::Rf_error("'from' must be positive but it is %ld", From);
+    Rcpp::stop("'from' must be positive but it is %ld", From);
   if (To < 0)
-    ::Rf_error("'to' must be positive but it is %ld", To);
+    Rcpp::stop("'to' must be positive but it is %ld", To);
   if (By < 0)
-    ::Rf_error("'by' must be positive but it is %ld", By);
+    Rcpp::stop("'by' must be positive but it is %ld", By);
 
   // Find file size, and return to start
   fseek(fp, 0L, SEEK_END);
-  long int filesize = ftell(fp);
+  long int filesize_tmp = ftell(fp); // made unsigned long later
+  if (filesize_tmp < 0)
+    Rcpp::stop("this ad2cp file is empty");
+  unsigned long int filesize = (unsigned long int) filesize_tmp;
   fseek(fp, 0L, SEEK_SET);
   if (Debug) {
-    Rprintf("do_ldc_ad2cp_in_file(filename, from=%ld, to=%ld, by=%ld, "
+    Rprintf("do_ldc_ad2cp_in_file(filename=%s, from=%ld, to=%ld, by=%ld, "
             "debug=%d) {\n",
-            From, To, By, Debug);
-    Rprintf("  filename=\"%s\"\n", fn.c_str());
-    // Rprintf("  ignoreChecksums[0]=%d\n", ignoreChecksums[0]);
-    Rprintf("  filesize=%ld bytes\n", filesize);
+            fn.c_str(), From, To, By, Debug);
+    Rprintf("  filesize=%lu bytes\n", filesize);
   }
-  long int chunk = 0;
-  long int cindex = 0; //, cindex_last_good = 0;
-  long int checksum_failures = 0;
+  unsigned long int chunk = 0;
+  unsigned long int cindex = 0; //, cindex_last_good = 0;
+  unsigned long int checksum_failures = 0;
 
   // Ensure that the first byte we point to equals SYNC.  In a
   // conventional file, starting with a SYNC char, this just gets a
@@ -214,7 +216,7 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, NumericVector from,
   while (1) {
     c = getc(fp);
     if (c == EOF) {
-      ::Rf_error("this file does not contain a single 0x%02x byte", SYNC);
+      Rcpp::stop("this file does not contain a single 0x%02x byte", SYNC);
       break;
     }
     if (SYNC == c) {
@@ -224,7 +226,7 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, NumericVector from,
     cindex++;
   }
   if (Debug)
-    Rprintf("  first SYNC byte (0x%02x hex) at cindex=%ld\n", SYNC, cindex);
+    Rprintf("  first SYNC byte (0x%02x hex) at cindex=%lu\n", SYNC, cindex);
   // The table in [ref 1 sec 6.1, page 80-81] says header pieces are
   // 10 bytes long, so once we get an 0xA5, we'll read 9 more
   // bytes to assemble the header in bytes10.  (We grab all the
@@ -242,7 +244,7 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, NumericVector from,
   unsigned int dbuflen = 10000; // may be increased later
   unsigned char *dbuf =
       (unsigned char *)R_Calloc((size_t)dbuflen, unsigned char);
-  unsigned int nchunk = 100000;
+  unsigned long int nchunk = 100000;
   unsigned long int *start_buf =
       (unsigned long int *)R_Calloc((size_t)nchunk, unsigned long int);
   unsigned long int *index_buf =
@@ -255,12 +257,12 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, NumericVector from,
   int early_EOF = 0;
   int reset_cindex = 0; // set to 1 if we skipped to find a new header start,
                         // after a bad checksum
-  while (chunk < To && cindex < filesize) { // FIXME: use whole file here
+  while (chunk < (unsigned long int)To && cindex < filesize) { // FIXME: use whole file here
     if (checksum_failures > 100)
-      ::Rf_error("more than 100 checksum errors");
+      Rcpp::stop("more than 100 checksum errors");
     if (chunk > nchunk - 1) {
       if (Debug)
-        Rprintf("  increasing 'index_buf' size from %d ", nchunk);
+        Rprintf("  increasing 'index_buf' size from %lu ", nchunk);
       nchunk = static_cast<unsigned int>(
           floor(chunk * 1.4)); // increase buffer size by sqrt(2)
       start_buf = static_cast<unsigned long int *>(
@@ -274,20 +276,20 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, NumericVector from,
       id_buf =
           static_cast<unsigned int *>(R_Realloc(id_buf, nchunk, unsigned int));
       if (Debug)
-        Rprintf("to %d\n", nchunk);
+        Rprintf("to %lu\n", nchunk);
     }
     size_t bytes_read;
     // Return 2 of these bytes later, if the header length is 10.
     if (12 != fread(&header_bytes, 1, 12, fp))
-      ::Rf_error("cannot read header_bytes at cindex=%ld of %ld byte file\n",
+      Rcpp::stop("cannot read header_bytes at cindex=%lu of %ld byte file\n",
                  cindex, filesize);
     // if (1 != fread(&header.sync, 1, 1, fp))
-    //   ::Rf_error("cannot read header.sync at cindex=%ld of %ld byte file\n",
+    //   Rcpp::stop("cannot read header.sync at cindex=%lu of %ld byte file\n",
     //   cindex, filesize);
     header.sync = header_bytes[0];
     if (header.sync != SYNC)
-      ::Rf_error(
-          "expected header.sync to be 0x%02x but it was 0x%02x at cindex=%ld "
+      Rcpp::stop(
+          "expected header.sync to be 0x%02x but it was 0x%02x at cindex=%lu "
           "(%7.4f%% through file) ... skipping to next 0x%02x character...\n",
           SYNC, header.sync, cindex, 100.0 * cindex / filesize, SYNC);
     header.header_size = header_bytes[1];
@@ -309,12 +311,12 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, NumericVector from,
       header.data_checksum = header_bytes[8] + 256 * header_bytes[9];
       header.header_checksum = header_bytes[10] + 256 * header_bytes[11];
     } else {
-      ::Rf_error("invalid header.header_size %d (must be 10 or 12) at "
-                 "cindex=%ld (%7.4f%% through file)\n",
+      Rcpp::stop("invalid header.header_size %d (must be 10 or 12) at "
+                 "cindex=%lu (%7.4f%% through file)\n",
                  header.header_size, cindex, 100.0 * (cindex) / filesize);
     }
     if (Debug > 1) {
-      Rprintf("Chunk %ld at cindex=%ld, %.5f%% through file: header_size=%d, "
+      Rprintf("Chunk %ld at cindex=%lu, %.5f%% through file: header_size=%d, "
               "data_size=%lu, id=0x%02x=",
               chunk, cindex, 100.0 * cindex / filesize, header.header_size,
               header.data_size, header.id);
@@ -349,8 +351,8 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, NumericVector from,
       Rprintf("  header_size=0x%02x=%d id=0x%02x family=0x%02x data_size=%lu\n",
               header.header_size, header.header_size, header.id, header.family,
               header.data_size);
-      if (cindex != ftell(fp) - header.header_size)
-        Rprintf("Bug: cindex (%ld) is not equal to ftell()-header_size (%ld)\n",
+      if (cindex != (unsigned long int)(ftell(fp) - header.header_size))
+        Rprintf("Bug: cindex (%lu) is not equal to ftell()-header_size (%ld)\n",
                 cindex, ftell(fp) - header.header_size);
     } // debug
     // See if header checksum is correct
@@ -361,10 +363,10 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, NumericVector from,
     if (computed_header_checksum == header.header_checksum) {
       if (Debug > 1) {
         if (computed_header_checksum == header.header_checksum) {
-          Rprintf("    cindex=%ld: header checksum 0x%02x is correct\n", cindex,
+          Rprintf("    cindex=%lu: header checksum 0x%02x is correct\n", cindex,
                   header.header_checksum);
         } else {
-          Rprintf("    cindex=%ld: header checksum 0x%02x disagrees with "
+          Rprintf("    cindex=%lu: header checksum 0x%02x disagrees with "
                   "expectation 0x%02x\n",
                   cindex, computed_header_checksum, header.header_checksum);
         }
@@ -372,7 +374,7 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, NumericVector from,
     } else {
       checksum_failures++;
       Rprintf("ERROR: header checksum (0x%02x) disagrees with expectation "
-              "(0x%02x) at cindex=%ld\n",
+              "(0x%02x) at cindex=%lu\n",
               computed_header_checksum, header.header_checksum, cindex);
     }
     start_buf[chunk] = cindex;
@@ -403,7 +405,7 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, NumericVector from,
         Rprintf(
             "Increasing 'dbuf' size from %d to %lu at cindex %ld (%.4f%%)\n",
             dbuflen, header.data_size, cindex, 100.0 * cindex / filesize);
-      if (cindex != ftell(fp))
+      if (cindex != (unsigned long int)ftell(fp))
         Rprintf("  *BUG*: cindex %ld is out of synch with ftell(fp)=%ld\n",
                 cindex, ftell(fp));
       dbuflen = header.data_size;
@@ -413,7 +415,7 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, NumericVector from,
     bytes_read = fread(dbuf, 1, header.data_size, fp);
     // Check that we got all the data
     if (bytes_read != header.data_size) {
-      Rf_warning("early EOF in chunk %ld at cindex=%ld", chunk + 1,
+      Rf_warning("early EOF in chunk %ld at cindex=%lu", chunk + 1,
                  cindex - header.header_size);
       break; // give up
     }
@@ -440,7 +442,7 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, NumericVector from,
       Rprintf("ERROR: data checksum, 0x%02x, disagrees with expectation, "
               "0x%02x, at cindex %ld.\n",
               dbufcs, header.data_checksum, cindex);
-      if (cindex != ftell(fp))
+      if (cindex != (unsigned long int)ftell(fp))
         Rprintf("  *BUG*: cindex %ld is out of synch with ftell(fp)=%ld\n",
                 cindex, ftell(fp));
 
@@ -448,7 +450,7 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, NumericVector from,
         c = getc(fp);
         cindex++;
         if (Debug)
-          Rprintf("cindex=%5ld c=0x%02x\n", cindex, c);
+          Rprintf("cindex=%5lu c=0x%02x\n", cindex, c);
         if (c == EOF) {
           Rprintf("... got to end of file while searching for a sync character "
                   "(0x%02x)\n",
@@ -504,15 +506,15 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, NumericVector from,
             cindex -= 4;
             fseek(fp, -4, SEEK_CUR);
             Rprintf(
-                "   ... skipped forward to a possible header at cindex=%ld\n",
+                "   ... skipped forward to a possible header at cindex=%lu\n",
                 cindex);
-            if (cindex != ftell(fp))
+            if (cindex != (unsigned long int)ftell(fp))
               Rprintf(
-                  "  *BUG*: cindex %ld is out of synch with ftell(fp)=%ld\n",
+                  "  *BUG*: cindex=%lu is out of synch with ftell(fp)=%ld\n",
                   cindex, ftell(fp));
             break;
           } else {
-            Rprintf(" expecting family (0x%02x) but got 0x%02x at cindex %ld\n",
+            Rprintf(" expecting family (0x%02x) but got 0x%02x at cindex=%lu\n",
                     family, c, cindex);
           }
         }
@@ -526,7 +528,7 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, NumericVector from,
   }
   NumericVector start(chunk), index(chunk), header_length(chunk),
       data_length(chunk), id(chunk);
-  for (long int i = 0; i < chunk; i++) {
+  for (unsigned long int i = 0; i < chunk; i++) {
     start[i] = start_buf[i];
     index[i] = index_buf[i];
     header_length[i] = header_length_buf[i];

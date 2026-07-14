@@ -5,6 +5,41 @@ test_that("gappyIndex", {
     expect_equal(c(3:6, 103:106), gappyIndex(c(1, 101), 2, 4))
 })
 
+test_that("makeFilter", {
+    expect_equal(
+        makeFilter("hamming", 5, normalize = FALSE, asKernel = FALSE),
+        c(0.08, 0.54, 1.00, 0.54, 0.08)
+    )
+    expect_equal(
+        makeFilter("hamming", 5, asKernel = FALSE),
+        c(0.03571429, 0.24107143, 0.44642857, 0.24107143, 0.03571429)
+    )
+    expect_equal(
+        makeFilter("hann", 5, normalize = FALSE, asKernel = FALSE),
+        c(0.0, 0.5, 1.0, 0.5, 0.0)
+    )
+    expect_equal(
+        makeFilter("hann", 5, asKernel = FALSE),
+        c(0.00, 0.25, 0.50, 0.25, 0.00)
+    )
+    expect_equal(
+        makeFilter("blackman-harris", 5, normalize = FALSE, asKernel = FALSE),
+        c(-0.000479, 0.217470, 1.000539, 0.217470, -0.000479)
+    )
+    expect_equal(
+        makeFilter("blackman-harris", 5, asKernel = FALSE),
+        c(-0.0003339094, 0.1515976413, 0.6974725361, 0.1515976413, -0.0003339094)
+    )
+    expect_equal(
+        makeFilter("rectangular", 5, normalize = FALSE, asKernel = FALSE),
+        rep(1, 5)
+    )
+    expect_equal(
+        makeFilter("rectangular", 5, asKernel = FALSE),
+        rep(0.2, 5)
+    )
+})
+
 test_that("approx3d", {
     # Test values from the .c code, before converting to .cpp
     n <- 5

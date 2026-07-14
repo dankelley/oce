@@ -667,10 +667,10 @@ drawPalette <- function(
 
 #' Plot an Image with a Color Palette
 #'
-#' Plot an image with a color palette, in a way that does not conflict with
-#' [`par`]`("mfrow")` or [layout()].  To plot just a palette,
-#' e.g. to get an x-y plot with points colored according to a palette, use
-#' [drawPalette()] and then draw the main diagram.
+#' Plot an image with a color palette, in a way that does not conflict with the
+#' `mfrow` or `mfcol` arguments of [par()], or with [layout()].  To plot just a
+#' palette, e.g. to get an x-y plot with points colored according to a palette,
+#' use [drawPalette()] and then draw the main diagram.
 #'
 #' @details
 #' By default, creates an image with a color palette to the right.  The effect is similar to
@@ -943,7 +943,7 @@ drawPalette <- function(
 #' speed <- outer(h, drho, function(drho, h) sqrt(9.8 * drho * h / 1024))
 #' imagep(h, drho, speed,
 #'     xlab = "Equivalent depth [m]",
-#'     ylab = expression(paste(Delta * rho, " [kg/m^3]")),
+#'     ylab = expression(paste(Delta * rho, " [ kg/m^3 ]")),
 #'     zlab = "Internal-wave speed [m/s]"
 #' )
 #'
@@ -1168,6 +1168,9 @@ imagep <- function(
         }
     }
     z[!is.finite(z)] <- NA # so range(z, na.rm=TRUE) will not be thwarted Inf
+    if (!any(is.finite(z))) {
+        stop("need some finite 'z' values")
+    }
     oceDebug(debug, "range(z):", paste(range(z, na.rm = TRUE), collapse = " to "), "\n")
     xIsTime <- inherits(x, "POSIXt") || inherits(x, "POSIXct") || inherits(x, "POSIXlt")
     # Handle TRUE/FALSE decimation

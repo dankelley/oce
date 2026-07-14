@@ -120,12 +120,15 @@ if (file.exists(file)) {
     })
 
     test_that("dataSet 4 'bottomTrack'", {
-        expect_message(
-            d <- read.adp.ad2cp(file, dataSet = 4, dataType = "bottomTrack"),
-            "setting plan=0"
+        expect_warning(
+            expect_message(
+                d <- read.adp.ad2cp(file, dataSet = 4, dataType = "bottomTrack"),
+                "setting plan=0"
+            ), "Using nbeams=4 from file header, instead of suspicious value 2"
         )
-        expect_equal(c(259, 4), dim(d[["v"]]))
-        expect_equal(c(259, 4), dim(d[["figureOfMerit"]]))
+        expect_equal(c(259, 1, 4), dim(d[["v"]]))
+        expect_equal(c(259, 1, 4), dim(d[["distance"]]))
+        expect_equal(259, length(d[["figureOfMerit"]]))
     })
 
     test_that("dataSet 4 from, to, by", {

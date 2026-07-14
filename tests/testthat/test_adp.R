@@ -204,6 +204,19 @@ if (file.exists(f)) {
     })
 }
 
+test_that("adpRdiFileTrim works same for 'n' and 'indices' cases", {
+    infile <- system.file("extdata", "adp_rdi.000", package = "oce")
+    A <- tempfile()
+    B <- tempfile()
+    adpRdiFileTrim(infile, A, n = 2)
+    adpRdiFileTrim(infile, B, indices = 1:2)
+    bufA <- readBin(A, raw(), n = file.info(A)$size)
+    bufB <- readBin(B, raw(), n = file.info(B)$size)
+    expect_equal(bufA, bufB)
+    file.remove(A)
+    file.remove(B)
+})
+
 test_that("three RDI reading methods (from, to, by not given)", {
     # https://github.com/dankelley/oce/issues/1557
     adp1 <- read.oce(system.file("extdata", "adp_rdi.000", package = "oce"))

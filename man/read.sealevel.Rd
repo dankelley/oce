@@ -13,8 +13,12 @@ read.sealevel(
 )
 }
 \arguments{
-\item{file}{a connection or a character string giving the name of the file
-to load.  See Details for the types of files that are recognized.}
+\item{file}{either of three choices: (1) a connection, (2)
+a character vector of length 1, giving the name of the file
+to load (see \sQuote{Details} for the possible file formats)
+or (3) a character vector of length 2 giving the
+names of 2 files that are to be passed, along with \code{debug} (but
+no other arguments) to \link{read.sealevel.gc2026}.}
 
 \item{tz}{time zone.  The default value, \code{oceTz}, is set to \code{UTC}
 at setup.  (If a time zone is present in the file header, this will
@@ -54,6 +58,7 @@ the string \code{Station_Name} the file is of type 2. If
 the file is in neither of these formats, the user might wish to scan it
 directly, and then to use \code{\link[=as.sealevel]{as.sealevel()}} to create a
 \code{sealevel} object.
+
 The Hawaii archive site at
 \verb{http://ilikai.soest.hawaii.edu/uhslc/datai.html} at one time provided a graphical
 interface for downloading sealevel data in Type 1, with format that was once
@@ -74,6 +79,7 @@ Other things related to sealevel data:
 \code{\link{[[<-,sealevel-method}},
 \code{\link{as.sealevel}()},
 \code{\link{plot,sealevel-method}},
+\code{\link{read.sealevel.gc2026}()},
 \code{\link{sealevel}},
 \code{\link{sealevel-class}},
 \code{\link{sealevelTuktoyaktuk}},

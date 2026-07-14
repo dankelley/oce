@@ -57,36 +57,21 @@ and Sontek acoustic current profilers in the SLEIWEX experiment.  In the
 table, (X, Y, Z) denote instrument-coordinate velocities, (S, F, M) denote
 ship-coordinate velocities, and (H, P, R) denote heading, pitch, and roll.
 
-\tabular{rrrrrrrrrrrr}{ \strong{Case} \tab \strong{Mfr.} \tab
-\strong{Instr.} \strong{Orient.} \tab \strong{H} \tab \strong{P} \tab
-\strong{R} \tab \strong{S} \tab \strong{F} \tab \strong{M}\cr 1 \tab RDI
-\tab ADCP \tab up \tab H \tab arctan(tan(P)*cos(R)) \tab R \tab -X \tab Y
-\tab -Z\cr 2 \tab RDI \tab ADCP \tab down \tab H \tab arctan(tan(P)*cos(R))
-\tab -R \tab X \tab Y \tab Z\cr 3 \tab Nortek \tab ADP \tab up \tab H-90
-\tab R \tab -P \tab X \tab Y \tab Z\cr 4 \tab Nortek \tab ADP \tab down \tab
-H-90 \tab R \tab -P \tab X \tab -Y \tab -Z\cr 5 \tab Sontek \tab ADP \tab up
-\tab H-90 \tab -P \tab -R \tab X \tab Y \tab Z\cr 6 \tab Sontek \tab ADP
-\tab down \tab H-90 \tab -P \tab -R \tab X \tab Y \tab Z\cr 7 \tab Sontek
-\tab PCADP \tab up \tab H-90 \tab R \tab -P \tab X \tab Y \tab Z\cr 8 \tab
-Sontek \tab PCADP \tab down \tab H-90 \tab R \tab -P \tab X \tab Y \tab Z\cr
+\tabular{llllllllll}{
+\strong{Case} \tab \strong{Mfr.} \tab \strong{Instr.} \tab \strong{Orient.} \tab \strong{H} \tab \strong{P} \tab  \strong{R} \tab  \strong{S} \tab  \strong{F} \tab  \strong{M}\cr
+1 \tab RDI    \tab ADCP   \tab up      \tab H    \tab arctan(tan(P)*cos(R)) \tab  R \tab -X \tab  Y \tab -Z\cr
+2 \tab RDI    \tab ADCP   \tab down    \tab H    \tab arctan(tan(P)*cos(R)) \tab -R \tab  X \tab  Y \tab  Z\cr
+3 \tab Nortek \tab ADP    \tab up      \tab H-90 \tab R                     \tab -P \tab  X \tab  Y \tab  Z\cr
+4 \tab Nortek \tab ADP    \tab down    \tab H-90 \tab R                     \tab -P \tab  X \tab -Y \tab -Z\cr
+5 \tab Sontek \tab ADP    \tab up      \tab H-90 \tab -P                    \tab -R \tab  X \tab  Y \tab  Z\cr
+6 \tab Sontek \tab ADP    \tab down    \tab H-90 \tab -P                    \tab -R \tab  X \tab  Y \tab  Z\cr
+7 \tab Sontek \tab PCADP  \tab up      \tab H-90 \tab R                     \tab -P \tab  X \tab  Y \tab  Z\cr
+8 \tab Sontek \tab PCADP  \tab down    \tab H-90 \tab R                     \tab -P \tab  X \tab  Y \tab  Z\cr
 }
 
 Finally, a standardized rotation matrix is used to convert from ship
-coordinates to earth coordinates.  As described in the RDI coordinate
-transformation manual (reference 1, pages 13 and 14), this matrix is based on sines
-and cosines of heading, pitch, and roll If \code{CH} and \code{SH} denote
-cosine and sine of heading (after adjusting for declination), with similar
-terms for pitch and roll using second letters \code{P} and \code{R}, the
-rotation matrix is
-
-\preformatted{ rbind(c( CH*CR + SH*SP*SR, SH*CP, CH*SR - SH*SP*CR), c(-SH*CR
-+ CH*SP*SR, CH*CP, -SH*SR - CH*SP*CR), c( -CP*SR, SP, CP*CR)) }
-
-This matrix is left-multiplied by a matrix with three rows, the top a vector
-of "starboard" values, the middle a vector of "forward" values, and the
-bottom a vector of "mast" values.  Finally, the columns of
-\code{data$v[,,1:3]} are filled in with the result of the matrix
-multiplication.
+coordinates to earth coordinates (see pages 13 and 14 of
+the RDI coordinate transformation manual, reference 1).
 }
 \references{
 \enumerate{

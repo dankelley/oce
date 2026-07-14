@@ -60,6 +60,7 @@ test_that("base-level [[\"?\"]] gives expected names (GSW)", {
             paste("Absolute", "Salinity"),
             paste("Conservative", "Temperature"),
             "CT",
+            "cabbeling",
             "density", "depth", "N2", paste("potential", "temperature"),
             "Rrho", "RrhoSF", "SA",
             paste0("sigma", 0:4),

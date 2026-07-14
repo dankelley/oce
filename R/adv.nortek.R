@@ -138,7 +138,7 @@ read.adv.nortek <- function(
     bisectNortekVectorSd <- function(tFind, add = 0, debug = 0) {
         # tFind=time add=offset debug=debug
         oceDebug(debug, "\n")
-        oceDebug(debug, "bisectNortekVectorSd(tFind=", format(tFind), ", add=", add, ", debug=", debug, ") BEGIN\n")
+        oceDebug(debug, "bisectNortekVectorSd(tFind=", format(tFind), ", add=", add, ", debug=", debug, ") START\n")
         vsdLen <- length(vsdStart)
         lower <- 1
         upper <- vsdLen

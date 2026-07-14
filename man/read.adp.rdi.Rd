@@ -58,10 +58,12 @@ North.}
 
 \item{which}{optional character value.  If this is \code{"??"} then the
 only other parameters that are examined are \code{file} and \code{debug},
-\code{\link[=read.adp.rdi]{read.adp.rdi()}} works by locating the indices in \code{file} at which
-data segments begin, and storing them as \code{index} in a list that is
-returned. The other entry of the list is \code{time}, the time of the
-observation.}
+and \code{\link[=read.adp.rdi]{read.adp.rdi()}} does not try to read the detailed data.
+Instead, all it does is to identify the starting locations
+of the profiles/ensembles in the file, reporting these in
+a data frame that also includes the size of the profile/ensemble
+and the time when the measurement was made. This information
+may prove useful to analysts who are doing low-level work.}
 
 \item{encoding}{ignored.}
 
@@ -134,6 +136,28 @@ century offset is required, then a change will be made to the code.
 Even if not, the method should not cause problems for a long time.
 }
 
+\section{Handling of 3-beam Horizontal ADCP (HADCP) files}{
+
+
+While most RDI ADCPs contain 4 beams (with the exception of some SentinelV
+ADCPs, which stores the vertical beam data in a separate data structure), the
+HADCP (which is a discontinued product in 2026) only has 3 beams. Despite the
+fact that there are only 3 beams, the pd0 data file format is still written
+as through there are four beams worth of data. The exact meaning of each of
+the "beams" in the data file depends on the coordinate system of the
+instrument (e.g. beam, xyz, sfm, or enu), with the RDI data format manual
+indicating how to interpret the resulting arrays, as follows (a dash means
+that the field holds no data, and in oce this is represented with NA values).
+
+\tabular{lllll}{
+\strong{Coordinate System} \tab \strong{Vel1} \tab \strong{Vel2} \tab \strong{Vel3} \tab \strong{Vel4}                \cr
+Beam                  \tab beam1    \tab beam2    \tab beam3    \tab -                       \cr
+Instrument            \tab x        \tab y        \tab -        \tab error                   \cr
+Ship                  \tab x        \tab y        \tab vertical \tab error (tilt applied)    \cr
+Earth                 \tab east     \tab north    \tab vertical \tab error (heading applied) \cr
+}
+}
+
 \section{Names of items in data slot}{
 
 
@@ -171,6 +195,9 @@ otherwise indicated.
 \code{g}                                    \tab data goodness matrix (units?)\cr
 \code{heading}                              \tab instrument heading (degrees)\cr
 \code{headingStd}                           \tab instrument heading std-dev (deg)\cr
+\code{ISMvalid}                             \tab indication of whether ISM data are in the file\cr
+\code{ISMacc}                               \tab ISM acceleration, in 3 directions\cr
+\code{ISMmag}                               \tab ISM earth magnetic field, in 3 directions\cr
 \code{lastLatitude}                         \tab latitude at end of profile (deg)\cr
 \code{lastLongitude}                        \tab longitude at end of profile (deg)\cr
 \code{lastTime}                             \tab (FIXME add a description here)\cr
@@ -299,7 +326,9 @@ and so produce a warning.
 \tab 0x00 \tab 0x0b \tab Sentinel correlation\cr
 \tab 0x00 \tab 0x0c \tab Sentinel amplitude\cr
 \tab 0x00 \tab 0x0d \tab Sentinel percent good\cr
-\tab 0x01 \tab 0x0f \tab ?? something to do with V series and 4-beam\cr
+\tab 0x01 \tab 0x0f \tab Perhaps something to do with V series and 4-beam\cr
+\tab 0x01 \tab 0x59 \tab ISM (earth magnetic field and sensor acceleration)\cr
+\tab 0x0C \tab 0x02 \tab Ambient sound\cr
 }
 
 Lacking a comprehensive Teledyne-RDI listing of ID codes,

@@ -1,4 +1,4 @@
-# vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
+# vim0textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
 # byte sequences at start of items
 # FLH 00 00; VLH 00 80; vel 00 01; Cor 00 02;  echo 00 03; percent 00 04; bottom-track 00 06
@@ -25,20 +25,30 @@
 # Teledyne RD Instruments, 2015.
 # ("SV_ODF_May15.pdf")
 
+
 #' Trim an RDI adp File
 #'
-#' Create an RDI adp file by copying the first `n` data chunks (starting with
-#' byte 0x7f 0x7f) of another such file. This can be useful in supplying small
-#' sample files for bug reports.
+#' Create an RDI adp file by copying either the first `n` data chunks or the
+#' chunks listed in `indices` from a given RDI file to a new RDI file.
+#' This can be useful in supplying small sample files for bug reports,
+#' or to speed up further processing of large datasets of which only
+#' a small portion is of interest. Note that the order of the parameters
+#' was changed in 2025-05-26, at which time the `indices` parameter
+#' was also added.
 #'
 #' @param infile name of an RDI file.
-#'
-#' @param n integer indicating the number of data chunks to keep. The default is
-#' to keep 100 chunks, a common choice for sample files.
 #'
 #' @param outfile optional name of the new RDI file to be created. If this is not
 #' supplied, a default is used, by adding `_trimmed` to the base filename, e.g.
 #' if `infile` is `"a.000"` then `outfile` will be `a_trimmed.000`.
+#'
+#' @param n integer indicating the number of data chunks to keep
+#' at the start of the file. If this is supplied, then `indices`
+#' cannot also be supplied.
+#'
+#' @param indices integer vector indicating the indices of the data
+#' chunks that are to be saved to `outfile`. If this is supplied,
+#' then `n` cannot also be supplied.
 #'
 #' @param debug an integer value indicating the level of debugging. If
 #' this is 0, then [read.adp.rdi()] proceeds quietly, except for
@@ -53,39 +63,58 @@
 #' provided or constructed.
 #'
 #' @family things related to adp data
+#'
 #' @family functions that trim data files
-#' @section Sample of Usage:
-#' \preformatted{
-#' # Can only be run by the developer, since it uses a private file.
-#' file  <- "~/data/archive/sleiwex/2008/moorings/m09/adp/rdi_2615/raw/adp_rdi_2615.000"
-#' if (file.exists(file)) {
-#'     adpRdiFileTrim(file, 9L, "test.000")
-#' }
-#' }
+#'
 #' @author Dan Kelley
-adpRdiFileTrim <- function(infile, n = 100L, outfile, debug = getOption("oceDebug")) {
-    oceDebug(debug, "adpRdiFileTrim(infile=\"", infile, "\", n=", n, ", debug=", debug, ") START\n", unindent = 1)
+adpRdiFileTrim <- function(infile, outfile, n, indices, debug = getOption("oceDebug")) {
+    oceDebug(debug, "adpRdiFileTrim(infile=\"", infile, "\", ...) START \n", sep = "", unindent = 1)
     debug <- ifelse(debug < 1, 0L, ifelse(debug < 2, 1, 2))
     if (missing(infile)) {
         stop("must provide 'infile'")
     }
-    n <- as.integer(n)
-    if (n < 1L) {
-        stop("'n' must be a positive number, but it is ", n)
+    if ("adp/rdi" != oceMagic(infile)) {
+        stop("the first parameter is not the name of an RDI adp file")
     }
+    if (missing(n) && missing(indices)) {
+        stop("supply either 'n' or 'chunks'")
+    }
+    if (!missing(n) && !missing(indices)) {
+        stop("do not supply both 'n' and 'indices'")
+    }
+    if (missing(indices)) {
+        oceDebug(debug, "creating 'indices' from 'n'")
+        n <- as.integer(n)
+        if (n < 1L) {
+            stop("n must be 1 or larger")
+        }
+        indices <- seq(1L, n)
+    }
+    oceDebug(debug, vectorShow(indices))
     if (missing(outfile)) {
         outfile <- gsub("^(.*)\\.([^.]*)$", "\\1_trimmed.\\2", infile)
-        oceDebug(debug, "created outfile value \"", outfile, "\"")
+        oceDebug(debug, "creating outfile named \"", outfile, "\"\n")
     }
-    r <- read.oce(infile, which = "??")
-    nmax <- length(r$start)
-    if (n >= nmax) {
-        stop("maximum allowed 'n' for this file is ", nmax)
+    toc <- read.adp.rdi(infile, which = "??", debug = debug - 1)
+    ntoc <- nrow(toc)
+    if (any(indices > ntoc)) {
+        stop("file has only ", ntoc, " data chunks, so cannot acquire all requested chunks")
     }
-    # add 1 to profile count; go back 1 char before that
-    last <- r$start[n + 1L] - 1L
-    buf <- readBin(infile, "raw", n = last)
-    writeBin(buf, outfile, useBytes = TRUE)
+    # build up pointer list, chunk by chunk. Most likely this could be done
+    # faster, but I think this function will get used only rarely so I'm
+    # coding this simply for now.
+    pointer <- NULL
+    for (i in indices) {
+        pointer <- c(pointer, seq(toc$index[i], length.out=toc$size[i]))
+    }
+    buf <- readBin(infile, raw(), n = file.info(infile)$size)
+    nbuf <- length(buf)
+    pointerMax <- max(pointer)
+    if (pointerMax > nbuf) {
+        stop("pointermax (", pointerMax, ") exceeds file length (", nbuf, ")")
+    }
+    bufOut <- buf[pointer]
+    writeBin(bufOut, outfile, useBytes = TRUE)
     oceDebug(debug, "END adpRdiFileTrim()\n", unindent = 1)
     outfile
 }
@@ -254,6 +283,10 @@ decodeHeaderRDI <- function(buf, debug = getOption("oceDebug"), tz = getOption("
     # real.sim.flag <- readBin(FLD[7], "integer", n=1, size=1)
     # lagLength <- readBin(FLD[8], "integer", n=1, size=1, signed=FALSE) # unused
     numberOfBeams <- readBin(FLD[9], "integer", n = 1, size = 1, signed = FALSE)
+    numberOfBeamsToRead <- 4 # setting this to use for properly reading p file format (Issue 2639)
+    if (numberOfBeams == 3) {
+        oceDebug(debug, "3 beam (HADCP) detected, setting numberOfBeamsToRead=", numberOfBeamsToRead, "\n")
+    }
     oceDebug(debug, "numberOfBeams", numberOfBeams, "\n")
     numberOfCells <- abs(readBin(FLD[10], "integer", n = 1, size = 1, signed = FALSE)) # WN
     oceDebug(debug, "numberOfCells", numberOfCells, "\n")
@@ -439,6 +472,7 @@ decodeHeaderRDI <- function(buf, debug = getOption("oceDebug"), tz = getOption("
         dataOffset = dataOffset,
         codes = codes,
         numberOfBeams = numberOfBeams,
+        numberOfBeamsToRead = numberOfBeamsToRead,
         numberOfCells = numberOfCells,
         pingsPerEnsemble = pingsPerEnsemble,
         cellSize = cellSize,
@@ -513,16 +547,38 @@ decodeHeaderRDI <- function(buf, debug = getOption("oceDebug"), tz = getOption("
 #' century offset is required, then a change will be made to the code.
 #' Even if not, the method should not cause problems for a long time.
 #'
+#' @section Handling of 3-beam Horizontal ADCP (HADCP) files:
+#'
+#' While most RDI ADCPs contain 4 beams (with the exception of some SentinelV
+#' ADCPs, which stores the vertical beam data in a separate data structure), the
+#' HADCP (which is a discontinued product in 2026) only has 3 beams. Despite the
+#' fact that there are only 3 beams, the pd0 data file format is still written
+#' as through there are four beams worth of data. The exact meaning of each of
+#' the "beams" in the data file depends on the coordinate system of the
+#' instrument (e.g. beam, xyz, sfm, or enu), with the RDI data format manual
+#' indicating how to interpret the resulting arrays, as follows (a dash means
+#' that the field holds no data, and in oce this is represented with NA values).
+#'
+#' \tabular{lllll}{
+#'   **Coordinate System** \tab **Vel1** \tab **Vel2** \tab **Vel3** \tab **Vel4**                \cr
+#'   Beam                  \tab beam1    \tab beam2    \tab beam3    \tab -                       \cr
+#'   Instrument            \tab x        \tab y        \tab -        \tab error                   \cr
+#'   Ship                  \tab x        \tab y        \tab vertical \tab error (tilt applied)    \cr
+#'   Earth                 \tab east     \tab north    \tab vertical \tab error (heading applied) \cr
+#' }
+#'
 #' @template adpTemplate
 #'
 #' @param type character string indicating the type of instrument.
 #'
 #' @param which optional character value.  If this is `"??"` then the
 #' only other parameters that are examined are `file` and `debug`,
-#' [read.adp.rdi()] works by locating the indices in `file` at which
-#' data segments begin, and storing them as `index` in a list that is
-#' returned. The other entry of the list is `time`, the time of the
-#' observation.
+#' and [read.adp.rdi()] does not try to read the detailed data.
+#' Instead, all it does is to identify the starting locations
+#' of the profiles/ensembles in the file, reporting these in
+#' a data frame that also includes the size of the profile/ensemble
+#' and the time when the measurement was made. This information
+#' may prove useful to analysts who are doing low-level work.
 #'
 #' @template encodingIgnoredTemplate
 #'
@@ -567,6 +623,9 @@ decodeHeaderRDI <- function(buf, debug = getOption("oceDebug"), tz = getOption("
 #' `g`                                    \tab data goodness matrix (units?)\cr
 #' `heading`                              \tab instrument heading (degrees)\cr
 #' `headingStd`                           \tab instrument heading std-dev (deg)\cr
+#' `ISMvalid`                             \tab indication of whether ISM data are in the file\cr
+#' `ISMacc`                               \tab ISM acceleration, in 3 directions\cr
+#' `ISMmag`                               \tab ISM earth magnetic field, in 3 directions\cr
 #' `lastLatitude`                         \tab latitude at end of profile (deg)\cr
 #' `lastLongitude`                        \tab longitude at end of profile (deg)\cr
 #' `lastTime`                             \tab (FIXME add a description here)\cr
@@ -717,7 +776,9 @@ decodeHeaderRDI <- function(buf, debug = getOption("oceDebug"), tz = getOption("
 #'   \tab 0x00 \tab 0x0b \tab Sentinel correlation\cr
 #'   \tab 0x00 \tab 0x0c \tab Sentinel amplitude\cr
 #'   \tab 0x00 \tab 0x0d \tab Sentinel percent good\cr
-#'   \tab 0x01 \tab 0x0f \tab ?? something to do with V series and 4-beam\cr
+#'   \tab 0x01 \tab 0x0f \tab Perhaps something to do with V series and 4-beam\cr
+#'   \tab 0x01 \tab 0x59 \tab ISM (earth magnetic field and sensor acceleration)\cr
+#'   \tab 0x0C \tab 0x02 \tab Ambient sound\cr
 #' }
 #'
 #' Lacking a comprehensive Teledyne-RDI listing of ID codes,
@@ -918,6 +979,7 @@ read.adp.rdi <- function(
     oceDebug(debug, "have Binary Fixed Attitude Header: ", header$haveBinaryFixedAttitudeHeader, "\n")
     if (header$haveActualData) {
         numberOfBeams <- header$numberOfBeams
+        numberOfBeamsToRead <- header$numberOfBeamsToRead
         numberOfCells <- header$numberOfCells
         bin1Distance <- header$bin1Distance
         xmitPulseLength <- header$xmitPulseLength
@@ -1003,7 +1065,12 @@ read.adp.rdi <- function(
         if (!missing(which)) {
             if (which[1] == "??") {
                 oceDebug(debug, "handling which=\"??\"\n")
-                return(list(index = ldc$ensembleStart, time = numberAsPOSIXct(ldc$time)))
+                size <- c(diff(ldc$ensembleStart), 1L + fileSize - tail(ldc$ensembleStart, 1L))
+                return(data.frame(
+                    index = ldc$ensembleStart,
+                    size = size,
+                    time = numberAsPOSIXct(ldc$time)
+                ))
             } else {
                 stop("read.adp.rdi() cannot handle which=\"?\"")
             }
@@ -1015,8 +1082,8 @@ read.adp.rdi <- function(
         buf <- ldc$buf # FIXME: this doubles memory pressure for no good reason
         bufSize <- length(buf)
         time <- as.POSIXct(ldc$time + 0.01 * as.numeric(ldc$sec100), origin = "1970-01-01")
-        oceDebug(debug, "next is str(ldc).  I think we can shrink this after extracting things\n")
         if (debug > 0) {
+            oceDebug(debug, "next is str(ldc).  I think we can shrink this after extracting things\n")
             print(str(ldc))
         }
         # Now, 'buf' contains *only* the profiles we want, so we may
@@ -1082,14 +1149,15 @@ read.adp.rdi <- function(
         # offset for data type 1 (velocity)
         oceDebug(debug, vectorShow(profileStart, "profileStart before trimming"))
         profilesInFile <- length(profileStart)
-        oceDebug(debug, "profilesInFile=", profilesInFile, "\n")
+        oceDebug(debug, "profilesInFile: ", profilesInFile, "\n")
         if (profilesInFile > 0) {
             profilesToRead <- length(profileStart)
             oceDebug(debug, "filename: \"", filename, "\"\n")
-            oceDebug(debug, "profilesToRead:", profilesToRead, "\n")
-            oceDebug(debug, "numberOfBeams:", numberOfBeams, "\n")
-            oceDebug(debug, "numberOfCells:", numberOfCells, "\n")
-            items <- numberOfBeams * numberOfCells
+            oceDebug(debug, "profilesToRead: ", profilesToRead, "\n")
+            oceDebug(debug, "numberOfBeams: ", numberOfBeams, "\n")
+            oceDebug(debug, "numberOfCells: ", numberOfCells, "\n")
+            # items <- numberOfBeams * numberOfCells
+            items <- numberOfBeamsToRead * numberOfCells
             codes <- header$codes
             oceDebug(debug, "codes[,1]=", paste("0x", paste(codes[, 1], sep = ""), collapse = " "), "\n")
             oceDebug(debug, "codes[,2]=", paste("0x", paste(codes[, 2], sep = ""), collapse = " "), "\n")
@@ -1112,8 +1180,10 @@ read.adp.rdi <- function(
             oceDebug(debug, "  0x00 0x0a Sentinel data\n") # vvFound
             oceDebug(debug, "  0x00 0x0b Sentinel correlation\n") # vqFound
             oceDebug(debug, "  0x00 0x0c Sentinel amplitude\n") # vaFound
-            oceDebug(debug, "  0x00 0x0d Sentinel percent good\n") # vgFoiund
-            oceDebug(debug, "  0x01 0x0f ? something to do with V series and 4-beam\n")
+            oceDebug(debug, "  0x00 0x0d Sentinel percent good\n") # vgFound
+            oceDebug(debug, "  0x01 0x0f Perhaps something to do with V series and 4-beam\n")
+            oceDebug(debug, "  0x01 0x59 ISM data: earth magnetic field and sensor acceleration\n") # ISMFound
+            oceDebug(debug, "  0x0C 0x02 Ambient sound\n") # ambientSoundFound
             # oceDebug(debug, "buf[1:10] near line 745: ", paste("0x", paste(buf[1:10], sep=" "), sep=""), "\n")
             vFound <- sum(codes[, 1] == 0x00 & codes[, 2] == 0x01) # velo
             qFound <- sum(codes[, 1] == 0x00 & codes[, 2] == 0x02) # corr
@@ -1124,38 +1194,59 @@ read.adp.rdi <- function(
             # information
             # nFound <- sum(codes[, 1]==0x00 & codes[, 2]==0x20) # navigation
             tmFound <- sum(codes[, 1] == 0x00 & codes[, 2] == 0x32) # transformation matrix
+            ambientSoundFound <- sum(codes[, 1] == 0x0C & codes[, 2] == 0x02) # transformation matrix
+            ISMFound <- sum(codes[, 1] == 0x01 & codes[, 2] == 0x59) # transformation matrix
+            # Set up storage
+            if (ambientSoundFound) {
+                ambientSound <- array(numeric(), dim = c(profilesToRead, 4))
+            } else {
+                ambientSound <- NULL
+            }
+            if (ISMFound) {
+                ISMvalid <- vector("numeric", profilesToRead)
+                ISMacc <- array(numeric(), dim = c(profilesToRead, 3))
+                ISMmag <- array(numeric(), dim = c(profilesToRead, 3))
+            } else {
+                ISMvalid <- NULL
+                ISMacc <- NULL
+                ISMmag <- NULL
+            }
             if (vFound) {
-                v <- array(numeric(), dim = c(profilesToRead, numberOfCells, numberOfBeams))
+                # v <- array(numeric(), dim = c(profilesToRead, numberOfCells, numberOfBeams))
+                v <- array(numeric(), dim = c(profilesToRead, numberOfCells, numberOfBeamsToRead))
                 oceDebug(
-                    debug, "set up 'v' (velocity) storage for", profilesToRead, "profiles,",
-                    numberOfCells, "cells, and", numberOfBeams, "beams\n"
+                    debug, "set up 'v' (velocity) storage for ", profilesToRead, " profiles,",
+                    numberOfCells, " cells, and ", numberOfBeamsToRead, " beams\n"
                 )
             } else {
                 v <- NULL
             }
             if (qFound) {
-                q <- array(raw(), dim = c(profilesToRead, numberOfCells, numberOfBeams))
+                # q <- array(raw(), dim = c(profilesToRead, numberOfCells, numberOfBeams))
+                q <- array(raw(), dim = c(profilesToRead, numberOfCells, numberOfBeamsToRead))
                 oceDebug(
-                    debug, "set up 'q' (correlation) storage for", profilesToRead, "profiles,",
-                    numberOfCells, "cells, and", numberOfBeams, "beams\n"
+                    debug, "set up 'q' (correlation) storage for ", profilesToRead, " profiles, ",
+                    numberOfCells, " cells, and ", numberOfBeamsToRead, " beams\n"
                 )
             } else {
                 q <- NULL
             }
             if (aFound) {
-                a <- array(raw(), dim = c(profilesToRead, numberOfCells, numberOfBeams))
+                # a <- array(raw(), dim = c(profilesToRead, numberOfCells, numberOfBeams))
+                a <- array(raw(), dim = c(profilesToRead, numberOfCells, numberOfBeamsToRead))
                 oceDebug(
-                    debug, "set up 'a' (echo intensity) storage for", profilesToRead, "profiles,",
-                    numberOfCells, "cells, and", numberOfBeams, "beams\n"
+                    debug, "set up 'a' (echo intensity) storage for ", profilesToRead, " profiles, ",
+                    numberOfCells, " cells, and ", numberOfBeamsToRead, " beams\n"
                 )
             } else {
                 a <- NULL
             }
             if (gFound) {
-                g <- array(raw(), dim = c(profilesToRead, numberOfCells, numberOfBeams))
+                # g <- array(raw(), dim = c(profilesToRead, numberOfCells, numberOfBeams))
+                g <- array(raw(), dim = c(profilesToRead, numberOfCells, numberOfBeamsToRead))
                 oceDebug(
-                    debug, "set up 'g' (percent good) storage for", profilesToRead, "profiles,",
-                    numberOfCells, "cells, and", numberOfBeams, "beams\n"
+                    debug, "set up 'g' (percent good) storage for ", profilesToRead, " profiles, ",
+                    numberOfCells, " cells, and ", numberOfBeamsToRead, " beams\n"
                 )
             } else {
                 g <- NULL
@@ -1168,10 +1259,10 @@ read.adp.rdi <- function(
                 oceDebug(debug, "As a test, displaying 'Binary Fixed Attitude Header' in first 10 ensembles...\n")
                 for (ensemble in seq_len(10)) {
                     J <- ensembleStart[ensemble] + header$dataOffset[ii]
-                    oceDebug(debug, "ensembleStart[", ensemble, "]=", ensembleStart[ensemble],
+                    oceDebug(
+                        debug, "ensembleStart[", ensemble, "]=", ensembleStart[ensemble],
                         ", header$dataOffset[", ii, "]=", header$dataOffset[ii],
-                        "; buf[", J, "+1:34]=", paste(buf[J + 1:34], collapse = " "), "\n",
-                        sep = ""
+                        "; buf[", J, "+1:34]=", paste(buf[J + 1:34], collapse = " "), "\n"
                     )
                 }
                 header$binaryFixedAttitudeHeaderRaw <- buf[J + 1:34]
@@ -1212,13 +1303,11 @@ read.adp.rdi <- function(
                     tmz <- 0.0001 * readBin(buf[ensembleStart[1] + header$dataOffset[ii] + 0:7 + 18], "integer", n = 4, size = 2, signed = TRUE, endian = "little")
                     tme <- 0.0001 * readBin(buf[ensembleStart[1] + header$dataOffset[ii] + 0:7 + 26], "integer", n = 4, size = 2, signed = TRUE, endian = "little")
                     transformationMatrix <- matrix(c(tmx, tmy, tmz, tme), nrow = 4, byrow = TRUE)
-                    if (debug > 0) {
-                        cat("Transformation matrix:\n")
-                        oceDebug(debug, vectorShow(tmx, paste("tmx", sep = "")))
-                        oceDebug(debug, vectorShow(tmy, paste("tmy", sep = "")))
-                        oceDebug(debug, vectorShow(tmz, paste("tmz", sep = "")))
-                        oceDebug(debug, vectorShow(tme, paste("tme", sep = "")))
-                    }
+                    oceDebug(debug, "Transformation matrix:\n")
+                    oceDebug(debug, vectorShow(tmx, paste("tmx", sep = "")))
+                    oceDebug(debug, vectorShow(tmy, paste("tmy", sep = "")))
+                    oceDebug(debug, vectorShow(tmz, paste("tmz", sep = "")))
+                    oceDebug(debug, vectorShow(tme, paste("tme", sep = "")))
                 }
                 # Read the V beam data leader
                 ii <- base::which(codes[, 1] == 0x01 & codes[, 2] == 0x0f)
@@ -1340,8 +1429,8 @@ read.adp.rdi <- function(
                 if (vvFound) {
                     vv <- array(numeric(), dim = c(profilesToRead, numberOfVCells))
                     oceDebug(
-                        debug, "set up 'vv' (vertical velocity) storage for", profilesToRead, "profiles, and",
-                        numberOfVCells, "cells.\n"
+                        debug, "set up 'vv' (vertical velocity) storage for ", profilesToRead, " profiles, and ",
+                        numberOfVCells, " cells.\n"
                     )
                 } else {
                     vv <- NULL
@@ -1349,8 +1438,8 @@ read.adp.rdi <- function(
                 if (vaFound) {
                     va <- array(raw(), dim = c(profilesToRead, numberOfVCells))
                     oceDebug(
-                        debug, "set up 'va' (vertical backscatter amplitude) storage for", profilesToRead, "profiles, and",
-                        numberOfVCells, "cells.\n"
+                        debug, "set up 'va' (vertical backscatter amplitude) storage for ", profilesToRead, " profiles, and ",
+                        numberOfVCells, " cells.\n"
                     )
                 } else {
                     va <- NULL
@@ -1358,8 +1447,8 @@ read.adp.rdi <- function(
                 if (vqFound) {
                     vq <- array(raw(), dim = c(profilesToRead, numberOfVCells))
                     oceDebug(
-                        debug, "set up 'vq' (vertical correlation) storage for", profilesToRead, "profiles, and",
-                        numberOfVCells, "cells.\n"
+                        debug, "set up 'vq' (vertical correlation) storage for ", profilesToRead, " profiles, and ",
+                        numberOfVCells, " cells.\n"
                     )
                 } else {
                     vq <- NULL
@@ -1367,30 +1456,36 @@ read.adp.rdi <- function(
                 if (vgFound) {
                     vg <- array(raw(), dim = c(profilesToRead, numberOfVCells))
                     oceDebug(
-                        debug, "set up 'vg' (vertical percent good) storage for", profilesToRead, "profiles, and",
-                        numberOfVCells, "cells.\n"
+                        debug, "set up 'vg' (vertical percent good) storage for ", profilesToRead, " profiles, and ",
+                        numberOfVCells, " cells.\n"
                     )
                 } else {
                     vg <- NULL
                 }
             }
             if (bFound) {
-                br <- array(double(), dim = c(profilesToRead, numberOfBeams))
-                bv <- array(double(), dim = c(profilesToRead, numberOfBeams))
+                # br <- array(double(), dim = c(profilesToRead, numberOfBeams))
+                # bv <- array(double(), dim = c(profilesToRead, numberOfBeams))
+                # # bq called bc until 2023-02-09 https://github.com/dankelley/oce/issues/2039
+                # bq <- array(double(), dim = c(profilesToRead, numberOfBeams)) # correlation
+                # ba <- array(double(), dim = c(profilesToRead, numberOfBeams)) # amplitude
+                # bg <- array(double(), dim = c(profilesToRead, numberOfBeams)) # percent good
+                br <- array(double(), dim = c(profilesToRead, numberOfBeamsToRead))
+                bv <- array(double(), dim = c(profilesToRead, numberOfBeamsToRead))
                 # bq called bc until 2023-02-09 https://github.com/dankelley/oce/issues/2039
-                bq <- array(double(), dim = c(profilesToRead, numberOfBeams)) # correlation
-                ba <- array(double(), dim = c(profilesToRead, numberOfBeams)) # amplitude
-                bg <- array(double(), dim = c(profilesToRead, numberOfBeams)) # percent good
+                bq <- array(double(), dim = c(profilesToRead, numberOfBeamsToRead)) # correlation
+                ba <- array(double(), dim = c(profilesToRead, numberOfBeamsToRead)) # amplitude
+                bg <- array(double(), dim = c(profilesToRead, numberOfBeamsToRead)) # percent good
                 oceDebug(
-                    debug, "set up 'br', etc. (bottom data) storage for", profilesToRead, "profiles,",
-                    numberOfCells, "cells, and", numberOfBeams, "beams\n"
+                    debug, "set up 'br', etc. (bottom data) storage for ", profilesToRead, " profiles, ",
+                    numberOfCells, " cells, and ", numberOfBeamsToRead, " beams\n"
                 )
             } else {
                 br <- bv <- bq <- ba <- bg <- NULL
             }
             badProfiles <- NULL
             # haveBottomTrack <- FALSE          # FIXME maybe we can determine this from the header
-            oceDebug(debug, "length(profileStart):", length(profileStart), "\n")
+            oceDebug(debug, "length(profileStart): ", length(profileStart), "\n")
             if (profilesToRead < 1) {
                 stop("no profilesToRead")
             }
@@ -1406,7 +1501,7 @@ read.adp.rdi <- function(
             if (monitor) {
                 progressBar <- txtProgressBar(max = profilesToRead, style = 3, title = "Reading profiles")
             }
-            oceDebug(debug, "profilesToRead=", profilesToRead, "\n")
+            oceDebug(debug, "profilesToRead: ", profilesToRead, "\n")
             unhandled <- list(xxGGA = 0, xxVTA = 0, xxGSA = 0)
             # . unknownWarningCount <- 0
             nmea <- NULL
@@ -1421,31 +1516,59 @@ read.adp.rdi <- function(
                 header$numberOfDataTypes <- readBin(buf[ensembleStart[i] + 5], "integer", n = 1, size = 1)
                 header$dataOffset <- readBin(buf[ensembleStart[i] + 6 + seq(0, 2 * header$numberOfDataTypes)],
                     "integer",
-                    n = header$numberOfDataTypes, size = 2
+                    size = 2, signed = FALSE, endian = "little", n = header$numberOfDataTypes
                 )
-                # if (i < 30) {
-                #     cat("i=", i, ", header$numberOfDataTypes=", header$numberOfDataTypes,
-                #         ", header$dataOffset=", paste(header$dataOffset, collapse=" "), "\n")
+                # if (debug > 0 && i < 30) {
+                #    cat(
+                #        "i=", i, ", header$numberOfDataTypes=", header$numberOfDataTypes,
+                #        ", header$dataOffset=", paste(header$dataOffset, collapse = " "), "\n"
+                #    )
                 # }
                 for (chunk in 1:header$numberOfDataTypes) {
                     o <- ensembleStart[i] + header$dataOffset[chunk]
+                    if (i == 1) {
+                        oceDebug(debug, "ensembleStart[", i, "]:", ensembleStart[i], ", header$dataOffset[", chunk, "]: ", header$dataOffset[chunk], "\n")
+                    }
                     if (buf[o] == 0x00 && buf[1 + o] == 0x00) {
                         orientation[i] <- if ("1" == substr(byteToBinary(buf[o + 4], endian = "big"), 1, 1)) "upward" else "downward"
                     } else if (buf[o] == 0x80 && buf[1 + o] == 0x00) {
                         ensembleNumber[i] <- readBin(buf[o + 2:3], "integer",
                             n = 1, size = 2,
-                            endian = "little", signed = TRUE
+                            endian = "little", signed = FALSE
                         ) + as.integer(buf[o + 11]) * 65535L
+                        #message("o=",o,", got ensembleNumber[",i,"] as ", ensembleNumber[i])
                     } else if (buf[o] == 0x00 && buf[1 + o] == 0x01) {
+                        #<> if (debug > 0 && i == 1) {
+                        #<>     cat("  buf[", o + 2, "]: ", buf[o + 2], " (this starts v[1,1,1]) NOTE: o=", o, "\n", sep = "")
+                        #<>     for (jjj in seq(-3, 3)) {
+                        #<>         cat("  buf[", o + 2 + jjj, "]: ", buf[o + 2 + jjj], "\n", sep = "")
+                        #<>     }
+                        #<> }
                         vtmp <- readBin(buf[o + 1 + seq(1, 2 * items)], "integer", n = items, size = 2, endian = "little", signed = TRUE)
                         vtmp[-32768 == vtmp] <- NA # blank out bad data
-                        v[i, , ] <- matrix(velocityScale * vtmp, ncol = numberOfBeams, byrow = TRUE)
+                        # v[i, , ] <- matrix(velocityScale * vtmp, ncol = numberOfBeams, byrow = TRUE)
+                        v[i, , ] <- matrix(velocityScale * vtmp, ncol = numberOfBeamsToRead, byrow = TRUE)
                     } else if (buf[o] == 0x00 && buf[1 + o] == 0x02) {
-                        q[i, , ] <- matrix(buf[o + 1 + seq(1, items)], ncol = numberOfBeams, byrow = TRUE)
+                        #<> if (debug > 0 && i == 1) {
+                        #<>     cat("  buf[", o + 2, "]: ", buf[o + 2], " (this is q[1,1,1]) NOTE: o=", o, "\n", sep = "")
+                        #<>     for (jjj in seq(-3, 3)) {
+                        #<>         cat("  buf[", o + 2 + jjj, "]: ", buf[o + 2 + jjj], "\n", sep = "")
+                        #<>     }
+                        #<> }
+                        # q[i, , ] <- matrix(buf[o + 1 + seq(1, items)], ncol = numberOfBeams, byrow = TRUE)
+                        q[i, , ] <- matrix(buf[o + 1 + seq(1, items)], ncol = numberOfBeamsToRead, byrow = TRUE)
                     } else if (buf[o] == 0x00 && buf[1 + o] == 0x03) {
-                        a[i, , ] <- matrix(buf[o + 1 + seq(1, items)], ncol = numberOfBeams, byrow = TRUE)
+                        #<> if (debug > 0 && i == 1) {
+                        #<>     cat("  buf[", o + 2, "]: ", buf[o + 2], " (this is a[1,1,1]) NOTE: o=", o, "\n", sep = "")
+                        #<>     for (jjj in seq(-3, 3)) {
+                        #<>         cat("  buf[", o + 2 + jjj, "]: ", buf[o + 2 + jjj], "\n", sep = "")
+                        #<>     }
+                        #<> }
+                        # a[i, , ] <- matrix(buf[o + 1 + seq(1, items)], ncol = numberOfBeams, byrow = TRUE)
+                        a[i, , ] <- matrix(buf[o + 1 + seq(1, items)], ncol = numberOfBeamsToRead, byrow = TRUE)
                     } else if (buf[o] == 0x00 && buf[1 + o] == 0x04) {
-                        g[i, , ] <- matrix(buf[o + 1 + seq(1, items)], ncol = numberOfBeams, byrow = TRUE)
+                        # g[i, , ] <- matrix(buf[o + 1 + seq(1, items)], ncol = numberOfBeams, byrow = TRUE)
+                        g[i, , ] <- matrix(buf[o + 1 + seq(1, items)], ncol = numberOfBeamsToRead, byrow = TRUE)
                     } else if (buf[o] == 0x00 && buf[1 + o] == 0x05) {
                         # FIXME: do something here (what is code 0x00 0x05?)
                     } else if (buf[o] == 0x00 && buf[1 + o] == 0x06) {
@@ -1642,6 +1765,21 @@ read.adp.rdi <- function(
                             nmeaLen <- nmeaLen + 1
                             nmea[nmeaLen] <- nmeaTmp
                         }
+                    } else if (buf[o] == 0x01 && buf[1 + o] == 0x59) {
+                        #oceDebug(debug, "storing ISM data (i:", i, ", o:", o, ")")
+                        ISMvalid[i] <- as.integer(buf[2 + o])
+                        # acceleration is in 4-byte integers (unit: milligravity)
+                        ISMacc[i, ] <- c(
+                            readBin(buf[o + 3:6], "integer", n = 1, size = 4),
+                            readBin(buf[o + 7:10], "integer", n = 1, size = 4),
+                            readBin(buf[o + 11:14], "integer", n = 1, size = 4)
+                        )
+                        # magnetic-field components: units perhaps nTesla (a guess)
+                        ISMmag[i, ] <- c(
+                            readBin(buf[o + 15:16], "integer", n = 1, size = 2, signed = TRUE),
+                            readBin(buf[o + 17:18], "integer", n = 1, size = 2, signed = TRUE),
+                            readBin(buf[o + 19:20], "integer", n = 1, size = 2, signed = TRUE)
+                        )
                     } else if (buf[o] == 0x02 && buf[1 + o] == 0x21) {
                         # 45 bytes (table 5 [WinRiver User Guide International Verion.pdf.pdf])
                         end <- .C("nmea_len", buf[o + 2 + 0:42], 43L, integer(1))[[3]]
@@ -1658,6 +1796,9 @@ read.adp.rdi <- function(
                             nmeaLen <- nmeaLen + 1
                             nmea[nmeaLen] <- nmeaTmp
                         }
+                    } else if (buf[o] == 0x0C && buf[1 + o] == 0x02) {
+                        oceDebug(debug, "  saving ambient sound at i=", i)
+                        ambientSound[i, ] <- as.numeric(buf[o+2:5])
                     } else {
                         key <- paste("0x", as.character(buf[o]), " 0x", as.character(buf[o + 1]), sep = "")
                         if (0 == length(warningUnknownCode[[key]])) {
@@ -2082,7 +2223,11 @@ read.adp.rdi <- function(
                     pressureMinus = pressureMinus,
                     attitudeTemp = attitudeTemp,
                     attitude = attitude,
-                    contaminationSensor = contaminationSensor
+                    contaminationSensor = contaminationSensor,
+                    ISMvalid = ISMvalid,
+                    ISMacc = ISMacc,
+                    ISMmag = ISMmag,
+                    ambientSound = ambientSound
                 )
             }
         } else {

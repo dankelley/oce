@@ -66,7 +66,7 @@
       <h1>3. Analysis of acoustic-Doppler data</h1>
                         <h4 data-toc-skip class="author">Dan Kelley (<a href="https://orcid.org/0000-0001-7808-5911" class="external-link uri">https://orcid.org/0000-0001-7808-5911</a>)</h4>
             
-            <h4 data-toc-skip class="date">2025-04-19</h4>
+            <h4 data-toc-skip class="date">2026-06-30</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/dankelley/oce/blob/HEAD/vignettes/C_adp.Rmd" class="external-link"><code>vignettes/C_adp.Rmd</code></a></small>
       <div class="d-none name"><code>C_adp.Rmd</code></div>
@@ -228,7 +228,7 @@ depends on the number of beams used by the instrument, and each one has
 a label indicating the component name. For example,</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">adp</span><span class="op">)</span></span></code></pre></div>
-<p><img src="C_adp_files/figure-html/unnamed-chunk-10-1.png" alt="Default plot of an adp object." width="432"></p>
+<p><img src="C_adp_files/figure-html/unnamed-chunk-10-1.png" class="r-plt" alt="Default plot of an adp object." width="432"></p>
 <p>has velocity panels named <code>east</code>, <code>north</code> and
 <code>up</code>, along with one named <code>error</code>, which is an
 estimate of the velocity-inference error.</p>
@@ -256,7 +256,7 @@ without the speed of the ship for a file named
 <p>Adp data can be subsetted in a wide variety of ways, e.g.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">adp</span>, <span class="va">distance</span> <span class="op">&lt;</span> <span class="fl">20</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="C_adp_files/figure-html/unnamed-chunk-11-1.png" alt="Plot of a subset of an adp object." width="432"></p>
+<p><img src="C_adp_files/figure-html/unnamed-chunk-11-1.png" class="r-plt" alt="Plot of a subset of an adp object." width="432"></p>
 <p>plots only data within 20m of the instrument. See
 <code><a href="../reference/subset-adp-method.html">?"subset,adp-method"</a></code> for more on subsetting.</p>
 <p><strong>Exercise 4.</strong> Plot the adp data for the first half of
@@ -340,7 +340,7 @@ transformed data. Using</p>
 <p><strong>Solution.</strong></p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">adp</span>, which <span class="op">=</span> <span class="st">"uv"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="C_adp_files/figure-html/unnamed-chunk-18-1.png" alt="A u-v scatterplot." width="288"></p>
+<p><img src="C_adp_files/figure-html/unnamed-chunk-18-1.png" class="r-plt" alt="A u-v scatterplot." width="288"></p>
 <p><strong>Exercise 3.</strong> Write the steps to plot the
 <code>east</code>, <code>north</code>, and <code>up</code> velocity
 without the speed of the ship for a file named
@@ -371,7 +371,7 @@ depth-averaged eastward velocities.</p>
 <span><span class="co"># Depth mean; note that na.rm, is passed by apply() to mean()</span></span>
 <span><span class="va">eastMean</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/apply.html" class="external-link">apply</a></span><span class="op">(</span><span class="va">v</span><span class="op">[</span>, , <span class="fl">1</span><span class="op">]</span>, <span class="fl">1</span>, <span class="va">mean</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">eastMean</span>, col <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
-<p><img src="C_adp_files/figure-html/unnamed-chunk-21-1.png" alt="Plot mid-depth and depth-averaged eastward velocities." width="700.0000032"></p>
+<p><img src="C_adp_files/figure-html/unnamed-chunk-21-1.png" class="r-plt" alt="Plot mid-depth and depth-averaged eastward velocities." width="700.0000032"></p>
 <p>Here, <code><a href="../reference/oce.plot.ts.html">oce.plot.ts()</a></code> is used instead of the basic R
 function <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code>, because it provides a margin note on the
 detailed time interval.</p>
@@ -416,7 +416,7 @@ variations, to reveal tidal height.</p>
 <code class="sourceCode R"><span><span class="va">time</span> <span class="op">&lt;-</span> <span class="va">adp</span><span class="op">[[</span><span class="st">"time"</span><span class="op">]</span><span class="op">]</span></span>
 <span><span class="va">pressure</span> <span class="op">&lt;-</span> <span class="va">adp</span><span class="op">[[</span><span class="st">"pressure"</span><span class="op">]</span><span class="op">]</span></span>
 <span><span class="fu"><a href="../reference/oce.plot.ts.html">oce.plot.ts</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">pressure</span><span class="op">)</span></span></code></pre></div>
-<p><img src="C_adp_files/figure-html/unnamed-chunk-25-1.png" alt="Plot pressure time series." width="700.0000032"></p>
+<p><img src="C_adp_files/figure-html/unnamed-chunk-25-1.png" class="r-plt" alt="Plot pressure time series." width="700.0000032"></p>
 <p>As a matter of interest, a tidal analysis may be done with</p>
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">m</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tidem.html">tidem</a></span><span class="op">(</span><span class="fu"><a href="../reference/as.sealevel.html">as.sealevel</a></span><span class="op">(</span><span class="va">pressure</span>, <span class="va">time</span><span class="op">)</span><span class="op">)</span></span>
@@ -449,8 +449,8 @@ constituents are as follows</p>
 <span><span class="co">#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
 <span><span class="co">#&gt; * Processing Log</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     - 2025-04-19 15:31:03 UTC: `create 'tidem' object`</span></span>
-<span><span class="co">#&gt;     - 2025-04-19 15:31:03 UTC: `tidem(t = as.sealevel(pressure, time))`</span></span></code></pre></div>
+<span><span class="co">#&gt;     - 2026-06-30 12:59:53 UTC: `create 'tidem' object`</span></span>
+<span><span class="co">#&gt;     - 2026-06-30 12:59:53 UTC: `tidem(t = as.sealevel(pressure, time))`</span></span></code></pre></div>
 <p>(Note that it fitted for M2, but not S2, because the Rayleigh
 criterion prevents inferring both, and the conventional tidal analysis
 favours M2 over S2 if the time series is too short to fit for more than
@@ -463,7 +463,7 @@ the following (see <code><a href="../reference/predict.tidem.html">?predict.tide
 <span><span class="va">timePredict</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">time</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">time</span><span class="op">)</span>, length.out <span class="op">=</span> <span class="fl">200</span><span class="op">)</span></span>
 <span><span class="va">pressurePredict</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">m</span>, <span class="va">timePredict</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="va">timePredict</span>, <span class="va">pressurePredict</span>, col <span class="op">=</span> <span class="st">"red"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="C_adp_files/figure-html/unnamed-chunk-28-1.png" alt="Plot tidal prediction." width="700.0000032"></p>
+<p><img src="C_adp_files/figure-html/unnamed-chunk-28-1.png" class="r-plt" alt="Plot tidal prediction." width="700.0000032"></p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
@@ -476,7 +476,7 @@ the following (see <code><a href="../reference/predict.tidem.html">?predict.tide
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer>

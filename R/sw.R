@@ -122,6 +122,7 @@ computableWaterProperties <- function(x) {
                 res, "SR", "Sstar",
                 paste0("sigma", 0:4),
                 "SA", paste("Absolute", "Salinity"),
+                "cabbeling",
                 "CT", paste("Conservative", "Temperature"),
                 paste0("spiciness", 0:2)
             )
@@ -2538,7 +2539,7 @@ swSigma4 <- function(
 
 #' Seawater Sound Absorption
 #'
-#' Compute the sound absorption of seawater, in dB/m
+#' Compute the sound absorption of seawater, in dB/m.
 #'
 #' Salinity and pH are ignored in this formulation.  Several formulae may be
 #' found in the literature, and they give results differing by 10 percent, as
@@ -2546,20 +2547,33 @@ swSigma4 <- function(
 #' formulations will be added to this function, and entirely possible that the
 #' default may change.
 #'
+#' Note that the `"thorp-extended"` model is an extended version of Thorp's equation,
+#' as discussed in References 8, 9 and 10. Following these citations will lead to
+#' Thorp's original paper, which does not include the extended equation. The original
+#' source for this extended version is not clear.
+#'
 #' @inheritParams swRho
 #'
-#' @param frequency The frequency of sound, in Hz.
+#' @param frequency the frequency of sound, in Hz.
 #'
-#' @param formulation character string indicating the formulation to use, either
-#' of `"fischer-simmons"` or `"francois-garrison"`; see \dQuote{References}.
+#' @param formulation character string indicating the formulation to use. The
+#' choices are `"fischer-simmons"`, `"francois-garrison"`, `"ainslie-mccolm"`,
+#' `"schulkin-marsh" and `"thorp-extended"`.  These may be abbreviated using
+#' sufficient initial letters to be distinct.
 #'
-#' @param pH seawater pH
+#' @param pH seawater pH.
 #'
-#' @return Sound absorption in dB/m.
+#' @return `swSoundAbsorption` returns the sound absorption in dB/m.
 #'
-#' @author Dan Kelley
+#' @author Dan Kelley and João Resende.  Kelley wrote an early version of
+#' this function, which supported only the `"fisher-simmons"` and
+#' `"francois-garrison"` formulations. The `"ainslie-mccolm"`, `schulkin-marsh"
+#' and `"thorp-extended"` formulations were added in a GitHub pull request
+#' (number 2345) submitted on 2025-09-04 by Resende, who also added a
+#' comparison plot to the documentation.
 #'
 #' @references
+#'
 #' 1. F. H. Fisher and V. P. Simmons, 1977.  Sound absorption in
 #' sea water.  Journal of the Acoustical Society of America, 62(3), 558-564.
 #'
@@ -2569,28 +2583,67 @@ swSigma4 <- function(
 #'
 #' 3. `http://resource.npl.co.uk/acoustics/techguides/seaabsorption/`
 #'
+#' 4. Michael A. Ainslie, James G. McColm; A simplified formula for viscous and chemical
+#' absorption in sea water. J. Acoust. Soc. Am. 1 March 1998; 103 (3): 1671–1672.
+#'
+#' 5. M. Schulkin, H. W. Marsh; Sound Absorption in Sea Water.
+#' J. Acoust. Soc. Am. 1 June 1962; 34 (6): 864–865.
+#'
+#' 6. H. Thorp. Analytic description of the low frequency attenuation coefficient. Journal
+#' of Acoustical Society of America, 1967.
+#'
+#' 7. T. Melodia, H. Kulhandjian, L.-C. Kuo, and E. Demirors, "Advances in underwater acoustic
+#' networking," Mobile Ad Hoc Networking: Cutting Edge Directions, pp. 804-852, 2013.
+#'
+#' 8. Al-Aboosi, Yasin & Al-Aboosi, Jenan. (2018). Study of Absorption Loss Effects
+#' on Acoustic Wave Propagation in Shallow Water Using Different Empirical Models.
+#' International Journal of Advances in Applied Sciences.
+#'
+#' 9. Milica Stojanovic. 2006. On the relationship between capacity and distance in an
+#' underwater acoustic communication channel. In Proceedings of the 1st International
+#' Workshop on Underwater Networks (WUWNet '06). Association for Computing Machinery.
+#'
+#' 10. A. Sehgal, I. Tumar and J. Schonwalder, "Variability of available capacity
+#' due to the effects of depth and temperature in the underwater acoustic
+#' communication channel," OCEANS 2009-EUROPE, Bremen, Germany, 2009.
+#'
 #' @examples
 #' # Fisher & Simmons (1977 table IV) gives 0.52 dB/km for 35 PSU, 5 degC, 500 atm
 #' # (4990 dbar of water)a and 10 kHz
 #' alpha <- swSoundAbsorption(35, 4, 4990, 10e3)
 #'
 #' # reproduce part of Fig 8 of Francois and Garrison (1982 Fig 8)
-#' f <- 1e3 * 10^(seq(-1, 3, 0.1)) # in KHz
+#' f <- 1e3 * 10^(seq(-1, 3, 0.1)) # in Hz
 #' plot(f / 1000, 1e3 * swSoundAbsorption(f, 35, 10, 0, formulation = "fr"),
 #'     xlab = " Freq [kHz]", ylab = " dB/km", type = "l", log = "xy"
 #' )
-#' lines(f / 1000, 1e3 * swSoundAbsorption(f, 0, 10, 0, formulation = "fr"), lty = "dashed")
+#' lines(f / 1000, 1e3 * swSoundAbsorption(f, 0, 10, 0, formulation = "fr"), lty = "solid")
 #' legend("topleft", lty = c("solid", "dashed"), legend = c("S=35", "S=0"))
+#'
+#' # Comparison of the supported absorption models
+#' f <- 1e3 * 10^(seq(-1, 3, 0.1)) # in KHz
+#' plot(f / 1000, 1e3 * swSoundAbsorption(f, 35, 10, 1000, formulation = "fi"),
+#'     xlab = " Freq [kHz]", ylab = " dB/km", type = "l", col = "blue"
+#' )
+#' lines(f / 1000, 1e3 * swSoundAbsorption(f, 35, 10, 1000, formulation = "fr"), col = "red")
+#' lines(f / 1000, 1e3 * swSoundAbsorption(f, 35, 10, 1000, formulation = "ai"), col = "green")
+#' lines(f / 1000, 1e3 * swSoundAbsorption(f, 35, 10, 1000, formulation = "sc"), col = "purple")
+#' lines(f / 1000, 1e3 * swSoundAbsorption(f, 35, 10, 1000, formulation = "th"), col = "black")
+#' legend("topleft", legend = c(
+#'     "fisher-simmons", "francois-garrison",
+#'     "ainslie-mccolm", "schulkin-marsh", "thorp-extended"
+#' ), col = c("blue", "red", "green", "purple", "black"), lty = 1, lwd = 2)
+#' title("Comparison of sound absorption models")
 #'
 #' @family functions that calculate seawater properties
 swSoundAbsorption <- function(
     frequency, salinity, temperature, pressure, pH = 8,
-    formulation = c("fisher-simmons", "francois-garrison")) {
+    formulation = c("fisher-simmons", "francois-garrison", "ainslie-mccolm", "schulkin-marsh", "thorp-extended")) {
     formulation <- match.arg(formulation)
     # nolint start T_and_F_symbol_linter
     if (formulation == "fisher-simmons") {
         # Equation numbers are from Fisher & Simmons (1977); see help page for ref
-        p <- 1 + pressure / 10 # add atmophere, then convert water part from dbar
+        p <- 1 + pressure / 10 # add atmosphere, then convert water part from dbar
         S <- salinity
         T <- T68fromT90(temperature)
         f <- frequency
@@ -2622,10 +2675,61 @@ swSoundAbsorption <- function(
         # f2 in kHz
         f2 <- (8.17 * 10^(8 - 1990 / theta)) / (1 + 0.0018 * (S - 35)) # nolint (space before left parenthesis)
         # pure water contribution
-        A3 <- 3.964e-4 - 1.146e-5 * T + 1.45e-7 * T^2 - 6.5e-10 * T^3 # dB / km / kHz^2
+        if (T <= 20) {
+            A3 <- 4.937e-4 - 2.59e-5 * T + 9.11e-7 * T^2 - 1.50e-8 * T^3
+        } else {
+            A3 <- 3.964e-4 - 1.146e-5 * T + 1.45e-7 * T^2 - 6.5e-10 * T^3
+        }
         P3 <- 1 - 3.83e-5 * D + 4.9e-10 * D^2
         alpha <- (A1 * P1 * f1 * f^2) / (f^2 + f1^2) + (A2 * P2 * f2 * f^2) / (f^2 + f2^2) + A3 * P3 * f^2
         alpha <- alpha / 1000
+    } else if (formulation == "ainslie-mccolm") {
+        # Equation numbers are from Ainslie & McColm Model (1998); see help page for ref
+        S <- salinity
+        T <- T68fromT90(temperature)
+        D <- pressure / 1000 # FIXME: approximation; D in km
+        f <- frequency / 1000 # convert to kHz
+        # f1 in kHz
+        f1 <- 0.78 * sqrt(S / 35) * exp(T / 26) # (1)
+        # f2 in kHz
+        f2 <- 42 * exp(T / 17) # (2)
+        alpha <- 0.106 * ((f1 * f^2) / (f^2 + f1^2)) * exp((pH - 8) / 0.56) + 0.52 * (1 + (T / 43)) * (S / 35) * (f2 * f^2 / (f^2 + f2^2)) * exp(-D / 6) + 0.00049 * (f^2) * exp(-((T / 27) + (D / 17))) # (3)
+        alpha <- alpha / 1000 # dB/km to dB/m
+    } else if (formulation == "schulkin-marsh") {
+        # Equation numbers are from schulkin-marsh Model (1962); see help page for ref
+        S <- salinity
+        T <- T68fromT90(temperature)
+        D <- pressure # FIXME: approximation; D in m
+        f <- frequency / 1000 # convert to kHz
+        A <- 2.34e-6
+        B <- 3.38e-6
+        ft <- 21.9 * 10^(6 - (1520 / (T + 273)))
+        P <- (1034 + (9.81 * D) + 101.325) * 1.02e-5 # 1 Pa (N/m2) = 1.02×10-5 kg/cm2 | Atmospheric Pressure: (1 atm or 101,325 pascals)
+        alpha <- 8.68e3 * (((S * A * ft * (f^2)) / ((ft^2) + (f^2))) + (B * f^2 / ft)) * (1 - (6.54e-4) * P) # (9) - 1 nepers/metre = 8.68*10**3 dB/Km
+        alpha <- alpha / 1000 # dB/km to dB/m
+    } else if (formulation == "thorp-extended") {
+        # Equation numbers refer to "Advances in Underwater Acoustic Networking"; see help page for ref
+        # This equation is an extended version of Thorp's equation, as referenced in the sources below:
+        #
+        # 1. Al-Aboosi, Yasin & Al-Aboosi, Jenan. (2018). Study of Absorption Loss Effects on Acoustic Wave Propagation
+        # in Shallow Water Using Different Empirical Models. International Journal of Advances in Applied Sciences.
+        #
+        # 2. Milica Stojanovic. 2006. On the relationship between capacity and distance in an underwater acoustic communication channel.
+        # In Proceedings of the 1st International Workshop on Underwater Networks (WUWNet '06). Association for Computing Machinery.
+        #
+        # 3. A. Sehgal, I. Tumar and J. Schonwalder, "Variability of available capacity due to the effects of depth and temperature in the
+        # underwater acoustic communication channel," OCEANS 2009-EUROPE, Bremen, Germany, 2009.
+        #
+        # Note:
+        # 1. Following the citations will lead to Thorp's original paper, which does not include the last two terms. The original source for
+        # this extended version is not clear.
+        # 2. The coefficients in the first two terms differ from those in Thorp's original paper due to unit conversion
+        #    from dB/kyd to dB/km.
+        S <- salinity
+        T <- T68fromT90(temperature)
+        f <- frequency / 1000 # convert to kHz
+        alpha <- 0.11 * ((f^2) / (1 + f^2)) + 44 * (f^2 / (4100 + f^2)) + (2.75e-4) * f^2 + 0.003 # (23.2)
+        alpha <- alpha / 1000 # dB/km to dB/m
     }
     # nolint end T_and_F_symbol_linter
     alpha

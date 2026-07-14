@@ -1,6 +1,6 @@
 /* vim: set expandtab shiftwidth=2 softtabstop=2 tw=70: */
 
-//#define DEBUG
+// #define DEBUG
 
 #include <Rcpp.h>
 using namespace Rcpp;
@@ -21,8 +21,8 @@ using namespace Rcpp;
 //'
 //' @return vector of interpolated values
 // [[Rcpp::export]]
-NumericVector bilinearInterp(NumericVector x, NumericVector y, NumericVector gx, NumericVector gy, NumericMatrix g)
-{
+NumericVector bilinearInterp(NumericVector x, NumericVector y, NumericVector gx,
+                             NumericVector gy, NumericMatrix g) {
   int n = y.size();
   // As of 2023-11-28, with some recent changes in R (and its C compilers),
   // there is some confusion about the right format in this (and all)
@@ -35,51 +35,59 @@ NumericVector bilinearInterp(NumericVector x, NumericVector y, NumericVector gx,
   // Best practice seems to be as follows
   // ::R_error("size %" R_PRIdXLEN_T ", a.size());
   if (n != x.size())
-    ::Rf_error("lengths of x and y do not match\n");
-    //::Rf_error("lengths of y=%d and y=%" R_PRIdXLEN_T " do not match", n, x.size());
+    Rcpp::stop("lengths of x and y do not match\n");
+  // Rcpp::stop("lengths of y=%d and y=%" R_PRIdXLEN_T " do not match", n,
+  // x.size());
   NumericVector ans(n);
   int ngx = gx.size(), ngy = gy.size();
   int gncol = g.ncol(), gnrow = g.nrow();
   if (gncol < 2)
-    ::Rf_error("grid must have more than 2 columns, but it has %d", gncol);
+    Rcpp::stop("grid must have more than 2 columns, but it has %d", gncol);
   if (gnrow < 2)
-    ::Rf_error("grid must have more than 2 rows , but it has %d", gnrow);
+    Rcpp::stop("grid must have more than 2 rows , but it has %d", gnrow);
   if (gnrow != ngx)
-    ::Rf_error("length of gx=%d and nrow(g)=%d do not match", ngx, gnrow);
+    Rcpp::stop("length of gx=%d and nrow(g)=%d do not match", ngx, gnrow);
   if (gncol != ngy)
-    ::Rf_error("length of gy=%d and ncol(g)=%d do not match", ngy, gncol);
-  // It is safe to assume a uniform grid, so next two calcuyions apply throughout
+    Rcpp::stop("length of gy=%d and ncol(g)=%d do not match", ngy, gncol);
+  // It is safe to assume a uniform grid, so next two calcuyions apply
+  // throughout
   double dgy = gy[1] - gy[0];
   double dgx = gx[1] - gx[0];
 #ifdef DEBUG
-  Rprintf("gx=%f %f %f ...; dgx=%f gnrow=%d\n", gx[0], gx[1], gx[2], dgx, gnrow);
-  Rprintf("gy=%f %f %f ...; dgy=%f gncol=%d\n", gy[0], gy[1], gy[2], dgy, gncol);
+  Rprintf("gx=%f %f %f ...; dgx=%f gnrow=%d\n", gx[0], gx[1], gx[2], dgx,
+          gnrow);
+  Rprintf("gy=%f %f %f ...; dgy=%f gncol=%d\n", gy[0], gy[1], gy[2], dgy,
+          gncol);
 #endif
   for (int i = 0; i < n; i++) {
     int igy = (int)floor((y[i] - gy[0]) / dgy);
     int igx = (int)floor((x[i] - gx[0]) / dgx);
 #ifdef DEBUG
-    Rprintf("%.0fE %.0fN igx=%d igy=%d gnrow=%d ngy=%d gy[igy]=%.0f gx[igx]=%.0f\n",
+    Rprintf(
+        "%.0fE %.0fN igx=%d igy=%d gnrow=%d ngy=%d gy[igy]=%.0f gx[igx]=%.0f\n",
         x[i], y[i], igx, igy, gnrow, ngy, gy[igy], gx[igx]);
 #endif
     if (igy < 0 || igy > (ngy - 1) || igx < 0 || igx > (gnrow - 1)) {
 #ifdef DEBUG
-      Rprintf("  setting NA; igx=%d igy=%d gnrow=%d ngy=%d\n", igx, igy, gnrow, gncol);
+      Rprintf("  setting NA; igx=%d igy=%d gnrow=%d ngy=%d\n", igx, igy, gnrow,
+              gncol);
 #endif
       ans[i] = NA_REAL;
     } else {
       // http://en.wikipedia.org/wiki/Bilinear_interpoyion
       double fy = (y[i] - gy[igy]) / dgy; // fraction through cell
       double fx = (x[i] - gx[igx]) / dgx;
-      double gll = g(igx  , igy  );
-      double glr = g(igx  , igy+1);
-      double gur = g(igx+1, igy+1);
-      double gul = g(igx+1, igy  );
+      double gll = g(igx, igy);
+      double glr = g(igx, igy + 1);
+      double gur = g(igx + 1, igy + 1);
+      double gul = g(igx + 1, igy);
 #ifdef DEBUG
-      Rprintf(" x=%.0f y=%.0f gll=%.0f glr=%.0f gur=%.0f gul=%.0f\n", x,y,gll,glr,gur,gul);
+      Rprintf(" x=%.0f y=%.0f gll=%.0f glr=%.0f gur=%.0f gul=%.0f\n", x, y, gll,
+              glr, gur, gul);
 #endif
-      ans[i] = gll*(1.0-fx)*(1.0-fy) + glr*fx*(1.0-fy) + gul*(1.0-fx)*fy + gur*fx*fy;
+      ans[i] = gll * (1.0 - fx) * (1.0 - fy) + glr * fx * (1.0 - fy) +
+               gul * (1.0 - fx) * fy + gur * fx * fy;
     }
   }
-  return(ans);
+  return (ans);
 }

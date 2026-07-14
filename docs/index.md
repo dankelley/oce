@@ -1,0 +1,159 @@
+# oce ![oce logo](https://raw.githubusercontent.com/dankelley/oce/develop/oce-logo-3.png)
+
+## Why use R for oceanographic analysis?
+
+The R language is popular in many branches of science, and Oceanography
+is no exception. With its broad statistical support, R is a natural
+choice for oceanographers in the biological, chemical and geological
+sub-disciplines. However, some physical oceanographers have remained
+attached to Matlab, which was widely adopted during the 1990s. Lately,
+this has been changing, as oceanographers turn to open-source systems
+such as Python and R. A particular strength of R is its provision of
+many powerful and well-vetted packages for handling specialized
+calculations. The oce package is a prime example.
+
+## What the oce package provides
+
+The oce package handles a wide variety of tasks that come up in the
+analysis of Oceanographic data. In addition to the present README file,
+a brief sketch of the package has been written by the core developers
+(Kelley Dan E., Clark Richards and Chantelle Layton, 2022. [oce: an R
+package for Oceanographic
+Analysis](https://doi.org/10.21105/joss.03594). Journal of Open Source
+Software, 7(71), 3594), and the primary developer uses the package
+extensively in his book about the place of R in oceanographic analysis
+(Kelley, Dan E., 2018. [Oceanographic Analysis with
+R](https://link.springer.com/book/10.1007/978-1-4939-8844-0). New York.
+Springer-Verlag ISBN 978-1-4939-8844-0). Details of oce functions are
+provided within the R help system, and in the package
+[webpage](https://dankelley.github.io/oce/).
+
+## Installing oce
+
+Stable versions of oce are available from CRAN, and may be installed
+from within R, in the same way as other packages. However, the CRAN
+version is only updated a few times a year (pursuant to policy), so many
+users install the `"develop"` branch instead. This branch may be updated
+several times per day, as the authors fix bugs or add features that are
+motivated by day-to-day usage. This is the branch favoured by users who
+need new features or who would wish to contribute to Oce development.
+
+To install a `develop` version that is usually under a week old, try
+using
+
+``` R
+install.packages("oce", repos = c("https://dankelley.r-universe.dev", "https://cloud.r-project.org"))
+```
+
+which does not require that you have compilers for C++, Fortran, etc. on
+your system. However, if you have those things, you can also try
+building straight from the github source using
+
+``` R
+remotes::install_github("dankelley/oce", ref="develop")
+```
+
+Note that most readers should also install Ocedata, with
+
+``` R
+remotes::install_github("dankelley/ocedata", ref="main")
+```
+
+which does not require compilers for C++, Fortran, etc.
+
+## Evolution of oce
+
+Oce is emphatically an open-source system, and so the participation of
+users is very important. This is why Git is used for version control of
+the Oce source code, and why GitHub is the host for that code. Users are
+invited to take part in the development process, by suggesting features,
+by reporting bugs, or just by watching as others do such things.
+Oceanography is a collaborative discipline, so it makes sense that the
+evolution of Oce be similarly collaborative.
+
+## Examples using built-in datasets
+
+### CTD
+
+``` R
+library(oce)
+data(ctd)
+plot(ctd, which=c(1,2,3,5), type="l", span=150)
+```
+
+![Sample CTD
+plot.](https://raw.githubusercontent.com/dankelley/oce/develop/oce-demo-1.png)
+
+Sample CTD plot.
+
+### Acoustic Doppler profiler
+
+``` R
+library(oce)
+data(adp)
+plot(adp)
+```
+
+![Sample adp
+plot.](https://raw.githubusercontent.com/dankelley/oce/develop/oce-demo-2.png)
+
+Sample adp plot.
+
+### Sealevel and tides
+
+``` R
+library(oce)
+data(sealevel)
+m <- tidem(sealevel)
+par(mfrow=c(2, 1))
+plot(sealevel, which=1)
+plot(m)
+```
+
+![Sample sealevel
+plot.](https://raw.githubusercontent.com/dankelley/oce/develop/oce-demo-3.png)
+
+Sample sealevel plot.
+
+### Echosounder
+
+``` R
+library(oce)
+data(echosounder)
+plot(echosounder, which=2, drawTimeRange=TRUE, drawBottom=TRUE)
+```
+
+![Sample echosounder
+plot.](https://raw.githubusercontent.com/dankelley/oce/develop/oce-demo-4.png)
+
+Sample echosounder plot.
+
+### Map
+
+``` R
+library(oce)
+par(mar=rep(0.5, 4))
+data(endeavour, package="ocedata")
+data(coastlineWorld, package="oce")
+mapPlot(coastlineWorld, col="gray")
+mapPoints(endeavour$longitude, endeavour$latitude, pch=20, col="red")
+```
+
+![Sample map
+plot.](https://raw.githubusercontent.com/dankelley/oce/develop/oce-demo-5.png)
+
+Sample map plot.
+
+### Landsat image
+
+``` R
+library(ocedata)
+library(oce)
+data(landsat)
+plot(landsat)
+```
+
+![Sample landsat image
+plot.](https://raw.githubusercontent.com/dankelley/oce/develop/oce-demo-6.png)
+
+Sample landsat image plot.

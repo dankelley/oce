@@ -66,7 +66,7 @@
       <h1>6. Subclassing oce objects</h1>
                         <h4 data-toc-skip class="author">Dan Kelley (<a href="https://orcid.org/0000-0001-7808-5911" class="external-link uri">https://orcid.org/0000-0001-7808-5911</a>)</h4>
             
-            <h4 data-toc-skip class="date">2025-04-19</h4>
+            <h4 data-toc-skip class="date">2026-06-30</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/dankelley/oce/blob/HEAD/vignettes/F_subclassing.Rmd" class="external-link"><code>vignettes/F_subclassing.Rmd</code></a></small>
       <div class="d-none name"><code>F_subclassing.Rmd</code></div>
@@ -135,7 +135,7 @@ much:</p>
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">o</span><span class="op">)</span></span>
 <span><span class="co">#&gt; * Processing Log</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     - 2025-04-19 15:31:11 UTC: `Create oce object`</span></span></code></pre></div>
+<span><span class="co">#&gt;     - 2026-06-30 13:00:01 UTC: `Create oce object`</span></span></code></pre></div>
 <p>but if we populate the object with some data and metadata</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">o</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/oceSetData.html">oceSetData</a></span><span class="op">(</span><span class="va">o</span>, <span class="st">"time"</span>, <span class="va">db</span><span class="op">$</span><span class="va">t</span><span class="op">)</span></span>
@@ -155,11 +155,11 @@ much:</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; * Processing Log</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     - 2025-04-19 15:31:11 UTC: `Create oce object`</span></span>
-<span><span class="co">#&gt;     - 2025-04-19 15:31:11 UTC: `oceSetData(object = o, name = "time", value = db$t)`</span></span>
-<span><span class="co">#&gt;     - 2025-04-19 15:31:11 UTC: `oceSetData(object = o, name = "longitude", value = db$lon)`</span></span>
-<span><span class="co">#&gt;     - 2025-04-19 15:31:11 UTC: `oceSetData(object = o, name = "latitude", value = db$lat)`</span></span>
-<span><span class="co">#&gt;     - 2025-04-19 15:31:11 UTC: `oceSetMetadata(object = o, name = "ID", value = 4201703)`</span></span></code></pre></div>
+<span><span class="co">#&gt;     - 2026-06-30 13:00:01 UTC: `Create oce object`</span></span>
+<span><span class="co">#&gt;     - 2026-06-30 13:00:01 UTC: `oceSetData(object = o, name = "time", value = db$t)`</span></span>
+<span><span class="co">#&gt;     - 2026-06-30 13:00:01 UTC: `oceSetData(object = o, name = "longitude", value = db$lon)`</span></span>
+<span><span class="co">#&gt;     - 2026-06-30 13:00:01 UTC: `oceSetData(object = o, name = "latitude", value = db$lat)`</span></span>
+<span><span class="co">#&gt;     - 2026-06-30 13:00:01 UTC: `oceSetMetadata(object = o, name = "ID", value = 4201703)`</span></span></code></pre></div>
 <p>Note, however, that the <code>ID</code> is not listed by
 <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code>. This is because the general form of that
 function is set up to focus on the contents of the <code>data</code>
@@ -176,7 +176,7 @@ interdependence of entries in the <code>data</code> slot.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">o</span>, pch <span class="op">=</span> <span class="fl">20</span>, cex <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
-<img src="F_subclassing_files/figure-html/unnamed-chunk-8-1.png" alt="**Figure 1.** Demonstration of base-level plot()." width="288"><p class="caption">
+<img src="F_subclassing_files/figure-html/unnamed-chunk-8-1.png" class="r-plt" alt="**Figure 1.** Demonstration of base-level plot()." width="288"><p class="caption">
 <strong>Figure 1.</strong> Demonstration of base-level plot().
 </p>
 </div>
@@ -283,7 +283,7 @@ argument can be used for customization, as in the following example.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">d</span>, which <span class="op">=</span> <span class="fl">2</span>, drawTimeRange <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">d</span>, which <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
-<img src="F_subclassing_files/figure-html/unnamed-chunk-14-1.png" alt="**Figure 2.** Demonstration of specialized plot()." width="700.0000032"><p class="caption">
+<img src="F_subclassing_files/figure-html/unnamed-chunk-14-1.png" class="r-plt" alt="**Figure 2.** Demonstration of specialized plot()." width="700.0000032"><p class="caption">
 <strong>Figure 2.</strong> Demonstration of specialized plot().
 </p>
 </div>
@@ -322,7 +322,7 @@ drifter. The rest of the information provided by the base-level
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; * Processing Log</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     - 2025-04-19 15:31:12 UTC: `create 'drifter' object`</span></span></code></pre></div>
+<span><span class="co">#&gt;     - 2026-06-30 13:00:02 UTC: `create 'drifter' object`</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="specializing-the-accessor">Specializing the <code>[[</code> accessor<a class="anchor" aria-label="anchor" href="#specializing-the-accessor"></a>
@@ -360,7 +360,7 @@ adding to <code>[[</code>. This may be done as follows.</p>
 <span><span class="fu"><a href="../reference/oce.plot.ts.html">oce.plot.ts</a></span><span class="op">(</span><span class="va">d</span><span class="op">[[</span><span class="st">"time"</span><span class="op">]</span><span class="op">]</span>, <span class="va">uv</span><span class="op">$</span><span class="va">u</span>, ylab <span class="op">=</span> <span class="st">"Eastward velo. [m/s]"</span>, grid <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/oce.plot.ts.html">oce.plot.ts</a></span><span class="op">(</span><span class="va">d</span><span class="op">[[</span><span class="st">"time"</span><span class="op">]</span><span class="op">]</span>, <span class="va">uv</span><span class="op">$</span><span class="va">v</span>, ylab <span class="op">=</span> <span class="st">"Northward vel. [m/s]"</span>, grid <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
-<img src="F_subclassing_files/figure-html/unnamed-chunk-18-1.png" alt="**Figure 3.** Velocities inferred from drifter motion." width="360"><p class="caption">
+<img src="F_subclassing_files/figure-html/unnamed-chunk-18-1.png" class="r-plt" alt="**Figure 3.** Velocities inferred from drifter motion." width="360"><p class="caption">
 <strong>Figure 3.</strong> Velocities inferred from drifter motion.
 </p>
 </div>
@@ -377,7 +377,7 @@ signals (but see Exercise 3), as follows.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/stats/acf.html" class="external-link">acf</a></span><span class="op">(</span><span class="va">uv</span><span class="op">$</span><span class="va">v</span>, main <span class="op">=</span> <span class="st">""</span>, ylab <span class="op">=</span> <span class="st">"v ACF"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span>v <span class="op">=</span> <span class="va">M2period</span>, col <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
-<img src="F_subclassing_files/figure-html/unnamed-chunk-19-1.png" alt="**Figure 4.** Autocorrelation analysis of drifter velocities, showing also the M2 period." width="360"><p class="caption">
+<img src="F_subclassing_files/figure-html/unnamed-chunk-19-1.png" class="r-plt" alt="**Figure 4.** Autocorrelation analysis of drifter velocities, showing also the M2 period." width="360"><p class="caption">
 <strong>Figure 4.</strong> Autocorrelation analysis of drifter
 velocities, showing also the M2 period.
 </p>
@@ -426,7 +426,7 @@ frequency.</p></li>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer>

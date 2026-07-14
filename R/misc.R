@@ -1725,7 +1725,6 @@ detrend <- function(x, y) {
 }
 
 
-
 #' Remove Spikes From a Time Series
 #'
 #' The method identifies spikes with respect to a "reference" time-series, and
@@ -1817,8 +1816,9 @@ detrend <- function(x, y) {
 #' CTD <- despike(ctd)
 #' plot(CTD)
 despike <- function(
-    x, reference = c("median", "smooth", "trim"), n = 4, k = 7, min = NA, max = NA,
-    replace = c("reference", "NA"), skip) {
+  x, reference = c("median", "smooth", "trim"), n = 4, k = 7, min = NA, max = NA,
+  replace = c("reference", "NA"), skip
+) {
     if (is.vector(x)) {
         x <- despikeColumn(x, reference = reference, n = n, k = k, min = min, max = max, replace = replace)
     } else {
@@ -1863,8 +1863,9 @@ despike <- function(
 }
 
 despikeColumn <- function(
-    x, reference = c("median", "smooth", "trim"), n = 4, k = 7, min = NA, max = NA,
-    replace = c("reference", "NA")) {
+  x, reference = c("median", "smooth", "trim"), n = 4, k = 7, min = NA, max = NA,
+  replace = c("reference", "NA")
+) {
     reference <- match.arg(reference)
     replace <- match.arg(replace)
     gave.min <- !is.na(min)
@@ -1916,7 +1917,6 @@ despikeColumn <- function(
 }
 
 
-
 #' Substitute NA for Data Outside a Range
 #'
 #' Substitute NA for data outside a range, e.g. to remove wild spikes in data.
@@ -1963,7 +1963,6 @@ unabbreviateYear <- function(year) {
     # handle e.g. 2008 as 2008 (full year), 8 (year-2000 offset), or 108 (year 1900 offset)
     ifelse(year > 1800, year, ifelse(year > 50, year + 1900, year + 2000))
 }
-
 
 
 #' Unwrap an Angle That Suffers Modulo-360 Problems
@@ -2376,6 +2375,11 @@ resizableLabel <- function(item, axis = "x", sep, unit = NULL, debug = getOption
         var <- gettext("Potential density anomaly", domain = "R-oce")
         full <- bquote(.(var) * .(L) * kg / m^3 * .(R))
         abbreviated <- bquote(sigma[theta] * .(L) * kg / m^3 * .(R))
+    } else if (item == "rho") {
+        # unit is ignored, since this quantity has a fixed meaning
+        var <- gettext("Density", domain = "R-oce")
+        full <- bquote(.(var) * .(L) * kg / m^3 * .(R))
+        abbreviated <- bquote(rho * .(L) * kg / m^3 * .(R))
     } else if (item == "sigma0") {
         # unit is ignored, since this quantity has a fixed meaning
         var <- gettext("Potential density anomaly wrt surface", domain = "R-oce")
@@ -2401,6 +2405,11 @@ resizableLabel <- function(item, axis = "x", sep, unit = NULL, debug = getOption
         var <- gettext("Potential density anomaly wrt 4000 dbar", domain = "R-oce")
         full <- bquote(.(var) * .(L) * kg / m^3 * .(R))
         abbreviated <- bquote(sigma[4] * .(L) * kg / m^3 * .(R))
+    } else if (item == "sigmaTheta") {
+        # unit is ignored, since this quantity has a fixed meaning
+        var <- gettext("Potential density anomaly", domain = "R-oce")
+        full <- bquote(.(var) * .(L) * kg / m^3 * .(R))
+        abbreviated <- bquote(sigma[theta] * .(L) * kg / m^3 * .(R))
     } else if (item %in% c("salinity", "SP")) {
         # unit is ignored, since this quantity has a fixed meaning
         var <- "Salinity"
@@ -2644,6 +2653,10 @@ resizableLabel <- function(item, axis = "x", sep, unit = NULL, debug = getOption
         # unit is ignored
         unit <- gettext("cph", domain = "R-oce")
         abbreviated <- full <- bquote(.(var) * .(L) * .(unit[[1]]) * .(R))
+    } else if (item == "Rrho") {
+        abbreviated <- full <- expression(R[rho])
+    } else if (item == "RrhoSF") {
+        abbreviated <- full <- expression(R[rho * "," * SF])
     } else if (item == paste("sound", "speed")) {
         var <- gettext("Sound Speed", domain = "R-oce")
         # unit is ignored
@@ -2672,8 +2685,18 @@ resizableLabel <- function(item, axis = "x", sep, unit = NULL, debug = getOption
     whichAxis <- if (axis == "x") 1 else 2
     spaceAvailable <- abs(par("fin")[whichAxis])
     fraction <- spaceNeeded / spaceAvailable
+    oceDebug(debug, "full: '", as.character(full), "'\n")
+    oceDebug(debug, "abbreviated: '", as.character(abbreviated), "'\n")
+    oceDebug(debug, "fraction: ", fraction, "\n")
+    if (fraction < 1) {
+        rval <- full
+        oceDebug(debug, "fraction < 1, so will return full\n")
+    } else {
+        rval <- abbreviated
+        oceDebug(debug, "fraction >= 1, so will return abbreviated\n")
+    }
     oceDebug(debug, "END resizableLabel\n", unindent = 1)
-    if (fraction < 1) full else abbreviated
+    rval
 }
 
 
@@ -3234,52 +3257,55 @@ gravity <- function(latitude = 45, degrees = TRUE) {
 
 #' Make a Digital Filter
 #'
-#' The filter is suitable for use by [filter()],
-#' [convolve()] or (for the `asKernal=TRUE` case) with
-#' [kernapply()].  Note that [convolve()] should be faster
-#' than [filter()], but it cannot be used if the time series has
-#' missing values.  For the Blackman-Harris filter, the half-power frequency is
-#' at `1/m` cycles per time unit, as shown in the \dQuote{Examples}
-#' section.  When using [filter()] or [kernapply()] with
-#' these filters, use `circular=TRUE`.
+#' The results can be used in two different ways.  CASE 1: for filtering, using
+#' [filter()] or [convolve()] or (for the `asKernal=TRUE` case) using
+#' [kernapply()].  For the Blackman-Harris filter, the half-power frequency is
+#' at `1/m` cycles per time unit, as shown in the \dQuote{Examples} section.
+#' When using [filter()] or [kernapply()] with these filters, use
+#' `circular=TRUE`. CASE 2: for windowing, if `normalize` is set to FALSE, as
+#' for example in computing a Welch spectral estimate.
 #'
 #' @param type a string indicating the type of filter to use.  (See Harris
-#' (1978) for a comparison of these and similar filters.)
+#' (1978) for a comparison of these and similar filters.) The choices for
+#' the present function are as follows.
 #'
 #' * `"blackman-harris"` yields a modified raised-cosine filter designated
 #' as "4-Term (-92 dB) Blackman-Harris" by Harris (1978; coefficients given in
 #' the table on page 65).  This is also called "minimum 4-sample Blackman
-#' Harris" by that author, in his Table 1, which lists figures of merit as
-#' follows: highest side lobe level -92dB; side lobe fall off -6 db/octave;
-#' coherent gain 0.36; equivalent noise bandwidth 2.00 bins; 3.0-dB bandwidth
-#' 1.90 bins; scallop loss 0.83 dB; worst case process loss 3.85 dB; 6.0-db
-#' bandwidth 2.72 bins; overlap correlation 46 percent for 75\% overlap and 3.8
-#' for 50\% overlap.  Note that the equivalent noise bandwidth is the width of
-#' a spectral peak, so that a value of 2 indicates a cutoff frequency of
-#' `1/m`, where `m` is as given below.
+#' Harris" by that author, in his Table 1.
 #'
 #' * `"rectangular"` for a flat filter.  (This is just for convenience.  Note that
 #' [`kernel`]`("daniell",....)` gives the same result, in kernel form.)
-#' `"hamming"` for a Hamming filter (a raised-cosine that does not taper
-#' to zero at the ends)
 #'
-#' * `"hann"` (a raised cosine that tapers to zero at the ends).
+#' * `"hamming"` for a raised-cosine filter designed by Hamming. The
+#' mathematical form is `a-(1-a)*cos(2*pi*i/(m-1))` where `a` is 0.54 and `i` is
+#' `seq(0,m-1)`.
 #'
-#' @param m length of filter.  This should be an odd number, for any
-#' non-rectangular filter.
+#' * `"hann"` for a cosine filter that tapers to zero at the ends, i.e.
+#' of the same mathematical form as `"hamming"`, but with
+#' `a` equal to 0.5.
+#'
+#' @param m length of filter.
+#'
+#' @param normalize logical value indicating whether to return numbers that sum
+#' to 1.  This is TRUE by default, which is useful if the purpose is to lowpass
+#' filter a timeseries without altering power in the pass-band.  However,
+#' `normalize=FALSE` is the right choice if the purpose is to window a
+#' timeseries, e.g. in computing a spectral estimate using Welch's method (see
+#' [pwelch()]).
 #'
 #' @param asKernel boolean, set to `TRUE` to get a smoothing kernel for
 #' the return value.
 #'
-#' @return If `asKernel` is `FALSE`, this returns a list of filter
-#' coefficients, symmetric about the midpoint and summing to 1.  These may be
-#' used with [filter()], which should be provided with argument
-#' `circular=TRUE` to avoid phase offsets.  If `asKernel` is
-#' `TRUE`, the return value is a smoothing kernel, which can be applied to
-#' a timeseries with [kernapply()], whose bandwidth can be determined
-#' with [bandwidth.kernel()], and which has both print and plot
-#' methods.
-#'
+#' @return If `asKernel` is `FALSE`, this returns a vector of filter
+#' coefficients, symmetric about the midpoint. The vector will sum to 1 if
+#' `normalize=TRUE` (i.e. by default).  The return value may be used with
+#' [filter()], which should be provided with argument `circular=TRUE` to avoid
+#' phase offsets.  If `asKernel` is TRUE and if `normalize` is FALSE, an error
+#' is reported.  On the other hand, if `asKernel` is TRUE and `normalize` is
+#' FALSE, then the return value is a smoothing kernel, which can be applied to a
+#' timeseries with [kernapply()], whose bandwidth can be determined with
+#' [bandwidth.kernel()], and which has both print and plot methods.
 #'
 #' @references F. J. Harris, 1978.  On the use of windows for harmonic analysis
 #' with the discrete Fourier Transform.  *Proceedings of the IEEE*, 66(1),
@@ -3288,78 +3314,48 @@ gravity <- function(latitude = 45, degrees = TRUE) {
 #' @examples
 #' library(oce)
 #'
-#' # 1. Demonstrate step-function response
+#' # Demonstrate step-function response
 #' y <- c(rep(1, 10), rep(-1, 10))
 #' x <- seq_along(y)
 #' plot(x, y, type = "o", ylim = c(-1.05, 1.05))
 #' BH <- makeFilter("blackman-harris", 11, asKernel = FALSE)
 #' H <- makeFilter("hamming", 11, asKernel = FALSE)
 #' yBH <- stats::filter(y, BH)
-#' points(x, yBH, col = 2, type = "o")
+#' lines(x, yBH, type = "o", col = 2)
 #' yH <- stats::filter(y, H)
-#' points(yH, col = 3, type = "o")
+#' lines(x, yH, type = "o", col = 3)
+#' grid()
 #' legend("topright",
-#'     col = 1:3, cex = 2 / 3, pch = 1,
+#'     col = 1:3, bg = "white",
 #'     legend = c("input", "Blackman Harris", "Hamming")
 #' )
-#'
-#' # 2. Show theoretical and practical filter gain, where
-#' #    the latter is based on random white noise, and
-#' #    includes a particular value for the spans
-#' #    argument of spectrum(), etc.
-#'
-#' @section Sample of Usage:
-#' \preformatted{
-#' # need signal package for this example
-#' r <- rnorm(2048)
-#' rh <- stats::filter(r, H)
-#' rh <- rh[is.finite(rh)] # kludge to remove NA at start/end
-#' sR <- spectrum(r, plot=FALSE, spans=c(11, 5, 3))
-#' sRH <- spectrum(rh, plot=FALSE, spans=c(11, 5, 3))
-#' par(mfrow=c(2, 1), mar=c(3, 3, 1, 1), mgp=c(2, 0.7, 0))
-#' plot(sR$freq, sRH$spec/sR$spec, xlab="Frequency", ylab="Power Transfer",
-#'      type="l", lwd=5, col="gray")
-#' theory <- freqz(H, n=seq(0,pi,length.out=100))
-#' # Note we must square the modulus for the power spectrum
-#' lines(theory$f/pi/2, Mod(theory$h)^2, lwd=1, col="red")
-#' grid()
-#' legend("topright", col=c("gray", "red"), lwd=c(5, 1), cex=2/3,
-#'        legend=c("Practical", "Theory"), bg="white")
-#' plot(log10(sR$freq), log10(sRH$spec/sR$spec),
-#'      xlab="log10 Frequency", ylab="log10 Power Transfer",
-#'      type="l", lwd=5, col="gray")
-#' theory <- freqz(H, n=seq(0,pi,length.out=100))
-#' # Note we must square the modulus for the power spectrum
-#' lines(log10(theory$f/pi/2), log10(Mod(theory$h)^2), lwd=1, col="red")
-#' grid()
-#' legend("topright", col=c("gray", "red"), lwd=c(5, 1), cex=2/3,
-#'        legend=c("Practical", "Theory"), bg="white")
-#' }
-#'
 #' @author Dan Kelley
-makeFilter <- function(type = c("blackman-harris", "rectangular", "hamming", "hann"), m, asKernel = TRUE) {
+makeFilter <- function(type = c("blackman-harris", "rectangular", "hamming", "hann"), m, normalize = TRUE, asKernel = TRUE) {
     type <- match.arg(type)
     if (missing(m)) {
         stop("must supply 'm'")
     }
-    i <- seq(0, m - 1)
-    if (type == "blackman-harris") {
-        # See Harris (1978) table on p65
-        if (m == 2 * floor(m / 2)) {
-            m <- m + 1
-            warning("increased filter length by 1, to make it odd")
-        }
-        a <- c(0.35875, 0.488829, 0.14128, 0.01168) # 4-term (-92dB) coefficients
-        ff <- pi * i / (m - 1)
-        coef <- a[1] - a[2] * cos(2 * ff) + a[3] * cos(4 * ff) - a[4] * cos(6 * ff)
-    } else if (type == "rectangular") {
-        coef <- rep(1 / m, m)
-    } else if (type == "hamming") {
-        coef <- 0.54 - 0.46 * cos(2 * pi * i / (m - 1))
-    } else if (type == "hann") {
-        coef <- 0.50 - 0.50 * cos(2 * pi * i / (m - 1))
+    if (!normalize && asKernel) {
+        stop("cannot specify asKernel=TRUE if normalize=FALSE")
     }
-    coef <- coef / sum(coef) # ensure unit sum
+    if (type == "rectangular") {
+        coef <- rep(1, m) # 2025-07-06 this used to be 1/m repeated
+    } else {
+        i <- seq(0, m - 1)
+        if (type == "blackman-harris") {
+            # See Harris (1978) table on p65
+            a <- c(0.35875, 0.488829, 0.14128, 0.01168) # 4-term (-92dB) coefficients
+            ff <- pi * i / (m - 1)
+            coef <- a[1] - a[2] * cos(2 * ff) + a[3] * cos(4 * ff) - a[4] * cos(6 * ff)
+        } else if (type == "hamming") {
+            coef <- 0.54 - 0.46 * cos(2 * pi * i / (m - 1))
+        } else if (type == "hann") {
+            coef <- 0.50 - 0.50 * cos(2 * pi * i / (m - 1))
+        }
+    }
+    if (normalize) {
+        coef <- coef / sum(coef)
+    }
     if (!asKernel) {
         return(coef)
     }
@@ -3368,8 +3364,12 @@ makeFilter <- function(type = c("blackman-harris", "rectangular", "hamming", "ha
     }
     middle <- ceiling(m / 2)
     coef <- coef[middle:m]
-    # the r=0 is to prevent code-analysis warning; it only applies to Fejer, which we do not use
-    return(kernel(coef = coef, name = paste(type, "(", m, ")", sep = ""), r = 0))
+    if (normalize) {
+        return(coef)
+    } else {
+        # the r=0 is to prevent code-analysis warning; it only applies to Fejer, which we do not use
+        return(kernel(coef = coef, name = paste(type, "(", m, ")", sep = ""), r = 0))
+    }
 }
 
 #' Grid Data Using the Barnes Algorithm
@@ -3398,8 +3398,12 @@ makeFilter <- function(type = c("blackman-harris", "rectangular", "hamming", "ha
 #' examined if `xg` and `yg` are not supplied.
 #'
 #' @param xr,yr optional values defining the x and y radii of the weighting ellipse.
-#' If not supplied, these are calculated as the span of x
-#' and y over the square root of the number of data.
+#' If not supplied, these are calculated respectively as the span of x
+#' and y over the square root of the number of data. Be aware that
+#' this method can be problematic if there are many repeated (x,y)
+#' pairs, as for example in CTD profiles. In most serious analyses,
+#' it will make sense to supply `xr` and `yr` based on knowledge
+#' of the dataset or the domain.
 #'
 #' @param gamma grid-focussing parameter.  At each successive iteration, `xr` and
 #' `yr` are reduced by a factor of `sqrt(gamma)`.
@@ -3481,11 +3485,12 @@ makeFilter <- function(type = c("blackman-harris", "rectangular", "hamming", "ha
 #' plot(S, p, cex = 0.5, col = "blue", ylim = rev(range(p)))
 #' lines(g$zg, g$xg, col = "red")
 interpBarnes <- function(
-    x, y, z, w,
-    xg, yg, xgl, ygl,
-    xr, yr, gamma = 0.5, iterations = 2, trim = 0,
-    pregrid = FALSE,
-    debug = getOption("oceDebug")) {
+  x, y, z, w,
+  xg, yg, xgl, ygl,
+  xr, yr, gamma = 0.5, iterations = 2, trim = 0,
+  pregrid = FALSE,
+  debug = getOption("oceDebug")
+) {
     debug <- max(0, debug)
     oceDebug(debug, "interpBarnes(",
         argShow(x),
@@ -4830,6 +4835,12 @@ integrateTrapezoid <- function(x, y, type = c("A", "dA", "cA"), xmin, xmax) {
 grad <- function(h, x = seq(0, 1, length.out = nrow(h)), y = seq(0, 1, length.out = ncol(h))) {
     if (missing(h)) {
         stop("must give h")
+    }
+    if (length(x) < 3) {
+        stop("length of x must exceed 3, but it is ", length(x))
+    }
+    if (length(y) < 3) {
+        stop("length of y must exceed 3, but it is ", length(y))
     }
     if (length(x) != nrow(h)) {
         stop("length of x (", length(x), ") must equal number of rows in h (", nrow(h), ")")

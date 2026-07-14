@@ -49,9 +49,9 @@ the table at the start of the \dQuote{Details} section.  In the character
 case, it must be a string taken from that same table.}
 
 \item{dataSet}{a positive integer that indicates which of the possibly
-several data sets stored within a file is to be focussed upon.  By
-default, the first data set is chosen. Note that data sets are found
-by trying to match each text data chunk against the regular expression
+several data sets stored within a file is to be focussed upon.  By default,
+the first data set is chosen. Note that data sets are found by trying to
+match each text data chunk against the regular expression
 \code{"^GETCLOCKSTR,TIME="}.}
 
 \item{tz}{a character value indicating time zone. This is used in
@@ -62,12 +62,11 @@ location.}
 
 \item{plan}{optional integer specifying which 'plan' to focus on (see}
 
-\item{TOC}{a logical value.  If this is FALSE (the default) then
-the other parameters of the function are used to select data from
-the indicated \code{filename}, and an \linkS4class{adp} object is returned.
-However, if \code{TOC} is TRUE, then a dataframe detailing the number
-of entries in each of the datasets stored within the file is
-returned.}
+\item{TOC}{a logical value.  If this is FALSE (the default) then the other
+parameters of the function are used to select data from the indicated
+\code{filename}, and an \linkS4class{adp} object is returned. However, if \code{TOC} is TRUE,
+then a dataframe detailing the number of entries in each of the datasets
+stored within the file is returned.}
 
 \item{debug}{an integer value indicating the level of debugging.  Set to 1 to
 get a moderate amount of debugging information, from the R code only, to 2 to
@@ -75,17 +74,16 @@ get some debugging information from the C++ code that is used to parse the
 data chunks, or to 3 for intensive debugging at both levels.}
 
 \item{orientation, distance, monitor, despike}{ignored, provided only for
-calling compatibility with other functions that read \linkS4class{adp}
-files.  A warning is issued if any of these is supplied in a call
-to \code{read.adp.ad2cp()}.}
+calling compatibility with other functions that read \linkS4class{adp} files.  A
+warning is issued if any of these is supplied in a call to
+\code{read.adp.ad2cp()}.}
 
-\item{\dots}{ignored parameters that might be passed to \code{read.adp.ad2cp()}
-by \code{\link[=read.oce]{read.oce()}}.}
+\item{\dots}{ignored parameters that might be passed to \code{read.adp.ad2cp()} by
+\code{\link[=read.oce]{read.oce()}}.}
 }
 \value{
-\code{read.adp.ad2cp()} returns either an \linkS4class{adp} object or
-the number of data sets within the file, according to the value
-of \code{TOC}.
+\code{read.adp.ad2cp()} returns either an \linkS4class{adp} object or the number
+of data sets within the file, according to the value of \code{TOC}.
 }
 \description{
 This function is under active development and may change without notice.  In
@@ -106,67 +104,75 @@ blanking distance, the cell size, the number of cells, etc.  Such items have
 a natural pairing with elements of the \code{data} slot, and \code{oce} uses this
 pairing in constructing plots and other items. However, an AD2CP file might
 combine such data with echosounder measurements, and these will have
-different values for number of beams and so forth.  This poses a challenge
-in naming conventions within the \code{oce} object, with ripple effects for
-plotting and data access.  Those ripple effects would extend beyond \code{oce}
-itself to user code.  To avoid such problems, \code{\link[=read.adp.ad2cp]{read.adp.ad2cp()}}
-is designed to focus on one data type at a time, relying on users to
-keep track of the resultant object, perhaps to combine it with other objects
-from within the AD2CP file or other files, in the normal R manner.
+different values for number of beams and so forth.  This poses a challenge in
+naming conventions within the \code{oce} object, with ripple effects for plotting
+and data access.  Those ripple effects would extend beyond \code{oce} itself to
+user code.  To avoid such problems, \code{\link[=read.adp.ad2cp]{read.adp.ad2cp()}} is designed to focus
+on one data type at a time, relying on users to keep track of the resultant
+object, perhaps to combine it with other objects from within the AD2CP file
+or other files, in the normal R manner.
 
-The permitted values for \code{dataType} are shown in the table below;
-the \code{dataType} argument of \code{\link[=read.adp.ad2cp]{read.adp.ad2cp()}} may be given
-as listed in any of the first 3 columns of this table.\tabular{rrrr}{
+The permitted values for \code{dataType} are shown in the table below; the
+\code{dataType} argument of \code{\link[=read.adp.ad2cp]{read.adp.ad2cp()}} may be given as listed in any of
+the first 3 columns of this table.\tabular{rrrr}{
    code (raw) \tab code (integer) \tab oce name \tab notes \cr
    ---------- \tab -------------- \tab ------------------- \tab ------ \cr
    \code{0x15} \tab 21 \tab \code{burst} \tab - \cr
    \code{0x16} \tab 22 \tab \code{average} \tab - \cr
-   \code{0x17} \tab 23 \tab \code{bottomTrack} \tab - \cr
+   \code{0x17} \tab 23 \tab \code{bottomTrack} \tab 1 \cr
    \code{0x18} \tab 24 \tab \code{interleavedBurst} \tab - \cr
-   \code{0x1a} \tab 26 \tab \code{burstAltimeterRaw} \tab - \cr
+   \code{0x1a} \tab 26 \tab \code{burstAltimeterRaw} \tab 2 \cr
    \code{0x1b} \tab 27 \tab \code{DVLBottomTrack} \tab - \cr
    \code{0x1c} \tab 28 \tab \code{echosounder} \tab - \cr
    \code{0x1d} \tab 29 \tab \code{DVLWaterTrack} \tab - \cr
    \code{0x1e} \tab 30 \tab \code{altimeter} \tab - \cr
-   \code{0x1f} \tab 31 \tab \code{averageAltimeter} \tab - \cr
+   \code{0x1f} \tab 31 \tab \code{averageAltimeterRaw} \tab 3 \cr
    \code{0x23} \tab 35 \tab \code{echosounderRaw} \tab - \cr
-   \code{0x24} \tab 36 \tab \code{echosounderRawTx} \tab 1 \cr
-   \code{0x30} \tab 48 \tab \code{waves} \tab 2 \cr
-   \code{0xa0} \tab 160 \tab \code{text} \tab 3 \cr
-   `0xc0 \tab 192 \tab \code{format8} \tab 4 \cr
-   `0xc8 \tab 200 \tab \verb{vector 2} \tab 5 \cr
+   \code{0x24} \tab 36 \tab \code{echosounderRawTx} \tab 4 \cr
+   \code{0x30} \tab 48 \tab \code{waves} \tab 5 \cr
+   \code{0xa0} \tab 160 \tab \code{text} \tab 6 \cr
 }
 
 
-Note 1: Code 0x24 (\code{echosounderRawTx}) has some coding done, but
-it is untested, as the developers lack a data file exemplar. For
-now, this data type is read as though it were 0x23, which is
-likely to produce poor results or cause errors in processing.
+Note 1. Tentative support for reading \code{dataType=bottomTrack} was added in
+April of 2026. The problem with this \code{dataType} is that the most recent
+Nortek manuals (e.g. Reference 3) do not provide any documentation, and there
+are contradictions between an older manual (Reference 4) and information
+provided in a Nortek email to Dan Kelley and Clark Richards, dated 2026-03-24
+(Reference 5). The known problems include the following (see
+\verb{https://github.com/dankelley/oce/issues/2368} for discussion),  (1) The
+\code{ensembleCounter} field is certainly incorrect, as it cycles from 1 to 60 in
+test files, instead of increasing monotonically. (2) The byte that is
+supposed to hold both the coordinate system and the number of beams seems not
+to be configured identically across the handful of test files used during oce
+development. As a remedy, the function tries to detect faulty values, and
+switches to using the header record if so (issuing a warning so the user will
+know that assumptions have been made).
 
-Note 2: Code 0x30 (\code{waves}) is recognized but not handled
-yet.
+Note 2. In reading a file with \code{burstAltimeterRaw} data components, a potential problem
+was noticed with that the part of the file that indicates the number of
+altimeter samples (called \code{NSAMP} in the Nortek documentation). The stated
+value was 2 times the value held in the header (text) portion of the file,
+and reading the larger value created a matrix that had
+the upper half filled with odd striping patterns. Therefore, the function
+checks the two indications of length, and uses the value in the text block if
+they disagree.  (See https://github.com/dankelley/oce/issues/2326.)
 
-Note 3: Code 0xa0 (\code{text}) holds a text string that defines
-the settings used in creating the file.  This can be quite
-helpful in debugging and analysis.
+Note 3. In April 2026, the name \code{averageAltimeter} (hex code 0x14) was changed to
+\code{averageAltimeterRaw}, to be more consistent with names used in Reference 3.
+The old name will still work, but a warning will be issued indicating that the
+name was automatically replaced with the new name.
 
-Note 4: Code 0xc0 (\code{format8}) is not handled, and trying to read
-this yields an error indicating this fact.  This code was listed,
-without further documentation in Nortek (2024) manual.  However,
-it is not listed in Nortek (2025). Accordingly, it is not handled
-by read.adp.ad2cp`.
+Note 4: Code 0x24 (\code{echosounderRawTx}) has some coding done, but it is
+untested, as the developers lack a data file exemplar. For now, this data
+type is read as though it were 0x23, which is likely to produce poor results
+or cause errors in processing.
 
-Note 5: Code 0xc8 (\verb{vector 2}) is listed in Nortek (2025) but that
-document provides no information on the format. Accordingly, it is
-not handled by read.adp.ad2cp`.
+Note 5: Code 0x30 (\code{waves}) is recognized but not handled yet.
+
+Note 6: Code 0xa0 (\code{text}) holds a text string that defines the settings used
+in creating the file.  This can be quite helpful in debugging and analysis.
 }
-\section{Sample of Usage}{
-
-\preformatted{
-d <- read.adp.ad2cp("~/test.ad2cp", to=100) # or read.oce()
-}
-}
-
 \section{How the binary file is decoded}{
 
 
@@ -200,32 +206,46 @@ components to physical units.
 }
 }
 
+\section{Problems}{
+
+\enumerate{
+\item It is unclear from the manufacturer's manuals whether
+\code{NSAMP} is a 2-byte value (as stated in old manuals) or a 4-byte value (as
+in a manual available in or around June 2025). The present function assumes a 4-byte
+value, which works with a test file available to the authors.
+The manufacturer has been asked for clarity on this; see
+https://github.com/dankelley/oce/issues/2326.
+}
+}
+
 \examples{
 library(oce)
 # You can run this within the oce directory, if you clone from github.
 file <- "tests/testthat/local_data/ad2cp/S102791A002_Barrow_v2.ad2cp"
 if (file.exists(file)) {
     library(oce)
-    d <- read.oce(file)
+    print(read.oce(file, TOC = TRUE))
+    d <- read.oce(file, dataType = "burstAltimeterRaw")
+    imagep(d[["time"]], d[["altimeterRawDistance"]], d[["altimeterRawSamples"]])
 }
 
 }
 \references{
-Nortek AS. “Integrator’s Guide: Signature.” Nortek AS, April 30, 2025.
-\url{https://support.nortekgroup.com/hc/en-us/article_attachments/19830760385436}.
-
-Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz (2024.1),} 2024.
-(This was once at \code{https://support.nortekgroup.com/hc/en-us/articles/360029513952-Integrators-Guide-Signature}
+\enumerate{
+\item Nortek AS. “Integrator's Guide: Signature.” Nortek AS, April 30, 2025.
+\code{https://support.nortekgroup.com/hc/en-us/article_attachments/19830760385436}
+(this link failed in a test on 2025-07-30).
+\item Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz (2024.1),}
+2024. (This was once at
+\code{https://support.nortekgroup.com/hc/en-us/articles/360029513952-Integrators-Guide-Signature}
 but a test on 2025-05-26 revealed that this link no longer worked.)
-
-Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz.} Nortek AS,
-2017.
-
-Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz.} Nortek AS,
-2018.
-
-Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz.} Nortek AS,
-March 31, 2022.
+\item Nortek AS. \dQuote{Integrator's Guide Signature.} March 5, 2026.
+\url{https://support.nortekgroup.com/hc/en-us/article_attachments/25920785046428}.
+\item Nortek AS. \dQuote{Signature Integration 55|250|500|1000kHz (2017).}
+February 10, 2017.
+\url{https://assets.nortekgroup.com/software/N3015-007-Integrators-Guide-AD2CP_1018.pdf}.
+\item \url{https://github.com/dankelley/oce/issues/2368}
+}
 }
 \seealso{
 Other things related to adp data: 
@@ -292,7 +312,7 @@ Other functions that read adp data:
 \code{\link{read.aquadoppProfiler}()}
 }
 \author{
-Dan Kelley
+Dan Kelley and Clark Richards
 }
 \concept{functions that read adp data}
 \concept{things related to ad2cp data}

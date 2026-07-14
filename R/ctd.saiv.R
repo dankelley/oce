@@ -72,7 +72,7 @@ read.ctd.saiv <- function(file, encoding = "latin1", debug = getOption("oceDebug
         stop("must supply 'file'")
     }
     debug <- max(0L, as.integer(debug))
-    oceDebug(debug, "read.ctd.saiv(file=\"", file, "\", ...) BEGIN\n", unindent = 1)
+    oceDebug(debug, "read.ctd.saiv(file=\"", file, "\", ...) START\n", unindent = 1)
     filename <- ""
     if (is.character(file)) {
         filename <- fullFilename(file)

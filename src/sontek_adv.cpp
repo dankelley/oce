@@ -16,7 +16,7 @@ NumericVector unwrapSequenceNumbers(IntegerVector seq, IntegerVector bytes) {
   if (bytes[0] == 2) {
     mod = 65535 + 1;
   } else {
-    ::Rf_error("only understand bytes=2 for now");
+    Rcpp::stop("only understand bytes=2 for now");
   }
 #ifdef DEBUG
   Rprintf("NEW n=%lld\n", n);
@@ -29,8 +29,8 @@ NumericVector unwrapSequenceNumbers(IntegerVector seq, IntegerVector bytes) {
     if (seq[i] < last) {
       cumulative += mod;
 #ifdef DEBUG
-      Rprintf("seq[%lld]=%d and last=%lld, so updated to cumulative=%lld\n",
-              i, seq[i], last, cumulative);
+      Rprintf("seq[%lld]=%d and last=%lld, so updated to cumulative=%lld\n", i,
+              seq[i], last, cumulative);
 #endif
     }
     tmpres.push_back(seq[i] + cumulative);

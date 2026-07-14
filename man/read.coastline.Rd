@@ -14,7 +14,9 @@ read.coastline(
 )
 }
 \arguments{
-\item{file}{name of file containing coastline data.}
+\item{file}{name of file containing coastline data.  If this is a shapefile,
+then the other parameters (except \code{debug}) are ignored, and the results
+of a call to \code{\link[=read.coastline.shapefile]{read.coastline.shapefile()}} are returned.}
 
 \item{type}{type of file, one of \code{"R"}, \code{"S"}, \code{"mapgen"},
 \code{"shapefile"} or \code{"openstreetmap"}.}

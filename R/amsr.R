@@ -931,7 +931,6 @@ setMethod(
 #' }
 #'
 #' @family functions that download files
-#' @family functions that plot oce data
 #' @family things related to amsr data
 #'
 #' @author Dan Kelley

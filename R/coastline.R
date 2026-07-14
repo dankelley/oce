@@ -796,14 +796,14 @@ setMethod(
                     xr.pretty <- prettyLon(par("usr")[1:2], n = if (geographical > 0) 3 else 5, high.u.bias = 20)
                     # yr.pretty <- prettyLat(yr, n=if (geographical)3 else 5, high.u.bias=20)
                     yr.pretty <- prettyLat(par("usr")[3:4], n = if (geographical > 0) 3 else 5, high.u.bias = 20)
-                    oceDebug(debug, vectorShow(xr.pretty))
-                    oceDebug(debug, vectorShow(yr.pretty))
-                    oceDebug(debug, vectorShow(usrTrimmed, postscript = " (original)\n"))
+                    oceDebug(debug, vectorShow(xr.pretty, n = 12))
+                    oceDebug(debug, vectorShow(yr.pretty, n = 12))
+                    oceDebug(debug, vectorShow(usrTrimmed, postscript = " (original)"))
                     usrTrimmed[1] <- max(-180, usrTrimmed[1])
                     usrTrimmed[2] <- min(180, usrTrimmed[2])
                     usrTrimmed[3] <- max(-90, usrTrimmed[3])
                     usrTrimmed[4] <- min(90, usrTrimmed[4])
-                    oceDebug(debug, vectorShow(usrTrimmed, postscript = " (after trimming)\n"))
+                    oceDebug(debug, vectorShow(usrTrimmed, postscript = " (after trimming)"))
                     # Go to full-world, if we are close to full world.  This ensures we will
                     # get ticks at the extrema, which is useful because the coastline doesn't go
                     # close enough to the north pole to get a +90 tick.
@@ -850,18 +850,45 @@ setMethod(
                             )
                         )
                     }
-                    axis(1, at = xr.pretty, labels = xlabels, pos = usrTrimmed[3], cex.axis = cex.axis)
-                    oceDebug(debug, "putting bottom x axis at", usrTrimmed[3], "with labels:", xlabels, "\n")
-                    axis(2, at = yr.pretty, labels = ylabels, pos = usrTrimmed[1], cex.axis = cex.axis, cex = cex.axis)
-                    oceDebug(debug, "putting left y axis at", usrTrimmed[1], "\n")
-                    axis(3, at = xr.pretty, labels = rep("", length.out = length(xr.pretty)), pos = usrTrimmed[4], cex.axis = cex.axis)
-                    axis(4, at = yr.pretty, pos = usrTrimmed[2], labels = FALSE, cex.axis = cex.axis)
-                    oceDebug(debug, "putting right y axis at", usrTrimmed[2], "\n")
+                    xinside <- usrTrimmed[1] <= xr.pretty & xr.pretty <= usrTrimmed[2]
+                    oceDebug(debug, vectorShow(xinside, n = 12))
+                    yinside <- usrTrimmed[3] <= yr.pretty & yr.pretty <= usrTrimmed[4]
+                    oceDebug(debug, vectorShow(yinside, n = 12))
+                    # xinside <- rep(TRUE, length(xr.pretty))
+                    # yinside <- rep(TRUE, length(yr.pretty))
+                    oceDebug(debug, "after trimming to (", usrTrimmed[2], ",", usrTrimmed[4], "), ", vectorShow(xr.pretty, n = 12))
+                    oceDebug(debug, "after trimming to (", usrTrimmed[1], ",", usrTrimmed[3], "), ", vectorShow(yr.pretty, n = 12))
+                    axis(1,
+                        at = xr.pretty[xinside], labels = xlabels[xinside],
+                        pos = usrTrimmed[3], cex.axis = cex.axis
+                    )
+                    oceDebug(
+                        debug, "bottom axis at lat=", usrTrimmed[3], "; tics at lon xr.pretty=",
+                        paste(xr.pretty, collapse = ","), "\n"
+                    )
+                    axis(2,
+                        at = yr.pretty[yinside], labels = ylabels[yinside],
+                        pos = usrTrimmed[1], cex.axis = cex.axis, cex = cex.axis
+                    )
+                    oceDebug(
+                        debug, "left axis at lon=", usrTrimmed[2], "; tics at lat yr.pretty=",
+                        paste(yr.pretty[yinside], collapse = ","), "\n"
+                    )
+                    axis(3, at = xr.pretty[xinside], labels = rep("", length.out = length(xr.pretty[xinside])), pos = usrTrimmed[4], cex.axis = cex.axis, lwd=1)
+                    oceDebug(debug, "top axis at lat=", usrTrimmed[4], "\n")
+                    axis(4, at = yr.pretty[yinside], pos = usrTrimmed[2], labels = FALSE, cex.axis = cex.axis, lwd = 1)
+                    oceDebug(debug, "right axis at lon=", usrTrimmed[2], "\n")
+                    # draw the box (yes, this is klunky)
+                    oxpd <- par("xpd")
+                    par(xpd = NA)
+                    rect(usrTrimmed[1], usrTrimmed[3], usrTrimmed[2], usrTrimmed[4],
+                         border = 1, lwd = 1)
+                    par(xpd = oxpd)
                 }
                 yaxp <- par("yaxp")
                 oceDebug(debug, vectorShow(par("yaxp")))
                 oceDebug(debug, vectorShow(par("pin")))
-                if (yaxp[1] < -90 | yaxp[2] > 90) {
+                if (yaxp[1] < (-90) || yaxp[2] > 90) {
                     oceDebug(debug, "should trim poles\n")
                 }
                 if (type == "polygon") {
@@ -894,6 +921,11 @@ setMethod(
             }
             oceDebug(debug, vectorShow(par("usr")))
             oceDebug(debug, "END plot.coastline() at line 896\n", unindent = 1)
+            # rect(usrTrimmed[1], usrTrimmed[3], usrTrimmed[2], usrTrimmed[4], border=1, lwd=3)
+            # lines(usrTrimmed[1:2], rep(usrTrimmed[4], 2), lwd=3,col=2)
+            # lines(usrTrimmed[1:2], rep(usrTrimmed[3], 2), lwd=3,col=2)
+            # lines(rep(usrTrimmed[1], 2), usrTrimmed[3:4], lwd=3,col=2)
+            # lines(rep(usrTrimmed[2], 2), usrTrimmed[3:4], lwd=3,col=2)
             invisible()
         }
     }
@@ -989,7 +1021,9 @@ download.coastline <- function(resolution, item = "coastline", destdir = ".", de
 #' -16.244793 28.563330 } BUG: the 'arc/info ungenerate' format is not yet
 #' understood.
 #'
-#' @param file name of file containing coastline data.
+#' @param file name of file containing coastline data.  If this is a shapefile,
+#' then the other parameters (except `debug`) are ignored, and the results
+#' of a call to [read.coastline.shapefile()] are returned.
 #'
 #' @param type type of file, one of `"R"`, `"S"`, `"mapgen"`,
 #' `"shapefile"` or `"openstreetmap"`.
@@ -1014,12 +1048,20 @@ read.coastline <- function(
     if (missing(file)) {
         stop("must supply 'file'")
     }
+    type <- match.arg(type)
+    oceDebug(debug, "read.coastline(file=\"", file, "\", type=\"", type, "\", ...) START\n", sep = "", unindent = 1)
     if (is.character(file)) {
         if (!file.exists(file)) {
             stop("cannot find file \"", file, "\"")
         }
         if (0L == file.info(file)$size) {
             stop("empty file \"", file, "\"")
+        }
+        # if it's a shapefile, we don't need other parameters
+        if (identical(oceMagic(file), "shapefile")) {
+            res <- read.coastline.shapefile(file, debug = debug - 1L)
+            oceDebug(debug, "read.coastline() END\n", sep = "", unindent = 1)
+            return(res)
         }
     }
     type <- match.arg(type)

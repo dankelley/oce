@@ -28,7 +28,7 @@ An object with \code{data$v[,,1:3]} altered appropriately, and
 This function is in active development, and both the methodology and user
 interface may change without notice. Only developers (or invitees) should be
 trying to use this function. See the Nortek documents listed in
-\sQuote{Referencess} for more on coordinate transformation.
+\sQuote{References} for more on coordinate transformation.
 }
 \references{
 \enumerate{

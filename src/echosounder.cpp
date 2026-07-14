@@ -14,21 +14,24 @@ using namespace Rcpp;
 // REFERENCES:
 // [1] "DT4 Data File Format Specification" [July, 2010] DT4_format_2010.pdf
 
-//#define DEBUG 1
+// #define DEBUG 1
 
 // 1. Routines to maintain static storage to avoid possibly thousands
 // of allocations of identical size (are we sure on that?, for a fixed purpose.
 // FIXME: see if OK on multicore; if not, use R method (if that's ok).
-static unsigned char *buffer = NULL; // single-beam uses just first 2 bytes of each 4-byte entry
-void biosonics_allocate_storage(int spp, int byte_per_sample)
-{
+static unsigned char *buffer =
+    NULL; // single-beam uses just first 2 bytes of each 4-byte entry
+void biosonics_allocate_storage(int spp, int byte_per_sample) {
   if (buffer == NULL) {
 #ifdef DEBUG
     Rprintf("should allocate space for %d data now\n", spp * byte_per_sample);
 #endif
-    buffer = (unsigned char*)calloc(spp * byte_per_sample, sizeof(unsigned char));
+    buffer =
+        (unsigned char *)calloc(spp * byte_per_sample, sizeof(unsigned char));
     if (buffer == NULL) {
-      ::Rf_error("cannot allocate space for temporary buffer, of length %d bytes", spp * byte_per_sample);
+      Rcpp::stop(
+          "cannot allocate space for temporary buffer, of length %d bytes",
+          spp * byte_per_sample);
     }
 #ifdef DEBUG
     Rprintf("... allocation was OK; address is %lx\n", buffer);
@@ -37,10 +40,9 @@ void biosonics_allocate_storage(int spp, int byte_per_sample)
 }
 
 extern "C" {
-void biosonics_free_storage()
-{
+void biosonics_free_storage() {
 #ifdef DEBUG
-    Rprintf("freeing up 'buffer' storage at address %lx\n", buffer);
+  Rprintf("freeing up 'buffer' storage at address %lx\n", buffer);
 #endif
   if (buffer != NULL)
     free(buffer);
@@ -49,8 +51,7 @@ void biosonics_free_storage()
 }
 
 // 2. run-length expansion
-void rle(unsigned char *samp, int ns, int spp, int byte_per_sample)
-{
+void rle(unsigned char *samp, int ns, int spp, int byte_per_sample) {
   // This code is patterned on [1 p36-37] for runlength expansion
   // of data stored in 4-byte chunks.  The main difference is
   // that the present function uses bytewise operations, which
@@ -61,14 +62,14 @@ void rle(unsigned char *samp, int ns, int spp, int byte_per_sample)
   // is 4*spp bytes.
 #ifdef DEBUG
   Rprintf("rle(0x%02x%02x%02x%02x ..., ns=%d, spp=%d, byte_per_sample=%d)\n",
-      samp[0], samp[1], samp[2], samp[3], ns, spp, byte_per_sample);
+          samp[0], samp[1], samp[2], samp[3], ns, spp, byte_per_sample);
 #endif
   int i = 0, k = 0;
   unsigned char b1 = 0x00, b2 = 0x00, b3 = 0x00, b4 = 0x00;
   int NS = ns * byte_per_sample;
   int SPP = spp * byte_per_sample;
   while (i < NS) {
-    //Rprintf("i=%d k=%d\n", i, k);
+    // Rprintf("i=%d k=%d\n", i, k);
     b1 = samp[i++];
     b2 = samp[i++];
     if (byte_per_sample == 4) {
@@ -107,7 +108,7 @@ void rle(unsigned char *samp, int ns, int spp, int byte_per_sample)
     }
   }
 #ifdef DEBUG
-  Rprintf("zero-fill at end for %d elements\n", (SPP-k)/4);
+  Rprintf("zero-fill at end for %d elements\n", (SPP - k) / 4);
 #endif
   while (k < SPP) {
     buffer[k++] = 0x00;
@@ -119,12 +120,10 @@ void rle(unsigned char *samp, int ns, int spp, int byte_per_sample)
   }
 }
 
-
 // 3. subsecond time for Biosonic echosounder [1 p19], wrapped
 // as C for use in R/echosounder.R.
 extern "C" {
-void biosonics_ss(unsigned char *byte, double *out)
-{
+void biosonics_ss(unsigned char *byte, double *out) {
   if (!(0x80 & *byte))
     *out = 0.0;
   else
@@ -133,29 +132,32 @@ void biosonics_ss(unsigned char *byte, double *out)
 }
 
 // 4. decode biosonics two-byte floating format
-double biosonic_float(unsigned char byte1, unsigned char byte2)
-{
-    unsigned int assembled_bytes = ((short)byte2 << 8) | ((short)byte1); // little endian
-    unsigned int mantissa = (assembled_bytes & 0x0FFF); // rightmost 12 bits (again, little endian)
-    int exponent = (assembled_bytes & 0xF000) >> 12; // leftmost 4 bits, shifted to RHS
-    unsigned long res;
-    if (exponent == 0) {
-      res = mantissa;
-    } else {
-      res = (mantissa + 0x1000) << (exponent - 1);
-    }
-//#ifdef DEBUG
-//    Rprintf(" ***  0x%x%x mantissa=%d exponent=%d res=%f\n", byte1, byte2, mantissa, exponent, resp[i]);
-//#endif
-    return((double)res);
+double biosonic_float(unsigned char byte1, unsigned char byte2) {
+  unsigned int assembled_bytes =
+      ((short)byte2 << 8) | ((short)byte1); // little endian
+  unsigned int mantissa =
+      (assembled_bytes & 0x0FFF); // rightmost 12 bits (again, little endian)
+  int exponent =
+      (assembled_bytes & 0xF000) >> 12; // leftmost 4 bits, shifted to RHS
+  unsigned long res;
+  if (exponent == 0) {
+    res = mantissa;
+  } else {
+    res = (mantissa + 0x1000) << (exponent - 1);
+  }
+  // #ifdef DEBUG
+  //     Rprintf(" ***  0x%x%x mantissa=%d exponent=%d res=%f\n", byte1, byte2,
+  //     mantissa, exponent, resp[i]);
+  // #endif
+  return ((double)res);
 }
 
 // Cross-reference work:
 // 1. update ../src/registerDynamicSymbol.c with an item for this
 // 2. main code should use the autogenerated wrapper in ../R/RcppExports.R
 // [[Rcpp::export]]
-List do_biosonics_ping(RawVector bytes, NumericVector Rspp, NumericVector Rns, NumericVector Rtype)
-{
+List do_biosonics_ping(RawVector bytes, NumericVector Rspp, NumericVector Rns,
+                       NumericVector Rtype) {
   int spp = (int)floor(0.5 + Rspp[0]);
   int ns = (int)floor(0.5 + Rns[0]);
   int type = (int)floor(0.5 + Rtype[0]); // beam type
@@ -173,39 +175,42 @@ List do_biosonics_ping(RawVector bytes, NumericVector Rspp, NumericVector Rns, N
   // Get static storage; FIXME: is this thread-safe?
   biosonics_allocate_storage(spp, byte_per_sample);
   if (type == 0) { // single-beam
-    rle((unsigned char*)&bytes[0], ns, spp, 2);
+    rle((unsigned char *)&bytes[0], ns, spp, 2);
     for (int k = 0; k < spp; k++) {
-      a[k] = biosonic_float(buffer[byte_per_sample * k], buffer[1 + byte_per_sample * k]);
+      a[k] = biosonic_float(buffer[byte_per_sample * k],
+                            buffer[1 + byte_per_sample * k]);
       b[k] = 0.0;
       c[k] = 0.0;
     }
   } else if (type == 1) { // dual-beam
-    rle((unsigned char*)&bytes[0], ns, spp, 4);
+    rle((unsigned char *)&bytes[0], ns, spp, 4);
     for (int k = 0; k < spp; k++) {
-      // Quote [1 p37 re dual-beam]: "For an RLE-expanded sample x, the low-order
-      // word (ie, (USHORT)(x & 0x0000FFFF)) contains the narrow-beam data. The
-      // high-order word (ie, (USHORT)((x & 0xFFFF0000) >> 16)) contains the
-      // wide beam data."
-      a[k] = biosonic_float(buffer[    byte_per_sample * k], buffer[1 + byte_per_sample * k]);
-      b[k] = biosonic_float(buffer[2 + byte_per_sample * k], buffer[3 + byte_per_sample * k]);
+      // Quote [1 p37 re dual-beam]: "For an RLE-expanded sample x, the
+      // low-order word (ie, (USHORT)(x & 0x0000FFFF)) contains the narrow-beam
+      // data. The high-order word (ie, (USHORT)((x & 0xFFFF0000) >> 16))
+      // contains the wide beam data."
+      a[k] = biosonic_float(buffer[byte_per_sample * k],
+                            buffer[1 + byte_per_sample * k]);
+      b[k] = biosonic_float(buffer[2 + byte_per_sample * k],
+                            buffer[3 + byte_per_sample * k]);
       b[k] = 0.0;
     }
   } else if (type == 2) { // split-beam
-    rle((unsigned char*)&bytes[0], ns, spp, 4);
+    rle((unsigned char *)&bytes[0], ns, spp, 4);
     for (int k = 0; k < spp; k++) {
       // Quote [1 p38 split-beam e.g. 01-Fish.dt4 example]: "the low-order word
       // (ie, (USHORT)(x & 0x0000FFFF)) contains the amplitude data. The
       // high-order byte (ie, (TINY)((x & 0xFF000000) >> 24)) contains the
       // raw X-axis angle data. The other byte
-      // (ie, (TINY)((x & 0x00FF0000) >> 16)) contains the raw Y-axis angle data.
-      a[k] = biosonic_float(buffer[byte_per_sample * k], buffer[1 + byte_per_sample * k]);
+      // (ie, (TINY)((x & 0x00FF0000) >> 16)) contains the raw Y-axis angle
+      // data.
+      a[k] = biosonic_float(buffer[byte_per_sample * k],
+                            buffer[1 + byte_per_sample * k]);
       b[k] = (double)buffer[2 + byte_per_sample * k];
       c[k] = (double)buffer[3 + byte_per_sample * k];
     }
   } else {
-    ::Rf_error("unknown type, %d", type);
+    Rcpp::stop("unknown type, %d", type);
   }
-  return(List::create(Named("a")=a, Named("b")=b, Named("c")=c));
+  return (List::create(Named("a") = a, Named("b") = b, Named("c") = c));
 }
-
-

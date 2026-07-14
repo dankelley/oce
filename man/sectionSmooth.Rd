@@ -124,14 +124,9 @@ longitudes and longitudes of stations, with the independent variable
 being the distance along the track, computed with \code{\link[=geodDist]{geodDist()}}.
 The values of \code{xg}, \code{yg}, \code{xgl} and \code{ygl} control
 the smoothing.
-\item For \code{method="kriging"}, smoothing is done across
-both horizontal and vertical coordinates, using \code{autoKrige()} from
-the \CRANpkg{automap} package (along with support from the
-\CRANpkg{sp} package to format the data).  Note that the format of
-the value returned by \code{autoKrige()} has changed over the years,
-and \code{method="kriging"} can only handle two particular formats,
-one of which is the result from version 1.1.9 of
-\CRANpkg{automap}.
+\item For \code{method="kriging"}, an error is reported.  This is
+because the code formerly used the \CRANpkg{automap} package, but
+this was removed from CRAN in June 2025.
 \item If \code{method} is a function, then that function is applied to
 the (distance, pressure) data for each variable at a grid defined by
 \code{xg}, \code{xgl}, \code{yg} and \code{ygl}. The function must
@@ -147,20 +142,6 @@ in \code{z}, which may be \code{temperature} on one call to the function,
 have the meanings as described below.
 }
 }
-\section{Sample of Usage}{
-
-\preformatted{
-# I have seen problems with kriging as the automap package has
-# evolved, so please be aware that the following may fail.
-if (requireNamespace("automap", quietly=TRUE)
-       && requireNamespace("sf", quietly=TRUE)) {
-    gsKriging <- sectionSmooth(gs, "kriging", xr=50, yr=200)
-    plot(gsKriging, which="temperature")
-    mtext("sectionSmooth(..., method=\"kriging\")", line=0.5)
-}
-}
-}
-
 \examples{
 # Unsmoothed (Gulf Stream)
 library(oce)
@@ -181,6 +162,7 @@ mtext("sectionSmooth(..., method=\"spline\")", line = 0.5)
 gsBarnes <- sectionSmooth(gs, "barnes", xr = 50, yr = 200)
 plot(gsBarnes, which = "temperature")
 mtext("sectionSmooth(..., method=\"barnes\")", line = 0.5)
+
 
 }
 \seealso{

@@ -25,7 +25,7 @@ presentTime <- function(tz = "UTC") {
 #' Base Class for oce Objects
 #'
 #' This is mainly used within oce to create sub-classes, although
-#' users may wish to mek direct calls to `new("oce")` for
+#' users may wish to make direct calls to `new("oce")` for
 #' their own purposes.
 #'
 #' @slot metadata A list containing information about the data. The
@@ -538,7 +538,12 @@ setMethod(
         # NOTE: we do not pass data and metadata through directly because e.g. we want
         # [[ to convert to the modern temperature scale, if the data are
         # in an old scale.
-        if (i == "conductivity") {
+        if (i == "cabbeling") {
+            SA <- x[["SA"]]
+            CT <- x[["CT"]]
+            p <- x[["pressure"]]
+            return(gsw::gsw_cabbeling(SA, CT, p))
+        } else if (i == "conductivity") {
             C <- x@data$conductivity
             if (!is.null(C) && !missing(j)) {
                 if (!(j %in% c("", "ratio", "uS/cm", "mS/cm", "S/m"))) {
@@ -1217,4 +1222,3 @@ setGeneric(
         standardGeneric("handleFlags")
     }
 )
-

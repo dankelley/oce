@@ -1,47 +1,98 @@
 # oce 1.8.4
 
 * Add `bodcNames2oceNames()` to rename NERC/BODC variables (issue #2235).
-* Add `D4902337_219.nc` built-in Argo profile data file (issue #2272).
+* Add `D4902337_219.nc` built-in Argo profile data file (issue #2272). (issue
+  #2331).
 * Add `netcdfTOC()` to overview NetCDF files (issue #2232).
-* Add `rename()` to rename variables, flags and units (issue #2238).
+* Add `oceColorsCubeHelix()`, a perceptual colour scheme used in Astronomy
+* Add `oceRename()` to rename variables, flags and units (issue #2238).
+* Add `read.sealevel.gc2026` to read a Govt Canada format (issue #2349).
 * Add `read.xbt.edf2()` to read a tab-separated file type.
+* Add `read.xbt.noaa2()` to handle UBT format (issue #2289).
 * Add `Tidal Analysis` vignette (issue #2243).
+* Change `[[` to handle `"cabbeling"`, for objects holding sufficient
+  information for this computation (issue #2338).
+* Change `adpRdiFileTrim()` to reorder parameters, and to accept `indices`
+  parameter (issue #2330)
 * Change `amsr[[` to handle `"metadata"` parameter (issue #2229).
 * Change `argo2ctd()` (issue #2270).
 * Change `as.unit()` to handle more units (issue #2240).
 * Change `as.ctd()` to handle Argo data better (issue #2270).
-* Change `binApply1D()` to handle the `...` argument (issue #2265).
-* Change `binApply1D()` to handle the time zones better (issue #2266).
+* Change `binApply1D()` to
+  * handle the `...` argument (issue #2265) and
+  * handle time zones better (issue #2266).
 * Change `concatenate()` to handle lists properly (issue #2278).
 * Change `download.amsr()` to handle realtime data files (issue #2231).
+* Change `download.met()` to account for server changes (issue #2381, reported
+and solved by github user `EOGrady21`).
 * Change `imagep()` to handle `decimate` as set in `~/.Rprofile` (issue #2263).
-* Change `lonlat2map()` to handle a [coastline-class] object as first parameter (issue #2284).
-* Change `magneticField()` to handle the latest (generation 14) IGRF formulation (issue #2274).
-* Change `mapScalebar()` to handle `x="top"` (issue #2283).
-* Change `mapScalebar()` to handle `length` under 1km (issue #2287).
+* Change `lonlat2map()` to handle a [coastline-class] object as first parameter
+  (issue #2284).
+* Change `magneticField()` to handle the latest (generation 14) IGRF
+  formulation (issue #2274).
+* Change `mapScalebar()` to
+  * handle `x="top"` (issue #2283) and
+  * handle `length` under 1km (issue #2287).
 * Change `mapPlot()` to handle `las` as a parameter (issue #1707).
-* Change `oce.plot.ts()` to handle `grid` better (issue #2267).
-* Change `oce.plot.ts()` to handle `simplify` better (issue #2277).
-* Change `oce.plot.ts()` to handle `xlab` (issue #2285).
+* Change `oceRename()` to default to a built-in IOOS dictionary (issue #2311).
+* Change `oce.plot.ts()` to
+  * handle `grid` better (issue #2267),
+  * handle `simplify` better (issue #2277) and
+  * handle `xlab` better (issue #2285).
+* Change `plot.coastline()` to improve axes aesthetics (issue #2342).
+* Change `plot.ctd()` to improve map margin note (issue #2343).
+* Change `plotProfile()` to improve unit spacing (issue #2352).
 * Change `plot.section()` to handle `eos="gsw"` (issue #2256).
-* Change `read.adp.ad2cp()` to handle TOC, datasets and plans better (issue #2303 and related).
-* Change `read.adp.ad2cp()` to set `data@distance` only if NC (number of cells) is nonzero (issue #2319)
-* Change `read.adp.ad2cp()` to save elements of AST (etc) individually, not within a list (issue #2318).
+* Change `pwelch()` to fix error if `nfft` and `spec` are provided (issue
+  #2299).
 * Change `read.amsr()` to handle realtime data files (issue #2230).
-* Change `read.ctd.sbe()` to handle files that lack salinity and conductivity (issues #2279 and #2282).
-* Change `read.ctd.sbe()` to handle time-related header elements better (issues #2280 and #2281).
+* Change `read.adp.ad2cp()` to
+  * rename hex code 0x1f from `averageAltimeter` to `averageAltimeterRaw`, for consistency with Nortek manuals as of 2026. (The old name is still accepted, but a warning is issued.)
+  * handle a new, three-element, form of the `GETCLOCKSTR` field (issue #2379).
+  * handle bottom-track data correctly (issue #2368)
+  * handle TOC, datasets and plans better (issue #2303 and related),
+  * read temperature correctly (issue #2324),
+  * save elements of AST (etc) individually, not within a list (issue #2318)
+  * scale `altimeterRawSamples` by 1/2^15 (issue #2327).
+  * set `data@distance` only if NC (number of cells) is nonzero (issue #2319).
+  * use number of raw altimeter samples from header, if it disagrees with value
+    in record (issue #2326).
+* Change `read.adp.rdi()` to
+  * read data from 3-beam horizontal devices (issue #2369).
+* Change `read.adp.rdi(..., which="??")` to
+  * return a data frame that includes ensemble size (issue #2329).
+* Change `read.ctd.sbe()` to
+  * Handle fixed-width column names (pull request #2365, kindly provided by William Kumler, github user @wkumler),
+  * handle files that lack salinity and conductivity (issues #2279 and #2282),
+  * handle time-related header elements better (issues #2280 and #2281), and
+  * handle "new" format CNV files, at least provisionally (issue #2328).
 * Change `read.ctd.aml()` to handle "type 3" format (issue #2247).
+* Change `read.coastline()` to handle `file` in "shapefile" format (issue
+  #1850).
 * Change `read.met()` to handle flags better (issue #2298).
-* Change `read.netcdf()` docs to show how to handle flags (issue #2236).
-* Change `read.netcdf()` to give a way to rename data (issue #2235).
-* Change `read.netcdf()` to handle units better.
-* Change `read.rsk()` to handle a new file (issue #2291).
-* Add `read.xbt.noaa2()` to handle UBT format (issue #2289).
-* Change `rename()` to default to a built-in IOOS dictionary (issue #2311).
+* Change `read.netcdf()` to
+  * document flag handling better (issue #2236),
+  * handle units better and
+  * permit renaming data (issue #2235).
+* Change `read.rsk()` to
+  * solve a column renaming problem (issue #2291),
+  * handle files that have empty (but not missing) `geodata` tables (issue
+    #2336), and
+  * handle more unit formats (issue #2337).
+* Change `sectionSmooth()` to disallow `method="kriging"`, because it relied on
+  the `automap` package, which was removed from CRAN on 2025-06-30 (issue
+  #2332).
 * Change `subset,amsr-method()` to handle `"pass"` parameter.
-* Change `subset,ctd-method()` to handle items of unexpected length (issue #2250).
-* Change `tidem()` to stop if there are any non-finite time values (issue #2269).
-* Change `vectorShow()` to obey "digits" parameter for list arguments (issue #2313).
+* Change `subset,ctd-method()` to handle items of unexpected length (issue
+  #2250).
+* Change `swSoundAbsorption()` to handle three more parameterizations (code and
+  documentation contributed by João Resende via pull request 2345).
+* Change `tidem()` to stop if there are any non-finite time values (issue
+  #2269).
+* Change `vectorShow()` to obey "digits" parameter for list arguments (issue
+  #2313).
+* Fix bug in `read.sbe.ctd` when `btl=TRUE` that was incorrectly parsing files
+  with long column names (#2365)
 
 # oce 1.8.3 (ON CRAN)
 

@@ -1,0 +1,335 @@
+* Sea-Bird SBE 9 Data File:
+* FileName = D:\CTD\Raw\demo\demo_CTD_001.hex
+* Software Version Seasave V 7.26.7.121
+* Temperature SN = 9999
+* Conductivity SN = 9999
+* Number of Bytes Per Scan = 41
+* Number of Voltage Words = 4
+* Number of Scans Averaged by the Deck Unit = 1
+* Append System Time to Every Scan
+* System UpLoad Time = Jan 01 2000 09:10:41
+* NMEA Latitude = 0 17.39 S
+* NMEA Longitude = 0 05.02 W
+* NMEA UTC (Time) = Jan 01 2000 09:10:39
+* Store Lat/Lon Data = Append to Every Scan
+* SBE 11plus V 5.2
+* number of scans to average = 1
+* pressure baud rate = 9600
+* NMEA baud rate = 4800
+* GPIB address = 1
+* advance primary conductivity  0.073 seconds
+* advance secondary conductivity  0.073 seconds
+* autorun on power up is disabled
+* S>
+** Ship: Demo
+** Station: S1
+** Operator: AA,BB
+* System UTC = Jan 01 2000 09:10:41
+# interval = seconds: 0.0416667
+# start_time = Jan 01 2000 09:10:39 [NMEA time, header]
+# <Sensors count="13" >
+#   <sensor Channel="1" >
+#     <!-- Frequency 0, Temperature -->
+#     <TemperatureSensor SensorID="55" >
+#       <SerialNumber>9999</SerialNumber>
+#       <CalibrationDate>30-May-25</CalibrationDate>
+#       <UseG_J>1</UseG_J>
+#       <A>0.00000000e+000</A>
+#       <B>0.00000000e+000</B>
+#       <C>0.00000000e+000</C>
+#       <D>0.00000000e+000</D>
+#       <F0_Old>0.000</F0_Old>
+#       <G>4.39961792e-003</G>
+#       <H>6.37827071e-004</H>
+#       <I>2.27621456e-005</I>
+#       <J>2.06752710e-006</J>
+#       <F0>1000.000</F0>
+#       <Slope>1.00000000</Slope>
+#       <Offset>0.0000</Offset>
+#     </TemperatureSensor>
+#   </sensor>
+#   <sensor Channel="2" >
+#     <!-- Frequency 1, Conductivity -->
+#     <ConductivitySensor SensorID="3" >
+#       <SerialNumber>9999</SerialNumber>
+#       <CalibrationDate>03-Jun-25</CalibrationDate>
+#       <UseG_J>1</UseG_J>
+#       <!-- Cell const and series R are applicable only for wide range sensors. -->
+#       <SeriesR>0.0000</SeriesR>
+#       <CellConst>2000.0000</CellConst>
+#       <ConductivityType>0</ConductivityType>
+#       <Coefficients equation="0" >
+#         <A>0.00000000e+000</A>
+#         <B>0.00000000e+000</B>
+#         <C>0.00000000e+000</C>
+#         <D>0.00000000e+000</D>
+#         <M>0.0</M>
+#         <CPcor>-9.57000000e-008</CPcor>
+#       </Coefficients>
+#       <Coefficients equation="1" >
+#         <G>-1.01784194e+001</G>
+#         <H>1.28581980e+000</H>
+#         <I>6.97516450e-005</I>
+#         <J>5.20520431e-005</J>
+#         <CPcor>-9.57000000e-008</CPcor>
+#         <CTcor>3.2500e-006</CTcor>
+#         <!-- WBOTC not applicable unless ConductivityType = 1. -->
+#         <WBOTC>0.00000000e+000</WBOTC>
+#       </Coefficients>
+#       <Slope>1.00000000</Slope>
+#       <Offset>0.00000</Offset>
+#     </ConductivitySensor>
+#   </sensor>
+#   <sensor Channel="3" >
+#     <!-- Frequency 2, Pressure, Digiquartz with TC -->
+#     <PressureSensor SensorID="45" >
+#       <SerialNumber>9999</SerialNumber>
+#       <CalibrationDate>14-May-25</CalibrationDate>
+#       <C1>-4.217433e+004</C1>
+#       <C2>-8.120070e-001</C2>
+#       <C3>1.192470e-002</C3>
+#       <D1>3.802100e-002</D1>
+#       <D2>0.000000e+000</D2>
+#       <T1>3.010242e+001</T1>
+#       <T2>-5.244980e-004</T2>
+#       <T3>3.759180e-006</T3>
+#       <T4>2.460980e-009</T4>
+#       <Slope>1.00009000</Slope>
+#       <Offset>0.47560</Offset>
+#       <T5>0.000000e+000</T5>
+#       <AD590M>1.279360e-002</AD590M>
+#       <AD590B>-9.256750e+000</AD590B>
+#     </PressureSensor>
+#   </sensor>
+#   <sensor Channel="4" >
+#     <!-- Frequency 3, Temperature, 2 -->
+#     <TemperatureSensor SensorID="55" >
+#       <SerialNumber>6426</SerialNumber>
+#       <CalibrationDate>29-May-25</CalibrationDate>
+#       <UseG_J>1</UseG_J>
+#       <A>0.00000000e+000</A>
+#       <B>0.00000000e+000</B>
+#       <C>0.00000000e+000</C>
+#       <D>0.00000000e+000</D>
+#       <F0_Old>0.000</F0_Old>
+#       <G>4.32749574e-003</G>
+#       <H>6.35754746e-004</H>
+#       <I>2.18063602e-005</I>
+#       <J>2.00596338e-006</J>
+#       <F0>1000.000</F0>
+#       <Slope>1.00000000</Slope>
+#       <Offset>0.0000</Offset>
+#     </TemperatureSensor>
+#   </sensor>
+#   <sensor Channel="5" >
+#     <!-- Frequency 4, Conductivity, 2 -->
+#     <ConductivitySensor SensorID="3" >
+#       <SerialNumber>4481</SerialNumber>
+#       <CalibrationDate>06-Jun-25</CalibrationDate>
+#       <UseG_J>1</UseG_J>
+#       <!-- Cell const and series R are applicable only for wide range sensors. -->
+#       <SeriesR>0.0000</SeriesR>
+#       <CellConst>2000.0000</CellConst>
+#       <ConductivityType>0</ConductivityType>
+#       <Coefficients equation="0" >
+#         <A>0.00000000e+000</A>
+#         <B>0.00000000e+000</B>
+#         <C>0.00000000e+000</C>
+#         <D>0.00000000e+000</D>
+#         <M>0.0</M>
+#         <CPcor>-9.57000000e-008</CPcor>
+#       </Coefficients>
+#       <Coefficients equation="1" >
+#         <G>-9.94102354e+000</G>
+#         <H>1.42764656e+000</H>
+#         <I>-1.51619823e-003</I>
+#         <J>1.83293298e-004</J>
+#         <CPcor>-9.57000000e-008</CPcor>
+#         <CTcor>3.2500e-006</CTcor>
+#         <!-- WBOTC not applicable unless ConductivityType = 1. -->
+#         <WBOTC>0.00000000e+000</WBOTC>
+#       </Coefficients>
+#       <Slope>1.00000000</Slope>
+#       <Offset>0.00000</Offset>
+#     </ConductivitySensor>
+#   </sensor>
+#   <sensor Channel="6" >
+#     <!-- A/D voltage 0, Oxygen, SBE 43 -->
+#     <OxygenSensor SensorID="38" >
+#       <SerialNumber>9999</SerialNumber>
+#       <CalibrationDate>03-Jun-25</CalibrationDate>
+#       <Use2007Equation>1</Use2007Equation>
+#       <CalibrationCoefficients equation="0" >
+#         <!-- Coefficients for Owens-Millard equation. -->
+#         <Boc>0.0000</Boc>
+#         <Soc>0.0000e+000</Soc>
+#         <offset>0.0000</offset>
+#         <Pcor>0.00e+000</Pcor>
+#         <Tcor>0.0000</Tcor>
+#         <Tau>0.0</Tau>
+#       </CalibrationCoefficients>
+#       <CalibrationCoefficients equation="1" >
+#         <!-- Coefficients for Sea-Bird equation - SBE calibration in 2007 and later. -->
+#         <Soc>4.1791e-001</Soc>
+#         <offset>-0.5041</offset>
+#         <A>-3.6854e-003</A>
+#         <B> 1.9439e-004</B>
+#         <C>-2.9525e-006</C>
+#         <D0> 2.5826e+000</D0>
+#         <D1> 1.92634e-004</D1>
+#         <D2>-4.64803e-002</D2>
+#         <E> 3.6000e-002</E>
+#         <Tau20> 1.0800</Tau20>
+#         <H1>-3.3000e-002</H1>
+#         <H2> 5.0000e+003</H2>
+#         <H3> 1.4500e+003</H3>
+#       </CalibrationCoefficients>
+#     </OxygenSensor>
+#   </sensor>
+#   <sensor Channel="7" >
+#     <!-- A/D voltage 1, Altimeter -->
+#     <AltimeterSensor SensorID="0" >
+#       <SerialNumber>99999</SerialNumber>
+#       <CalibrationDate>22-April-25</CalibrationDate>
+#       <ScaleFactor>15.000</ScaleFactor>
+#       <Offset>0.000</Offset>
+#     </AltimeterSensor>
+#   </sensor>
+#   <sensor Channel="8" >
+#     <!-- A/D voltage 2, Oxygen, SBE 43, 2 -->
+#     <OxygenSensor SensorID="38" >
+#       <SerialNumber>9999</SerialNumber>
+#       <CalibrationDate>30-Jan-25</CalibrationDate>
+#       <Use2007Equation>1</Use2007Equation>
+#       <CalibrationCoefficients equation="0" >
+#         <!-- Coefficients for Owens-Millard equation. -->
+#         <Boc>0.0000</Boc>
+#         <Soc>0.0000e+000</Soc>
+#         <offset>0.0000</offset>
+#         <Pcor>0.00e+000</Pcor>
+#         <Tcor>0.0000</Tcor>
+#         <Tau>0.0</Tau>
+#       </CalibrationCoefficients>
+#       <CalibrationCoefficients equation="1" >
+#         <!-- Coefficients for Sea-Bird equation - SBE calibration in 2007 and later. -->
+#         <Soc>4.4770e-001</Soc>
+#         <offset>-0.5002</offset>
+#         <A>-2.7770e-003</A>
+#         <B> 1.6521e-004</B>
+#         <C>-2.5090e-006</C>
+#         <D0> 2.5826e+000</D0>
+#         <D1> 1.92634e-004</D1>
+#         <D2>-4.64803e-002</D2>
+#         <E> 3.6000e-002</E>
+#         <Tau20> 1.1100</Tau20>
+#         <H1>-3.3000e-002</H1>
+#         <H2> 5.0000e+003</H2>
+#         <H3> 1.4500e+003</H3>
+#       </CalibrationCoefficients>
+#     </OxygenSensor>
+#   </sensor>
+#   <sensor Channel="9" >
+#     <!-- A/D voltage 3, Transmissometer, WET Labs C-Star -->
+#     <WET_LabsCStar SensorID="71" >
+#       <SerialNumber>1817DR</SerialNumber>
+#       <CalibrationDate>10-Oct-25</CalibrationDate>
+#       <M>21.2721</M>
+#       <B>-0.0511</B>
+#       <PathLength>0.250</PathLength>
+#     </WET_LabsCStar>
+#   </sensor>
+#   <sensor Channel="10" >
+#     <!-- A/D voltage 4, Fluorometer, WET Labs ECO-AFL/FL -->
+#     <FluoroWetlabECO_AFL_FL_Sensor SensorID="20" >
+#       <SerialNumber>9999</SerialNumber>
+#       <CalibrationDate>22-Oct-24</CalibrationDate>
+#       <ScaleFactor>1.00000000e+001</ScaleFactor>
+#       <!-- Dark output -->
+#       <Vblank>0.0740</Vblank>
+#     </FluoroWetlabECO_AFL_FL_Sensor>
+#   </sensor>
+#   <sensor Channel="11" >
+#     <!-- A/D voltage 5, Turbidity Meter, WET Labs, ECO-NTU -->
+#     <TurbidityMeter SensorID="67" >
+#       <SerialNumber>9999</SerialNumber>
+#       <CalibrationDate>22-Oct-24</CalibrationDate>
+#       <ScaleFactor>5.000000</ScaleFactor>
+#       <!-- Dark output -->
+#       <DarkVoltage>0.067000</DarkVoltage>
+#     </TurbidityMeter>
+#   </sensor>
+#   <sensor Channel="12" >
+#     <!-- A/D voltage 6, PAR/Irradiance, Biospherical/Licor -->
+#     <PAR_BiosphericalLicorChelseaSensor SensorID="42" >
+#       <SerialNumber>70460</SerialNumber>
+#       <CalibrationDate>19th Apr 2022</CalibrationDate>
+#       <M>1.00000000</M>
+#       <B>0.00000000</B>
+#       <CalibrationConstant>10300000000.00000000</CalibrationConstant>
+#       <ConversionUnits>7</ConversionUnits>
+#       <Multiplier>1.00000000</Multiplier>
+#       <Offset>-0.09860000</Offset>
+#     </PAR_BiosphericalLicorChelseaSensor>
+#   </sensor>
+#   <sensor Channel="13" >
+#     <!-- A/D voltage 7, Free -->
+#   </sensor>
+# </Sensors>
+# datcnv_date = Jan 25 2026 01:50:19, 7.26.7.129
+# datcnv_in = D:\CTD\Raw\demo\demo_ctd_001.hex D:\CTD\Raw\demo\demo_CTD_001.xmlcon
+# datcnv_ox_hysteresis_correction = yes
+# datcnv_bottle_scan_range_source = BL file
+# datcnv_scans_per_bottle = 49
+# bottlesum_date = Jan 25 2026 01:50:53, 7.26.7.129
+# bottlesum_in = D:\CTD\Processed\demo\demo_ctd_001.ros D:\CTD\Raw\demo\demo_CTD_001.xmlcon
+# bottlesum_ox_tau_correction = yes
+    Bottle        Date Potemp090C Potemp190C      Sal00      Sal11  Sigma-t00  Sigma-t11 Sbeox0ML/L Sbox0Mm/Kg   Sbeox0PS Sbeox1ML/L Sbox1Mm/Kg   Sbeox1PS  Longitude   Latitude      DepSM       PrDM      T090C      T190C      C0S/m      C1S/m   CStarAt0   CStarTr0  FlECO-AFLTurbWETntu0        Par
+  Position        Time                                                                                                                                                                                                                                                                                   
+      1    Jan 01 2000     2.7950     2.7958    34.3496    34.3472    27.3843    27.3823     4.4246    192.335     59.136     4.4684    194.238     59.722    0.08247    0.08786    998.620   1009.079     2.8622     2.8630   3.145560   3.145432     0.1241    96.9458    -0.0301     0.0550 1.8187e-03 (avg)
+              09:45:39                                                                                                                                        0.00001    0.00000      0.105      0.106     0.0002     0.0002   0.000016   0.000015     0.0010     0.0238     0.0043     0.0039 0.0000e+00 (sdev)
+      2    Jan 01 2000     2.7958     2.7966    34.3490    34.3468    27.3837    27.3819     4.4240    192.311     59.130     4.4680    194.224     59.718    0.08248    0.08784    999.693   1010.166     2.8632     2.8639   3.145642   3.145521     0.1237    96.9553    -0.0316     0.0464 1.8187e-03 (avg)
+              09:45:52                                                                                                                                        0.00000    0.00000      0.297      0.301     0.0002     0.0002   0.000026   0.000027     0.0009     0.0231     0.0017     0.0091 0.0000e+00 (sdev)
+      3    Jan 01 2000     2.7960     2.7966    34.3491    34.3469    27.3838    27.3820     4.4264    192.413     59.162     4.4695    194.286     59.738    0.08248    0.08784   1000.386   1010.869     2.8634     2.8640   3.145697   3.145567     0.1234    96.9611    -0.0325     0.0597 1.8187e-03 (avg)
+              09:46:05                                                                                                                                        0.00000    0.00000      0.193      0.195     0.0002     0.0002   0.000019   0.000029     0.0009     0.0211     0.0030     0.0092 0.0000e+00 (sdev)
+      4    Jan 01 2000     2.7963     2.7969    34.3490    34.3469    27.3837    27.3820     4.4271    192.443     59.171     4.4760    194.572     59.826    0.08248    0.08784    999.994   1010.471     2.8637     2.8642   3.145695   3.145574     0.1222    96.9919    -0.0286     0.0563 1.8187e-03 (avg)
+              09:46:26                                                                                                                                        0.00000    0.00000      0.400      0.405     0.0001     0.0002   0.000025   0.000024     0.0006     0.0157     0.0054     0.0040 0.0000e+00 (sdev)
+      5    Jan 01 2000     2.7964     2.7972    34.3491    34.3467    27.3837    27.3818     4.4249    192.347     59.142     4.4704    194.327     59.751    0.08248    0.08784   1000.415   1010.897     2.8638     2.8646   3.145733   3.145603     0.1222    96.9914    -0.0196     0.0528 1.8187e-03 (avg)
+              09:46:32                                                                                                                                        0.00000    0.00000      0.152      0.154     0.0001     0.0001   0.000022   0.000020     0.0009     0.0228     0.0025     0.0031 0.0000e+00 (sdev)
+      6    Jan 01 2000     2.7964     2.7972    34.3491    34.3468    27.3837    27.3818     4.4264    192.413     59.162     4.4760    194.571     59.826    0.08248    0.08784    999.482   1009.952     2.8637     2.8646   3.145686   3.145567     0.1225    96.9855    -0.0293     0.0474 1.8187e-03 (avg)
+              09:46:37                                                                                                                                        0.00000    0.00000      0.052      0.053     0.0001     0.0001   0.000015   0.000015     0.0008     0.0202     0.0050     0.0074 0.0000e+00 (sdev)
+      7    Jan 01 2000     3.4724     3.4725    34.2031    34.2011    27.2048    27.2032     5.2640    228.863     71.440     5.3100    230.863     72.065    0.08238    0.08778    750.199    757.601     3.5251     3.5253   3.180445   3.180291     0.1199    97.0459    -0.0263     0.0446 1.8187e-03 (avg)
+              09:58:06                                                                                                                                        0.00000    0.00000      0.063      0.063     0.0003     0.0001   0.000027   0.000019     0.0007     0.0172     0.0061     0.0027 0.0000e+00 (sdev)
+      8    Jan 01 2000     3.4735     3.9999    34.2030    34.2009    27.2046    27.2029     5.2696    229.108     71.519     5.3136    231.021     72.116    0.08238    0.08780    750.321    757.724     3.5263     3.5264   3.180546   3.180375     0.1206    97.0300    -0.0383     0.0466 1.8187e-03 (avg)
+              09:58:17                                                                                                                                        0.00000    0.00000      0.275      0.278     0.0010     0.0006   0.000086   0.000056     0.0009     0.0204     0.0062     0.0031 0.0000e+00 (sdev)
+      9    Jan 01 2000     4.1244     4.1308    34.1457    34.1459    27.0937    27.0932     5.8244    253.255     80.247     5.8575    254.693     80.703    0.08252    0.08832    504.259    508.931     4.1614     4.1678   3.220536   3.221115     0.1123    97.2325    -0.0383     0.0313 1.8187e-03 (avg)
+              10:08:32                                                                                                                                        0.00000    0.00000      0.101      0.102     0.0020     0.0010   0.000201   0.000089     0.0007     0.0176     0.0062     0.0000 0.0000e+00 (sdev)
+     10    Jan 01 2000     4.1119     4.1124    34.1438    34.1418    27.0935    27.0918     5.8190    253.021     80.147     5.8706    255.266     80.858    0.08252    0.08834    504.552    509.227     4.1488     4.1493   3.219284   3.219156     0.1128    97.2198    -0.0340     0.0288 1.8187e-03 (avg)
+              10:08:50                                                                                                                                        0.00000    0.00000      0.322      0.325     0.0015     0.0009   0.000164   0.000103     0.0007     0.0167     0.0048     0.0030 0.0000e+00 (sdev)
+     11    Jan 01 2000     4.1130     4.1181    34.1438    34.1427    27.0934    27.0919     5.8300    253.499     80.301     5.8729    255.365     80.892    0.08252    0.08834    504.335    509.007     4.1499     4.1550   3.219372   3.219724     0.1124    97.2304    -0.0380     0.0262 1.8187e-03 (avg)
+              10:08:56                                                                                                                                        0.00000    0.00000      0.044      0.044     0.0016     0.0028   0.000147   0.000276     0.0006     0.0159     0.0062     0.0060 0.0000e+00 (sdev)
+     12    Jan 01 2000     4.1172     4.1163    34.1448    34.1425    27.0937    27.0920     5.8210    253.109     80.186     5.8659    255.059     80.804    0.08252    0.08834    504.873    509.552     4.1542     4.1533   3.219856   3.219586     0.1128    97.2204    -0.0278     0.0333 1.8187e-03 (avg)
+              10:09:02                                                                                                                                        0.00000    0.00000      0.260      0.263     0.0030     0.0011   0.000314   0.000130     0.0008     0.0201     0.0058     0.0046 0.0000e+00 (sdev)
+     13    Jan 01 2000     4.1204     4.1231    34.1452    34.1437    27.0937    27.0922     5.8172    252.945     80.141     5.8564    254.647     80.680    0.08252    0.08834    504.555    509.230     4.1574     4.1601   3.220156   3.220268     0.1127    97.2214    -0.0405     0.0345 1.8187e-03 (avg)
+              10:09:09                                                                                                                                        0.00000    0.00000      0.172      0.173     0.0017     0.0013   0.000182   0.000145     0.0007     0.0178     0.0061     0.0031 0.0000e+00 (sdev)
+     14    Jan 01 2000     4.1286     4.1293    34.1469    34.1454    27.0942    27.0930     5.8098    252.620     80.055     5.8466    254.220     80.562    0.08252    0.08834    505.271    509.954     4.1656     4.1664   3.221058   3.221000     0.1128    97.2188    -0.0325     0.0288 1.8187e-03 (avg)
+              10:09:18                                                                                                                                        0.00000    0.00000      0.048      0.048     0.0004     0.0005   0.000044   0.000050     0.0007     0.0168     0.0030     0.0037 0.0000e+00 (sdev)
+     15    Jan 01 2000     4.1292     4.1323    34.1470    34.1456    27.0943    27.0928     5.8042    252.377     79.979     5.8453    254.164     80.545    0.08252    0.08836    505.101    509.781     4.1663     4.1694   3.221120   3.221275     0.1123    97.2315    -0.0256     0.0256 1.8187e-03 (avg)
+              10:09:26                                                                                                                                        0.00000    0.00000      0.104      0.105     0.0006     0.0009   0.000083   0.000094     0.0006     0.0160     0.0062     0.0062 0.0000e+00 (sdev)
+     16    Jan 01 2000     4.2863     4.2864    34.1236    34.1217    27.0591    27.0576     6.0349    262.417     83.445     6.0801    264.385     84.071    0.08284    0.08882    401.153    404.768     4.3159     4.3159   3.227649   3.227501     0.1275    96.8625    -0.0320     0.0496 1.8187e-03 (avg)
+              10:17:33                                                                                                                                        0.00000    0.00000      0.178      0.180     0.0002     0.0005   0.000019   0.000035     0.0008     0.0184     0.0017     0.0000 0.0000e+00 (sdev)
+     17    Jan 01 2000     4.5848     4.5854    34.1108    34.1092    27.0168    27.0154     6.2866    273.373     87.529     6.3255    275.066     88.071    0.08318    0.08918    301.148    303.787     4.6074     4.6080   3.247768   3.247680     0.1159    97.1451    -0.0343     0.0358 1.8187e-03 (avg)
+              10:23:29                                                                                                                                        0.00000    0.00000      0.046      0.046     0.0001     0.0002   0.000018   0.000015     0.0008     0.0194     0.0050     0.0027 0.0000e+00 (sdev)
+     18    Jan 01 2000     4.6719     4.6720    34.1028    34.1011    27.0009    26.9995     6.4013    278.364     89.300     6.4407    280.078     89.850    0.08330    0.08936    252.170    254.350     4.6909     4.6910   3.252254   3.252119     0.1170    97.1165    -0.0291     0.0375 1.8187e-03 (avg)
+              10:27:27                                                                                                                                        0.00000    0.00000      0.122      0.123     0.0009     0.0012   0.000074   0.000090     0.0007     0.0171     0.0080     0.0009 0.0000e+00 (sdev)
+     19    Jan 01 2000     4.7947     4.7944    34.0995    34.0977    26.9845    26.9831     6.4412    280.107     90.111     6.4874    282.114     90.757    0.08342    0.08948    199.474    201.173     4.8098     4.8096   3.260094   3.259914     0.1194    97.0597    -0.0291     0.0435 1.8187e-03 (avg)
+              10:31:29                                                                                                                                        0.00000    0.00000      0.042      0.043     0.0001     0.0003   0.000019   0.000028     0.0008     0.0196     0.0106     0.0000 0.0000e+00 (sdev)
+     20    Jan 01 2000     4.7946     4.7944    34.0994    34.0976    26.9845    26.9831     6.4382    279.975     90.068     6.4725    281.468     90.549    0.08342    0.08948    200.249    201.955     4.8098     4.8096   3.260113   3.259945     0.1191    97.0661    -0.0196     0.0428 1.8187e-03 (avg)
+              10:31:33                                                                                                                                        0.00000    0.00000      0.094      0.095     0.0001     0.0005   0.000020   0.000044     0.0008     0.0210     0.0025     0.0055 0.0000e+00 (sdev)
+     21    Jan 01 2000     4.7943     4.7949    34.0992    34.0975    26.9843    26.9830     6.4391    280.013     90.080     6.4812    281.843     90.669    0.08342    0.08948    199.786    201.488     4.8095     4.8101   3.260050   3.259960     0.1194    97.0581    -0.0231     0.0374 1.8187e-03 (avg)
+              10:31:37                                                                                                                                        0.00000    0.00000      0.062      0.062     0.0002     0.0003   0.000017   0.000029     0.0009     0.0210     0.0056     0.0000 0.0000e+00 (sdev)
+     22    Jan 01 2000     4.7960     4.7976    34.0991    34.0975    26.9841    26.9827     6.4395    280.030     90.089     6.4800    281.793     90.656    0.08342    0.08948    199.990    201.693     4.8112     4.8127   3.260206   3.260206     0.1194    97.0576    -0.0303     0.0350 1.8187e-03 (avg)
+              10:31:42                                                                                                                                        0.00000    0.00001      0.108      0.109     0.0006     0.0002   0.000055   0.000029     0.0008     0.0191     0.0177     0.0041 0.0000e+00 (sdev)
+     23    Jan 01 2000     4.7971     4.7978    34.0992    34.0977    26.9840    26.9827     6.4505    280.510     90.246     6.4754    281.591     90.594    0.08343    0.08950    200.131    201.835     4.8123     4.8130   3.260318   3.260248     0.1206    97.0300    -0.0258     0.0354 1.8187e-03 (avg)
+              10:31:47                                                                                                                                        0.00001    0.00000      0.166      0.168     0.0002     0.0003   0.000026   0.000028     0.0015     0.0370     0.0062     0.0029 0.0000e+00 (sdev)
+     24    Jan 01 2000     4.7974     4.7984    34.0992    34.0974    26.9840    26.9825     6.4316    279.689     89.982     6.4715    281.421     90.540    0.08342    0.08950    200.009    201.713     4.8126     4.8136   3.260337   3.260270     0.1196    97.0539    -0.0191     0.0374 1.8187e-03 (avg)
+              10:31:51                                                                                                                                        0.00001    0.00000      0.119      0.120     0.0003     0.0009   0.000033   0.000110     0.0011     0.0263     0.0122     0.0000 0.0000e+00 (sdev)
