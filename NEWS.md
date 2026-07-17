@@ -1,6 +1,7 @@
 # oce 1.8.5
 
-* Change tests to handle a structure feature that is deprecated in R-devel.
+* Change tests to handle a structure feature that was deprecated in R-devel a
+  few days after 1.8.4 was submitted.
 
 
 # oce 1.8.4
