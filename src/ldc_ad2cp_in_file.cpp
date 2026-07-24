@@ -194,7 +194,7 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, NumericVector from,
   long int filesize_tmp = ftell(fp); // made unsigned long later
   if (filesize_tmp < 0)
     Rcpp::stop("this ad2cp file is empty");
-  unsigned long int filesize = (unsigned long int) filesize_tmp;
+  unsigned long int filesize = (unsigned long int)filesize_tmp;
   fseek(fp, 0L, SEEK_SET);
   if (Debug) {
     Rprintf("do_ldc_ad2cp_in_file(filename=%s, from=%ld, to=%ld, by=%ld, "
@@ -257,7 +257,8 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, NumericVector from,
   int early_EOF = 0;
   int reset_cindex = 0; // set to 1 if we skipped to find a new header start,
                         // after a bad checksum
-  while (chunk < (unsigned long int)To && cindex < filesize) { // FIXME: use whole file here
+  while (chunk < (unsigned long int)To &&
+         cindex < filesize) { // FIXME: use whole file here
     if (checksum_failures > 100)
       Rcpp::stop("more than 100 checksum errors");
     if (chunk > nchunk - 1) {

@@ -91,7 +91,8 @@ Authors:
 
 Other contributors:
 \itemize{
-  \item Chantelle Layton \email{chantelle.layton@dal.ca} (\href{https://orcid.org/0000-0002-3199-5763}{ORCID}) (curl() coauthor) [contributor]
+  \item Chantelle Layton \email{chantelle.layton@dal.ca} (\href{https://orcid.org/0000-0002-3199-5763}{ORCID}) [contributor]
+  \item Emily O'Grady \email{emilyogrady21@gmail.com} (\href{https://orcid.org/0000-0002-1072-5879}{ORCID}) [contributor]
   \item British Geological Survey (magnetic-field subroutine) [contributor, copyright holder]
 }
 

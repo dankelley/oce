@@ -12,10 +12,8 @@ using namespace Rcpp;
 
 // #define DEBUG // uncomment this for debugging info
 
-
 // [[Rcpp::export]]
-RawMatrix do_landsat_transpose_flip(RawMatrix m)
-{
+RawMatrix do_landsat_transpose_flip(RawMatrix m) {
 #ifdef DEBUG
   Rprintf("do_landsat_transpose_flip() start\n");
 #endif
@@ -24,7 +22,8 @@ RawMatrix do_landsat_transpose_flip(RawMatrix m)
 #ifdef DEBUG
   Rprintf("nrow=%d ncol=%d\n", nrow, ncol);
 #endif
-  RawMatrix res(ncol, nrow); // this is the *transpose* dimension, so ncol then nrow
+  RawMatrix res(ncol,
+                nrow); // this is the *transpose* dimension, so ncol then nrow
   int nrow_res = ncol;
   int ncol_res = nrow;
   // Transpose
@@ -48,19 +47,18 @@ RawMatrix do_landsat_transpose_flip(RawMatrix m)
   for (int i = 0; i < nrow_res; i++) {
     for (int j = 0; j < ncol_res_half; j++) {
       unsigned char tmp = res(i, j);
-      res(i, j) = res(i, ncol_res-j-1);
-      res(i, ncol_res-j-1) = tmp;
+      res(i, j) = res(i, ncol_res - j - 1);
+      res(i, ncol_res - j - 1) = tmp;
     }
   }
 #ifdef DEBUG
   Rprintf("... end flip\n");
 #endif
-  return(res);
+  return (res);
 }
 
 // [[Rcpp::export]]
-List do_landsat_numeric_to_bytes(NumericMatrix m, IntegerVector bits)
-{
+List do_landsat_numeric_to_bytes(NumericMatrix m, IntegerVector bits) {
 #ifdef DEBUG
   Rprintf("do_landsat_numeric_to_bytes() start\n");
 #endif
@@ -71,11 +69,11 @@ List do_landsat_numeric_to_bytes(NumericMatrix m, IntegerVector bits)
 
   // The most-significant matrix is just 1x1 for 8-bit data
   RawMatrix lsb(nrow, ncol);
-  RawMatrix msb(two_byte?nrow:1, two_byte?ncol:1);
+  RawMatrix msb(two_byte ? nrow : 1, two_byte ? ncol : 1);
 
   // Check endianness
   unsigned int x = 1;
-  char *c = (char*) &x;
+  char *c = (char *)&x;
   int little_endian = (int)*c;
 #ifdef DEBUG
   Rprintf("little_endian: %d\n", little_endian);
@@ -91,12 +89,13 @@ List do_landsat_numeric_to_bytes(NumericMatrix m, IntegerVector bits)
       Rprintf("little-endian two-byte nrow=%d ncol=%d\n", nrow, ncol);
 #endif
       for (int i = 0; i < n; i++) {
-        mij_int = (unsigned int)(65535*m[i]);
+        mij_int = (unsigned int)(65535 * m[i]);
         ms = (mij_int & 0xFF00) >> 8;
         ls = mij_int & 0x00FF;
-        //#ifdef DEBUG
-        //        Rprintf("i %d, m: %f -> %d -> msb 0x%02x lsb 0x%02x (little endian two-byte)\n", i, m[i], mij_int, ms, ls);
-        //#endif
+        // #ifdef DEBUG
+        //         Rprintf("i %d, m: %f -> %d -> msb 0x%02x lsb 0x%02x (little
+        //         endian two-byte)\n", i, m[i], mij_int, ms, ls);
+        // #endif
         lsb[i] = ls;
         msb[i] = ms;
       }
@@ -108,11 +107,13 @@ List do_landsat_numeric_to_bytes(NumericMatrix m, IntegerVector bits)
       // big endian below
       for (int i = 0; i < n; i++) {
         double mij = m[i];
-        unsigned int mij_int = (unsigned int)(65535*mij);
+        unsigned int mij_int = (unsigned int)(65535 * mij);
         unsigned char ls = (mij_int & 0xFF00) >> 8;
         unsigned char ms = mij_int & 0x00FF;
 #ifdef DEBUG
-        Rprintf("i %d, m: %f -> %d -> msb 0x%02x lsb 0x%02x (big endian two-byte)\n", i, mij, mij_int, ms, ls);
+        Rprintf("i %d, m: %f -> %d -> msb 0x%02x lsb 0x%02x (big endian "
+                "two-byte)\n",
+                i, mij, mij_int, ms, ls);
 #endif
         lsb[i] = ls;
         msb[i] = ms;
@@ -126,11 +127,12 @@ List do_landsat_numeric_to_bytes(NumericMatrix m, IntegerVector bits)
 #endif
       for (int i = 0; i < n; i++) {
         double mij = m[i];
-        unsigned int mij_int = (unsigned int)(255*mij);
+        unsigned int mij_int = (unsigned int)(255 * mij);
         unsigned char ls = mij_int; // & 0xFF00;
-        //#ifdef DEBUG
-        //        Rprintf("i=%d   %f -> %d -> lsb 0x%02x (little endian one-byte)\n", i, mij, mij_int, ls);
-        //#endif
+        // #ifdef DEBUG
+        //         Rprintf("i=%d   %f -> %d -> lsb 0x%02x (little endian
+        //         one-byte)\n", i, mij, mij_int, ls);
+        // #endif
         lsb[i] = ls;
       }
     } else {
@@ -141,11 +143,12 @@ List do_landsat_numeric_to_bytes(NumericMatrix m, IntegerVector bits)
       unsigned int mij_int;
       unsigned char ls;
       for (int i = 0; i < n; i++) {
-        mij_int = (unsigned int)(255*m[i]);
+        mij_int = (unsigned int)(255 * m[i]);
         ls = mij_int; // & 0x00FF;
-        //#ifdef DEBUG
-        //        Rprintf("i=%d   %f -> %d -> lsb 0x%02x (big endian one-byte)\n", i, m[i], mij_int, ls);
-        //#endif
+        // #ifdef DEBUG
+        //         Rprintf("i=%d   %f -> %d -> lsb 0x%02x (big endian
+        //         one-byte)\n", i, m[i], mij_int, ls);
+        // #endif
         lsb[i] = ls;
       }
     }
@@ -153,5 +156,5 @@ List do_landsat_numeric_to_bytes(NumericMatrix m, IntegerVector bits)
 #ifdef DEBUG
   Rprintf("do_landsat_numeric_to_bytes() done\n");
 #endif
-  return(List::create(Named("lsb")=lsb, Named("msb")=msb));
+  return (List::create(Named("lsb") = lsb, Named("msb") = msb));
 }
