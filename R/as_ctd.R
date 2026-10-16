@@ -53,7 +53,7 @@
 #' Typically, this vector has the same length as `salinity` and `temperature`,
 #' but it also possible to supply just one value, which will be repeated
 #' to get the right length. Note that `as.ctd()` stores the
-#' sum of `pressure` and `pressureAtmospheric` in the returned object,
+#' difference of `pressure` and `pressureAtmospheric` in the returned object,
 #' although the default value for `pressureAtmospheric` is zero, so
 #' in the default case, `pressure` is stored directly.
 #'

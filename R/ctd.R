@@ -651,9 +651,9 @@ setMethod(
 #' slot, so for example `x[["temperature"]]` will retrieve that
 #' item. By contrast, `x[["sigmaTheta"]]` is taken to be a
 #' request to compute \eqn{\sigma_\theta}{sigma[theta]}, and so
-#' it yields a call to [swTheta]`(x)` even if
+#' it yields a call to [swSigmaTheta]`(x)` even if
 #' the `data` slot of `x` might happen to contain an item
-#' named `theta`. This can be confusing at first, but it tends
+#' named `sigmaTheta`. This can be confusing at first, but it tends
 #' to lead to fewer surprises in everyday work, for otherwise the
 #' user would be forced to check the contents of any `ctd`
 #' object under analysis, to determine whether that item will be looked

@@ -44,9 +44,9 @@ should hold an item named \code{temperature} in the \code{data}
 slot, so for example \code{x[["temperature"]]} will retrieve that
 item. By contrast, \code{x[["sigmaTheta"]]} is taken to be a
 request to compute \eqn{\sigma_\theta}{sigma[theta]}, and so
-it yields a call to \link{swTheta}\code{(x)} even if
+it yields a call to \link{swSigmaTheta}\code{(x)} even if
 the \code{data} slot of \code{x} might happen to contain an item
-named \code{theta}. This can be confusing at first, but it tends
+named \code{sigmaTheta}. This can be confusing at first, but it tends
 to lead to fewer surprises in everyday work, for otherwise the
 user would be forced to check the contents of any \code{ctd}
 object under analysis, to determine whether that item will be looked
