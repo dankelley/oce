@@ -3404,14 +3404,14 @@ oceDebug(debug, "subset(<ctd>) START", sep="", unindent=1)
             }
             res <- x
             indices <- dots[["indices"]]
-            nindices <- length(indices)
+            n <- length(x[["temperature"]])
             for (i in seq_along(x@data)) {
-                if (length(x@data[[i]]) == nindices) {
+                if (length(x@data[[i]]) == n) {
                     res@data[[i]] <- x@data[[i]][indices]
                 }
             }
             for (i in seq_along(x@metadata$flags)) {
-                if (length(x@metadata$flags[[i]]) == nindices) {
+                if (length(x@metadata$flags[[i]]) == n) {
                     res@metadata$flags[[i]] <- x@metadata$flags[[i]][indices]
                 }
             }
