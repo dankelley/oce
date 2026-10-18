@@ -45,7 +45,7 @@ documentation for \code{\link[=swRho]{swRho()}}.}
 Typically, this vector has the same length as \code{salinity} and \code{temperature},
 but it also possible to supply just one value, which will be repeated
 to get the right length. Note that \code{as.ctd()} stores the
-sum of \code{pressure} and \code{pressureAtmospheric} in the returned object,
+difference of \code{pressure} and \code{pressureAtmospheric} in the returned object,
 although the default value for \code{pressureAtmospheric} is zero, so
 in the default case, \code{pressure} is stored directly.}
 
