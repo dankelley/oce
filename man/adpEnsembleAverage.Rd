@@ -20,7 +20,7 @@ to create a final ensemble in the returned value.}
 \item{na.rm}{a logical value indicating whether NA values should be stripped
 before the computation proceeds}
 
-\item{...}{extra arguments to be passed to the \code{mean()} function.}
+\item{...}{extra arguments to be passed to the \code{\link[base:mean]{base::mean()}} function.}
 }
 \value{
 A new \linkS4class{adp} object with ensembles averaged as specified. E.g. for

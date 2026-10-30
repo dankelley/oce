@@ -15,7 +15,7 @@ This is presently ignored for \code{adv} objects.  For \code{adp} objects, if
 (otherwise, an average across bins is used).}
 
 \item{\dots}{additional arguments that are used in the call to
-\code{\link[=mean]{mean()}}.}
+\code{\link[base:mean]{base::mean()}}.}
 }
 \value{
 A list containing items the major and minor axes of the covariance

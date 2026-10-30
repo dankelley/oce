@@ -45,7 +45,7 @@ range of \code{zlim} or \code{breaks} should be painted with
 painted with the nearest in-range color.}
 
 \item{breaks}{an optional indication of break points between color levels
-(see \code{\link[=image]{image()}}).  If this is provided, the arguments \code{name}
+(see \code{\link[graphics:image]{graphics::image()}}).  If this is provided, the arguments \code{name}
 through \code{blend} are all ignored (see \dQuote{Details}).  If it is
 provided, then it may either be a vector of break points, or a single number
 indicating the desired number of break points to be computed with
@@ -99,9 +99,9 @@ a list containing the following (not necessarily in this order)
 \item \code{zcol}, a vector of colors for \code{z}, if \code{z} was
 provided, otherwise \code{"black"}
 \item \code{zlim}, a two-element vector suitable as the argument of the same
-name supplied to \code{\link[=image]{image()}} or \code{\link[=imagep]{imagep()}}
+name supplied to \code{\link[graphics:image]{graphics::image()}} or \code{\link[=imagep]{imagep()}}
 \item \code{breaks} and \code{col}, vectors of breakpoints and colors,
-suitable as the same-named arguments to \code{\link[=image]{image()}} or
+suitable as the same-named arguments to \code{\link[graphics:image]{graphics::image()}} or
 \code{\link[=imagep]{imagep()}}
 \item \code{zclip} the provided value of \code{zclip}.
 \item \code{x0} and \code{x1}, numerical vectors of the sides of color
@@ -118,7 +118,7 @@ of colors, given a vector of \code{z} values; see Example 6.
 \description{
 Create a mapping between numeric values and colors, for use in palettes and plots.
 The return value can be used in various ways, including colorizing points
-on scattergraphs, controlling images created by \code{\link[=image]{image()}} or \code{\link[=imagep]{imagep()}},
+on scattergraphs, controlling images created by \code{\link[graphics:image]{graphics::image()}} or \code{\link[=imagep]{imagep()}},
 drawing palettes with \code{\link[=drawPalette]{drawPalette()}}, etc.
 }
 \details{
@@ -132,13 +132,13 @@ do this.  One approach is to supply \code{z} but no
 other argument, in which case \code{zlim}, and \code{breaks} will be determined
 from \code{z}, and the default \code{col} will be used.  Another approach is
 to specify \code{breaks} and \code{col} together, in the same way as they
-might be specified for the base R function \code{\link[=image]{image()}}.  It is
+might be specified for the base R function \code{\link[graphics:image]{graphics::image()}}.  It is
 also possible to supply only \code{zlim}, in which case \code{breaks} is
 inferred from that value.
 \if{html}{The figure below explains the
 (`breaks`, `col`) method of specifying a color mapping.  Note
 that there must be one more break than color.  This is the method used by
-e.g. [image()].}
+e.g. [graphics::image()].}
 \if{html}{\figure{colormap_fig_1.png}}
 \item \strong{Case B.} Supply \code{x0}, \code{col0}, \code{x1}, and \code{col1}, but \emph{not}
 \code{zlim}, \code{breaks}, \code{col} or \code{name}.

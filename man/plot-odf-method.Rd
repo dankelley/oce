@@ -27,7 +27,7 @@ using \code{\link[=oce.plot.ts]{oce.plot.ts()}} to create panels of time-series 
 all the columns contained in the \code{odf} object (or just those that
 contain at least one finite value, if \code{blanks} is \code{FALSE}).
 If the object's \code{data} slot does not contain \code{time}, then
-\code{\link[=pairs]{pairs()}} is used to plot all the elements in the \code{data}
+\code{\link[graphics:pairs]{graphics::pairs()}} is used to plot all the elements in the \code{data}
 slot that contain at least one finite value.
 These actions are both
 crude and there are no arguments to control the behaviour, but this

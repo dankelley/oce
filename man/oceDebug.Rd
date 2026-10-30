@@ -12,7 +12,7 @@ oceDebug(debug = 0, ..., unindent = 0, sep = "", style = "plain")
 greater than zero for increasing levels of debugging.  Values greater than 4
 are treated like 4.}
 
-\item{\dots}{items to be supplied to \code{\link[=cat]{cat()}}, which does the
+\item{\dots}{items to be supplied to \code{\link[base:cat]{base::cat()}}, which does the
 printing.  Note that no newline will be printed unless \dots
 contains a string with a newline character (as in the example).}
 
@@ -20,7 +20,7 @@ contains a string with a newline character (as in the example).}
 e.g. for start and end lines from a called function.}
 
 \item{sep}{character to insert between elements of \code{...}, by passing
-it to \code{\link[=cat]{cat()}}.}
+it to \code{\link[base:cat]{base::cat()}}.}
 
 \item{style}{either a string or a function. If a string,
 it must be \code{"plain"} (the default) for plain text,

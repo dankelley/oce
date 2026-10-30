@@ -31,7 +31,7 @@
 down from the top of the page.  See \dQuote{Details} for the meanings of various
 values of \code{which}.}
 
-\item{type}{type of plot, as for \code{\link[=plot]{plot()}}.}
+\item{type}{type of plot, as for \code{\link[graphics:plot.default]{graphics::plot()}}.}
 
 \item{xlim, ylim}{optional limit to the x and y axes, passed to \code{\link[=oce.plot.ts]{oce.plot.ts()}} for
 time-series plots.}
@@ -57,7 +57,7 @@ in order to use more space for the data and less for the axes.}
 
 \item{small}{an integer indicating the size of data set to be considered
 "small", to be plotted with points or lines using the standard
-\code{\link[=plot]{plot()}} function.  Data sets with more than \code{small} points will
+\code{\link[base:plot]{base::plot()}} function.  Data sets with more than \code{small} points will
 be plotted with \code{\link[=smoothScatter]{smoothScatter()}} instead.}
 
 \item{main}{main title for plot, used just on the top panel, if there are

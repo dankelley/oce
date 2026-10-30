@@ -60,8 +60,8 @@ Windows \code{x} on either time or distance, depending on the value of
 integers, to indicate a portion of the time or distance range.  If
 \code{which} is \code{"time"}, then the \code{start} and \code{end} values
 may also be provided as POSIX times, or character strings indicating times
-(in time zone given by the value of \link{getOption}\code{("oceTz")}).
-Note that \code{\link[=subset]{subset()}} may be more useful than this function.
+(in time zone given by the value of \code{base::getOption("oceTz")}).
+Note that \code{\link[base:subset]{base::subset()}} may be more useful than this function.
 }
 \examples{
 library(oce)
@@ -73,7 +73,7 @@ bottom <- window(adp, start = 0, end = 20, which = "distance")
 plot(bottom)
 }
 \seealso{
-\code{\link[=subset]{subset()}} provides more flexible selection of subsets.
+\code{\link[base:subset]{base::subset()}} provides more flexible selection of subsets.
 }
 \author{
 Dan Kelley

@@ -182,7 +182,7 @@ or by \code{densitylim} if \code{ytype} is \code{"sigmaTheta"}.}
 \item{pch}{code for plotting symbol (see \code{\link[=par]{par()}}).}
 
 \item{useSmoothScatter}{boolean, set to \code{TRUE} to use
-\code{\link[=smoothScatter]{smoothScatter()}} instead of \code{\link[=plot]{plot()}} to draw the plot.}
+\code{\link[=smoothScatter]{smoothScatter()}} instead of \code{\link[base:plot]{base::plot()}} to draw the plot.}
 
 \item{df}{optional argument, passed to \code{\link[=swN2]{swN2()}} if provided, and
 if a plot using \eqn{N^2}{N^2} is requested.}
@@ -190,7 +190,7 @@ if a plot using \eqn{N^2}{N^2} is requested.}
 \item{keepNA}{FALSE}
 
 \item{type}{type of plot to draw, using the same scheme as
-\code{\link[=plot]{plot()}}.}
+\code{\link[base:plot]{base::plot()}}.}
 
 \item{mgp}{3-element numerical vector to use for \link{par}\code{(mgp)}, and also
 for \link{par}\code{(mar)}, computed from this.  The default is tighter than the R

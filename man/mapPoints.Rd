@@ -17,10 +17,10 @@ arguments are ignored.  This objects that are possible include those of type
 \item{debug}{A flag that turns on debugging.  Set to 1 to get a moderate amount
 of debugging information, or to 2 to get more.}
 
-\item{...}{Optional arguments passed to \code{\link[=points]{points()}}.}
+\item{...}{Optional arguments passed to \code{\link[graphics:points]{graphics::points()}}.}
 }
 \description{
-Plot points on an existing map, by analogy to \code{\link[=points]{points()}}.
+Plot points on an existing map, by analogy to \code{\link[graphics:points]{graphics::points()}}.
 }
 \examples{
 \donttest{

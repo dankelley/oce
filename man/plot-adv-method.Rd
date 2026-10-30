@@ -48,7 +48,7 @@ plot panels.  For images, these strings will be placed in the right hand side
 of the top margin.  For timeseries, these strings are ignored.  If this is
 provided, its length must equal that of \code{which}.}
 
-\item{type}{Type of plot, as for \code{\link[=plot]{plot()}}.}
+\item{type}{Type of plot, as for \code{\link[base:plot]{base::plot()}}.}
 
 \item{lwd}{If the plot is of a time-series or scattergraph format with lines,
 this is used in the usual way; otherwise, e.g. for image formats, this is

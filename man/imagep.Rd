@@ -66,13 +66,13 @@ ordered in a matching way).
 If \code{z} is provided but not \code{x} and \code{y}, then the latter
 are constructed to
 indicate the indices of the matrix, in contrast
-to the range of 0 to 1, as is the case for \code{\link[=image]{image()}}.
+to the range of 0 to 1, as is the case for \code{\link[graphics:image]{graphics::image()}}.
 
 \emph{Mode 3.} If
 \code{x} is a list, its components \code{x$x} and \code{x$y} are used
 for \code{x} and \code{y}, respectively. If the list has component
 \code{z} this is used for \code{z}. (NOTE: these arguments are meant to
-mimic those of \code{\link[=image]{image()}}, which explains the same description
+mimic those of \code{\link[graphics:image]{graphics::image()}}, which explains the same description
 here.)  \emph{Mode 4.} There are also some special cases, e.g. if \code{x} is a
 topographic object such as can be created with \code{\link[=read.topo]{read.topo()}}
 or \code{\link[=as.topo]{as.topo()}}, then longitude and latitude are used for
@@ -80,7 +80,7 @@ axes, and topographic height is drawn.}
 
 \item{z}{A matrix containing the values to be plotted (NAs are allowed). Note
 that x can be used instead of z for convenience. (NOTE: these arguments
-are meant to mimic those of \code{\link[=image]{image()}}, which explains the same
+are meant to mimic those of \code{\link[graphics:image]{graphics::image()}}, which explains the same
 description here.)}
 
 \item{xlim, ylim}{Limits on x and y axes.}
@@ -205,10 +205,10 @@ contours to plot the image.}
 \code{NULL} for transparent (to see this, try setting
 \code{par("bg")<-"red"}).}
 
-\item{useRaster}{A logical value passed to \code{\link[=image]{image()}}, in cases
+\item{useRaster}{A logical value passed to \code{\link[graphics:image]{graphics::image()}}, in cases
 where \code{filledContour} is \code{FALSE}. Setting \code{useRaster=TRUE}
 can alleviate some anti-aliasing effects on some plot devices;
-see the documentation for \code{\link[=image]{image()}}.}
+see the documentation for \code{\link[graphics:image]{graphics::image()}}.}
 
 \item{mgp}{A 3-element numerical vector to use for \code{par(mgp)}, and
 also for \code{par(mar)}, computed from this.  The default is
@@ -284,9 +284,9 @@ Note that this does not use \code{\link[=layout]{layout()}} or any of the other 
 splitting methods.  It simply manipulates margins, and draws two plots
 together.  This lets users employ their favourite layout schemes.
 
-NOTE: \code{imagep} is an analogue of \code{\link[=image]{image()}}, and from that
+NOTE: \code{imagep} is an analogue of \code{\link[graphics:image]{graphics::image()}}, and from that
 it borrows a the convention that the number of rows in the matrix corresponds to
-to \code{x} axis, not the \code{y} axis.  (Actually, \code{\link[=image]{image()}} permits
+to \code{x} axis, not the \code{y} axis.  (Actually, \code{\link[graphics:image]{graphics::image()}} permits
 the length of \code{x} to match either \code{nrow(z)} or \code{1+nrow(z)}, but
 here only the first is permitted.)
 }

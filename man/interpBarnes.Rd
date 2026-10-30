@@ -58,7 +58,7 @@ one iteration, using the radii as described at \verb{xr,yr} above.}
 to be used as a criterion for blanking out the gridded value (using
 \code{NA}).  If 0, the whole \code{zg} grid is returned.  If >0, any spots
 on the grid where the data weight is less than the \code{trim}-th
-\code{\link[=quantile]{quantile()}} are set to \code{NA}.  See examples.}
+\code{\link[stats:quantile]{stats::quantile()}} are set to \code{NA}.  See examples.}
 
 \item{pregrid}{an indication of whether to pre-grid the data. If
 \code{FALSE}, this is not done, i.e. conventional Barnes interpolation is

@@ -15,7 +15,7 @@ maximum.
 }
 \description{
 This is a simpler cousin of the standard \code{\link[=fivenum]{fivenum()}} function,
-used in \code{\link[=summary]{summary()}} functions for \code{oce} objects.
+used in \code{\link[base:summary]{base::summary()}} functions for \code{oce} objects.
 }
 \section{Historical note}{
 
@@ -23,7 +23,7 @@ On Aug 5, 2019, the dimension was dropped as the fourth column, and
 this function returned to the original intention (revealed by its
 name).  Another change is that the function now returns numerical
 results, leaving the task of setting the number of digits to
-\code{\link[=summary]{summary()}}.
+\code{\link[base:summary]{base::summary()}}.
 }
 
 \examples{

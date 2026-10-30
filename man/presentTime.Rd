@@ -12,7 +12,7 @@ to use UTC, which is used commonly in oceanographic work. To
 get the local time, use \code{tz=""} or \code{tz=NULL}, as in \dQuote{Examples}.}
 }
 \value{
-A \code{\link[=POSIXct]{POSIXct()}}-style object holding the present time, in the
+A \code{\link[base:DateTimeClasses]{base::POSIXct()}}-style object holding the present time, in the
 indicated timezone.
 }
 \description{

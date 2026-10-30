@@ -15,7 +15,7 @@ retime(x, a, b, t0, debug = getOption("oceDebug"))
 \item{b}{slope (unitless) in linear model of time drift (unitless) (see
 \dQuote{Details}).}
 
-\item{t0}{reference time (in \code{\link[=POSIXct]{POSIXct()}} format) used in linear model of time
+\item{t0}{reference time (in \code{\link[base:DateTimeClasses]{base::POSIXct()}} format) used in linear model of time
 drift (see \dQuote{Details}).}
 
 \item{debug}{a flag that, if nonzero, turns on debugging.}
@@ -42,7 +42,7 @@ The returned object is computed by linear interpolation, using
 start or end.  The new time will be as given by the formula above. Note that
 if the drift is large enough, the sampling rate will be changed.  It is a
 good idea to start with an object that has an extended time range, so that,
-after this is called, \code{\link[=subset]{subset()}} can be used to trim to a desired
+after this is called, \code{\link[base:subset]{base::subset()}} can be used to trim to a desired
 time range.
 }
 \examples{

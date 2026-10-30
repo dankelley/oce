@@ -113,7 +113,7 @@ For the \code{type="l"} case, the line is plotted in the first colour specified.
 \item{pch}{character code, used if \code{type=="p"}.
 If there are fewer \code{pch} values than there are \code{x} values, then the \code{pch} values
 are recycled in the standard fashion.
-See \code{\link[=points]{points()}} for the possible values for \code{pch}.}
+See \code{\link[graphics:points]{graphics::points()}} for the possible values for \code{pch}.}
 
 \item{cex}{numeric character expansion factor for points on plots, ignored unless
 \code{type} is \code{"p"}.  This may be a single number, applied to all points, or
@@ -167,7 +167,7 @@ time axes consider months to be of equal length.}
 \item{debug}{a flag that turns on debugging.  Set to 1 to get a moderate
 amount of debugging information, or to 2 to get more.}
 
-\item{\dots}{graphical parameters passed down to \code{\link[=plot]{plot()}}.}
+\item{\dots}{graphical parameters passed down to \code{\link[graphics:plot.default]{graphics::plot()}}.}
 }
 \value{
 A list is silently returned, containing \code{xat} and \code{yat},
@@ -178,7 +178,7 @@ Plot a time-series, obeying the timezone and possibly drawing the range in
 the top-left margin.
 }
 \details{
-Depending on the version of R, the standard \code{\link[=plot]{plot()}} and
+Depending on the version of R, the standard \code{\link[graphics:plot.default]{graphics::plot()}} and
 \code{\link[=plot.ts]{plot.ts()}} routines will not obey the time zone of the data.
 This routine gets around that problem.  It can also plot the time range in
 the top-left margin, if desired; this string includes the timezone, to

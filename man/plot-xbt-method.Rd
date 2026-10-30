@@ -21,7 +21,7 @@
 \item{which}{list of desired plot types; see \dQuote{Details} for the meanings of various
 values of \code{which}.}
 
-\item{type}{type of plot, as for \code{\link[=plot]{plot()}}.}
+\item{type}{type of plot, as for \code{\link[base:plot]{base::plot()}}.}
 
 \item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and also for
 \code{par(mar)}, computed from this.  The default is tighter than the R default,

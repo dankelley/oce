@@ -26,7 +26,7 @@ parameters, and the return value is decreased accordingly
 (see Example 3).}
 }
 \value{
-A \code{\link[=POSIXct]{POSIXct()}} time vector.
+A \code{\link[base:DateTimeClasses]{base::POSIXct()}} time vector.
 }
 \description{
 This converts numerical values into POSIXct times.  There are many

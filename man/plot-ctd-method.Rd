@@ -188,7 +188,7 @@ using \link{pretty}\code{(c(0, 300))} if the station depth is
 under 100m or \link{pretty}\code{(c(0, 5500))} otherwise.
 If \code{drawIsobaths} is a numerical vector,
 then the indicated depths are drawn. For plots drawn with \code{projection}
-set to \code{NULL}, the contours are added with \code{\link[=contour]{contour()}}
+set to \code{NULL}, the contours are added with \code{\link[graphics:contour]{graphics::contour()}}
 and otherwise \code{\link[=mapContour]{mapContour()}} is used. To customize
 the resultant contours, e.g. setting particular line types or colors,
 users should call these functions directly (see e.g. Example 2).}
@@ -225,7 +225,7 @@ passed to that function.}
 \item{pch}{code for plotting symbol (see \code{\link[=par]{par()}}).}
 
 \item{useSmoothScatter}{logical value indicating whether to
-use \code{\link[=smoothScatter]{smoothScatter()}} instead of \code{\link[=plot]{plot()}} to draw the plot.}
+use \code{\link[=smoothScatter]{smoothScatter()}} instead of \code{\link[base:plot]{base::plot()}} to draw the plot.}
 
 \item{df}{optional numeric argument that is ignored except for plotting buoyancy
 frequency; in that case, it is passed to \code{\link[=swN2]{swN2()}}.}
@@ -239,7 +239,7 @@ would have extraneous lines joining the deepest point in one
 profile to the shallowest in the next profile.}
 
 \item{type}{the type of plot to draw, using the same scheme as
-\code{\link[=plot]{plot()}}. If supplied, this is increased to be the
+\code{\link[base:plot]{base::plot()}}. If supplied, this is increased to be the
 same length as \code{which}, if necessary, and then supplied to
 each of the individual plot calls. If it is not supplied,
 then those plot calls use defaults (e.g. using a line for

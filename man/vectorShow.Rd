@@ -47,7 +47,7 @@ the result is to be used with, e.g. \code{\link[=mtext]{mtext()}}.}
 }
 \value{
 A string ending in a newline character, suitable for
-display with \code{\link[=cat]{cat()}} or \code{\link[=oceDebug]{oceDebug()}}.
+display with \code{\link[base:cat]{base::cat()}} or \code{\link[=oceDebug]{oceDebug()}}.
 }
 \description{
 This is similar to \code{\link[=str]{str()}}, but it shows data at the first and last of the

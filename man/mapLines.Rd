@@ -17,10 +17,10 @@ following two arguments are ignored.}
 \item{greatCircle}{a logical value indicating whether to render line
 segments as great circles.  (Ignored.)}
 
-\item{\dots}{optional arguments passed to \code{\link[=lines]{lines()}}.}
+\item{\dots}{optional arguments passed to \code{\link[graphics:lines]{graphics::lines()}}.}
 }
 \description{
-Plot lines on an existing map, by analogy to \code{\link[=lines]{lines()}}.
+Plot lines on an existing map, by analogy to \code{\link[graphics:lines]{graphics::lines()}}.
 }
 \examples{
 \donttest{

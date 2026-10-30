@@ -15,7 +15,7 @@ then a default will be used (see \dQuote{Details}).}
 }
 \value{
 \code{labelWithUnit} returns a language object, created with \code{\link[=bquote]{bquote()}},
-that that may supplied as a text string to \code{\link[=legend]{legend()}}, \code{\link[=mtext]{mtext()}}, \code{\link[=text]{text()}},
+that that may supplied as a text string to \code{\link[=legend]{legend()}}, \code{\link[=mtext]{mtext()}}, \code{\link[graphics:text]{graphics::text()}},
 etc.
 }
 \description{

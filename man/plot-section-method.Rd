@@ -109,7 +109,7 @@ plot types, i.e. if \code{ztype} is either \code{"points"} or \code{"image"}.
 limit on the plotted field.  If not provided, it defaults to the data
 range.
 \code{zbreaks} controls the colour breaks, in a manner that is similar to
-the \code{\link[=image]{image()}} parameter named \code{breaks}.  If not provided, \code{zbreaks} is
+the \code{\link[graphics:image]{graphics::image()}} parameter named \code{breaks}.  If not provided, \code{zbreaks} is
 inferred from \code{zlim}.
 \code{zcol}, which controls the colour scheme, may be a vector of colours
 (of length 1 less than \code{zbreaks}), or a function that takes an
@@ -187,7 +187,7 @@ ignored otherwise.}
 
 \item{mgp}{A 3-element numerical vector to use for \code{par(mgp)}, and also for
 \code{par(mar)}, computed from this. If not provided, this defaults to
-\link{getOption}\code{("oceMgp")}.}
+\link[base:options]{base::getOption}\code{("oceMgp")}.}
 
 \item{mar}{Value to be used with \code{\link{par}}\code{("mar")}. If not provided,
 a default is set up.}
@@ -203,7 +203,7 @@ non-map or to 3 for map.}
 \item{lwd}{line width; defaults to \code{\link{par}}\code{("lwd")}.}
 
 \item{labcex}{Size of characters in contour labels (passed to
-\code{\link[=contour]{contour()}}).}
+\code{\link[graphics:contour]{graphics::contour()}}).}
 
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
@@ -257,7 +257,7 @@ form, so that the water surface appears at the top of the plot.  The x-axis is
 more complicated. If \code{at} is not supplied, then the routine calculates x
 as the distance between the first station in the section and each of the other
 stations. (This will produce an error if the stations are not ordered
-geographically, because the \code{\link[=contour]{contour()}} routine cannot handle
+geographically, because the \code{\link[graphics:contour]{graphics::contour()}} routine cannot handle
 non-increasing axis coordinates.) If \code{at} is specified, then it is taken
 to be the location, in arbitrary units, along the x-axis of labels specified by
 \code{labels}; the way this works is designed to be the same as for

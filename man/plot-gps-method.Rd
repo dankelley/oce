@@ -60,7 +60,7 @@ supplied.}
 that gps shapes near the centre of the plot are preserved.  If a projection
 is provided, the coordinate system will bear an indirect relationship to
 longitude and longitude, and further adornment of the plot must be done with
-e.g.  \code{\link[=mapPoints]{mapPoints()}} instead of \code{\link[=points]{points()}}.}
+e.g.  \code{\link[=mapPoints]{mapPoints()}} instead of \code{\link[graphics:points]{graphics::points()}}.}
 
 \item{expand}{numerical factor for the expansion of plot limits, showing
 area outside the plot, e.g. if showing a ship track as a gps, and then an

@@ -115,7 +115,7 @@ of the returned object; thus, for example,
 The NetCDF files for profile data store time in an item named \code{juld},
 which holds the overall profile time, in what the Argo documentation
 calls Julian days, with respect to a reference time that is also stored
-in the file.  Based on this information, a \link{POSIXct} value named \code{time}
+in the file.  Based on this information, a \link[base:DateTimeClasses]{base::POSIXct} value named \code{time}
 is stored in the \code{metadata} slot of the returned value, and this
 may be found with e.g. \code{a[["time"]]}, where \code{a} is that returned value.
 Importantly, this value matches the time listed in profile index files.

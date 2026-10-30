@@ -54,7 +54,7 @@ example, modern temperatures have
 \item \code{unit} is an \code{\link[=expression]{expression()}} giving the unit as above. In this
 case, the scale will be set to \code{""}.
 \item \code{unit} is a character string that is converted
-into an expression with \link{parse}\code{(text=unit)},
+into an expression with \link[base:parse]{base::parse}\code{(text=unit)},
 and the scale set to \code{""}.
 }
 }

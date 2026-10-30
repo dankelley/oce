@@ -57,7 +57,7 @@ means they will be removed in the next CRAN release. They are as follows.
 \item The \code{fill} argument of \code{\link[=mapPlot]{mapPlot()}} was confusing
 to users, so it was designated as deprecated in June 2016.
 (The confusion stemmed from subtle differences between
-\code{\link[=plot]{plot()}} and \code{\link[=polygon]{polygon()}}, and the problem is that
+\code{\link[base:plot]{base::plot()}} and \code{\link[=polygon]{polygon()}}, and the problem is that
 \code{\link[=mapPlot]{mapPlot()}} can use either of these functions, according
 to whether coastlines are to be filled.)
 The functionality is preserved, in the \code{col} argument.

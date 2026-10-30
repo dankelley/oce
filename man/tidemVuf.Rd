@@ -7,7 +7,7 @@
 tidemVuf(t, j, latitude = NULL)
 }
 \arguments{
-\item{t}{a single time in \code{\link[=POSIXct]{POSIXct()}} format, with timezone \code{"UTC"}.}
+\item{t}{a single time in \code{\link[base:DateTimeClasses]{base::POSIXct()}} format, with timezone \code{"UTC"}.}
 
 \item{j}{integer vector, giving indices of tidal constituents to use.}
 

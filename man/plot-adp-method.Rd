@@ -314,7 +314,7 @@ record of AD2CP data.
 }
 
 The color scheme for image plots (\code{which} in 1:12) is provided by the
-\code{col} argument, which is passed to \code{\link[=image]{image()}} to do the actual
+\code{col} argument, which is passed to \code{\link[graphics:image]{graphics::image()}} to do the actual
 plotting.  See \dQuote{Examples} for some comparisons.
 
 A common quick-look plot to assess mooring movement is to use
@@ -322,7 +322,7 @@ A common quick-look plot to assess mooring movement is to use
 currents may dislodge a mooring or cause it to settle).
 
 By default, \verb{plot,adp-method} uses a \code{zlim} value for the
-\code{\link[=image]{image()}} that is constructed to contain all the data, but to be
+\code{\link[graphics:image]{graphics::image()}} that is constructed to contain all the data, but to be
 symmetric about zero.  This is done on a per-panel basis, and the scale is
 plotted at the top-right corner, along with the name of the variable being
 plotted. You may also supply \code{zlim} as one of the \dots{} arguments,

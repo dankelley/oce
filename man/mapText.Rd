@@ -13,11 +13,11 @@ mapText(longitude, latitude, labels, ...)
 
 \item{labels}{vector of labels of text to be plotted.}
 
-\item{...}{optional arguments passed to \code{\link[=text]{text()}}, e.g. \code{adj},
+\item{...}{optional arguments passed to \code{\link[graphics:text]{graphics::text()}}, e.g. \code{adj},
 \code{pos}, etc.}
 }
 \description{
-Plot text on an existing map, by analogy to \code{\link[=text]{text()}}.
+Plot text on an existing map, by analogy to \code{\link[graphics:text]{graphics::text()}}.
 }
 \examples{
 \donttest{

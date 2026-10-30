@@ -63,7 +63,7 @@ given as the string \code{"smoothing"}
 \item If \code{derivs} equals \code{"simple"}, then the derivative of
 density with respect to pressure is calculated as the ratio of first-order
 derivatives of density and pressure, each calculated using
-\code{\link[=diff]{diff()}}.  (A zero is appended at the top level.)
+\code{\link[base:diff]{base::diff()}}.  (A zero is appended at the top level.)
 \item If \code{derivs} equals \code{"smoothing"}, then the processing
 depends on the number of data in the profile, and on whether \code{df} is
 given as an optional argument.  When the number of points exceeds 4, and

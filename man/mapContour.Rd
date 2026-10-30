@@ -42,7 +42,7 @@ not supplied.}
 \item{levels}{vector of contour levels.}
 
 \item{labcex}{\code{cex} value used for contour labelling. As with
-\code{\link[=contour]{contour()}}, this is an absolute size, not a multiple of
+\code{\link[graphics:contour]{graphics::contour()}}, this is an absolute size, not a multiple of
 \code{\link{par}}\code{("cex")}.}
 
 \item{drawlabels}{logical value or vector indicating whether to
@@ -63,7 +63,7 @@ in drawing coarsely-spaced labelled contours on top of
 finely-spaced unlabelled contours. On the other hand, if \code{underlay}
 equals \code{"interrupt"}, then the contour line is interrupted in the
 region of the label, which is closer to the scheme used by the base
-\code{\link[=contour]{contour()}} function.}
+\code{\link[graphics:contour]{graphics::contour()}} function.}
 
 \item{col}{colour of the contour line, as for \code{\link{par}}\code{("col")},
 except here \code{col} gets lengthened by calling \code{\link[=rep]{rep()}},
@@ -86,7 +86,7 @@ by specifying higher \code{debug} values.}
 \description{
 Draw contour lines to an existing map, using \code{\link[=mapLines]{mapLines()}}.
 Note that label placement in \code{mapContour} is handled differently
-than in \code{\link[=contour]{contour()}}.
+than in \code{\link[graphics:contour]{graphics::contour()}}.
 }
 \section{Sample of Usage}{
 

@@ -68,6 +68,13 @@ Note that most readers should also install Ocedata, with
 
 which does not require compilers for C++, Fortran, etc.
 
+A special note to developers: if you rebuild the documentation, e.g. by using
+`devtools::document()`, then it is critical that you use version 7.3.2 of
+Roxygen2. Newer versions of Roxygen2 will spew hundreds of errors relating to
+method over-rides. The effort of keeping up-to-date is arduous and the result
+will not benefit users, because the regenerated documentation will be the same
+as the old documentation.
+
 ## Evolution of oce
 
 Oce is emphatically an open-source system, and so the participation of users is

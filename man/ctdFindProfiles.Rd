@@ -85,7 +85,7 @@ either indices to these events or a vector of CTD records containing the events.
 \details{
 The method works by examining the pressure record.  First, this is smoothed using
 \code{smoother()} (see \dQuote{Arguments}), and then the result is first-differenced
-using \code{\link[=diff]{diff()}}.  Median values of the positive and
+using \code{\link[base:diff]{base::diff()}}.  Median values of the positive and
 negative first-difference values are then multiplied by \code{cutoff}.  This establishes criteria
 for any given point to be in an ascending profile, a descending profile, or a non-profile.
 Contiguous regions are then found, and those that have fewer than \code{minLength} points are

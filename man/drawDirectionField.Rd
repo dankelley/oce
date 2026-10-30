@@ -56,7 +56,7 @@ default used by \code{\link[=arrows]{arrows()}}.}
 
 \item{add}{if \code{TRUE}, the arrows are added to an existing
 plot; otherwise, a new plot is started by calling
-\code{\link[=plot]{plot()}} with \code{x}, \code{y} and \code{type="n"}.
+\code{\link[base:plot]{base::plot()}} with \code{x}, \code{y} and \code{type="n"}.
 In other words, the plot will be very basic. In most cases, the
 user will probably want to draw a diagram first, and \code{add}
 the direction field later.}

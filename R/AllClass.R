@@ -10,7 +10,7 @@
 #' presentTime() # UTC
 #' presentTime("") # the local timezone
 #'
-#' @return A [Base::POSIXct()]-style object holding the present time, in the
+#' @return A [base::POSIXct()]-style object holding the present time, in the
 #' indicated timezone.
 # NOTE: we need to define this here so [setClass()] knows about it;
 # NOTE: having it in NAMESPACE is not sufficient.
@@ -350,7 +350,6 @@ setMethod(
     }
 )
 
-
 setClass("satellite", contains = "oce") # both amsr and landsat stem from this
 
 #' Plot an oce Object
@@ -378,7 +377,11 @@ setClass("satellite", contains = "oce") # both amsr and landsat stem from this
 #' o <- oceSetData(o, "y", rnorm(10))
 #' o <- oceSetData(o, "z", rnorm(10))
 #' plot(o)
+#' @name plot,oce-method
 #' @aliases plot.oce
+#' @docType methods
+NULL
+
 setMethod(
     f = "plot",
     signature = "oce",

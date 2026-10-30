@@ -50,7 +50,7 @@ the processing.}
 \item{\dots}{optional arguments passed to plotting functions.}
 }
 \description{
-This provides something analogous to \code{\link[=contour]{contour()}}, but with the
+This provides something analogous to \code{\link[graphics:contour]{graphics::contour()}}, but with the
 ability to flip x and y.
 Setting \code{revy=TRUE} can be helpful if the \code{y} data represent
 pressure or depth below the surface.

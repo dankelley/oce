@@ -62,7 +62,7 @@ range (e.g. skipping the year, month, day, etc. if it's the same as the start
 time).}
 
 \item{useSmoothScatter}{a boolean to cause \code{\link[=smoothScatter]{smoothScatter()}} to be
-used for profile plots, instead of \code{\link[=plot]{plot()}}.}
+used for profile plots, instead of \code{\link[base:plot]{base::plot()}}.}
 
 \item{mgp}{3-element numerical vector to use for \code{\link{par}}\code{("mgp")}, and
 also for \code{par(mar)}, computed from this.  The default is tighter than the

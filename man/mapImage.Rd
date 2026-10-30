@@ -103,7 +103,7 @@ Plot an image on an existing map that was created with \code{\link[=mapPlot]{map
 }
 \details{
 Image data are on a regular grid in lon-lat space, but not in the
-projected x-y space.  This means that \code{\link[=image]{image()}} cannot be used.
+projected x-y space.  This means that \code{\link[graphics:image]{graphics::image()}} cannot be used.
 Instead, there are two approaches, depending on the value of
 \code{filledContour}.
 

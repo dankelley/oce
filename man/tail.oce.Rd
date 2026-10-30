@@ -9,7 +9,7 @@
 \arguments{
 \item{x}{an \linkS4class{oce} object.}
 
-\item{n}{Number of elements to extract, as for \code{\link[=tail]{tail()}}.}
+\item{n}{Number of elements to extract, as for \code{\link[utils:head]{utils::tail()}}.}
 
 \item{...}{ignored}
 }

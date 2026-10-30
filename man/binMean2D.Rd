@@ -48,7 +48,7 @@ by calling \code{\link[=fillGapMatrix]{fillGapMatrix()}} with the supplied value
 See \dQuote{Details}.}
 
 \item{na.rm}{logical value indicating whether to remove NA values before
-doing the computation of the average. This is passed to \code{\link[=mean]{mean()}}, which
+doing the computation of the average. This is passed to \code{\link[base:mean]{base::mean()}}, which
 does the work of the present function.}
 
 \item{debug}{an integer specifying whether debugging information is
