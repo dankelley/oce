@@ -1306,7 +1306,7 @@ ctdDecimate <- function(x, p = 1, method = "boxcar", rule = 1, e = 1.5, na.rm = 
 #'
 #' The method works by examining the pressure record.  First, this is smoothed using
 #' `smoother()` (see \dQuote{Arguments}), and then the result is first-differenced
-#' using [diff()].  Median values of the positive and
+#' using [base::diff()].  Median values of the positive and
 #' negative first-difference values are then multiplied by `cutoff`.  This establishes criteria
 #' for any given point to be in an ascending profile, a descending profile, or a non-profile.
 #' Contiguous regions are then found, and those that have fewer than `minLength` points are
@@ -1408,9 +1408,10 @@ ctdDecimate <- function(x, p = 1, method = "boxcar", rule = 1, e = 1.5, na.rm = 
 #'
 #' @author Dan Kelley and Clark Richards
 ctdFindProfiles <- function(
-    x, cutoff = 0.5, minLength = 10, minHeight,
-    smoother = smooth.spline, direction = c("descending", "ascending"),
-    breaks, arr.ind = FALSE, distinct, debug = getOption("oceDebug"), ...) {
+  x, cutoff = 0.5, minLength = 10, minHeight,
+  smoother = smooth.spline, direction = c("descending", "ascending"),
+  breaks, arr.ind = FALSE, distinct, debug = getOption("oceDebug"), ...
+) {
     if (!inherits(x, "oce")) {
         stop("x must be an \"oce\" object")
     }
@@ -1834,8 +1835,9 @@ ctdFindProfilesRBR <- function(x, direction = "descending", arr.ind = FALSE, deb
 #'
 #' @family things related to ctd data
 ctdTrim <- function(
-    x, method, removeDepthInversions = FALSE,
-    parameters = NULL, indices = FALSE, debug = getOption("oceDebug")) {
+  x, method, removeDepthInversions = FALSE,
+  parameters = NULL, indices = FALSE, debug = getOption("oceDebug")
+) {
     oceDebug(debug, "ctdTrim() START\n", unindent = 1)
     methodIsFunction <- !missing(method) && is.function(method)
     if (!inherits(x, "ctd")) {
@@ -2461,7 +2463,7 @@ write.ctd <- function(object, file, metadata = TRUE, flags = TRUE, format = "csv
 #' under 100m or [pretty]`(c(0, 5500))` otherwise.
 #' If `drawIsobaths` is a numerical vector,
 #' then the indicated depths are drawn. For plots drawn with `projection`
-#' set to `NULL`, the contours are added with [contour()]
+#' set to `NULL`, the contours are added with [graphics::contour()]
 #' and otherwise [mapContour()] is used. To customize
 #' the resultant contours, e.g. setting particular line types or colors,
 #' users should call these functions directly (see e.g. Example 2).
@@ -2501,7 +2503,7 @@ write.ctd <- function(object, file, metadata = TRUE, flags = TRUE, format = "csv
 #' @param pch code for plotting symbol (see [par()]).
 #'
 #' @param useSmoothScatter logical value indicating whether to
-#' use [smoothScatter()] instead of [plot()] to draw the plot.
+#' use [smoothScatter()] instead of [base::plot()] to draw the plot.
 #'
 #' @param df optional numeric argument that is ignored except for plotting buoyancy
 #' frequency; in that case, it is passed to [swN2()].
@@ -2515,7 +2517,7 @@ write.ctd <- function(object, file, metadata = TRUE, flags = TRUE, format = "csv
 #' profile to the shallowest in the next profile.
 #'
 #' @param type the type of plot to draw, using the same scheme as
-#' [plot()]. If supplied, this is increased to be the
+#' [base::plot()]. If supplied, this is increased to be the
 #' same length as `which`, if necessary, and then supplied to
 #' each of the individual plot calls. If it is not supplied,
 #' then those plot calls use defaults (e.g. using a line for
@@ -3395,7 +3397,7 @@ setMethod(
         if (length(dots) && ("debug" %in% dotsNames)) {
             debug <- dots$debug
         }
-oceDebug(debug, "subset(<ctd>) START", sep="", unindent=1)
+        oceDebug(debug, "subset(<ctd>) START", sep = "", unindent = 1)
         indicesGiven <- length(dots) && ("indices" %in% dotsNames)
         if (indicesGiven) {
             oceDebug(debug, "'indices' was given\n")
@@ -3420,7 +3422,7 @@ oceDebug(debug, "subset(<ctd>) START", sep="", unindent=1)
                 res@processingLog,
                 paste("subset.ctd(x, subset=", subsetString, ")", sep = "")
             )
-            oceDebug(debug, "subset(<ctd>) END\n", unindent=1)
+            oceDebug(debug, "subset(<ctd>) END\n", unindent = 1)
             return(res)
         } else {
             oceDebug(debug, "'indices' was not given\n")
@@ -3448,7 +3450,7 @@ oceDebug(debug, "subset(<ctd>) START", sep="", unindent=1)
                 res@processingLog,
                 paste("subset.ctd(x, subset=", subsetString, ")", sep = "")
             )
-            oceDebug(debug, "subset(<ctd>) END\n", unindent=1)
+            oceDebug(debug, "subset(<ctd>) END\n", unindent = 1)
             res
         }
     }
@@ -3516,8 +3518,9 @@ oceDebug(debug, "subset(<ctd>) START", sep="", unindent=1)
 #' @family functions that plot oce data
 #' @family things related to ctd data
 plotScan <- function(
-    x, which = 1, xtype = "scan", flipy = FALSE, type = "l", mgp = getOption("oceMgp"),
-    xlim = NULL, ylim = NULL, mar = c(mgp[1] + 1.5, mgp[1] + 1.5, mgp[1], mgp[1]), ..., debug = getOption("oceDebug")) {
+  x, which = 1, xtype = "scan", flipy = FALSE, type = "l", mgp = getOption("oceMgp"),
+  xlim = NULL, ylim = NULL, mar = c(mgp[1] + 1.5, mgp[1] + 1.5, mgp[1], mgp[1]), ..., debug = getOption("oceDebug")
+) {
     if (!inherits(x, "ctd")) {
         stop("method is only for objects of class '", "ctd", "'")
     }
@@ -3625,8 +3628,9 @@ plotScan <- function(
 #'
 #' @family functions that read ctd data
 read.ctd <- function(
-    file, type = NULL, columns = NULL, station = NULL, missingValue, deploymentType = "unknown",
-    monitor = FALSE, encoding = "latin1", debug = getOption("oceDebug"), processingLog, ...) {
+  file, type = NULL, columns = NULL, station = NULL, missingValue, deploymentType = "unknown",
+  monitor = FALSE, encoding = "latin1", debug = getOption("oceDebug"), processingLog, ...
+) {
     if (missing(file)) {
         stop("must supply 'file'")
     }
@@ -4005,34 +4009,35 @@ time.formats <- c("%b %d %Y %H:%M:%s", "%Y%m%d")
 #' @family functions that plot oce data
 #' @family things related to ctd data
 plotTS <- function(
-    x,
-    inSitu = FALSE,
-    type = "p",
-    referencePressure = 0,
-    nlevels = 6, levels,
-    grid = TRUE,
-    col.grid = "lightgray",
-    lty.grid = "dotted",
-    rho1000 = FALSE,
-    eos = getOption("oceEOS", default = "gsw"),
-    cex = par("cex"), col = par("col"), pch = par("pch"),
-    bg = "white", pt.bg = "transparent",
-    col.rho = gray(0.5),
-    cex.rho = 3 / 4 * par("cex"),
-    rotate = TRUE,
-    useSmoothScatter = FALSE,
-    xlab, ylab,
-    Slim, Tlim,
-    drawFreezing = TRUE,
-    trimIsopycnals = TRUE,
-    gridIsopycnals = c(30, 50),
-    mgp = getOption("oceMgp"),
-    mar = c(mgp[1] + 1.5, mgp[1] + 1.5, mgp[1], mgp[1]),
-    lwd = par("lwd"), lty = par("lty"),
-    lwd.rho = par("lwd"), lty.rho = par("lty"),
-    add = FALSE, inset = FALSE,
-    debug = getOption("oceDebug"),
-    ...) {
+  x,
+  inSitu = FALSE,
+  type = "p",
+  referencePressure = 0,
+  nlevels = 6, levels,
+  grid = TRUE,
+  col.grid = "lightgray",
+  lty.grid = "dotted",
+  rho1000 = FALSE,
+  eos = getOption("oceEOS", default = "gsw"),
+  cex = par("cex"), col = par("col"), pch = par("pch"),
+  bg = "white", pt.bg = "transparent",
+  col.rho = gray(0.5),
+  cex.rho = 3 / 4 * par("cex"),
+  rotate = TRUE,
+  useSmoothScatter = FALSE,
+  xlab, ylab,
+  Slim, Tlim,
+  drawFreezing = TRUE,
+  trimIsopycnals = TRUE,
+  gridIsopycnals = c(30, 50),
+  mgp = getOption("oceMgp"),
+  mar = c(mgp[1] + 1.5, mgp[1] + 1.5, mgp[1], mgp[1]),
+  lwd = par("lwd"), lty = par("lty"),
+  lwd.rho = par("lwd"), lty.rho = par("lty"),
+  add = FALSE, inset = FALSE,
+  debug = getOption("oceDebug"),
+  ...
+) {
     oceDebug(debug, "plotTS(..., lwd.rho=", lwd.rho, ", lty.rho=", lty.rho, ",",
         "Slim=", if (!missing(Slim)) paste("c(", Slim[1], ",", Slim[2], ")") else "(missing)", ", ",
         "Tlim=", if (!missing(Tlim)) paste("c(", Tlim[1], ",", Tlim[2], ")") else "(missing)", ", ",
@@ -4386,12 +4391,13 @@ plotTS <- function(
 #'
 #' @author Dan Kelley
 drawIsopycnals <- function(
-    nlevels = 6, levels, rotate = TRUE, rho1000 = FALSE, digits = 2,
-    eos = getOption("oceEOS", default = "gsw"),
-    longitude = NULL, latitude = NULL,
-    trimIsopycnals = TRUE, gridIsopycnals = c(50, 50),
-    cex = 0.75 * par("cex"), col = "darkgray", lwd = par("lwd"), lty = par("lty"),
-    debug = getOption("oceDebug")) {
+  nlevels = 6, levels, rotate = TRUE, rho1000 = FALSE, digits = 2,
+  eos = getOption("oceEOS", default = "gsw"),
+  longitude = NULL, latitude = NULL,
+  trimIsopycnals = TRUE, gridIsopycnals = c(50, 50),
+  cex = 0.75 * par("cex"), col = "darkgray", lwd = par("lwd"), lty = par("lty"),
+  debug = getOption("oceDebug")
+) {
     oceDebug(debug, "drawIsopycnals(nlevels=", nlevels,
         "..., gridIsopycnals=", paste(gridIsopycnals, collapse = " "),
         ", rho1000=", rho1000, ", ...) START\n",
@@ -4742,7 +4748,7 @@ drawIsopycnals <- function(
 #' @param pch code for plotting symbol (see [par()]).
 #'
 #' @param useSmoothScatter boolean, set to `TRUE` to use
-#' [smoothScatter()] instead of [plot()] to draw the plot.
+#' [smoothScatter()] instead of [base::plot()] to draw the plot.
 #'
 #' @param df optional argument, passed to [swN2()] if provided, and
 #' if a plot using \eqn{N^2}{N^2} is requested.
@@ -4750,7 +4756,7 @@ drawIsopycnals <- function(
 #' @param keepNA FALSE
 #'
 #' @param type type of plot to draw, using the same scheme as
-#' [plot()].
+#' [base::plot()].
 #'
 #' @param mgp 3-element numerical vector to use for [par]`(mgp)`, and also
 #' for [par]`(mar)`, computed from this.  The default is tighter than the R
@@ -4792,38 +4798,39 @@ drawIsopycnals <- function(
 #' @family functions that plot oce data
 #' @family things related to ctd data
 plotProfile <- function(
-    x,
-    xtype = "salinity+temperature", ytype = "pressure",
-    eos = getOption("oceEOS", default = "gsw"),
-    lty = 1,
-    xlab = NULL, ylab = NULL,
-    col = "black",
-    col.salinity = "darkgreen",
-    col.temperature = "red",
-    col.rho = "blue",
-    col.N2 = "brown",
-    col.dpdt = "darkgreen",
-    col.time = "darkgreen",
-    pt.bg = "transparent",
-    grid = TRUE,
-    col.grid = "lightgray",
-    lty.grid = "dotted",
-    Slim, Clim, Tlim, densitylim, sigmalim, N2lim, Rrholim, dpdtlim, timelim, plim,
-    xlim, ylim,
-    lwd = par("lwd"),
-    xaxs = "r",
-    yaxs = "r",
-    cex = 1, pch = 1,
-    useSmoothScatter = FALSE,
-    df,
-    keepNA = FALSE,
-    type = "l",
-    mgp = getOption("oceMgp"),
-    mar,
-    add = FALSE,
-    inset = FALSE,
-    debug = getOption("oceDebug", 0),
-    ...) {
+  x,
+  xtype = "salinity+temperature", ytype = "pressure",
+  eos = getOption("oceEOS", default = "gsw"),
+  lty = 1,
+  xlab = NULL, ylab = NULL,
+  col = "black",
+  col.salinity = "darkgreen",
+  col.temperature = "red",
+  col.rho = "blue",
+  col.N2 = "brown",
+  col.dpdt = "darkgreen",
+  col.time = "darkgreen",
+  pt.bg = "transparent",
+  grid = TRUE,
+  col.grid = "lightgray",
+  lty.grid = "dotted",
+  Slim, Clim, Tlim, densitylim, sigmalim, N2lim, Rrholim, dpdtlim, timelim, plim,
+  xlim, ylim,
+  lwd = par("lwd"),
+  xaxs = "r",
+  yaxs = "r",
+  cex = 1, pch = 1,
+  useSmoothScatter = FALSE,
+  df,
+  keepNA = FALSE,
+  type = "l",
+  mgp = getOption("oceMgp"),
+  mar,
+  add = FALSE,
+  inset = FALSE,
+  debug = getOption("oceDebug", 0),
+  ...
+) {
     debug <- max(0, min(debug, 3))
     oceDebug(debug, "plotProfile(x, xtype=",
         ifelse(is.character(xtype), paste0("\"", xtype, "\""), "NUMERIC"), ", ",

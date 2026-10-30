@@ -10,7 +10,7 @@
 #' presentTime() # UTC
 #' presentTime("") # the local timezone
 #'
-#' @return A [POSIXct()]-style object holding the present time, in the
+#' @return A [Base::POSIXct()]-style object holding the present time, in the
 #' indicated timezone.
 # NOTE: we need to define this here so [setClass()] knows about it;
 # NOTE: having it in NAMESPACE is not sufficient.
@@ -356,7 +356,7 @@ setClass("satellite", contains = "oce") # both amsr and landsat stem from this
 #' Plot an oce Object
 #'
 #' @description
-#' This creates a [pairs()] plot of the elements in the `data`
+#' This creates a [graphics::pairs()] plot of the elements in the `data`
 #' slot, if there are more than 2 elements there, or a simple xy plot if 2
 #' elements, or a histogram if 1 element.
 #'
@@ -368,8 +368,8 @@ setClass("satellite", contains = "oce") # both amsr and landsat stem from this
 #' @param y Ignored; only present here because S4 object for generic `plot`
 #' need to have a second parameter before the `...` parameter.
 #'
-#' @param ... Passed to [hist()], [plot()], or to
-#' [pairs()], according to whichever does the plotting.
+#' @param ... Passed to [graphics::hist()], [base::plot()], or to
+#' [graphics::pairs()], according to whichever does the plotting.
 #'
 #' @examples
 #' library(oce)

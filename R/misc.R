@@ -108,7 +108,7 @@ abbreviateVector <- function(x) {
 #' (e.g. due to mooring motion) can yield values that swing from small angles
 #' to large angles, because of the modulo-360 cut point.
 #' The method is to use the cosine and sine of the angle in order to find "x"
-#' and "y" values on a unit circle, and then to use [atan2()] to
+#' and "y" values on a unit circle, and then to use [base::atan2()] to
 #' infer the angles.
 #'
 #' @param theta an angle (in degrees) that is in the range from 0 to 360
@@ -313,7 +313,7 @@ argShow <- function(x, nshow = 4, last = FALSE, sep = "=") {
 #' then a default will be used (see \dQuote{Details}).
 #'
 #' @return `labelWithUnit` returns a language object, created with [bquote()],
-#' that that may supplied as a text string to [legend()], [mtext()], [text()],
+#' that that may supplied as a text string to [legend()], [mtext()], [graphics::text()],
 #' etc.
 #'
 #' @examples
@@ -1554,7 +1554,7 @@ rescale <- function(x, xlow, xhigh, rlow = 0, rhigh = 1, clip = TRUE) {
 #' start or end.  The new time will be as given by the formula above. Note that
 #' if the drift is large enough, the sampling rate will be changed.  It is a
 #' good idea to start with an object that has an extended time range, so that,
-#' after this is called, [subset()] can be used to trim to a desired
+#' after this is called, [base::subset()] can be used to trim to a desired
 #' time range.
 #'
 #' @param x an [oce-class] object.
@@ -1565,7 +1565,7 @@ rescale <- function(x, xlow, xhigh, rlow = 0, rhigh = 1, clip = TRUE) {
 #' @param b slope (unitless) in linear model of time drift (unitless) (see
 #' \dQuote{Details}).
 #'
-#' @param t0 reference time (in [POSIXct()] format) used in linear model of time
+#' @param t0 reference time (in [base::POSIXct()] format) used in linear model of time
 #' drift (see \dQuote{Details}).
 #'
 #' @param debug a flag that, if nonzero, turns on debugging.
@@ -1609,7 +1609,7 @@ retime <- function(x, a, b, t0, debug = getOption("oceDebug")) {
 #' Calculate Minimum, Mean, and Maximum Values
 #'
 #' This is a simpler cousin of the standard [fivenum()] function,
-#' used in [summary()] functions for `oce` objects.
+#' used in [base::summary()] functions for `oce` objects.
 #'
 #' @param x a vector or matrix of numerical values.
 #'
@@ -1626,7 +1626,7 @@ retime <- function(x, a, b, t0, debug = getOption("oceDebug")) {
 #' this function returned to the original intention (revealed by its
 #' name).  Another change is that the function now returns numerical
 #' results, leaving the task of setting the number of digits to
-#' [summary()].
+#' [base::summary()].
 threenum <- function(x) {
     dim <- dim(x)
     if (is.character(x) || is.null(x)) {
@@ -1973,7 +1973,7 @@ unabbreviateYear <- function(year) {
 #' to large angles, because of the modulo-360 cut point.
 #' The method is to use the cosine and sine of the angle, to construct "x" and
 #' "y" values on a unit circle, then to find means and medians of x and y
-#' respectively, and finally to use [atan2()] to infer the angles.
+#' respectively, and finally to use [base::atan2()] to infer the angles.
 #'
 #' @param angle an angle (in degrees) that is thought be near 360 degrees, with
 #' added noise
@@ -2049,7 +2049,7 @@ unwrapAngle <- function(angle) {
 #' the result is to be used with, e.g. [mtext()].
 #'
 #' @return A string ending in a newline character, suitable for
-#' display with [cat()] or [oceDebug()].
+#' display with [base::cat()] or [oceDebug()].
 #'
 #' @examples
 #' # List
@@ -2230,7 +2230,7 @@ fullFilename <- function(filename) {
 #'
 #' @param sep optional character string inserted between the unit and the
 #' parentheses or brackets that enclose it. If not provided,
-#' [getOption]`("oceUnitSep", " ")` is called to get a value for `sep`.
+#' [base::getOption]`("oceUnitSep", " ")` is called to get a value for `sep`.
 #' By default, the units are enclosed in square brackets; to change
 #' that to parentheses, use [options]`(oceUnitBracket="(")`, but
 #' note that this setting will last for the whole session.
@@ -2247,9 +2247,9 @@ fullFilename <- function(filename) {
 #' @return A character string or expression, in either a long or a shorter
 #' format, for use in the indicated axis at the present plot size.  Whether the
 #' unit is enclosed in parentheses or square brackets is determined by the
-#' value of [getOption]`("oceUnitBracket")`, which may be `"["`, which is
+#' value of `base::getOption`("oceUnitBracket"), which may be `"["`, which is
 #' the default, or `"("`.  Whether spaces are used between the unit and
-#' these delimiters is controlled by `sep` or [getOption]`("oceUnitSep")`.
+#' these delimiters is controlled by `sep` or `base::getOption`("oceUnitSep")`.
 #'
 #' @examples
 #' # 1. A matchable item name
@@ -3415,7 +3415,7 @@ makeFilter <- function(type = c("blackman-harris", "rectangular", "hamming", "ha
 #' to be used as a criterion for blanking out the gridded value (using
 #' `NA`).  If 0, the whole `zg` grid is returned.  If >0, any spots
 #' on the grid where the data weight is less than the `trim`-th
-#' [quantile()] are set to `NA`.  See examples.
+#' [stats::quantile()] are set to `NA`.  See examples.
 #'
 #' @param pregrid an indication of whether to pre-grid the data. If
 #' `FALSE`, this is not done, i.e. conventional Barnes interpolation is

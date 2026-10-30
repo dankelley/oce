@@ -743,7 +743,7 @@ as.tidem <- function(tRef, latitude, name, amplitude, phase, frequency, speed, d
 #' on `t_vuf` in the `T_TIDE` Matlab package (Pawlowicz et al., 2002),
 #' which inherits from the Fortran code described by Foreman (1978).
 #'
-#' @param t a single time in [POSIXct()] format, with timezone `"UTC"`.
+#' @param t a single time in [base::POSIXct()] format, with timezone `"UTC"`.
 #'
 #' @param j integer vector, giving indices of tidal constituents to use.
 #'

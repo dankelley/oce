@@ -1142,7 +1142,7 @@ sectionAddCtd <- sectionAddStation
 #' more complicated. If `at` is not supplied, then the routine calculates x
 #' as the distance between the first station in the section and each of the other
 #' stations. (This will produce an error if the stations are not ordered
-#' geographically, because the [contour()] routine cannot handle
+#' geographically, because the [graphics::contour()] routine cannot handle
 #' non-increasing axis coordinates.) If `at` is specified, then it is taken
 #' to be the location, in arbitrary units, along the x-axis of labels specified by
 #' `labels`; the way this works is designed to be the same as for
@@ -1201,7 +1201,7 @@ sectionAddCtd <- sectionAddStation
 #' limit on the plotted field.  If not provided, it defaults to the data
 #' range.
 #' `zbreaks` controls the colour breaks, in a manner that is similar to
-#' the [image()] parameter named `breaks`.  If not provided, `zbreaks` is
+#' the [graphics::image()] parameter named `breaks`.  If not provided, `zbreaks` is
 #' inferred from `zlim`.
 #' `zcol`, which controls the colour scheme, may be a vector of colours
 #' (of length 1 less than `zbreaks`), or a function that takes an
@@ -1294,7 +1294,7 @@ sectionAddCtd <- sectionAddStation
 #'
 #' @param mgp A 3-element numerical vector to use for `par(mgp)`, and also for
 #' `par(mar)`, computed from this. If not provided, this defaults to
-#' [getOption]`("oceMgp")`.
+#' [base::getOption]`("oceMgp")`.
 #'
 #' @param mar Value to be used with [`par`]`("mar")`. If not provided,
 #' a default is set up.
@@ -1310,7 +1310,7 @@ sectionAddCtd <- sectionAddStation
 #' @param lwd line width; defaults to [`par`]`("lwd")`.
 #'
 #' @param labcex Size of characters in contour labels (passed to
-#' [contour()]).
+#' [graphics::contour()]).
 #'
 #' @template debugShortTemplate
 #'
@@ -2485,17 +2485,18 @@ setMethod(
 #'
 #' @family things related to section data
 read.section <- function(
-    file,
-    directory,
-    sectionId = "",
-    flags,
-    ship = "",
-    scientist = "",
-    institute = "",
-    missingValue = -999,
-    encoding = "latin1",
-    debug = getOption("oceDebug"),
-    processingLog) {
+  file,
+  directory,
+  sectionId = "",
+  flags,
+  ship = "",
+  scientist = "",
+  institute = "",
+  missingValue = -999,
+  encoding = "latin1",
+  debug = getOption("oceDebug"),
+  processingLog
+) {
     if (missing(file)) {
         stop("must supply 'file'")
     }
@@ -2992,27 +2993,28 @@ sectionGrid <- function(section, p, method = "approx", trim = TRUE, debug = getO
 #' plot(gsBarnes, which = "temperature")
 #' mtext("sectionSmooth(..., method=\"barnes\")", line = 0.5)
 #'
-## @section Sample of Usage:
-## \preformatted{
-## # I have seen problems with kriging as the automap package has
-## # evolved, so please be aware that the following may fail.
-## if (requireNamespace("automap", quietly=TRUE)
-##        && requireNamespace("sf", quietly=TRUE)) {
-##     gsKriging <- sectionSmooth(gs, "kriging", xr=50, yr=200)
-##     plot(gsKriging, which="temperature")
-##     mtext("sectionSmooth(..., method=\"kriging\")", line=0.5)
-## }
-## }
+#' # @section Sample of Usage:
+#' # \preformatted{
+#' # # I have seen problems with kriging as the automap package has
+#' # # evolved, so please be aware that the following may fail.
+#' # if (requireNamespace("automap", quietly=TRUE)
+#' #        && requireNamespace("sf", quietly=TRUE)) {
+#' #     gsKriging <- sectionSmooth(gs, "kriging", xr=50, yr=200)
+#' #     plot(gsKriging, which="temperature")
+#' #     mtext("sectionSmooth(..., method=\"kriging\")", line=0.5)
+#' # }
+#' # }
 #'
 #' @author Dan Kelley
 #'
 #' @family things related to section data
 sectionSmooth <- function(
-    section, method = "spline",
-    x,
-    xg, yg, xgl, ygl, xr, yr,
-    df, gamma = 0.5, iterations = 2, trim = 0, pregrid = FALSE,
-    debug = getOption("oceDebug"), ...) {
+  section, method = "spline",
+  x,
+  xg, yg, xgl, ygl, xr, yr,
+  df, gamma = 0.5, iterations = 2, trim = 0, pregrid = FALSE,
+  debug = getOption("oceDebug"), ...
+) {
     if (!inherits(section, "section")) {
         stop("method is only for objects of class '", "section", "'")
     }

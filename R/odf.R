@@ -164,7 +164,7 @@ setMethod(
 #' all the columns contained in the `odf` object (or just those that
 #' contain at least one finite value, if `blanks` is `FALSE`).
 #' If the object's `data` slot does not contain `time`, then
-#' [pairs()] is used to plot all the elements in the `data`
+#' [graphics::pairs()] is used to plot all the elements in the `data`
 #' slot that contain at least one finite value.
 #' These actions are both
 #' crude and there are no arguments to control the behaviour, but this

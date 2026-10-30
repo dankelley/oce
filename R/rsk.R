@@ -472,7 +472,7 @@ as.rsk <- function(
 #' time).
 #'
 #' @param useSmoothScatter a boolean to cause [smoothScatter()] to be
-#' used for profile plots, instead of [plot()].
+#' used for profile plots, instead of [base::plot()].
 #'
 #' @param mgp 3-element numerical vector to use for [`par`]`("mgp")`, and
 #' also for `par(mar)`, computed from this.  The default is tighter than the
@@ -1494,10 +1494,10 @@ rskPatm <- function(x, dp = 0.5) {
 #' @param dir name of a directory containing a single table-of-contents file, with
 #' `.TBL` at the end of its file name.
 #'
-#' @param from optional [POSIXct()] time, indicating the beginning of a
+#' @param from optional [base::POSIXct()] time, indicating the beginning of a
 #' data interval of interest.  This must have timezone `"UTC"`.
 #'
-#' @param to optional [POSIXct()] time, indicating the end of a data
+#' @param to optional [base::POSIXct()] time, indicating the end of a data
 #' interval of interest.  This must have timezone `"UTC"`.
 #'
 #' @param debug optional integer to control debugging, with positive values
@@ -1505,7 +1505,7 @@ rskPatm <- function(x, dp = 0.5) {
 #'
 #' @return
 #' A list with two elements: `filename`, a vector of file names, and
-#' `startTime`, a vector of [POSIXct()] times indicating the (real)
+#' `startTime`, a vector of [base::POSIXct()] times indicating the (real)
 #' times of the first datum in the corresponding files.
 #'
 #' @section Sample of Usage:

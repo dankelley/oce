@@ -11,7 +11,7 @@
 #' (otherwise, an average across bins is used).
 #'
 #' @param \dots additional arguments that are used in the call to
-#' [mean()].
+#' [base::mean()].
 #'
 #' @return A list containing items the major and minor axes of the covariance
 #' ellipse (`ellipseMajor` and `ellipseMinor`), the angle of the

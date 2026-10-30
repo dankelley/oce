@@ -112,7 +112,7 @@ NULL
 #' potential density anomaly (referenced to zero
 #' pressure) is computed, with [swSigmaTheta()], where the
 #' equation of state is taken to be
-#' [getOption]`("oceEOS", default="gsw")`.
+#' [base::getOption]`("oceEOS", default="gsw")`.
 #'
 #' * If `i` is `"sigma0"`, `"sigma1"`, `"sigma2"`, `"sigma3"` or `"sigma4"`,
 #' then the associated function in the \CRANpkg{gsw} package.
@@ -124,7 +124,7 @@ NULL
 #' potential temperature (referenced to zero
 #' pressure) is computed, with [swTheta()], where the
 #' equation of state is taken to be
-#' [getOption]`("oceEOS", default="gsw")`.
+#' [base::getOption]`("oceEOS", default="gsw")`.
 #'
 #' * If `i` is `"depth"`, then
 #' a matrix of depths is returned.
@@ -1168,7 +1168,7 @@ argoDecodeFlags <- function(f) # local function
 #' The NetCDF files for profile data store time in an item named `juld`,
 #' which holds the overall profile time, in what the Argo documentation
 #' calls Julian days, with respect to a reference time that is also stored
-#' in the file.  Based on this information, a [POSIXct] value named `time`
+#' in the file.  Based on this information, a [base::POSIXct] value named `time`
 #' is stored in the `metadata` slot of the returned value, and this
 #' may be found with e.g. `a[["time"]]`, where `a` is that returned value.
 #' Importantly, this value matches the time listed in profile index files.

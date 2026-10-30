@@ -41,34 +41,43 @@ abbreviateTimeLabels <- function(t, ...) {
     }
     year <- substr(t, 1, 4)
     # strip years, if all the same
-    for (i in 2:n) if (year[i] != year[1]) {
-        return(t)
+    for (i in 2:n) {
+        if (year[i] != year[1]) {
+            return(t)
+        }
     }
     t <- substr(t, 6, nchar(t))
     # strip months, if all the same
     month <- substr(t, 1, 2)
-    for (i in 2:n) if (month[i] != month[1]) {
-        return(t)
+    for (i in 2:n) {
+        if (month[i] != month[1]) {
+            return(t)
+        }
     }
     t <- substr(t, 4, nchar(t))
     # strip seconds, if all the same
     seconds <- substr(t, nchar(t) - 2, nchar(t))
-    for (i in 2:n) if (seconds[i] != seconds[1]) {
-        return(t)
+    for (i in 2:n) {
+        if (seconds[i] != seconds[1]) {
+            return(t)
+        }
     }
     t <- substr(t, 1, nchar(t) - 3)
     # strip minutes, if all the same (this may be confusing)
     minutes <- substr(t, nchar(t) - 2, nchar(t))
-    for (i in 2:n) if (minutes[i] != minutes[1]) {
-        return(t)
+    for (i in 2:n) {
+        if (minutes[i] != minutes[1]) {
+            return(t)
+        }
     }
     substr(t, 1, nchar(t) - 3)
 }
 
 
 paletteCalculations <- function(
-    separation = par("cin")[2] / 2, width = par("cin")[2], pos = 4,
-    zlab, maidiff = c(0, 0, 0, 0), debug = getOption("oceDebug")) {
+  separation = par("cin")[2] / 2, width = par("cin")[2], pos = 4,
+  zlab, maidiff = c(0, 0, 0, 0), debug = getOption("oceDebug")
+) {
     # This returns a list with the following entries:
     #   mai0  = before this call
     #   mai1  = just before plotting palette (i.e. lots of white space on one side)
@@ -307,9 +316,10 @@ paletteCalculations <- function(
 #' contour(volcano, add = TRUE)
 #' drawPalette(c(90, 200), fullpage = TRUE, col = oce.colorsViridis)
 drawPalette <- function(
-    zlim, zlab = "", breaks, col, colormap, mai, cex = par("cex"), pos = 4, las = 0,
-    labels = NULL, at = NULL, levels, drawContours = FALSE, plot = TRUE, fullpage = FALSE,
-    drawTriangles = FALSE, axisPalette, tformat, debug = getOption("oceDebug"), ...) {
+  zlim, zlab = "", breaks, col, colormap, mai, cex = par("cex"), pos = 4, las = 0,
+  labels = NULL, at = NULL, levels, drawContours = FALSE, plot = TRUE, fullpage = FALSE,
+  drawTriangles = FALSE, axisPalette, tformat, debug = getOption("oceDebug"), ...
+) {
     debug <- max(0, min(debug, 2))
     oceDebug(debug, "drawPalette(",
         argShow(zlab),
@@ -683,9 +693,9 @@ drawPalette <- function(
 #' splitting methods.  It simply manipulates margins, and draws two plots
 #' together.  This lets users employ their favourite layout schemes.
 #'
-#' NOTE: `imagep` is an analogue of [image()], and from that
+#' NOTE: `imagep` is an analogue of [graphics::image()], and from that
 #' it borrows a the convention that the number of rows in the matrix corresponds to
-#' to `x` axis, not the `y` axis.  (Actually, [image()] permits
+#' to `x` axis, not the `y` axis.  (Actually, [graphics::image()] permits
 #' the length of `x` to match either `nrow(z)` or `1+nrow(z)`, but
 #' here only the first is permitted.)
 #'
@@ -703,13 +713,13 @@ drawPalette <- function(
 #' If `z` is provided but not `x` and `y`, then the latter
 #' are constructed to
 #' indicate the indices of the matrix, in contrast
-#' to the range of 0 to 1, as is the case for [image()].
+#' to the range of 0 to 1, as is the case for [graphics::image()].
 #'
 #' *Mode 3.* If
 #' `x` is a list, its components `x$x` and `x$y` are used
 #' for `x` and `y`, respectively. If the list has component
 #' `z` this is used for `z`. (NOTE: these arguments are meant to
-#' mimic those of [image()], which explains the same description
+#' mimic those of [graphics::image()], which explains the same description
 #' here.)  *Mode 4.* There are also some special cases, e.g. if `x` is a
 #' topographic object such as can be created with [read.topo()]
 #' or [as.topo()], then longitude and latitude are used for
@@ -717,7 +727,7 @@ drawPalette <- function(
 #'
 #' @param z A matrix containing the values to be plotted (NAs are allowed). Note
 #' that x can be used instead of z for convenience. (NOTE: these arguments
-#' are meant to mimic those of [image()], which explains the same
+#' are meant to mimic those of [graphics::image()], which explains the same
 #' description here.)
 #'
 #' @param xlim,ylim Limits on x and y axes.
@@ -844,10 +854,10 @@ drawPalette <- function(
 #' `NULL` for transparent (to see this, try setting
 #' `par("bg")<-"red"`).
 #'
-#' @param useRaster A logical value passed to [image()], in cases
+#' @param useRaster A logical value passed to [graphics::image()], in cases
 #' where `filledContour` is `FALSE`. Setting `useRaster=TRUE`
 #' can alleviate some anti-aliasing effects on some plot devices;
-#' see the documentation for [image()].
+#' see the documentation for [graphics::image()].
 #'
 #' @param mgp A 3-element numerical vector to use for `par(mgp)`, and
 #' also for `par(mar)`, computed from this.  The default is
@@ -981,34 +991,35 @@ drawPalette <- function(
 #'
 #' @author Dan Kelley and Clark Richards
 imagep <- function(
-    x, y, z,
-    xlim, ylim, zlim,
-    zclip = FALSE, flipy = FALSE,
-    xlab = "", ylab = "", zlab = "", zlabPosition = c("top", "side"),
-    las.palette = 0,
-    decimate = getOption("oceImagepDecimate", TRUE),
-    quiet = FALSE,
-    breaks, col, colormap, labels = NULL, at = NULL,
-    drawContours = FALSE,
-    drawPalette = TRUE,
-    drawTriangles = FALSE,
-    tformat,
-    drawTimeRange = getOption("oceDrawTimeRange"),
-    filledContour = FALSE,
-    missingColor = NULL,
-    useRaster,
-    mgp = getOption("oceMgp"),
-    mar, mai.palette,
-    xaxs = "i", yaxs = "i",
-    asp = NA,
-    cex = par("cex"),
-    cex.axis = cex, cex.lab = cex, cex.main = cex,
-    axes = TRUE,
-    main = "",
-    axisPalette,
-    add = FALSE,
-    debug = getOption("oceDebug"),
-    ...) {
+  x, y, z,
+  xlim, ylim, zlim,
+  zclip = FALSE, flipy = FALSE,
+  xlab = "", ylab = "", zlab = "", zlabPosition = c("top", "side"),
+  las.palette = 0,
+  decimate = getOption("oceImagepDecimate", TRUE),
+  quiet = FALSE,
+  breaks, col, colormap, labels = NULL, at = NULL,
+  drawContours = FALSE,
+  drawPalette = TRUE,
+  drawTriangles = FALSE,
+  tformat,
+  drawTimeRange = getOption("oceDrawTimeRange"),
+  filledContour = FALSE,
+  missingColor = NULL,
+  useRaster,
+  mgp = getOption("oceMgp"),
+  mar, mai.palette,
+  xaxs = "i", yaxs = "i",
+  asp = NA,
+  cex = par("cex"),
+  cex.axis = cex, cex.lab = cex, cex.main = cex,
+  axes = TRUE,
+  main = "",
+  axisPalette,
+  add = FALSE,
+  debug = getOption("oceDebug"),
+  ...
+) {
     debug <- max(0, min(debug, 3))
     oceDebug(debug, "imagep(x,y,z,xlab,ylab,",
         argShow(zlim),

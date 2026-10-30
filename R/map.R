@@ -575,10 +575,11 @@ badFillFix2 <- function(x, y, xorig, yorig) {
 #'
 #' @author Dan Kelley
 mapAxis <- function(
-    side = 1:2, longitude = TRUE, latitude = TRUE,
-    axisStyle = 1, tick = TRUE, line = NA, pos = NA, outer = FALSE, font = NA,
-    las = c(0, 0), lty = "solid", lwd = 1, lwd.ticks = lwd, col = NULL, col.ticks = NULL,
-    hadj = NA, padj = NA, tcl = -0.3, cex.axis = 1, mgp = c(0, 0.5, 0), debug = getOption("oceDebug")) {
+  side = 1:2, longitude = TRUE, latitude = TRUE,
+  axisStyle = 1, tick = TRUE, line = NA, pos = NA, outer = FALSE, font = NA,
+  las = c(0, 0), lty = "solid", lwd = 1, lwd.ticks = lwd, col = NULL, col.ticks = NULL,
+  hadj = NA, padj = NA, tcl = -0.3, cex.axis = 1, mgp = c(0, 0.5, 0), debug = getOption("oceDebug")
+) {
     if ("none" == .Projection()$type) {
         stop("must create a map first, with mapPlot()\n")
     }
@@ -700,7 +701,7 @@ mapAxis <- function(
 #'
 #' Draw contour lines to an existing map, using [mapLines()].
 #' Note that label placement in `mapContour` is handled differently
-#' than in [contour()].
+#' than in [graphics::contour()].
 #'
 #' @param longitude numeric vector of longitudes of points to be
 #' plotted, or an object of class `topo` (see [topo-class]), in which
@@ -724,7 +725,7 @@ mapAxis <- function(
 #' @param levels vector of contour levels.
 #'
 #' @param labcex `cex` value used for contour labelling. As with
-#' [contour()], this is an absolute size, not a multiple of
+#' [graphics::contour()], this is an absolute size, not a multiple of
 #' [`par`]`("cex")`.
 #'
 #' @param drawlabels logical value or vector indicating whether to
@@ -745,7 +746,7 @@ mapAxis <- function(
 #' finely-spaced unlabelled contours. On the other hand, if `underlay`
 #' equals `"interrupt"`, then the contour line is interrupted in the
 #' region of the label, which is closer to the scheme used by the base
-#' [contour()] function.
+#' [graphics::contour()] function.
 #'
 #' @param col colour of the contour line, as for [`par`]`("col")`,
 #' except here `col` gets lengthened by calling [rep()],
@@ -791,18 +792,19 @@ mapAxis <- function(
 #'
 #' @author Dan Kelley
 mapContour <- function(
-    longitude, latitude, z,
-    nlevels = 10, levels = pretty(range(z, na.rm = TRUE), nlevels),
-    # labels=null,
-    # xlim=range(longitude, finite=TRUE),
-    # ylim=range(latitude, finite=TRUE),
-    labcex = 0.6,
-    drawlabels = TRUE,
-    underlay = "erase",
-    # vfont,
-    # axes=TRUE, frame.plot=axes,
-    col = par("fg"), lty = par("lty"), lwd = par("lwd"),
-    debug = getOption("oceDebug")) {
+  longitude, latitude, z,
+  nlevels = 10, levels = pretty(range(z, na.rm = TRUE), nlevels),
+  # labels=null,
+  # xlim=range(longitude, finite=TRUE),
+  # ylim=range(latitude, finite=TRUE),
+  labcex = 0.6,
+  drawlabels = TRUE,
+  underlay = "erase",
+  # vfont,
+  # axes=TRUE, frame.plot=axes,
+  col = par("fg"), lty = par("lty"), lwd = par("lwd"),
+  debug = getOption("oceDebug")
+) {
     oceDebug(debug, "mapContour(..., labcex=", labcex, ", drawlabels=", drawlabels,
         ", ...) START\n",
         sep = "", unindent = 1
@@ -879,25 +881,25 @@ mapContour <- function(
                 yc <- xy$y
                 nc <- length(xc)
                 haveSomeData <- sum(!is.na(xc) & !is.na(yc)) > 0
-                #oceDebug(debug > 1, vectorShow(haveSomeData))
+                # oceDebug(debug > 1, vectorShow(haveSomeData))
                 if (nc > 0 && haveSomeData && drawlabels[ilevel]) {
-                    #oceDebug(debug > 2, "ilevel=", ilevel, "\n")
+                    # oceDebug(debug > 2, "ilevel=", ilevel, "\n")
                     slopeMin <- 9999999 # big
                     slopeMinj <- NULL
                     slopeMinj2 <- NULL
                     canlabel <- FALSE
-                    #oceDebug(debug > 2, vectorShow(xc), "\n")
-                    #oceDebug(debug > 2, vectorShow(yc), "\n")
+                    # oceDebug(debug > 2, vectorShow(xc), "\n")
+                    # oceDebug(debug > 2, vectorShow(yc), "\n")
                     for (j in 1:nc) {
                         j2 <- j
                         while (j2 < nc) {
-                            #oceDebug(debug > 2, "j=", j, ", j2=", j2, ", nc=", nc, "\n")
+                            # oceDebug(debug > 2, "j=", j, ", j2=", j2, ", nc=", nc, "\n")
                             dy <- yc[j2] - yc[j]
                             dx <- xc[j2] - xc[j]
                             dist <- sqrt(dx^2 + dy^2)
-                            #oceDebug(debug > 2, "dx=", dx, ", dy=", dy, ", dist=", dist, ", w=", w, "\n")
+                            # oceDebug(debug > 2, "dx=", dx, ", dy=", dy, ", dist=", dist, ", w=", w, "\n")
                             if (is.finite(dist) && is.finite(dx) && dist > 1.4 * w && dx != 0.0) {
-                                #oceDebug(debug > 2, "enough space at j=", j, ", j2=", j2, "\n")
+                                # oceDebug(debug > 2, "enough space at j=", j, ", j2=", j2, "\n")
                                 slope <- dy / dx
                                 if (abs(slope) < slopeMin) {
                                     slopeMin <- abs(slope)
@@ -1220,9 +1222,10 @@ windBarbs <- function(longitude, latitude, u, v,
 # plot, give an example, set up familial links with
 # sibling functions, etc.
 mapDirectionFieldBarbs <- function(
-    longitude, latitude, u, v,
-    scale = 1, length = 0.2, step = 10, col = par("fg"), lwd = par("lwd"),
-    debug = 0, ...) {
+  longitude, latitude, u, v,
+  scale = 1, length = 0.2, step = 10, col = par("fg"), lwd = par("lwd"),
+  debug = 0, ...
+) {
     # Check (and flatten location and velocity parameters)
     if (!is.vector(longitude)) {
         stop("longitude must be a vector")
@@ -1374,10 +1377,11 @@ mapDirectionFieldBarbs <- function(
 #'
 #' @author Dan Kelley
 mapDirectionField <- function(
-    longitude, latitude, u, v,
-    scale = 1, length = NULL, code = 2,
-    lwd = par("lwd"), col = par("fg"),
-    debug = getOption("oceDebug")) {
+  longitude, latitude, u, v,
+  scale = 1, length = NULL, code = 2,
+  lwd = par("lwd"), col = par("fg"),
+  debug = getOption("oceDebug")
+) {
     if ("none" == .Projection()$type) {
         stop("must create a map first, with mapPlot()\n")
     }
@@ -2032,14 +2036,15 @@ mapLongitudeLatitudeXY <- function(longitude, latitude) {
 #'
 #' @family functions related to maps
 mapPlot <- function(
-    longitude, latitude, longitudelim, latitudelim, grid = TRUE,
-    geographical = 0,
-    bg, fill, border = NULL, col = NULL,
-    clip = TRUE, type = "polygon", axes = TRUE, axisStyle = 1,
-    cex, cex.axis = 1, mgp = c(0, 0.5, 0), las = c(0, 0), drawBox = TRUE, showHemi = TRUE,
-    polarCircle = 0, lonlabels = TRUE, latlabels = TRUE,
-    projection = "+proj=moll", tissot = FALSE, trim = TRUE,
-    debug = getOption("oceDebug"), ...) {
+  longitude, latitude, longitudelim, latitudelim, grid = TRUE,
+  geographical = 0,
+  bg, fill, border = NULL, col = NULL,
+  clip = TRUE, type = "polygon", axes = TRUE, axisStyle = 1,
+  cex, cex.axis = 1, mgp = c(0, 0.5, 0), las = c(0, 0), drawBox = TRUE, showHemi = TRUE,
+  polarCircle = 0, lonlabels = TRUE, latlabels = TRUE,
+  projection = "+proj=moll", tissot = FALSE, trim = TRUE,
+  debug = getOption("oceDebug"), ...
+) {
     debug <- max(0, min(debug, 3))
     oceDebug(debug, "mapPlot(...,",
         argShow(longitudelim),
@@ -2725,10 +2730,11 @@ mapPlot <- function(
 #'
 #' @family functions related to maps
 mapGrid <- function(
-    dlongitude = 15, dlatitude = 15, longitude, latitude,
-    col = "darkgray", lty = "solid", lwd = 0.5 * par("lwd"), polarCircle = 0,
-    longitudelim, latitudelim,
-    debug = getOption("oceDebug")) {
+  dlongitude = 15, dlatitude = 15, longitude, latitude,
+  col = "darkgray", lty = "solid", lwd = 0.5 * par("lwd"), polarCircle = 0,
+  longitudelim, latitudelim,
+  debug = getOption("oceDebug")
+) {
     debug <- min(3, max(0, debug)) # trim to range 0 to 3
     oceDebug(debug, "mapGrid(",
         argShow(dlongitude), argShow(dlatitude),
@@ -2996,9 +3002,10 @@ mapGrid <- function(
 #'
 #' @author Dan Kelley
 mapScalebar <- function(
-    x, y = NULL, length, lwd = 1.5 * par("lwd"), cex = par("cex"),
-    col = "black",
-    debug = getOption("oceDebug")) {
+  x, y = NULL, length, lwd = 1.5 * par("lwd"), cex = par("cex"),
+  col = "black",
+  debug = getOption("oceDebug")
+) {
     oceDebug(debug, "mapScale(...) START\n", sep = "", unindent = 1)
     if (!is.null(y)) {
         stop("y must be NULL in this (early) version of mapScalebar()\n")
@@ -3092,7 +3099,7 @@ mapScalebar <- function(
 
 #' Add Text to a Map
 #'
-#' Plot text on an existing map, by analogy to [text()].
+#' Plot text on an existing map, by analogy to [graphics::text()].
 #'
 #' @param longitude numeric vector of longitudes of text to be plotted.
 #'
@@ -3100,7 +3107,7 @@ mapScalebar <- function(
 #'
 #' @param labels vector of labels of text to be plotted.
 #'
-#' @param ... optional arguments passed to [text()], e.g. `adj`,
+#' @param ... optional arguments passed to [graphics::text()], e.g. `adj`,
 #' `pos`, etc.
 #'
 #' @examples
@@ -3217,7 +3224,7 @@ mapTissot <- function(grid = rep(15, 2), scale = 0.2, crosshairs = FALSE, ...) {
 
 #' Add Lines to a Map
 #'
-#' Plot lines on an existing map, by analogy to [lines()].
+#' Plot lines on an existing map, by analogy to [graphics::lines()].
 #'
 #' @param longitude numeric vector of longitudes of points to be plotted, or an
 #' object from which longitude and latitude can be inferred (e.g. a coastline
@@ -3229,7 +3236,8 @@ mapTissot <- function(grid = rep(15, 2), scale = 0.2, crosshairs = FALSE, ...) {
 #' @param greatCircle a logical value indicating whether to render line
 #' segments as great circles.  (Ignored.)
 #'
-#' @param \dots optional arguments passed to [lines()].
+#' @param \dots optional arguments passed to [graphics::lines()].
+
 #'
 #' @examples
 #' \donttest{
@@ -3293,7 +3301,7 @@ mapLines <- function(longitude, latitude, greatCircle = FALSE, ...) {
 
 #' Add Points to a Map
 #'
-#' Plot points on an existing map, by analogy to [points()].
+#' Plot points on an existing map, by analogy to [graphics::points()].
 #'
 #' @param longitude Longitudes of points to be plotted, or an object from which
 #' longitude and latitude can be inferred in which case the following two
@@ -3305,7 +3313,7 @@ mapLines <- function(longitude, latitude, greatCircle = FALSE, ...) {
 #' @param debug A flag that turns on debugging.  Set to 1 to get a moderate amount
 #' of debugging information, or to 2 to get more.
 #'
-#' @param ... Optional arguments passed to [points()].
+#' @param ... Optional arguments passed to [graphics::points()].
 #'
 #' @seealso A map must first have been created with [mapPlot()].
 #'
@@ -3402,11 +3410,12 @@ mapPoints <- function(longitude, latitude, debug = getOption("oceDebug"), ...) {
 #'
 #' @author Dan Kelley
 mapArrows <- function(
-    longitude0, latitude0,
-    longitude1 = longitude0, latitude1 = latitude0,
-    length = 0.25, angle = 30,
-    code = 2, col = par("fg"), lty = par("lty"),
-    lwd = par("lwd"), ...) {
+  longitude0, latitude0,
+  longitude1 = longitude0, latitude1 = latitude0,
+  length = 0.25, angle = 30,
+  code = 2, col = par("fg"), lty = par("lty"),
+  lwd = par("lwd"), ...
+) {
     if ("none" == .Projection()$type) {
         stop("must create a map first, with mapPlot()\n")
     }
@@ -3576,7 +3585,6 @@ mapLocator <- function(n = 512, type = "n", ...) {
 }
 
 
-
 #' Convert X and Y to Longitude and Latitude
 #'
 #' Convert from x-y coordinates to longitude and latitude. This is normally called
@@ -3642,7 +3650,6 @@ map2lonlat <- function(x, y, init = NULL, debug = getOption("oceDebug")) {
 }
 
 
-
 #' Add a Polygon to a Map
 #'
 #' `mapPolygon` adds a polygon to an existing map.
@@ -3685,8 +3692,9 @@ map2lonlat <- function(x, y, init = NULL, debug = getOption("oceDebug")) {
 #'
 #' @author Dan Kelley
 mapPolygon <- function(
-    longitude, latitude, density = NULL, angle = 45,
-    border = NULL, col = NA, lty = par("lty"), ..., fillOddEven = FALSE) {
+  longitude, latitude, density = NULL, angle = 45,
+  border = NULL, col = NA, lty = par("lty"), ..., fillOddEven = FALSE
+) {
     if ("none" == .Projection()$type) {
         stop("must create a map first, with mapPlot()\n")
     }
@@ -3720,7 +3728,7 @@ mapPolygon <- function(
 #' Plot an image on an existing map that was created with [mapPlot()].
 #'
 #' Image data are on a regular grid in lon-lat space, but not in the
-#' projected x-y space.  This means that [image()] cannot be used.
+#' projected x-y space.  This means that [graphics::image()] cannot be used.
 #' Instead, there are two approaches, depending on the value of
 #' `filledContour`.
 #'
@@ -4210,7 +4218,6 @@ mapImage <- function(longitude, latitude, z, zlim, zclip = FALSE,
     oceDebug(debug, "END mapImage()\n", unindent = 1)
     invisible(NULL)
 }
-
 
 
 #' Convert Longitude and Latitude to UTM

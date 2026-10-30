@@ -320,7 +320,7 @@ binCount1D <- function(x, xbreaks, include.lowest = FALSE) {
 #' `x` values that equal `xbreaks[1]`.  See \dQuote{Details}.
 #'
 #' @param na.rm logical value indicating whether to remove NA values before
-#' doing the computation of the average. This is passed to [mean()], which
+#' doing the computation of the average. This is passed to [base::mean()], which
 #' does the work of the present function.
 #'
 #' @return A list with the following elements: the breaks (`xbreaks`,
@@ -521,7 +521,7 @@ binCount2D <- function(x, y, xbreaks, ybreaks, flatten = FALSE, include.lowest =
 #' See \dQuote{Details}.
 #'
 #' @param na.rm logical value indicating whether to remove NA values before
-#' doing the computation of the average. This is passed to [mean()], which
+#' doing the computation of the average. This is passed to [base::mean()], which
 #' does the work of the present function.
 #'
 #' @template debugTemplate
@@ -667,7 +667,7 @@ binMean2D <- function(x, y, f, xbreaks, ybreaks, flatten = FALSE,
 #' See \dQuote{Details}.
 #'
 #' @param na.rm logical value indicating whether to remove NA values before
-#' doing the computation of the average. This is passed to [mean()], which
+#' doing the computation of the average. This is passed to [base::mean()], which
 #' does the work of the present function.
 #'
 #' @return A list with two elements: `x`, the mid-points of the bins, and

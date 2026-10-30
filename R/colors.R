@@ -27,9 +27,10 @@ colormapNames <- c("gmt_relief", "gmt_ocean", "gmt_globe", "gmt_gebco")
 
 # keeping this (which was called 'colorize' until 2014-05-07) for a while, but not in NAMESPACE.
 colormap_colorize <- function(
-    z = NULL, zlim, zclip = FALSE, breaks,
-    col = oceColorsViridis, colormap = NULL, segments = 1, missingColor = "gray",
-    debug = getOption("oceDebug")) {
+  z = NULL, zlim, zclip = FALSE, breaks,
+  col = oceColorsViridis, colormap = NULL, segments = 1, missingColor = "gray",
+  debug = getOption("oceDebug")
+) {
     oceDebug(debug, "colormap_colorize(z=",
         if (is.null(z)) "(missing)" else paste("c(", z[1], ",...)", sep = ""), ",",
         "zlim=", if (missing(zlim)) {
@@ -449,7 +450,7 @@ colormapGMT <- function(name, debug = getOption("oceDebug")) {
 #'
 #' Create a mapping between numeric values and colors, for use in palettes and plots.
 #' The return value can be used in various ways, including colorizing points
-#' on scattergraphs, controlling images created by [image()] or [imagep()],
+#' on scattergraphs, controlling images created by [graphics::image()] or [imagep()],
 #' drawing palettes with [drawPalette()], etc.
 #'
 #' `colormap` can be used in a variety of ways, including the following.
@@ -462,13 +463,13 @@ colormapGMT <- function(name, debug = getOption("oceDebug")) {
 #' other argument, in which case `zlim`, and `breaks` will be determined
 #' from `z`, and the default `col` will be used.  Another approach is
 #' to specify `breaks` and `col` together, in the same way as they
-#' might be specified for the base R function [image()].  It is
+#' might be specified for the base R function [graphics::image()].  It is
 #' also possible to supply only `zlim`, in which case `breaks` is
 #' inferred from that value.
 #' \if{html}{The figure below explains the
 #' (`breaks`, `col`) method of specifying a color mapping.  Note
 #' that there must be one more break than color.  This is the method used by
-#' e.g. [image()].}
+#' e.g. [graphics::image()].}
 #' \if{html}{\figure{colormap_fig_1.png}}
 #'
 #' * **Case B.** Supply `x0`, `col0`, `x1`, and `col1`, but *not*
@@ -521,7 +522,7 @@ colormapGMT <- function(name, debug = getOption("oceDebug")) {
 #' painted with the nearest in-range color.
 #'
 #' @param breaks an optional indication of break points between color levels
-#' (see [image()]).  If this is provided, the arguments `name`
+#' (see [graphics::image()]).  If this is provided, the arguments `name`
 #' through `blend` are all ignored (see \dQuote{Details}).  If it is
 #' provided, then it may either be a vector of break points, or a single number
 #' indicating the desired number of break points to be computed with
@@ -576,10 +577,10 @@ colormapGMT <- function(name, debug = getOption("oceDebug")) {
 #' provided, otherwise `"black"`
 #'
 #' * `zlim`, a two-element vector suitable as the argument of the same
-#' name supplied to [image()] or [imagep()]
+#' name supplied to [graphics::image()] or [imagep()]
 #'
 #' * `breaks` and `col`, vectors of breakpoints and colors,
-#' suitable as the same-named arguments to [image()] or
+#' suitable as the same-named arguments to [graphics::image()] or
 #' [imagep()]
 #'
 #' * `zclip` the provided value of `zclip`.
@@ -668,8 +669,9 @@ colormapGMT <- function(name, debug = getOption("oceDebug")) {
 #'
 #' @template colourBlindnessTemplate
 colormap <- function(
-    z = NULL, zlim, zclip = FALSE, breaks, col = oceColorsViridis,
-    name, x0, x1, col0, col1, blend = 0, missingColor, debug = getOption("oceDebug")) {
+  z = NULL, zlim, zclip = FALSE, breaks, col = oceColorsViridis,
+  name, x0, x1, col0, col1, blend = 0, missingColor, debug = getOption("oceDebug")
+) {
     debug <- min(max(0, debug), 1)
     oceDebug(debug, "colormap(...) START\n", sep = "", unindent = 1)
     zKnown <- !is.null(z)

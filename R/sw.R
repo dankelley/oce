@@ -293,11 +293,12 @@ lookWithin <- function(list) {
 #'
 #' @family functions that calculate seawater properties
 swRrho <- function(
-    ctd,
-    sense = c("diffusive", "finger"),
-    smoothingLength = 10, df,
-    eos = getOption("oceEOS", default = "gsw"),
-    debug = getOption("oceDebug")) {
+  ctd,
+  sense = c("diffusive", "finger"),
+  smoothingLength = 10, df,
+  eos = getOption("oceEOS", default = "gsw"),
+  debug = getOption("oceDebug")
+) {
     if (!inherits(ctd, "oce")) {
         stop("method is only for objects of class 'oce'")
     }
@@ -426,7 +427,7 @@ swRrho <- function(
 #' * If `derivs` equals `"simple"`, then the derivative of
 #' density with respect to pressure is calculated as the ratio of first-order
 #' derivatives of density and pressure, each calculated using
-#' [diff()].  (A zero is appended at the top level.)
+#' [base::diff()].  (A zero is appended at the top level.)
 #'
 #' * If `derivs` equals `"smoothing"`, then the processing
 #' depends on the number of data in the profile, and on whether `df` is
@@ -807,8 +808,9 @@ swCSTp <- function(salinity, temperature = 15, pressure = 0, eos = getOption("oc
 #'
 #' @family functions that calculate seawater properties
 swSCTp <- function(
-    conductivity, temperature = NULL, pressure = NULL,
-    conductivityUnit, eos = getOption("oceEOS", default = "gsw")) {
+  conductivity, temperature = NULL, pressure = NULL,
+  conductivityUnit, eos = getOption("oceEOS", default = "gsw")
+) {
     C0 <- 42.9140 # Culkin and Smith (1980)
     # FIXME-gsw add gsw version
     if (missing(conductivity)) {
@@ -1143,8 +1145,9 @@ swTSrho <- function(salinity, density, pressure = NULL, eos = getOption("oceEOS"
 #'
 #' @family functions that calculate seawater properties
 swTFreeze <- function(
-    salinity, pressure = NULL, longitude = NULL, latitude = NULL,
-    saturation_fraction = 1, eos = getOption("oceEOS", default = "gsw")) {
+  salinity, pressure = NULL, longitude = NULL, latitude = NULL,
+  saturation_fraction = 1, eos = getOption("oceEOS", default = "gsw")
+) {
     if (missing(salinity)) {
         stop("must supply salinity (which may be S or a CTD object)")
     }
@@ -1226,8 +1229,9 @@ swTFreeze <- function(
 #'
 #' @family functions that calculate seawater properties
 swAlpha <- function(
-    salinity, temperature = NULL, pressure = 0,
-    longitude = NULL, latitude = NULL, eos = getOption("oceEOS", default = "gsw")) {
+  salinity, temperature = NULL, pressure = 0,
+  longitude = NULL, latitude = NULL, eos = getOption("oceEOS", default = "gsw")
+) {
     if (missing(salinity)) {
         stop("must provide salinity")
     }
@@ -1309,8 +1313,9 @@ swAlpha <- function(
 #'
 #' @family functions that calculate seawater properties
 swAlphaOverBeta <- function(
-    salinity, temperature = NULL, pressure = NULL,
-    longitude = NULL, latitude = NULL, eos = getOption("oceEOS", default = "gsw")) {
+  salinity, temperature = NULL, pressure = NULL,
+  longitude = NULL, latitude = NULL, eos = getOption("oceEOS", default = "gsw")
+) {
     if (missing(salinity)) {
         stop("must provide salinity")
     }
@@ -1402,8 +1407,9 @@ swAlphaOverBeta <- function(
 #'
 #' @family functions that calculate seawater properties
 swBeta <- function(
-    salinity, temperature = NULL, pressure = 0,
-    longitude = NULL, latitude = NULL, eos = getOption("oceEOS", default = "gsw")) {
+  salinity, temperature = NULL, pressure = 0,
+  longitude = NULL, latitude = NULL, eos = getOption("oceEOS", default = "gsw")
+) {
     if (missing(salinity)) {
         stop("must provide salinity")
     }
@@ -1726,9 +1732,10 @@ swZ <- function(pressure, latitude = 45, eos = getOption("oceEOS", default = "gs
 #'
 #' @family functions that calculate seawater properties
 swDynamicHeight <- function(
-    x, referencePressure = 2000,
-    subdivisions = 500, rel.tol = .Machine$double.eps^0.25,
-    eos = getOption("oceEOS", default = "gsw")) {
+  x, referencePressure = 2000,
+  subdivisions = 500, rel.tol = .Machine$double.eps^0.25,
+  eos = getOption("oceEOS", default = "gsw")
+) {
     eos <- match.arg(eos, c("unesco", "gsw"))
     height <- function(ctd, referencePressure, subdivisions, rel.tol, eos = getOption("oceEOS", default = "gsw")) {
         if (sum(!is.na(ctd@data$pressure)) < 2) {
@@ -1843,8 +1850,9 @@ swDynamicHeight <- function(
 #'
 #' @family functions that calculate seawater properties
 swLapseRate <- function(
-    salinity, temperature = NULL, pressure = NULL,
-    longitude = NULL, latitude = NULL, eos = getOption("oceEOS", default = "gsw")) {
+  salinity, temperature = NULL, pressure = NULL,
+  longitude = NULL, latitude = NULL, eos = getOption("oceEOS", default = "gsw")
+) {
     if (missing(salinity)) {
         stop("must provide salinity")
     }
@@ -1991,9 +1999,10 @@ swLapseRate <- function(
 #'
 #' @family functions that calculate seawater properties
 swRho <- function(
-    salinity, temperature = NULL, pressure = NULL,
-    longitude = NULL, latitude = NULL, eos = getOption("oceEOS", default = "gsw"),
-    debug = getOption("oceDebug")) {
+  salinity, temperature = NULL, pressure = NULL,
+  longitude = NULL, latitude = NULL, eos = getOption("oceEOS", default = "gsw"),
+  debug = getOption("oceDebug")
+) {
     if (missing(salinity)) {
         stop("must provide salinity")
     }
@@ -2077,8 +2086,9 @@ swRho <- function(
 #'
 #' @family functions that calculate seawater properties
 swSigma <- function(
-    salinity, temperature = NULL, pressure = NULL,
-    longitude = NULL, latitude = NULL, eos = getOption("oceEOS", default = "gsw")) {
+  salinity, temperature = NULL, pressure = NULL,
+  longitude = NULL, latitude = NULL, eos = getOption("oceEOS", default = "gsw")
+) {
     if (missing(salinity)) {
         stop("must provide salinity")
     }
@@ -2111,8 +2121,9 @@ swSigma <- function(
 #'
 #' @family functions that calculate seawater properties
 swSigmaT <- function(
-    salinity, temperature = NULL, pressure = NULL,
-    longitude = NULL, latitude = NULL, eos = getOption("oceEOS", default = "gsw")) {
+  salinity, temperature = NULL, pressure = NULL,
+  longitude = NULL, latitude = NULL, eos = getOption("oceEOS", default = "gsw")
+) {
     if (missing(salinity)) {
         stop("must provide salinity")
     }
@@ -2180,9 +2191,10 @@ swSigmaT <- function(
 #'
 #' @family functions that calculate seawater properties
 swSigmaTheta <- function(
-    salinity, temperature = NULL, pressure = NULL, referencePressure = 0,
-    longitude = NULL, latitude = NULL, eos = getOption("oceEOS", default = "gsw"),
-    debug = getOption("oceDebug")) {
+  salinity, temperature = NULL, pressure = NULL, referencePressure = 0,
+  longitude = NULL, latitude = NULL, eos = getOption("oceEOS", default = "gsw"),
+  debug = getOption("oceDebug")
+) {
     # message("DEBUG: in swSigmaTheta with eos=", eos, ", referencePressure=", referencePressure)
     if (missing(salinity)) {
         stop("must provide salinity")
@@ -2296,8 +2308,9 @@ swSigmaTheta <- function(
 #'
 #' @family functions that calculate seawater properties
 swSigma0 <- function(
-    salinity, temperature = NULL, pressure = NULL,
-    longitude = NULL, latitude = NULL, eos = getOption("oceEOS", default = "gsw")) {
+  salinity, temperature = NULL, pressure = NULL,
+  longitude = NULL, latitude = NULL, eos = getOption("oceEOS", default = "gsw")
+) {
     if (missing(salinity)) {
         stop("must provide salinity")
     }
@@ -2346,8 +2359,9 @@ swSigma0 <- function(
 #' @references See citations provided in the [swRho()] documentation.
 #' @family functions that calculate seawater properties
 swSigma1 <- function(
-    salinity, temperature = NULL, pressure = NULL,
-    longitude = NULL, latitude = NULL, eos = getOption("oceEOS", default = "gsw")) {
+  salinity, temperature = NULL, pressure = NULL,
+  longitude = NULL, latitude = NULL, eos = getOption("oceEOS", default = "gsw")
+) {
     if (missing(salinity)) {
         stop("must provide salinity")
     }
@@ -2396,8 +2410,9 @@ swSigma1 <- function(
 #' @references See citations provided in the [swRho()] documentation.
 #' @family functions that calculate seawater properties
 swSigma2 <- function(
-    salinity, temperature = NULL, pressure = NULL,
-    longitude = NULL, latitude = NULL, eos = getOption("oceEOS", default = "gsw")) {
+  salinity, temperature = NULL, pressure = NULL,
+  longitude = NULL, latitude = NULL, eos = getOption("oceEOS", default = "gsw")
+) {
     if (missing(salinity)) {
         stop("must provide salinity")
     }
@@ -2446,8 +2461,9 @@ swSigma2 <- function(
 #' @references See citations provided in the [swRho()] documentation.
 #' @family functions that calculate seawater properties
 swSigma3 <- function(
-    salinity, temperature = NULL, pressure = NULL,
-    longitude = NULL, latitude = NULL, eos = getOption("oceEOS", default = "gsw")) {
+  salinity, temperature = NULL, pressure = NULL,
+  longitude = NULL, latitude = NULL, eos = getOption("oceEOS", default = "gsw")
+) {
     if (missing(salinity)) {
         stop("must provide salinity")
     }
@@ -2496,8 +2512,9 @@ swSigma3 <- function(
 #' @references See citations provided in the [swRho()] documentation.
 #' @family functions that calculate seawater properties
 swSigma4 <- function(
-    salinity, temperature = NULL, pressure = NULL,
-    longitude = NULL, latitude = NULL, eos = getOption("oceEOS", default = "gsw")) {
+  salinity, temperature = NULL, pressure = NULL,
+  longitude = NULL, latitude = NULL, eos = getOption("oceEOS", default = "gsw")
+) {
     if (missing(salinity)) {
         stop("must provide salinity")
     }
@@ -2637,8 +2654,9 @@ swSigma4 <- function(
 #'
 #' @family functions that calculate seawater properties
 swSoundAbsorption <- function(
-    frequency, salinity, temperature, pressure, pH = 8,
-    formulation = c("fisher-simmons", "francois-garrison", "ainslie-mccolm", "schulkin-marsh", "thorp-extended")) {
+  frequency, salinity, temperature, pressure, pH = 8,
+  formulation = c("fisher-simmons", "francois-garrison", "ainslie-mccolm", "schulkin-marsh", "thorp-extended")
+) {
     formulation <- match.arg(formulation)
     # nolint start T_and_F_symbol_linter
     if (formulation == "fisher-simmons") {
@@ -2761,8 +2779,9 @@ swSoundAbsorption <- function(
 #'
 #' @family functions that calculate seawater properties
 swSoundSpeed <- function(
-    salinity, temperature = NULL, pressure = NULL,
-    longitude = NULL, latitude = NULL, eos = getOption("oceEOS", default = "gsw")) {
+  salinity, temperature = NULL, pressure = NULL,
+  longitude = NULL, latitude = NULL, eos = getOption("oceEOS", default = "gsw")
+) {
     if (missing(salinity)) {
         stop("must provide salinity")
     }
@@ -2848,8 +2867,9 @@ swSoundSpeed <- function(
 #'
 #' @family functions that calculate seawater properties
 swSpecificHeat <- function(
-    salinity, temperature = NULL, pressure = 0,
-    longitude = NULL, latitude = NULL, eos = getOption("oceEOS", default = "gsw")) {
+  salinity, temperature = NULL, pressure = 0,
+  longitude = NULL, latitude = NULL, eos = getOption("oceEOS", default = "gsw")
+) {
     if (missing(salinity)) {
         stop("must provide salinity")
     }
@@ -2989,9 +3009,10 @@ swSpecificHeat <- function(
 #' @family functions that calculate seawater spiciness
 #' @family functions that calculate seawater properties
 swSpice <- function(
-    salinity, temperature = NULL, pressure = NULL,
-    longitude = NULL, latitude = NULL, eos = getOption("oceEOS", default = "gsw"),
-    debug = getOption("oceDebug")) {
+  salinity, temperature = NULL, pressure = NULL,
+  longitude = NULL, latitude = NULL, eos = getOption("oceEOS", default = "gsw"),
+  debug = getOption("oceDebug")
+) {
     oceDebug(debug, vectorShow(eos))
     if (eos != "gsw" && eos != "unesco") {
         stop("eos must be \"gsw\" or \"unesco\", but \"", eos, "\" was given")
@@ -3051,8 +3072,9 @@ swSpice <- function(
 
 # Internal function used by swSpiciness0(), swSpiciness1() and swSpiciness2()
 swSpiciness <- function(
-    salinity = NULL, temperature = NULL, pressure = NULL,
-    longitude = NULL, latitude = NULL, referencePressure = NULL) {
+  salinity = NULL, temperature = NULL, pressure = NULL,
+  longitude = NULL, latitude = NULL, referencePressure = NULL
+) {
     if (is.null(salinity)) stop("must provide salinity")
     if (inherits(salinity, "oce")) {
         temperature <- salinity[["temperature"]]
@@ -3274,9 +3296,10 @@ swSpiciness2 <- function(salinity, temperature, pressure, longitude, latitude) {
 #'
 #' @family functions that calculate seawater properties
 swTheta <- function(
-    salinity, temperature = NULL, pressure = NULL, referencePressure = 0,
-    longitude = NULL, latitude = NULL, eos = getOption("oceEOS", default = "gsw"),
-    debug = getOption("oceDebug")) {
+  salinity, temperature = NULL, pressure = NULL, referencePressure = 0,
+  longitude = NULL, latitude = NULL, eos = getOption("oceEOS", default = "gsw"),
+  debug = getOption("oceDebug")
+) {
     if (missing(salinity)) {
         stop("must provide salinity")
     }
@@ -3449,9 +3472,10 @@ swViscosity <- function(salinity, temperature) {
 #'
 #' @family functions that calculate seawater properties
 swConservativeTemperature <- function(
-    salinity, temperature = NULL, pressure = NULL,
-    longitude = NULL, latitude = NULL,
-    debug = getOption("oceDebug")) {
+  salinity, temperature = NULL, pressure = NULL,
+  longitude = NULL, latitude = NULL,
+  debug = getOption("oceDebug")
+) {
     if (missing(salinity)) {
         stop("must provide salinity")
     }

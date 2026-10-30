@@ -160,7 +160,7 @@ setMethod(
 #' that gps shapes near the centre of the plot are preserved.  If a projection
 #' is provided, the coordinate system will bear an indirect relationship to
 #' longitude and longitude, and further adornment of the plot must be done with
-#' e.g.  [mapPoints()] instead of [points()].
+#' e.g.  [mapPoints()] instead of [graphics::points()].
 #'
 # These archaic arguments have not worked for a long time, if ever.
 # A pkg::build_site() run on April 1, 2020 flagged them as

@@ -303,7 +303,6 @@ setMethod(
 )
 
 
-
 #' Subset an adv Object
 #'
 #' Subset an adv (acoustic Doppler profile) object.  This function is somewhat
@@ -427,10 +426,11 @@ setMethod(
 #'
 #' @author Dan Kelley
 read.adv <- function(
-    file, from = 1, to, by = 1, tz = getOption("oceTz"),
-    type = c("nortek", "sontek", "sontek.adr", "sontek.text"),
-    header = TRUE, encoding = NA, longitude = NA, latitude = NA, start = NULL, deltat = NA,
-    debug = getOption("oceDebug"), monitor = FALSE, processingLog = NULL) {
+  file, from = 1, to, by = 1, tz = getOption("oceTz"),
+  type = c("nortek", "sontek", "sontek.adr", "sontek.text"),
+  header = TRUE, encoding = NA, longitude = NA, latitude = NA, start = NULL, deltat = NA,
+  debug = getOption("oceDebug"), monitor = FALSE, processingLog = NULL
+) {
     if (missing(file)) {
         stop("must supply 'file'")
     }
@@ -478,7 +478,6 @@ read.adv <- function(
         stop("read.adv() cannot understand type = \"", type, "\"")
     }
 }
-
 
 
 #' Plot an adv Object
@@ -579,7 +578,7 @@ read.adv <- function(
 #' this is used in the usual way; otherwise, e.g. for image formats, this is
 #' ignored.
 #'
-#' @param type Type of plot, as for [plot()].
+#' @param type Type of plot, as for [base::plot()].
 #'
 #' @param drawTimeRange Logical value that applies to panels with time as the horizontal
 #' axis, indicating whether to draw the time range in the top-left margin of the
@@ -1458,8 +1457,9 @@ beamToXyzAdv <- function(x, debug = getOption("oceDebug")) {
 #'
 #' @family things related to adv data
 xyzToEnuAdv <- function(
-    x, declination = 0, cabled = FALSE, horizontalCase, sensorOrientation,
-    debug = getOption("oceDebug")) {
+  x, declination = 0, cabled = FALSE, horizontalCase, sensorOrientation,
+  debug = getOption("oceDebug")
+) {
     oceDebug(debug, "xyzToEnuAdv(x, declination[1]=", declination[1],
         ",cabled=", cabled,
         ",horizontalCase=", if (missing(horizontalCase)) "(not provided)" else horizontalCase,

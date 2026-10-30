@@ -71,7 +71,7 @@ oceDeleteData <- function(object, name) {
 #' 2. `unit` is an [expression()] giving the unit as above. In this
 #' case, the scale will be set to `""`.
 #' 3. `unit` is a character string that is converted
-#' into an expression with [parse]`(text=unit)`,
+#' into an expression with [base::parse]`(text=unit)`,
 #' and the scale set to `""`.
 #'
 #' @param object an [oce-class] object.

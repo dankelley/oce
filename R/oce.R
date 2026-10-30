@@ -129,7 +129,7 @@ NULL
 #' * The `fill` argument of [mapPlot()] was confusing
 #' to users, so it was designated as deprecated in June 2016.
 #' (The confusion stemmed from subtle differences between
-#' [plot()] and [polygon()], and the problem is that
+#' [base::plot()] and [polygon()], and the problem is that
 #' [mapPlot()] can use either of these functions, according
 #' to whether coastlines are to be filled.)
 #' The functionality is preserved, in the `col` argument.
@@ -266,7 +266,6 @@ useHeading <- function(b, g, add = 0) {
 }
 
 
-
 #' Window an oce Object by Time or Distance
 #'
 #' Windows `x` on either time or distance, depending on the value of
@@ -274,8 +273,8 @@ useHeading <- function(b, g, add = 0) {
 #' integers, to indicate a portion of the time or distance range.  If
 #' `which` is `"time"`, then the `start` and `end` values
 #' may also be provided as POSIX times, or character strings indicating times
-#' (in time zone given by the value of [getOption]`("oceTz")`).
-#' Note that [subset()] may be more useful than this function.
+#' (in time zone given by the value of `base::getOption("oceTz")`).
+#' Note that [base::subset()] may be more useful than this function.
 #'
 #' @param x an [oce-class] object.
 #'
@@ -314,7 +313,7 @@ useHeading <- function(b, g, add = 0) {
 #'
 #' @author Dan Kelley
 #'
-#' @seealso [subset()] provides more flexible selection of subsets.
+#' @seealso [base::subset()] provides more flexible selection of subsets.
 #'
 #' @examples
 #' library(oce)
@@ -325,9 +324,10 @@ useHeading <- function(b, g, add = 0) {
 #' bottom <- window(adp, start = 0, end = 20, which = "distance")
 #' plot(bottom)
 window.oce <- function(
-    x, start = NULL, end = NULL, frequency = NULL, deltat = NULL, extend = FALSE,
-    which = c("time", "distance"), indexReturn = FALSE,
-    debug = getOption("oceDebug"), ...) {
+  x, start = NULL, end = NULL, frequency = NULL, deltat = NULL, extend = FALSE,
+  which = c("time", "distance"), indexReturn = FALSE,
+  debug = getOption("oceDebug"), ...
+) {
     oceDebug(debug, "window.oce(...,start=",
         paste(format(start), collapse = ","), ",end=",
         paste(format(end), collapse = ","),
@@ -448,7 +448,7 @@ window.oce <- function(
 #'
 #' @param x an [oce-class] object.
 #'
-#' @param n Number of elements to extract, as for [head()].
+#' @param n Number of elements to extract, as for [utils::head()].
 #'
 #' @param ... ignored
 #'
@@ -591,8 +591,7 @@ headOrTail <- function(x, n = 6L, headTail = head, ...) {
                 res@data[[name]] <- headTail(x@data[[name]], n)
             } else if (is.data.frame(x@data[[name]])) {
                 res@data[[name]] <- headTail(x@data[[name]], n)
-            } else if (is.null(x@data[[name]])) {
-            } else {
+            } else if (is.null(x@data[[name]])) {} else {
                 warning("ignoring '", name, "' because it is not a vector\n")
             }
         }
@@ -619,7 +618,7 @@ headOrTail <- function(x, n = 6L, headTail = head, ...) {
 #'
 #' @param x an [oce-class] object.
 #'
-#' @param n Number of elements to extract, as for [tail()].
+#' @param n Number of elements to extract, as for [utils::tail()].
 #'
 #' @param ... ignored
 #'
@@ -991,7 +990,7 @@ oce.grid <- function(xat, yat, col = "lightgray", lty = "dotted", lwd = par("lwd
 #' Plot a time-series, obeying the timezone and possibly drawing the range in
 #' the top-left margin.
 #'
-#' Depending on the version of R, the standard [plot()] and
+#' Depending on the version of R, the standard [graphics::plot()] and
 #' [plot.ts()] routines will not obey the time zone of the data.
 #' This routine gets around that problem.  It can also plot the time range in
 #' the top-left margin, if desired; this string includes the timezone, to
@@ -1059,7 +1058,7 @@ oce.grid <- function(xat, yat, col = "lightgray", lty = "dotted", lwd = par("lwd
 #' @param pch character code, used if `type=="p"`.
 #' If there are fewer `pch` values than there are `x` values, then the `pch` values
 #' are recycled in the standard fashion.
-#' See [points()] for the possible values for `pch`.
+#' See [graphics::points()] for the possible values for `pch`.
 #'
 #' @param cex numeric character expansion factor for points on plots, ignored unless
 #' `type` is `"p"`.  This may be a single number, applied to all points, or
@@ -1121,7 +1120,7 @@ oce.grid <- function(xat, yat, col = "lightgray", lty = "dotted", lwd = par("lwd
 #' @param debug a flag that turns on debugging.  Set to 1 to get a moderate
 #' amount of debugging information, or to 2 to get more.
 #'
-#' @param \dots graphical parameters passed down to [plot()].
+#' @param \dots graphical parameters passed down to [graphics::plot()].
 #'
 #' @return A list is silently returned, containing `xat` and `yat`,
 #' values that can be used by [oce.grid()] to add a grid to the plot.
@@ -1144,19 +1143,20 @@ oce.grid <- function(xat, yat, col = "lightgray", lty = "dotted", lwd = par("lwd
 #' # Flip the y axis
 #' oce.plot.ts(t, y, flipy = TRUE)
 oce.plot.ts <- function(
-    x, y, type = "l", xlim, ylim, log = "", logStyle = "r", flipy = FALSE, xlab = "", ylab,
-    drawTimeRange, simplify = 2560, fill = FALSE, col = par("col"), pch = par("pch"),
-    cex = par("cex"), cex.axis = par("cex.axis"), cex.lab = par("cex.lab"), cex.main = par("cex.main"),
-    xaxs = par("xaxs"), yaxs = par("yaxs"),
-    mgp = getOption("oceMgp"),
-    mar = c(mgp[1] + if (nchar(xlab) > 0) 1.5 else 1, mgp[1] + 1.5, mgp[2] + 1, mgp[2] + 3 / 4),
-    main = "",
-    despike = FALSE,
-    axes = TRUE, tformat,
-    marginsAsImage = FALSE,
-    grid = FALSE, grid.col = "lightgray", grid.lty = "dotted", grid.lwd = par("lwd"),
-    debug = getOption("oceDebug"),
-    ...) {
+  x, y, type = "l", xlim, ylim, log = "", logStyle = "r", flipy = FALSE, xlab = "", ylab,
+  drawTimeRange, simplify = 2560, fill = FALSE, col = par("col"), pch = par("pch"),
+  cex = par("cex"), cex.axis = par("cex.axis"), cex.lab = par("cex.lab"), cex.main = par("cex.main"),
+  xaxs = par("xaxs"), yaxs = par("yaxs"),
+  mgp = getOption("oceMgp"),
+  mar = c(mgp[1] + if (nchar(xlab) > 0) 1.5 else 1, mgp[1] + 1.5, mgp[2] + 1, mgp[2] + 3 / 4),
+  main = "",
+  despike = FALSE,
+  axes = TRUE, tformat,
+  marginsAsImage = FALSE,
+  grid = FALSE, grid.col = "lightgray", grid.lty = "dotted", grid.lwd = par("lwd"),
+  debug = getOption("oceDebug"),
+  ...
+) {
     if (is.function(x)) {
         stop("x cannot be a function")
     }
@@ -1215,7 +1215,7 @@ oce.plot.ts <- function(
         oceDebug(debug, "made col, pch and cex of length ", nx, " to match length(x)\n")
     }
     pc <- paletteCalculations(maidiff = rep(0, 4))
-    #oceDebug(if (debug > 1) 1 else 0, vectorShow(pc), "\n")
+    # oceDebug(if (debug > 1) 1 else 0, vectorShow(pc), "\n")
     par(mgp = mgp, mar = mar)
     args <- list(...)
     xlimGiven <- !missing(xlim)
@@ -1295,31 +1295,31 @@ oce.plot.ts <- function(
             dfSplit,
             function(DF) {
                 mean(DF$x, na.rm = TRUE)
-                #if (length(DF$x) > 2) {
+                # if (length(DF$x) > 2) {
                 #    mean(DF$x, na.rm = TRUE)
-                #} else {
+                # } else {
                 #    NA
-                #}
+                # }
             }
         )), each = 2)
         x <- numberAsPOSIXct(x, tz = tz)
         oceDebug(debug, "after simplifying, have ", vectorShow(x))
-        #(issue2277) # FIXME: I think this might be faster if another 'apply' function were
-        #(issue2277) # used, to return 2 values, but I (DEK) can't recall what that function is.
-        #(issue2277) ymin <- unname(sapply(
-        #(issue2277)     dfSplit,
-        #(issue2277)     function(DF) {
-        #(issue2277)         # if (sum(is.finite(DF$y)) > 2) min(DF$y, na.rm = TRUE) else NA
-        #(issue2277)         min(DF$y, na.rm = TRUE)
-        #(issue2277)     }
-        #(issue2277) ))
-        #(issue2277) ymax <- unname(sapply(
-        #(issue2277)     dfSplit,
-        #(issue2277)     function(DF) {
-        #(issue2277)         # if (sum(is.finite(DF$y)) > 2) max(DF$y, na.rm = TRUE) else NA
-        #(issue2277)         max(DF$y, na.rm = TRUE)
-        #(issue2277)     }
-        #(issue2277) ))
+        # (issue2277) # FIXME: I think this might be faster if another 'apply' function were
+        # (issue2277) # used, to return 2 values, but I (DEK) can't recall what that function is.
+        # (issue2277) ymin <- unname(sapply(
+        # (issue2277)     dfSplit,
+        # (issue2277)     function(DF) {
+        # (issue2277)         # if (sum(is.finite(DF$y)) > 2) min(DF$y, na.rm = TRUE) else NA
+        # (issue2277)         min(DF$y, na.rm = TRUE)
+        # (issue2277)     }
+        # (issue2277) ))
+        # (issue2277) ymax <- unname(sapply(
+        # (issue2277)     dfSplit,
+        # (issue2277)     function(DF) {
+        # (issue2277)         # if (sum(is.finite(DF$y)) > 2) max(DF$y, na.rm = TRUE) else NA
+        # (issue2277)         max(DF$y, na.rm = TRUE)
+        # (issue2277)     }
+        # (issue2277) ))
         y <- unname(sapply(
             dfSplit,
             function(DF) {
@@ -2125,7 +2125,7 @@ oceAxis <- function(side, labels = TRUE, logStyle = "r", ...) {
 #' @param drawTimeRange Optional indication of whether/how to draw the time range
 #' in the margin on the side of the the plot opposite the time axis. If this is
 #' not supplied, it defaults to the value returned by
-#' [getOption]`("oceDrawTimeRange")`, and if that option is not set,
+#' [base::getOption]("oceDrawTimeRange")`, and if that option is not set,
 #' it defaults to `TRUE`. No time range is drawn if `drawTimeRange` is `FALSE`.
 #' If it is `TRUE`, the range will be shown. This range refers to
 #' range of the x axis (not the data). The format of the elements of that range is set by
@@ -2161,14 +2161,15 @@ oceAxis <- function(side, labels = TRUE, logStyle = "r", ...) {
 #'
 #' @seealso This is used mainly by [oce.plot.ts()].
 oce.axis.POSIXct <- function(
-    side, x, at, tformat, labels = TRUE,
-    drawTimeRange,
-    abbreviateTimeRange = FALSE, drawFrequency = FALSE,
-    cex.axis = par("cex.axis"), cex.lab = par("cex.lab"), cex.main = par("cex.main"),
-    mar = par("mar"),
-    mgp = par("mgp"),
-    main = "",
-    debug = getOption("oceDebug"), ...) {
+  side, x, at, tformat, labels = TRUE,
+  drawTimeRange,
+  abbreviateTimeRange = FALSE, drawFrequency = FALSE,
+  cex.axis = par("cex.axis"), cex.lab = par("cex.lab"), cex.main = par("cex.main"),
+  mar = par("mar"),
+  mgp = par("mgp"),
+  main = "",
+  debug = getOption("oceDebug"), ...
+) {
     oceDebug(debug, "oce.axis.POSIXct(..., debug=", debug, ",...) START\n", sep = "", unindent = 1)
     oceDebug(debug, argShow(mar), "\n")
     oceDebug(debug, argShow(mgp), "\n")
@@ -2694,7 +2695,7 @@ numberAsHMS <- function(t, default = 0) {
 #' parameters, and the return value is decreased accordingly
 #' (see Example 3).
 #'
-#' @return A [POSIXct()] time vector.
+#' @return A [base::POSIXct()] time vector.
 #'
 #' @author Dan Kelley
 #'
@@ -2889,9 +2890,10 @@ numberAsPOSIXct <- function(t, type = "unix", tz = "UTC", leap = TRUE) {
 #'     )
 #' )
 plotInset <- function(
-    xleft, ybottom, xright, ytop, expr,
-    mar = c(2, 2, 1, 1),
-    debug = getOption("oceDebug")) {
+  xleft, ybottom, xright, ytop, expr,
+  mar = c(2, 2, 1, 1),
+  debug = getOption("oceDebug")
+) {
     opar <- par(no.readonly = TRUE)
     mai <- par("mai") # bottom left top right
     # omfg <- par("mfg")                 # original mfg
@@ -3126,7 +3128,7 @@ decodeTime <- function(time, timeFormats, tz = "UTC") {
 #'
 #' @param add if `TRUE`, the arrows are added to an existing
 #'     plot; otherwise, a new plot is started by calling
-#'     [plot()] with `x`, `y` and `type="n"`.
+#'     [base::plot()] with `x`, `y` and `type="n"`.
 #'     In other words, the plot will be very basic. In most cases, the
 #'     user will probably want to draw a diagram first, and `add`
 #'     the direction field later.
@@ -3176,12 +3178,13 @@ decodeTime <- function(time, timeFormats, tz = "UTC") {
 #'
 #' @author Dan Kelley and Clark Richards
 drawDirectionField <- function(
-    x, y, u, v, scalex, scaley, skip, length = 0.05, add = FALSE,
-    type = 1, col = par("fg"), pch = 1, cex = par("cex"),
-    lwd = par("lwd"), lty = par("lty"),
-    xlab = "", ylab = "",
-    debug = getOption("oceDebug"),
-    ...) {
+  x, y, u, v, scalex, scaley, skip, length = 0.05, add = FALSE,
+  type = 1, col = par("fg"), pch = 1, cex = par("cex"),
+  lwd = par("lwd"), lty = par("lty"),
+  xlab = "", ylab = "",
+  debug = getOption("oceDebug"),
+  ...
+) {
     oceDebug(debug, "drawDirectionField(...) START\n", unindent = 1)
     if (missing(x) || missing(y) || missing(u) || missing(v)) {
         stop("must supply x, y, u, and v")
@@ -3274,7 +3277,7 @@ drawDirectionField <- function(
 
 #' Oce Variant of contour
 #'
-#' This provides something analogous to [contour()], but with the
+#' This provides something analogous to [graphics::contour()], but with the
 #' ability to flip x and y.
 #' Setting `revy=TRUE` can be helpful if the `y` data represent
 #' pressure or depth below the surface.
@@ -3323,9 +3326,10 @@ drawDirectionField <- function(
 #' oce.contour(lon, lat, z, levels = 0, drawlabels = FALSE)
 #' oce.contour(lon, lat, z, levels = -130, drawlabels = FALSE, col = "blue", add = TRUE)
 oce.contour <- function(
-    x, y, z, revx = FALSE, revy = FALSE, add = FALSE,
-    tformat, drawTimeRange = getOption("oceDrawTimeRange"),
-    debug = getOption("oceDebug"), ...) {
+  x, y, z, revx = FALSE, revy = FALSE, add = FALSE,
+  tformat, drawTimeRange = getOption("oceDrawTimeRange"),
+  debug = getOption("oceDebug"), ...
+) {
     # dots <- list(...)
     # dotsNames <- names(dots)
     mustReverseX <- any(0 > diff(order(x)))
@@ -3688,7 +3692,7 @@ oce.smooth <- oceSmooth
 #' greater than zero for increasing levels of debugging.  Values greater than 4
 #' are treated like 4.
 #'
-#' @param \dots items to be supplied to [cat()], which does the
+#' @param \dots items to be supplied to [base::cat()], which does the
 #' printing.  Note that no newline will be printed unless \dots
 #' contains a string with a newline character (as in the example).
 #'
@@ -3708,7 +3712,7 @@ oce.smooth <- oceSmooth
 #' e.g. for start and end lines from a called function.
 #'
 #' @param sep character to insert between elements of `...`, by passing
-#' it to [cat()].
+#' it to [base::cat()].
 #'
 #' @author Dan Kelley
 #'

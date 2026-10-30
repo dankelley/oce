@@ -258,9 +258,10 @@ setMethod(
 #'
 #' @family things related to cm data
 as.cm <- function(
-    time, u = NULL, v = NULL,
-    pressure = NULL, conductivity = NULL, temperature = NULL, salinity = NULL,
-    longitude = NA, latitude = NA, filename = "", debug = getOption("oceDebug")) {
+  time, u = NULL, v = NULL,
+  pressure = NULL, conductivity = NULL, temperature = NULL, salinity = NULL,
+  longitude = NA, latitude = NA, filename = "", debug = getOption("oceDebug")
+) {
     oceDebug(debug, "as.ctd() START\n", unindent = 1)
     rpd <- atan2(1, 1) / 45 # radians per degree (avoid 'pi')
     # Catch special cases
@@ -522,9 +523,10 @@ as.cm <- function(
 #'
 #' @author Dan Kelley
 read.cm <- function(
-    file, from = 1, to, by = 1, tz = getOption("oceTz"), type = c("s4"),
-    longitude = NA, latitude = NA, debug = getOption("oceDebug"),
-    encoding = "latin1", monitor = FALSE, processingLog) {
+  file, from = 1, to, by = 1, tz = getOption("oceTz"), type = c("s4"),
+  longitude = NA, latitude = NA, debug = getOption("oceDebug"),
+  encoding = "latin1", monitor = FALSE, processingLog
+) {
     if (missing(file)) {
         stop("must supply 'file'")
     }
@@ -553,8 +555,9 @@ read.cm <- function(
 }
 
 read.cm.s4 <- function(
-    file, from = 1, to, by = 1, tz = getOption("oceTz"), longitude = NA, latitude = NA,
-    monitor = FALSE, encoding = "latin1", debug = getOption("oceDebug"), processingLog) {
+  file, from = 1, to, by = 1, tz = getOption("oceTz"), longitude = NA, latitude = NA,
+  monitor = FALSE, encoding = "latin1", debug = getOption("oceDebug"), processingLog
+) {
     debug <- max(0, min(debug, 1))
     oceDebug(debug, "read.cm.s4(file=\"", file, "\", from=", format(from), ", to=", if (missing(to)) "(missing)" else format(to), ", by=", by, ", ...) START\n", sep = "", unindent = 1)
     if (missing(file)) {
@@ -752,7 +755,7 @@ read.cm.s4 <- function(
 #' down from the top of the page.  See \dQuote{Details} for the meanings of various
 #' values of `which`.
 #'
-#' @param type type of plot, as for [plot()].
+#' @param type type of plot, as for [graphics::plot()].
 #'
 #' @param xlim,ylim optional limit to the x and y axes, passed to [oce.plot.ts()] for
 #' time-series plots.
@@ -778,7 +781,7 @@ read.cm.s4 <- function(
 #'
 #' @param small an integer indicating the size of data set to be considered
 #' "small", to be plotted with points or lines using the standard
-#' [plot()] function.  Data sets with more than `small` points will
+#' [base::plot()] function.  Data sets with more than `small` points will
 #' be plotted with [smoothScatter()] instead.
 #'
 #' @param main main title for plot, used just on the top panel, if there are

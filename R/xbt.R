@@ -967,7 +967,7 @@ read.xbt.noaa2 <- function(
 #' @param which list of desired plot types; see \dQuote{Details} for the meanings of various
 #' values of `which`.
 #'
-#' @param type type of plot, as for [plot()].
+#' @param type type of plot, as for [base::plot()].
 #'
 #' @param mgp 3-element numerical vector to use for `par(mgp)`, and also for
 #' `par(mar)`, computed from this.  The default is tighter than the R default,

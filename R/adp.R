@@ -1647,7 +1647,7 @@ read.adp <- function(file, from, to, by, tz = getOption("oceTz"), longitude = NA
 #' record of AD2CP data.
 #'
 #' The color scheme for image plots (`which` in 1:12) is provided by the
-#' `col` argument, which is passed to [image()] to do the actual
+#' `col` argument, which is passed to [graphics::image()] to do the actual
 #' plotting.  See \dQuote{Examples} for some comparisons.
 #'
 #' A common quick-look plot to assess mooring movement is to use
@@ -1655,7 +1655,7 @@ read.adp <- function(file, from, to, by, tz = getOption("oceTz"), longitude = NA
 #' currents may dislodge a mooring or cause it to settle).
 #'
 #' By default, `plot,adp-method` uses a `zlim` value for the
-#' [image()] that is constructed to contain all the data, but to be
+#' [graphics::image()] that is constructed to contain all the data, but to be
 #' symmetric about zero.  This is done on a per-panel basis, and the scale is
 #' plotted at the top-right corner, along with the name of the variable being
 #' plotted. You may also supply `zlim` as one of the \dots{} arguments,
@@ -4125,7 +4125,7 @@ binmapAdp <- function(x, debug = getOption("oceDebug")) {
 #' @param na.rm a logical value indicating whether NA values should be stripped
 #' before the computation proceeds
 #'
-#' @param ... extra arguments to be passed to the `mean()` function.
+#' @param ... extra arguments to be passed to the [`base::mean()`] function.
 #'
 #' @return A new [adp-class] object with ensembles averaged as specified. E.g. for
 #' an `adp` object with 100 pings and `n=5` the number of rows of the data arrays
